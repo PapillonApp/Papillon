@@ -222,13 +222,15 @@ export default function ActionMenu({
   }
 
   function getMenuPosition() {
-    if (!position || !menuSize) {
-      return { alignSelf: "center" as const };
+    if (!position) {
+      return { position: "absolute" as const, top: 0, left: 0, opacity: 0 };
     }
 
     const screen = Dimensions.get("window");
     const MARGIN = 16;
     const SPACING = 8;
+    const width = menuSize?.width ?? menuWidth;
+    const height = menuSize?.height ?? estimatedMenuHeight;
 
     const safeLeft = insets.left + MARGIN;
     const safeRight = screen.width - insets.right - MARGIN;
@@ -237,19 +239,19 @@ export default function ActionMenu({
 
     const left = Math.min(
       Math.max(position.x, safeLeft),
-      safeRight - menuSize.width
+      safeRight - width
     );
 
     const topIfBelow = placement === "below"
       ? Math.min(
         Math.max(position.y, safeTop),
-        Math.max(safeTop, safeBottom - menuSize.height)
+        Math.max(safeTop, safeBottom - height)
       )
       : position.y + position.height + SPACING;
-    const hasSpaceBelow = placement === "below" || topIfBelow + menuSize.height <= safeBottom;
+    const hasSpaceBelow = placement === "below" || topIfBelow + height <= safeBottom;
     const top = hasSpaceBelow
       ? topIfBelow
-      : Math.max(safeTop, position.y - menuSize.height - SPACING);
+      : Math.max(safeTop, position.y - height - SPACING);
 
     return { position: "absolute" as const, top, left };
   }
@@ -265,7 +267,9 @@ export default function ActionMenu({
 
   const currentSubmenu = submenuStack[submenuStack.length - 1];
   const currentActions = currentSubmenu?.subactions ?? actions;
+  const menuWidth = Math.min(Dimensions.get("window").width * 0.75, 320);
   const estimatedMenuContentHeight = (currentActions.length + (currentSubmenu ? 1 : 0)) * 48;
+  const estimatedMenuHeight = estimatedMenuContentHeight + (currentSubmenu ? 52 : 0);
   const menuContentHeight = useSharedValue(estimatedMenuContentHeight);
   const hasMeasuredMenuContent = useRef(false);
 
@@ -323,7 +327,11 @@ export default function ActionMenu({
               style={[
                 styles.menu,
                 getMenuPosition(),
-                { backgroundColor: theme.colors.item, width: Math.min(Dimensions.get("window").width * 0.75, 320), transformOrigin: side === "left" ? "top left" : "top right" },
+                {
+                  backgroundColor: theme.colors.item,
+                  width: menuWidth,
+                  transformOrigin: side === "left" ? "top left" : "top right",
+                },
               ]}
             >
               <Reanimated.View
