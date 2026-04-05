@@ -138,7 +138,7 @@ export default function AccountsView() {
         ))}
         <List.Item
           onPress={() =>
-            router.replace({
+            router.push({
               pathname: "/(onboarding)/ageSelection",
               params: { action: "addService" },
             })
