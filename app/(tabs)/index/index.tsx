@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
 import { FlatList, Platform, StatusBar, View } from 'react-native';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
@@ -25,7 +24,7 @@ import Typography from '@/ui/new/Typography';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const bottomTabBarHeight = useBottomTabBarHeight();
+  const bottomTabBarHeight = insets.bottom + 16;
   const focused = useIsFocused();
 
   // Account
