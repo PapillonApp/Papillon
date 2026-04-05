@@ -115,10 +115,6 @@ const HomeScreen = () => {
 const HomeViewContainer = ({ children }) => {
   const insets = useSafeAreaInsets();
 
-  if (Platform.OS === 'ios') {
-    return children;
-  }
-
   return (
     <MaskedView
       maskElement={
@@ -126,7 +122,7 @@ const HomeViewContainer = ({ children }) => {
           <LinearGradient
             colors={['#ff000022', 'red']}
             locations={[0.5, 1]}
-            style={{ height: insets.top + 72 }}
+            style={{ height: insets.top + 68 }}
           />
           <View style={{ flex: 1, backgroundColor: 'red' }} />
         </View>
