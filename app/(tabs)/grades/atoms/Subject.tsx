@@ -176,6 +176,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
           style={{ width: "100%", paddingVertical: 8 }}
           activeOpacity={0.5}
           onPress={handlePressSubject}
+          disabled={subject.studentAverage === undefined}
         >
           <Stack
             direction="horizontal"
