@@ -5,7 +5,6 @@ import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, Platform, RefreshControl, View } from 'react-native';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -79,12 +78,13 @@ function comparePeriodsForDisplay(a: Period, b: Period): number {
 }
 
 const GradesView: React.FC = () => {
+  // Layout du header
+  const [headerHeight, setHeaderHeight] = useState(0);
+
   // Thème
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  // Layout du header
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const bottomTabBarHeight = useBottomTabBarHeight();
+  const bottomTabBarHeight = 0;
   const navigation = useNavigation();
 
   // Chargement
@@ -553,7 +553,7 @@ const GradesView: React.FC = () => {
 
       <List
       animated
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: (headerHeight - insets.top) + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
 
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
