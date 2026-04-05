@@ -2,7 +2,7 @@ import { useTheme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { t } from 'i18next';
 import React, { useMemo } from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 
 import {
   AI_SCREEN_OPTIONS,
@@ -32,7 +32,7 @@ export function RootNavigator() {
   }), [theme]);
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: Platform.OS === "android" ? theme.colors.background : undefined }}>
       {Platform.OS === "android" && <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} animated />}
       <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
 
@@ -70,7 +70,8 @@ export function RootNavigator() {
             headerTitle: t("Modal_Wallpaper_Title"),
             contentStyle: {
               backgroundColor: theme.colors.card
-            }
+            },
+            headerBackground: AndroidHeaderBackground
           }}
         />
 
@@ -79,7 +80,8 @@ export function RootNavigator() {
           options={{
             presentation: "modal",
             headerLargeTitle: false,
-            headerTitle: t("Modal_Profile_Title")
+            headerTitle: t("Modal_Profile_Title"),
+            headerBackground: AndroidHeaderBackground
           }}
         />
         <Stack.Screen
@@ -111,6 +113,7 @@ export function RootNavigator() {
             headerTitle: "",
             headerLargeTitle: false,
             presentation: "modal",
+            headerBackground: AndroidHeaderBackground
           }}
         />
         <Stack.Screen
@@ -175,7 +178,8 @@ export function RootNavigator() {
             }),
             sheetGrabberVisible: true,
             sheetAllowedDetents: "fitToContents",
-            headerTitle: t("Modal_Soon")
+            headerTitle: t("Modal_Soon"),
+            headerBackground: AndroidHeaderBackground
           }}
         />
 
@@ -212,7 +216,7 @@ export function RootNavigator() {
         <Stack.Screen
           name="(features)/attendance"
           options={{
-            headerShown: true,
+            headerShown: false,
             headerTitle: t("Tab_Attendance"),
             headerTransparent: runsIOS26,
             headerLargeTitle: true,
@@ -220,6 +224,6 @@ export function RootNavigator() {
           }}
         />
       </Stack>
-    </>
+    </View>
   );
 }

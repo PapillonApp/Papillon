@@ -3,7 +3,7 @@ import { News } from "@/services/shared/news";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
+import TypographyLegacy from "@/ui/components/Typography";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
 import { useEffect, useState } from "react";
 import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
@@ -18,7 +18,7 @@ import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeH
 import { MenuView } from "@react-native-menu/menu";
 import Icon from "@/ui/components/Icon";
 import { t } from "i18next";
-import List from "@/ui/components/List";
+import ListLegacy from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
@@ -27,8 +27,10 @@ import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { Papicons } from "@getpapillon/papicons";
+import { IconNames, Papicons } from "@getpapillon/papicons";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
 
 const NewsModal = () => {
   const search = useLocalSearchParams();
@@ -115,32 +117,50 @@ const NewsModal = () => {
 
       <Stack gap={10}>
         <Stack padding={[10, 4]} radius={200} backgroundColor={colors.text + "16"}>
-          <Typography variant="body2">
+          <TypographyLegacy variant="body2">
             {news.category}
-          </Typography>
+          </TypographyLegacy>
         </Stack>
 
-        <Typography variant="h3">
+        <TypographyLegacy variant="h3">
           {news.title}
-        </Typography>
+        </TypographyLegacy>
 
         <Stack direction="horizontal" hAlign="center">
           <Stack direction="horizontal" gap={8} inline flex hAlign="center">
             <Avatar initials={getInitials(news.author)} size={28} />
-            <Typography nowrap variant="body2">
+            <TypographyLegacy nowrap variant="body2">
               {news.author}
-            </Typography>
+            </TypographyLegacy>
           </Stack>
 
-          <Typography nowrap variant="body2" color="secondary">
+          <TypographyLegacy nowrap variant="body2" color="secondary">
             {new Date(news.createdAt).toLocaleDateString(undefined, {
               day: '2-digit',
               month: 'short',
               year: 'numeric'
             })}
-          </Typography>
+          </TypographyLegacy>
         </Stack>
       </Stack>
+
+      {news.question && (
+        <List scrollEnabled={false}>
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name="pie" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">
+              Cette actualité contient un sondage
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              PRONOTE ne nous permet pas d'afficher les sondages pour le moment.
+            </Typography>
+          </List.Item>
+        </List>
+      )}
 
       <HTMLView
         value={cleanedContent}
@@ -153,7 +173,7 @@ const NewsModal = () => {
       />
 
       {news.attachments.length > 0 && (
-        <List>
+        <ListLegacy>
           {news.attachments.map((attachment, index) => (
             <Item key={index} onPress={() => Linking.openURL(attachment.url)}>
               <Leading>
@@ -161,26 +181,26 @@ const NewsModal = () => {
                   <Papicons name={getAttachmentIcon(attachment)} />
                 </Icon>
               </Leading>
-              <Typography variant="title">
+              <TypographyLegacy variant="title">
                 {attachment.name}
-              </Typography>
-              <Typography variant="body1" nowrap color="secondary">
+              </TypographyLegacy>
+              <TypographyLegacy variant="body1" nowrap color="secondary">
                 {attachment.url}
-              </Typography>
+              </TypographyLegacy>
             </Item>
           ))}
-        </List>
+        </ListLegacy>
       )}
 
       <Stack gap={0} style={{ opacity: 0.4 }}>
-        <Typography variant="caption">
+        <TypographyLegacy variant="caption">
           Si cette actualité ne s'affiche pas correctement,
-        </Typography>
-        <Typography variant="caption" style={{
+        </TypographyLegacy>
+        <TypographyLegacy variant="caption" style={{
           textDecorationLine: 'underline'
         }} onPress={() => setHTMLCleanupEnabled(!HTMLCleanupEnabled)}>
           {HTMLCleanupEnabled ? "désactiver" : "activer"} le formattage automatique
-        </Typography>
+        </TypographyLegacy>
       </Stack>
     </ScrollView >
   );

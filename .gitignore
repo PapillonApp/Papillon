@@ -52,3 +52,5 @@ bun.lock
 yarn.lock
 
 secrets.json
+.vscode/
+.idea/

@@ -16,6 +16,13 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { GeographicSearchCities } from "@/utils/native/georeverse";
 
+const convertPostalCode
+= (postalCode: string) => {
+  if (postalCode.length < 5) {
+    return "0" + postalCode;
+  }
+  return postalCode;
+}
 
 export interface School {
   name: string,
@@ -157,7 +164,7 @@ export default function PronoteLoginMethod() {
             </Typography>
             <List.Trailing>
               <Typography variant="body1" color="textSecondary">
-                {city.postalCode}
+                {convertPostalCode(city.postalCode.toString())}
               </Typography>
             </List.Trailing>
           </List.Item>

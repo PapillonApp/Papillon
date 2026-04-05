@@ -42,8 +42,8 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           gap: 12,
           paddingHorizontal: 10,
           paddingVertical: 13,
-          borderRadius: 24,
-          backgroundColor: colors.card,
+          borderRadius: 22,
+          backgroundColor: colors.item,
           elevation: 4,
           overflow: 'hidden',
         }}
