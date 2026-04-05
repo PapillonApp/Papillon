@@ -1,6 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
-import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
@@ -39,7 +38,6 @@ import FeaturesMap from './atoms/FeaturesMap';
 import { SubjectItem } from './atoms/Subject';
 import { useGradeInfluence } from './hooks/useGradeInfluence';
 import List from '@/ui/new/List';
-import Typography from '@/ui/new/Typography';
 import ActionMenu from '@/ui/components/ActionMenu';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
@@ -320,7 +318,7 @@ const GradesView: React.FC = () => {
     <View style={{ marginBottom: 16 }}>
       <ErrorBoundary>
         <Averages
-          grades={grades}
+          grades={grades.filter((v) => v.studentScore !== undefined)}
           color={colors.primary}
           realAverage={serviceAverage || undefined}
         />
