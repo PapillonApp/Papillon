@@ -96,6 +96,7 @@ export default {
         backgroundColor: "#003A21",
       },
       supportsTablet: true,
+      predictiveBackGestureEnabled: true
     },
     web: {
       bundler: "metro",

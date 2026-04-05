@@ -1,4 +1,5 @@
 $EnableCoreMLDelegate=true
+$EnableCoreMLDelegate=true
 # Set by expo-router. This enables Fabric-only features from react-native-screens
 ENV['RNS_GAMMA_ENABLED'] ||= '1'
 $EnableCoreMLDelegate=true
