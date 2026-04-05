@@ -28,6 +28,7 @@ interface TaskProps {
   date: Date;
   completed: boolean;
   hasAttachments: boolean;
+  isCustom?: boolean;
   magic?: string;
   onToggle: () => void;
   onPress: () => void;
@@ -42,6 +43,7 @@ const Task: React.FC<TaskProps> = ({
   date,
   completed,
   hasAttachments,
+  isCustom = false,
   magic,
   onToggle,
   onPress
@@ -101,6 +103,11 @@ const Task: React.FC<TaskProps> = ({
               {hasAttachments && (
                 <Icon size={18} fill={tintedColor}>
                   <Papicons name="link" />
+                </Icon>
+              )}
+              {isCustom && (
+                <Icon size={18} fill={tintedColor}>
+                  <Papicons name="PenAlt" />
                 </Icon>
               )}
             </Stack>
