@@ -8,7 +8,7 @@ import { t } from "i18next";
 import React from "react";
 import { Text, View, ViewStyle } from "react-native";
 
-const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
+const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", custom = false, title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, title?: string, custom?: boolean, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
   const theme = useTheme();
 
   return (
@@ -50,15 +50,22 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
           {overtitle}
         </Typography>
       )}
-      {subject && (
-        <Typography
-          variant={subjectVariant}
-          align="center"
-          color={adjust(color, theme.dark ? 0.3 : -0.3)}
-        >
-          {subject}
-        </Typography>
-      )}
+      <Stack direction="horizontal" hAlign="center">
+        {subject && (
+          <Typography
+            variant={subjectVariant}
+            align="center"
+            color={adjust(color, theme.dark ? 0.3 : -0.3)}
+          >
+            {subject}
+          </Typography>
+        )}
+        {custom && (
+          <Icon size={18} fill={adjust(color, theme.dark ? 0.3 : -0.3)}>
+            <Papicons name="PenAlt" />
+          </Icon>
+        )}
+      </Stack>
       {title && (
         <Typography
           variant="body1"

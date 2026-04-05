@@ -7,6 +7,7 @@ import React, { useState } from "react";
 
 import ModalOverhead from "@/components/ModalOverhead";
 import Homework from "@/database/models/Homework";
+import { Homework as SharedHomework } from "@/services/shared/homework";
 import { updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
@@ -19,6 +20,7 @@ import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
+import { View } from "react-native";
 
 const Task = () => {
   const { params } = useRoute();
@@ -37,7 +39,7 @@ const Task = () => {
 
   const setAsDone = async (done: boolean) => {
     const manager = getManager();
-    await manager.setHomeworkCompletion(task, done);
+    await manager.setHomeworkCompletion((task as unknown as SharedHomework), done);
 
     const id = generateId(
       task.subject +
@@ -73,6 +75,7 @@ const Task = () => {
             subject={subjectInfo.name}
             subjectVariant="header"
             color={subjectInfo.color}
+            custom={task.custom}
             date={new Date(task.dueDate)}
             style={{
               marginVertical: 24
