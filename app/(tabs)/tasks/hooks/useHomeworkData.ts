@@ -68,7 +68,9 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
 
       try {
         const manager = getManager();
-        await manager.setHomeworkCompletion(item, done)
+        if (!item.custom) {
+          await manager.setHomeworkCompletion(item, done)
+        }
 
         updateHomeworkIsDone(id, done);
         
