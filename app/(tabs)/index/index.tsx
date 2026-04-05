@@ -3,7 +3,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
-import { FlatList, Platform, StatusBar } from 'react-native';
+import { FlatList, Platform, StatusBar, View } from 'react-native';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -19,6 +19,9 @@ import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
 import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/new/Button';
+import MaskedView from '@react-native-masked-view/masked-view';
+import LinearGradient from 'react-native-linear-gradient';
+import Typography from '@/ui/new/Typography';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -81,20 +84,39 @@ const HomeScreen = () => {
       <Wallpaper />
       <HomeTopBar />
       {focused && <StatusBar translucent animated barStyle={'light-content'} />}
-      <FlatList
-        renderItem={({ item }) => <HomeWidget item={item} />}
-        keyExtractor={(item) => item.title}
-        ListHeaderComponent={<HomeHeader />}
+      <MaskedView
+        maskElement={
+          Platform.OS === 'android' ? (
+          <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+            <LinearGradient
+              colors={['#ff000022', 'red']}
+              locations={[0.5, 1]}
+              style={{ height: insets.top + 72 }}
+            />
+            <View style={{ flex: 1, backgroundColor: 'red' }} />
+          </View>
+          ) : (
+            <View style={{ flex: 1, backgroundColor: 'transparent' }} />
+          )
+        }
         style={{ flex: 1 }}
-        contentContainerStyle={{
-          paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 16,
-          paddingHorizontal: 16,
-          flexGrow: 1,
-          gap: 12,
-          marginTop: 6
-        }}
-        data={data}
-      />
+      >
+        <FlatList
+          renderItem={({ item }) => <HomeWidget item={item} />}
+          keyExtractor={(item) => item.title}
+          ListHeaderComponent={<HomeHeader />}
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 16,
+            paddingHorizontal: 16,
+            flexGrow: 1,
+            gap: 12,
+            marginTop: 6
+          }}
+          data={data}
+        />
+        
+      </MaskedView>
     </>
   );
 };
