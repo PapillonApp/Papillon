@@ -3,7 +3,6 @@ import { Platform, ScrollView, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import { Switch } from "react-native-gesture-handler";
 
 import adjust from "@/utils/adjustColor";
 import {
@@ -46,6 +45,7 @@ import {
   getEDCanteenBadgeDetails,
 } from "@/services/ecoledirecte/qrcode";
 import { useAccountStore } from "@/stores/account";
+import NativeSwitch from "@/ui/native/NativeSwitch";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -373,7 +373,7 @@ export default function QRCodeAndCardsPage() {
                             Borne {item.label}
                           </Typography>
                           <Trailing>
-                            <Switch
+                            <NativeSwitch
                               disabled={accountKind === CanteenKind.FORFAIT ? false : !item.canBook || (wallet.lunchRemaining < 1 && wallet.lunchPrice !== 0)}
                               value={item.booked}
                               onValueChange={() => handleToggle(index)}

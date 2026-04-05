@@ -15,6 +15,7 @@ import Typography from "@/ui/components/Typography";
 import { useTheme } from "@react-navigation/native";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import NativeSwitch from "@/ui/native/NativeSwitch";
 
 export default function TabOneScreen() {
   const [icalUrl, setIcalUrl] = useState("");
@@ -146,7 +147,7 @@ export default function TabOneScreen() {
                   </Icon>
                   <Typography variant="title">Parsing intelligent (Beta)</Typography>
                   <Trailing>
-                    <Switch
+                    <NativeSwitch
                       value={(ical as any).intelligentParsing || false}
                       onValueChange={async (value) => {
                         await updateIcalParsing(ical.id, value);

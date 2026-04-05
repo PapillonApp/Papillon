@@ -1,4 +1,4 @@
-import { Platform, Switch } from "react-native";
+import { Platform } from "react-native";
 import React, { useEffect } from "react";
 import Typography from "@/ui/new/Typography";
 import Icon from "@/ui/components/Icon";
@@ -17,6 +17,7 @@ import List from "@/ui/new/List";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import NativeSwitch from "@/ui/native/NativeSwitch";
 
 
 const PersonalizationSettings = () => {
@@ -100,7 +101,7 @@ const PersonalizationSettings = () => {
                 {t("Settings_Personalization_MaterialYou_Description")}
               </Typography>
               <List.Trailing>
-                <Switch
+                <NativeSwitch
                   value={useMaterialYou}
                   onValueChange={(value) => {
                     mutateProperty("personalization", { useMaterialYou: value });
