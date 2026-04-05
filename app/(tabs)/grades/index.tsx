@@ -230,8 +230,8 @@ const GradesView: React.FC = () => {
 
       case "averages":
         subjectsCopy.sort((a, b) => {
-          const aAvg = a.studentAverage.value;
-          const bAvg = b.studentAverage.value;
+          const aAvg = a.studentAverage?.value ?? 0;
+          const bAvg = b.studentAverage?.value ?? 0;
           return bAvg - aAvg;
         });
         break;
@@ -390,13 +390,14 @@ const GradesView: React.FC = () => {
                   emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
                   title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
                   description={grade.description}
+                  skillLevel={grade.skills?.map((v) => v.score) ?? []}
                   score={grade.studentScore?.value || 0}
                   outOf={grade.outOf?.value || 20}
                   disabled={grade.studentScore?.disabled}
                   status={grade.studentScore?.status}
                   color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
                   date={grade.givenAt}
-                  hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
+                  hasMaxScore={(grade?.studentScore?.value ?? 0)=== (grade?.maxScore?.value ?? 1) && !grade?.studentScore?.disabled}
                   onPress={() => {
                     // @ts-expect-error navigation types
                     navigation.navigate('(modals)/grade', {
