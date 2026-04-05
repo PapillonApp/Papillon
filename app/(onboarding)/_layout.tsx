@@ -17,19 +17,36 @@ export default function OnboardingLayout() {
   }), []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: Platform.OS === "ios" ? "black" : undefined }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: Platform.OS === "ios" ? "black" : undefined,
+      }}
+    >
       <Stack>
         <Stack.Screen
           name="welcome"
-          options={{ ...newScreenOptions, title: "", headerLeft: () => null, headerShown: false, headerBackground: null }}
+          options={{
+            ...newScreenOptions,
+            title: "",
+            headerLeft: () => null,
+            headerShown: false,
+            headerBackground: null,
+          }}
         />
         <Stack.Screen
           name="ageSelection"
-          options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_ABOUTYOU") }}
+          options={{
+            ...newScreenOptions,
+            title: t("ONBOARDING_HEADER_ABOUTYOU"),
+          }}
         />
         <Stack.Screen
           name="serviceSelection"
-          options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_SCHOOLSERVICE") }}
+          options={{
+            ...newScreenOptions,
+            title: t("ONBOARDING_HEADER_SCHOOLSERVICE"),
+          }}
         />
         <Stack.Screen
           name="restaurants"
@@ -46,6 +63,10 @@ export default function OnboardingLayout() {
         />
         <Stack.Screen
           name="services/skolengo"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
+        />
+        <Stack.Screen
+          name="services/webuntis"
           options={{ headerShown: false, title: "", presentation: "modal" }}
         />
         <Stack.Screen
