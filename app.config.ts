@@ -108,6 +108,8 @@ export default {
       "expo-video",
       "expo-audio",
       "expo-localization",
+      "expo-asset",
+      "@react-native-community/datetimepicker",
       [
         "expo-image-picker",
         {
