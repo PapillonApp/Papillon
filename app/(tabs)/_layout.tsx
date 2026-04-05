@@ -1,4 +1,5 @@
 import { useSettingsStore } from '@/stores/settings';
+import BottomAccessory from '@/components/BottomAccessory';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { useTheme } from '@react-navigation/native';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -29,8 +30,13 @@ export default function TabLayout() {
       rippleColor={theme.colors.tint + '22'}
       backgroundColor={Platform.OS === 'android' ? theme.colors.background : undefined}
       sidebarAdaptable
+      minimizeBehavior="onScrollDown"
     >
-      <NativeTabs.Trigger name="index" hidden={disabledTabs.includes('home')}>
+      <NativeTabs.BottomAccessory>
+        <BottomAccessory />
+      </NativeTabs.BottomAccessory>
+
+      <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{t("Tab_Home")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={IS_IOS_WITH_PADDING ? require('@/assets/icons/home_padding.png') : require('@/assets/icons/home.png')} renderingMode='template' />
       </NativeTabs.Trigger>

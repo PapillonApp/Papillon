@@ -8,6 +8,7 @@ export const useTimetableWidgetData = () => {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now);
 
+  const [loading, setLoading] = useState(false);
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const account = accounts.find((a) => a.id === lastUsedAccount);
@@ -32,6 +33,7 @@ export const useTimetableWidgetData = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -49,6 +51,7 @@ export const useTimetableWidgetData = () => {
 
       dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
       setCourses(dayCourse);
+      setLoading(false);
     };
     fetchData();
   }, [weeklyTimetable]);
