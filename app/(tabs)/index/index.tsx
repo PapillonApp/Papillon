@@ -84,23 +84,7 @@ const HomeScreen = () => {
       <Wallpaper />
       <HomeTopBar />
       {focused && <StatusBar translucent animated barStyle={'light-content'} />}
-      <MaskedView
-        maskElement={
-          Platform.OS === 'android' ? (
-          <View style={{ flex: 1, backgroundColor: 'transparent' }}>
-            <LinearGradient
-              colors={['#ff000022', 'red']}
-              locations={[0.5, 1]}
-              style={{ height: insets.top + 72 }}
-            />
-            <View style={{ flex: 1, backgroundColor: 'red' }} />
-          </View>
-          ) : (
-            <View style={{ flex: 1, backgroundColor: 'transparent' }} />
-          )
-        }
-        style={{ flex: 1 }}
-      >
+      <HomeViewContainer>
         <FlatList
           renderItem={({ item }) => <HomeWidget item={item} />}
           keyExtractor={(item) => item.title}
@@ -115,10 +99,35 @@ const HomeScreen = () => {
           }}
           data={data}
         />
-        
-      </MaskedView>
+      </HomeViewContainer>
     </>
   );
 };
+
+const HomeViewContainer = ({ children }) => {
+  const insets = useSafeAreaInsets();
+
+  if (Platform.OS === 'ios') {
+    return children;
+  }
+
+  return (
+    <MaskedView
+      maskElement={
+        <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+          <LinearGradient
+            colors={['#ff000022', 'red']}
+            locations={[0.5, 1]}
+            style={{ height: insets.top + 72 }}
+          />
+          <View style={{ flex: 1, backgroundColor: 'red' }} />
+        </View>
+      }
+      style={{ flex: 1 }}
+    >
+      {children}
+    </MaskedView>
+  )
+}
 
 export default HomeScreen;
