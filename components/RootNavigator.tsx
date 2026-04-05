@@ -74,6 +74,79 @@ export function RootNavigator() {
             headerBackground: AndroidHeaderBackground
           }}
         />
+      <Stack.Screen
+        name="(modals)/profile"
+        options={{
+          presentation: "modal",
+          headerLargeTitle: false,
+          headerTitle: t("Modal_Profile_Title")
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/tasks/task"
+        options={{
+          headerShown: Platform.OS !== 'ios',
+          headerTitle: t("Modal_Task_Title"),
+          headerLargeTitle: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/tasks/custom"
+        options={{
+          headerShown: false,
+          headerTitle: t("Modal_Task_New"),
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/grade"
+        options={{
+          headerShown: Platform.OS !== 'ios',
+          headerTitle: t("Modal_Grades_Title"),
+          headerLargeTitle: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/news"
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLargeTitle: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/course"
+        options={{
+          headerShown: Platform.OS !== 'ios',
+          headerTitle: t("Modal_Course_Title"),
+          headerLargeTitle: false,
+          headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
+          presentation: "modal",
+          contentStyle: {
+            borderRadius: Platform.OS === 'ios' ? 30 : 0,
+            overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+          }
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/notifications"
+        options={{
+          headerShown: false,
+          headerTitle: "Notifications",
+          headerTransparent: runsIOS26,
+          headerLargeTitle: false,
+          presentation: "formSheet",
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.5, 0.75, 1],
+          sheetCornerRadius: runsIOS26 ? undefined : 30,
+          contentStyle: {
+            backgroundColor: runsIOS26 ? 'transparent' : undefined
+          }
+        }}
+      />
 
         <Stack.Screen
           name="(modals)/profile"
