@@ -116,6 +116,7 @@
   "ONBOARDING_UNKNOWN_STUDENT": "Étudiant",
   "ONBOARDING_DEFAULT_USER_FIRSTNAME": "Utilisateur",
   "ONBOARDING_DOUBLE_AUTH": "Double authentification",
+  "ONBOARDING_DOUBLE_AUTH_DESCRIPTION": "Sélectionne la bonne réponse, puis continue.",
   "ONBOARDING_OTHER_UNIVERSITIES": "Autres universités",
   "ONBOARDING_SERVICE_PRONOTE": "PRONOTE",
   "ONBOARDING_SERVICE_ED": "ÉcoleDirecte",
