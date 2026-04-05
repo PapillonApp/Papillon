@@ -1,11 +1,11 @@
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import Typography from "@/ui/components/Typography";
 import Stack from "@/ui/components/Stack";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -23,10 +23,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAccountStore } from "@/stores/account";
 import { formatRelative } from "date-fns/formatRelative";
 import { FormatRelativeFn, fr } from "date-fns/locale";
-import Task from "@/ui/components/Task";
+import Task, { formatDistanceDay } from "@/ui/components/Task";
 import { CustomisableSubject } from "@/stores/account/types";
 import { Homework } from "@/services/shared/homework";
-import { addHomeworkToDatabase } from "@/database/useHomework";
+import { useHomeworkActionsStore } from "@/app/(tabs)/tasks/hooks/useHomeworkData";
+import { deleteHomeworkFromDatabase } from "@/database/useHomework";
 
 const SubjectSelector = ({ subjects, selectedSubject, setSelectedSubject }: {
   subjects: CustomisableSubject[];
@@ -175,7 +176,7 @@ const DateSelector = ({ selectedDate, setDate }: {
         <Typography style={{ flex: 1 }}
                     nowrap
                     color={"secondary"}
-        >{formatRelative(selectedDate, new Date(), { locale: customFr })}</Typography>
+        >{formatDistanceDay(selectedDate)}</Typography>
         <AnimatedPressable
           style={{
             height: 30,
@@ -237,13 +238,15 @@ const NewTaskModal = () => {
     [account?.customisation?.subjects]
   );
 
-  const [selectedSubject, setSelectedSubject] = useState<CustomisableSubject | null>(subjects[0]);
-  const [selectedDate, setDate] = useState<Date>(new Date());
-  const [taskDescription, setDescription] = useState<string>();
-  const [taskDone, setTaskDone] = useState<boolean>(false);
+  const local: { action?: string, id?: string, subject?: string, date?: string, description?: string, done?: string } = useLocalSearchParams();
+  const [selectedSubject, setSelectedSubject] = useState<CustomisableSubject | undefined>(local.subject ? subjects.find(s => s.name === local?.subject) : subjects[0]);
+  const [selectedDate, setDate] = useState<Date>(local?.date ? new Date(parseInt(local?.date)) : new Date());
+  const [taskDescription, setDescription] = useState<string | undefined>(local?.description);
+  const [taskDone, setTaskDone] = useState<boolean>(local?.done ? Boolean(parseInt(local?.done)) : false);
+  const addHomework = useHomeworkActionsStore(s => s.onAdd);
 
   const disabled = taskDescription?.trim() === "" || !taskDescription
-
+  
   return (
     <>
       {/* Header */}
@@ -296,9 +299,11 @@ const NewTaskModal = () => {
                 custom: true,
                 createdByAccount: account.id
               }
-              console.log(homework)
-              console.log("HOMEWORK ADDED")
-              addHomeworkToDatabase([homework])
+              if (local?.action === "edit" && local?.id) {
+                deleteHomeworkFromDatabase(local?.id);
+                router.back();
+              }
+              addHomework!(homework)
             }
             router.back();
           }}
@@ -422,6 +427,7 @@ const NewTaskModal = () => {
               selectionColor={"#C54CB3"}
               cursorColor={"#C54CB3"}
               verticalAlign={"top"}
+              value={taskDescription}
               onChangeText={setDescription}
             />
           </Stack>

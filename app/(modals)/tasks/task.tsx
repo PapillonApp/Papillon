@@ -6,9 +6,7 @@ import { t } from "i18next";
 import React, { useState } from "react";
 
 import ModalOverhead from "@/components/ModalOverhead";
-import Homework from "@/database/models/Homework";
-import { Homework as SharedHomework } from "@/services/shared/homework";
-import { updateHomeworkIsDone } from "@/database/useHomework";
+import { Homework, Homework as SharedHomework } from "@/services/shared/homework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
@@ -20,7 +18,11 @@ import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
+import adjust from "@/utils/adjustColor";
+import { router } from "expo-router";
+import { MenuView } from "@react-native-menu/menu";
+import { useHomeworkActionsStore } from "@/app/(tabs)/tasks/hooks/useHomeworkData";
 
 const Task = () => {
   const { params } = useRoute();
@@ -37,9 +39,13 @@ const Task = () => {
 
   const [isDone, setIsDone] = useState(task.isDone);
 
+  const deleteHomework = useHomeworkActionsStore(s => s.onDelete);
+
   const setAsDone = async (done: boolean) => {
     const manager = getManager();
-    await manager.setHomeworkCompletion((task as unknown as SharedHomework), done);
+    if (!task.custom) {
+      await manager.setHomeworkCompletion((task as unknown as SharedHomework), done);
+    }
 
     const id = generateId(
       task.subject +
@@ -67,7 +73,6 @@ const Task = () => {
           opacity: 0.4
         }}
       />
-
       <TableFlatList
         ListHeaderComponent={
           <ModalOverhead
@@ -144,6 +149,70 @@ const Task = () => {
           backgroundColor: "transparent"
         }}
       />
+      <MenuView
+        onPressAction={async ({ nativeEvent }) => {
+          const actionId = nativeEvent.event;
+          if (actionId === "homework-delete") {
+            deleteHomework!(task)
+            router.back();
+          } else if (actionId === "homework-edit") {
+            router.push({
+              pathname: "/(modals)/tasks/custom",
+              params: {
+                action: "edit",
+                id: generateId(task.subject + task.content + task.createdByAccount + task.dueDate.toDateString()),
+                subject: task.subject,
+                done: task.isDone ? 1 : 0,
+                description: task.content,
+                date: task.dueDate.getTime()
+              }
+            })
+          }
+        }}
+        style={{
+          position: "absolute",
+          right: 20,
+          top: 20
+        }}
+        actions={[
+          {
+            id: "homework-edit",
+            title: "Modifier ce devoir",
+            imageColor: "#000000",
+            image: Platform.select({
+              ios: "paintbrush.fill"
+            }),
+          },
+          {
+            id: "homework-delete",
+            title: "Supprimer ce devoir",
+            imageColor: "#FF0000",
+            image: Platform.select({
+              ios: "trash.fill"
+            }),
+            attributes: { "destructive": true }
+          }
+        ]}>
+      <AnimatedPressable
+        >
+          <Stack
+            card
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 30,
+            }}
+            hAlign='center'
+            vAlign='center'
+            noShadow
+            backgroundColor='#FFFFFF50'
+          >
+            <Icon size={26} fill={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}>
+              <Papicons name="Gears" />
+            </Icon>
+          </Stack>
+        </AnimatedPressable>
+        </MenuView>
     </>
   );
 };

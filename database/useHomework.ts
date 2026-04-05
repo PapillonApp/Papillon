@@ -62,11 +62,8 @@ export async function getHomeworksFromCache(
   }
 }
 
-export async function deleteHomeworkFromDatabase(homework: SharedHomework) {
+export async function deleteHomeworkFromDatabase(id: string) {
   const db = getDatabaseInstance();
-  const id = generateId(
-    homework.subject + homework.content + homework.createdByAccount + homework.dueDate.toDateString()
-  );
 
   const existing = await db
     .get("homework")

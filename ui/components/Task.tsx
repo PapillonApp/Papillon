@@ -34,24 +34,7 @@ interface TaskProps {
   onPress: () => void;
 }
 
-const Task: React.FC<TaskProps> = ({
-  subject,
-  emoji,
-  title,
-  color,
-  description,
-  date,
-  completed,
-  hasAttachments,
-  isCustom = false,
-  magic,
-  onToggle,
-  onPress
-}) => {
-  const theme = useTheme();
-  const tintedColor = adjust(color, theme.dark ? 0.3 : -0.3);
-
-  function formatDistanceDay(date: Date): string {
+export function formatDistanceDay(date: Date): string {
     // if yesterday, today or tomorrow
     const today = new Date();
     const yesterday = new Date(today);
@@ -69,6 +52,23 @@ const Task: React.FC<TaskProps> = ({
 
     return formatDistanceToNow(date, { addSuffix: true, locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
   }
+
+const Task: React.FC<TaskProps> = ({
+  subject,
+  emoji,
+  title,
+  color,
+  description,
+  date,
+  completed,
+  hasAttachments,
+  isCustom = false,
+  magic,
+  onToggle,
+  onPress
+}) => {
+  const theme = useTheme();
+  const tintedColor = adjust(color, theme.dark ? 0.3 : -0.3);
 
   return (
     <AnimatedPressable onPress={onPress}>

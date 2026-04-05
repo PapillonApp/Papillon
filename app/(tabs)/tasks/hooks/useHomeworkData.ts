@@ -2,10 +2,11 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useAccountStore } from "@/stores/account";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
-import { useHomeworkForWeek, updateHomeworkIsDone } from "@/database/useHomework";
+import { useHomeworkForWeek, updateHomeworkIsDone, deleteHomeworkFromDatabase, addHomeworkToDatabase } from "@/database/useHomework";
 import { generateId } from "@/utils/generateId";
 import { error } from '@/utils/logger/logger';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
+import { create } from 'zustand';
 
 export const useHomeworkData = (selectedWeek: number, alert: any) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -111,11 +112,88 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
     []
   );
 
+  const addHomework = useCallback(
+    async (item: Homework) => {
+      const id = generateId(
+        item.subject +
+        item.content +
+        item.createdByAccount +
+        new Date(item.dueDate).toDateString()
+      );
+      try {
+        setHomework(prev => ({
+          ...prev,
+          [id]: { ...item, id },
+        }));
+
+        await addHomeworkToDatabase([item]);
+
+        setRefreshTrigger(prev => prev + 1);
+      } catch (err) {
+        setHomework(prev => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+        setRefreshTrigger(prev => prev + 1);
+      }
+    }, [alert]
+  );
+
+  const deleteHomework = useCallback(
+    async (item: Homework) => {
+      const id = generateId(
+        item.subject +
+        item.content +
+        item.createdByAccount +
+        new Date(item.dueDate).toDateString()
+      );
+      try {
+        setHomework(prev => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+
+        const id = generateId(item.subject + item.content + item.createdByAccount + item.dueDate.toDateString());
+        await deleteHomeworkFromDatabase(id);
+
+        setRefreshTrigger(prev => prev + 1);
+      } catch (err) {
+        setHomework(prev => ({ ...prev, [id]: item }));
+        setRefreshTrigger(prev => prev + 1);
+      }
+    },[alert]
+  );
+
+  const setOnDelete = useHomeworkActionsStore(s => s.setOnDelete);
+  const setOnAdd = useHomeworkActionsStore(s => s.setOnAdd);
+
+  useEffect(() => {
+    setOnDelete(deleteHomework);
+    setOnAdd(addHomework);
+  }, [deleteHomework, addHomework]);
+
   return {
     homework,
     homeworksFromCache,
     isRefreshing,
     handleRefresh,
     setAsDone,
+    deleteHomework
   };
 };
+
+interface HomeworkActionsStore {
+  onDelete: ((item: Homework) => void) | null;
+  onAdd: ((item: Homework) => void) | null;
+  setOnDelete: (fn: (item: Homework) => void) => void;
+  setOnAdd: (fn: (item: Homework) => void) => void;
+}
+
+export const useHomeworkActionsStore = create<HomeworkActionsStore>((set) => ({
+  onDelete: null,
+  onAdd: null,
+  setOnDelete: (fn) => set({ onDelete: fn }),
+  setOnAdd: (fn) => set({ onAdd: fn }),
+}));
