@@ -520,13 +520,22 @@
 
   "Changelog_Title": "Notes de mise à jour",
 
-  "Tasks_Sorting_Methods_DueDate": "Date de rendu",
+  "Tasks_Sorting_Methods_DueDate": "Date",
   "Tasks_Sorting_Methods_Subject": "Matières",
   "Tasks_Sorting_Methods_Done": "Non terminé",
   "Tasks_ThisWeek": "Cette semaine",
 
   "Task_Undone": "Non terminé",
   "Task_Done": "Terminé",
+  
+  "Task_New_Subject": "Matière",
+  "Task_New_Title": "Nouveau devoir",
+  "Task_New_DueDate": "Date de rendu",
+  "Task_New_DueDate_Edit": "Modifier",
+  "Task_New_TaskTitle": "Titre du devoir",
+  "Task_New_TaskTitle_Placeholder": "Titre du devoir",
+  "Task_New_TaskDescription": "Contenu du devoir",
+  "Task_New_TaskDescription_Placeholder": "Contenu du devoir",
 
   "Modal_Wallpaper_Title": "Personnaliser le fond d'écran",
   "Modal_Profile_Title": "Personnaliser le profil",

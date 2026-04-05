@@ -59,9 +59,11 @@ export interface Account {
   updatedAt: string;
 }
 
+export interface CustomisableSubject { color: string; emoji: string; name: string }
+
 export interface CustomisationStorage {
   profilePicture: string;
-  subjects: Record<string, { color: string; emoji: string; name: string }>;
+  subjects: Record<string, CustomisableSubject>;
 }
 
 export interface TransportAddress {

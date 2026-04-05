@@ -79,11 +79,19 @@ export function RootNavigator() {
         }}
       />
       <Stack.Screen
-        name="(modals)/task"
+        name="(modals)/tasks/task"
         options={{
           headerShown: Platform.OS !== 'ios',
           headerTitle: t("Modal_Task_Title"),
           headerLargeTitle: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/tasks/custom"
+        options={{
+          headerShown: false,
+          headerTitle: t("Modal_Task_New"),
           presentation: "modal",
         }}
       />

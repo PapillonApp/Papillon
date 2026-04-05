@@ -43,11 +43,12 @@ const TaskItem = memo(
           date={new Date(item.dueDate)}
           completed={item.isDone}
           hasAttachments={item.attachments.length > 0}
+          isCustom={item.custom}
           magic={magic}
           onToggle={() => setAsDone(item, !item.isDone)}
           onPress={() =>
             // @ts-ignore Modal types
-            navigation.navigate("(modals)/task", {
+            navigation.navigate("(modals)/tasks/task", {
               task: item
             })
           }

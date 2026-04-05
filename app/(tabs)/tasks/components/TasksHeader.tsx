@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
 import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
@@ -8,6 +8,7 @@ import ChipButton from '@/ui/components/ChipButton';
 import Search from '@/ui/components/Search';
 import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
+import Stack from '@/ui/components/Stack';
 
 export type SortMethod = 'date' | 'subject' | 'done';
 
@@ -34,6 +35,7 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
   sortMethod,
   shouldCollapseHeader,
 }) => {
+  const navigation = useNavigation();
   const { colors } = useTheme();
 
   const sortingOptions = useMemo(
@@ -62,6 +64,14 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
         />
       }
       trailing={
+        <Stack direction='horizontal'>
+        <ChipButton
+          onPress={() => {
+            navigation.navigate("(modals)/tasks/custom")
+          }}
+          
+          icon="plus"
+        ></ChipButton>
         <ChipButton
           onPressAction={({ nativeEvent }) => {
             const actionId = nativeEvent.event;
@@ -96,6 +106,7 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
         >
           {menuTitle}
         </ChipButton>
+        </Stack>
       }
       bottom={
         <Search
