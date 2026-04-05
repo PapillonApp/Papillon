@@ -9,7 +9,7 @@ import { Homework } from "../shared/homework";
 import { News } from "../shared/news";
 import { CourseDay } from "../shared/timetable";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
-import { fetchEDAttendance } from "./attendance";
+import { fetchEDAttendance, fetchEDAttendancePeriods } from "./attendance";
 import { fetchEDGradePeriods, fetchEDGrades } from "./grades";
 import { fetchEDHomeworks, setEDHomeworkAsDone } from "./homework";
 import { fetchEDNews } from "./news";
@@ -23,6 +23,7 @@ export class EcoleDirecte implements SchoolServicePlugin {
     Capabilities.REFRESH, 
     Capabilities.NEWS, 
     Capabilities.ATTENDANCE, 
+    Capabilities.ATTENDANCE_PERIODS,
     Capabilities.GRADES,
     Capabilities.HOMEWORK,
     Capabilities.TIMETABLE
@@ -73,12 +74,20 @@ export class EcoleDirecte implements SchoolServicePlugin {
     throw error("Session or account is not valid", "EcoleDirecte.getGradesPeriods");
   }
 
-  async getAttendanceForPeriod(): Promise<Attendance> {
+  async getAttendanceForPeriod(period: string): Promise<Attendance> {
     if (this.session) {
-      return fetchEDAttendance(this.session, this.accountId);
+      return fetchEDAttendance(this.session, this.accountId, period);
     }
 
     throw error("Session or account is not valid", "EcoleDirecte.getAttendanceForPeriod");
+  }
+
+  async getAttendancePeriods(): Promise<Period[]> {
+    if (this.session) {
+      return fetchEDAttendancePeriods(this.session, this.accountId);
+    }
+
+    throw error("Session or account is not valid", "EcoleDirecte.getAttendancePeriods");
   }
 
   async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
