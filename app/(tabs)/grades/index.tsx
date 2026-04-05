@@ -528,7 +528,7 @@ const GradesView: React.FC = () => {
 
       <List
       animated
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: (headerHeight - insets.top) + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: (headerHeight - (Platform.OS === "ios" ? insets.top : 0)) + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
 
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
