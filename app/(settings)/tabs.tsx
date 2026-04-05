@@ -7,6 +7,7 @@ import { useSettingsStore } from "@/stores/settings";
 import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import NativeSwitch from "@/ui/native/NativeSwitch";
 
 const SettingsTabs = () => {
   const { t } = useTranslation();
@@ -72,7 +73,7 @@ const SettingsTabs = () => {
           </List.Leading>
           <Typography variant="title">{tab.name}</Typography>
           <List.Trailing>
-            <Switch
+            <NativeSwitch
               value={tab.enabled}
               onValueChange={() => toggleTab(tab.id)}
             />

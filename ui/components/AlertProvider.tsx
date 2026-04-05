@@ -210,10 +210,10 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
   const containerStyle = useMemo(() => [
     styles.alertContainer,
     {
-      backgroundColor: colors.card,
+      backgroundColor: colors.item,
       borderColor: colors.text + "30",
     },
-  ], [colors.card, colors.text]);
+  ], [colors.item, colors.text]);
 
   const iconColor = useMemo(() => alert.color ?? colors.text, [alert.color, colors.text]);
 
