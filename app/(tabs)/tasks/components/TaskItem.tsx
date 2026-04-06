@@ -5,6 +5,12 @@ import Reanimated from 'react-native-reanimated';
 import { Homework } from "@/services/shared/homework";
 import Task from "@/ui/components/Task";
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import {
+  getHomeworkPrimaryContent,
+  hasHomeworkAttachments,
+  hasHomeworkLessonAttachments,
+  hasHomeworkLessonContent,
+} from "@/utils/homework";
 import { getSubjectName } from "@/utils/subjects/name";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectColor } from "@/utils/subjects/colors";
@@ -25,7 +31,14 @@ const TaskItem = memo(
     setAsDone
   }: TaskItemProps) => {
     const navigation = useNavigation();
-    const cleanContent = useMemo(() => item.content.replace(/<[^>]*>/g, ""), [item.content]);
+    const primaryContent = useMemo(
+      () => getHomeworkPrimaryContent(item),
+      [item]
+    );
+    const cleanContent = useMemo(
+      () => primaryContent.replace(/<[^>]*>/g, ""),
+      [primaryContent]
+    );
     const magic = useMagicPrediction(cleanContent);
 
     return (
@@ -39,11 +52,15 @@ const TaskItem = memo(
           emoji={getSubjectEmoji(item.subject)}
           title={""}
           color={getSubjectColor(item.subject)}
-          description={item.content}
+          description={primaryContent}
           date={new Date(item.dueDate)}
           completed={item.isDone}
-          hasAttachments={item.attachments.length > 0}
+          hasAttachments={hasHomeworkAttachments(item)}
+          hasLessonContent={
+            hasHomeworkLessonContent(item) || hasHomeworkLessonAttachments(item)
+          }
           magic={magic}
+          supportsCompletion={item.supportsCompletion !== false}
           onToggle={() => setAsDone(item, !item.isDone)}
           onPress={() =>
             // @ts-ignore Modal types

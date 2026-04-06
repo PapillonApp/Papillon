@@ -19,18 +19,18 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedWeek, onSelectWeek, onC
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const WeekPickerRef = useRef<FlatList>(null);
+  const [weekLimit, setWeekLimit] = useState(60);
+  const safeSelectedWeek = Math.max(0, Math.min(selectedWeek, weekLimit - 1));
 
   const layoutPicker = useCallback(() => {
     if (WeekPickerRef.current) {
-      const offset = selectedWeek * 60;
+      const offset = safeSelectedWeek * 60;
       WeekPickerRef.current.scrollToOffset({
         offset,
         animated: false,
       });
     }
-  }, [selectedWeek]);
-
-  const [weekLimit, setWeekLimit] = useState(60);
+  }, [safeSelectedWeek]);
 
   const loadMoreWeeks = useCallback(() => {
     setWeekLimit((prev) => prev + 26);
@@ -91,7 +91,7 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedWeek, onSelectWeek, onC
           onEndReached={loadMoreWeeks}
           onEndReachedThreshold={2}
           windowSize={5}
-          initialScrollIndex={selectedWeek}
+          initialScrollIndex={safeSelectedWeek}
           getItemLayout={(data, index) => (
             { length: 60, offset: 60 * index, index }
           )}

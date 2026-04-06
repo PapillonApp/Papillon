@@ -15,19 +15,31 @@ import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { Papicons } from '@getpapillon/papicons';
 
 import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
-import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
+import { HomeHeaderData } from '../hooks/useHomeHeaderData';
 import WrappedBanner from './WrappedBanner';
 import { useTheme } from '@react-navigation/native';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { ListTouchable } from '@/ui/new/List';
 
-const HomeHeader = () => {
+interface HomeHeaderProps {
+  data: HomeHeaderData;
+}
+
+const HomeHeader = ({ data }: HomeHeaderProps) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { colors } = theme;
-  const { availableCanteenCards, attendancesPeriods, attendances, absencesCount, chats } = useHomeHeaderData();
+  const extendedColors = colors as typeof colors & { item?: string; tint?: string };
+  const ListTouchableComponent = ListTouchable as any;
+  const {
+    availableCanteenCards,
+    attendancesPeriods,
+    attendances,
+    absencesCount,
+    chats,
+  } = data;
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const currentVersion = packageJson.version;
@@ -126,15 +138,15 @@ const HomeHeader = () => {
 
       {showReleaseNotesBanner && (
 
-        <Stack card style={{ marginTop: 12, elevation: 2, backgroundColor: (!theme.dark && Platform.OS === 'android') ? '#FFF' : theme.colors.item, overflow: Platform.OS === 'android' ? 'hidden' : 'visible' }} padding={0}>
-          <ListTouchable
+        <Stack card style={{ marginTop: 12, elevation: 2, backgroundColor: (!theme.dark && Platform.OS === 'android') ? '#FFF' : extendedColors.item ?? theme.colors.card, overflow: Platform.OS === 'android' ? 'hidden' : 'visible' }} padding={0}>
+          <ListTouchableComponent
             onPress={() =>
               WebBrowser.openBrowserAsync(releaseNotesUrl, {
                 presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
               })
             }>
             <Stack padding={[12, 10]} gap={8} direction='horizontal'>
-              <Papicons name="sparkles" size={24} color={colors.tint} />
+              <Papicons name="sparkles" size={24} color={extendedColors.tint ?? colors.primary} />
 
               <Stack inline flex style={{ marginRight: 32 }}>
                 <Typography variant='title'>
@@ -145,9 +157,9 @@ const HomeHeader = () => {
                 </Typography>
               </Stack>
 
-              <ListTouchable
+              <ListTouchableComponent
                 hitSlop={10}
-                onPress={(event) => {
+                onPress={(event: { stopPropagation: () => void }) => {
                   event.stopPropagation();
                   mutateProperty("personalization", { releaseNotesSeenForVersion: currentVersion });
                 }}
@@ -158,13 +170,13 @@ const HomeHeader = () => {
                 <Papicons name="Cross" />
                 </Icon>
                 </View>
-              </ListTouchable>
+              </ListTouchableComponent>
             </Stack>
-          </ListTouchable>
+          </ListTouchableComponent>
         </Stack>
       )}
 
-      {__DEV__ && 1 === 2 && (
+      {false && __DEV__ && (
         <WrappedBanner />
       )}
     </View>

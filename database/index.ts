@@ -13,12 +13,14 @@ import Subject from '@/database/models/Subject';
 import Course from '@/database/models/Timetable';
 
 import { Balance } from './models/Balance';
+import { migrations } from './migrations';
 import CanteenHistoryItem from './models/CanteenHistory';
 import Kid from './models/Kid';
 import { mySchema } from './schema';
 
 const adapter = new SQLiteAdapter({
   schema: mySchema,
+  migrations,
 });
 
 export const database = new Database({

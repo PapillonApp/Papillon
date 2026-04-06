@@ -13,7 +13,13 @@ import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import Typography from "@/ui/components/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/services/helper";
+import {
+  getServiceBackground,
+  getServiceLogo,
+  getServiceName,
+  getWalletDisplayAmount,
+  getWalletDisplayLabel,
+} from "@/utils/services/helper";
 import { Papicons, Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect } from "expo-router";
@@ -61,7 +67,7 @@ export default function QRCodeAndCardsPage() {
             subtitle={t("Profile_QRCards_Subtitle", { count: wallets.length })}
           />
         }
-        trailing={Platform.OS === "ios" && (
+        trailing={Platform.OS === "ios" ? (
           <ChipButton
             single
             icon="cross"
@@ -69,7 +75,7 @@ export default function QRCodeAndCardsPage() {
               router.dismiss();
             }}
           />
-        )}
+        ) : undefined}
       />
 
       <ScrollView
@@ -226,10 +232,10 @@ export function Card({
 
           <Stack gap={0} direction="vertical">
             <Typography variant="caption" align="right" color={"#FFFFFF" + 90} style={{ width: "100%", lineHeight: 0 }}>
-              {wallet.label}
+              {getWalletDisplayLabel(wallet, service)}
             </Typography>
             <Typography variant="title" align="right" color={"#FFFFFF"} style={{ width: "100%", lineHeight: 0 }}>
-              {(wallet.amount / 100).toFixed(2)} {wallet.currency}
+              {getWalletDisplayAmount(wallet, service)}
             </Typography>
           </Stack>
         </Stack>

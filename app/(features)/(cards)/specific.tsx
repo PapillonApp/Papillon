@@ -1,13 +1,17 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, ScrollView, View } from "react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import { Switch } from "react-native-gesture-handler";
 
 import adjust from "@/utils/adjustColor";
-import { getCodeType, getServiceColor } from "@/utils/services/helper";
+import {
+  getCodeType,
+  getServiceColor,
+  getWalletDisplayAmount,
+  isQRCodeOnlyWallet,
+} from "@/utils/services/helper";
 import { warn } from "@/utils/logger/logger";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 
@@ -23,7 +27,7 @@ import Typography from "@/ui/components/Typography";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
-import Calendar from "@/ui/components/Calendar";
+import Calendar, { CalendarRef } from "@/ui/components/Calendar";
 import { Card } from "./cards";
 
 import { Calendar as CalendarIcon, ChevronDown, Clock, Papicons, QrCode } from "@getpapillon/papicons";
@@ -36,6 +40,11 @@ import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import ChipButton from "@/ui/components/ChipButton";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import {
+  EDCanteenWeekDayStatus,
+  getEDCanteenBadgeDetails,
+} from "@/services/ecoledirecte/qrcode";
+import { useAccountStore } from "@/stores/account";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -43,12 +52,19 @@ export default function QRCodeAndCardsPage() {
   const serviceName = String(search.serviceName);
   const service = Number(search.service) as Services;
   const wallet = JSON.parse(String(search.wallet)) as Balance;
+  const accounts = useAccountStore((state) => state.accounts);
 
   const theme = useTheme();
   const { colors } = theme;
 
   const manager = getManager();
-  const hasBookingCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount)
+  const hasBookingCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount) ?? false;
+  const hasQRCodeCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_QRCODE, wallet.createdByAccount) ?? false;
+  const hasHistoryCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_HISTORY, wallet.createdByAccount) ?? false;
+  const isQRCodeOnly = useMemo(
+    () => isQRCodeOnlyWallet(service, wallet),
+    [service, wallet]
+  );
 
   const [history, setHistory] = useState<CanteenHistoryItem[]>([]);
   const [qrcode, setQR] = useState("");
@@ -56,7 +72,7 @@ export default function QRCodeAndCardsPage() {
   const [date, setDate] = useState(new Date());
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
   const [bookingWeek, setBookingWeek] = useState<BookingDay[]>([]);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const calendarRef = useRef<CalendarRef>(null);
 
   const bookingDay = useMemo(() => {
     const target = new Date(date);
@@ -69,38 +85,57 @@ export default function QRCodeAndCardsPage() {
   }, [date, bookingWeek]);
 
   const fetchQRCode = useCallback(async () => {
+    if (!hasQRCodeCapacity) {
+      setQR("");
+      return;
+    }
+
     try {
       const { data } = await manager.getCanteenQRCodes(wallet.createdByAccount);
       setQR(data);
     } catch (error) {
       warn(String(error));
     }
-  }, [manager, wallet.createdByAccount]);
+  }, [hasQRCodeCapacity, manager, wallet.createdByAccount]);
 
   const [loadingHistory, setLoadingHistory] = useState(false);
 
   const fetchHistory = useCallback(async () => {
+    if (!hasHistoryCapacity) {
+      setHistory([]);
+      return;
+    }
+
     setLoadingHistory(true);
     const history = await manager.getCanteenTransactionsHistory(wallet.createdByAccount);
     setHistory(history);
     setLoadingHistory(false);
-  }, [manager, wallet.createdByAccount]);
+  }, [hasHistoryCapacity, manager, wallet.createdByAccount]);
 
   const fetchBookingWeek = useCallback(async () => {
+    if (!hasBookingCapacity) {
+      setBookingWeek([]);
+      return;
+    }
+
     const bookings = await manager.getCanteenBookingWeek(weekNumber, wallet.createdByAccount);
     setBookingWeek(bookings);
-  }, [manager, weekNumber, wallet.createdByAccount]);
+  }, [hasBookingCapacity, manager, weekNumber, wallet.createdByAccount]);
 
   const fetchKind = useCallback(async () => {
+    if (!hasBookingCapacity) {
+      return;
+    }
+
     const kind = await manager.getCanteenKind(wallet.createdByAccount);
     setAccountKind(kind);
-  }, [manager, weekNumber, wallet.createdByAccount]);
+  }, [hasBookingCapacity, manager, wallet.createdByAccount]);
 
   useEffect(() => {
     fetchQRCode();
     fetchHistory();
     fetchKind();
-  }, [fetchQRCode, fetchHistory]);
+  }, [fetchQRCode, fetchHistory, fetchKind]);
 
   useEffect(() => {
     fetchBookingWeek();
@@ -111,7 +146,6 @@ export default function QRCodeAndCardsPage() {
       setDate(newDate);
       const newWeek = getWeekNumberFromDate(newDate);
       if (newWeek !== weekNumber) setWeekNumber(newWeek);
-      if (Platform.OS === "ios") setShowDatePicker(false);
     },
     [weekNumber]
   );
@@ -149,15 +183,28 @@ export default function QRCodeAndCardsPage() {
   const { t } = useTranslation();
 
   const [headerHeight, setHeaderHeight] = useState(0);
+  const serviceAccount = useMemo(
+    () =>
+      accounts
+        .flatMap((account) => account.services)
+        .find((entry) => entry.id === wallet.createdByAccount),
+    [accounts, wallet.createdByAccount]
+  );
+  const edBadgeDetails = useMemo(
+    () =>
+      service === Services.ECOLEDIRECTE
+        ? getEDCanteenBadgeDetails(serviceAccount?.auth.additionals)
+        : null,
+    [service, serviceAccount?.auth.additionals]
+  );
 
   return (
     <>
       <Calendar
+        ref={calendarRef}
         key={`calendar-${date.toISOString()}`}
         date={date}
         onDateChange={handleDateChange}
-        showDatePicker={showDatePicker}
-        setShowDatePicker={setShowDatePicker}
       />
 
       <LinearGradient
@@ -175,7 +222,7 @@ export default function QRCodeAndCardsPage() {
           <TabHeaderTitle
             chevron={false}
             leading={serviceName}
-            subtitle={(wallet.amount / 100).toFixed(2) + " " + wallet.currency}
+            subtitle={getWalletDisplayAmount(wallet, service)}
           />
         }
         trailing={
@@ -193,9 +240,17 @@ export default function QRCodeAndCardsPage() {
         <View style={{ padding: 15, flex: 1, gap: 20 }}>
           <Card index={0} service={service} wallet={wallet} disabled inSpecificView />
 
-          {qrcode && (
+          {hasQRCodeCapacity && qrcode && (
             <AnimatedPressable
-              onPress={() => router.push({ pathname: "/(features)/(cards)/qrcode", params: { qrcode, type: getCodeType(service), service } })}
+              onPress={() => router.push({
+                pathname: "/(features)/(cards)/qrcode",
+                params: {
+                  qrcode,
+                  type: getCodeType(service),
+                  service,
+                  clientId: wallet.createdByAccount,
+                }
+              })}
               style={{
                 width: "100%",
                 backgroundColor: colors.background,
@@ -212,35 +267,75 @@ export default function QRCodeAndCardsPage() {
             </AnimatedPressable>
           )}
 
-          <Stack card direction="horizontal" width="100%">
-            <Stack
-              width="50%"
-              vAlign="center"
-              hAlign="center"
-              style={{ borderRightWidth: 1, borderRightColor: colors.border }}
-              padding={12}
-            >
-              <Icon papicon opacity={0.5}>
-                <Papicons name="PiggyBank" />
-              </Icon>
-              <Typography color="secondary">Solde</Typography>
-              <ContainedNumber color={serviceColor}>
-                {(wallet.amount / 100).toFixed(2)} {wallet.currency}
-              </ContainedNumber>
+          {isQRCodeOnly ? (
+            <Stack card padding={16} gap={10}>
+              <Stack direction="horizontal" gap={8} hAlign="center">
+                <Icon papicon opacity={0.6}>
+                  <Papicons name="Card" />
+                </Icon>
+                <Typography variant="title">Badge cantine ED</Typography>
+              </Stack>
+              <Typography color="secondary">
+                Cet etablissement expose uniquement un badge/code-barres via EcoleDirecte. Aucun solde ni historique monetaire n'est disponible.
+              </Typography>
+              {edBadgeDetails?.regime && (
+                <Item>
+                  <Typography>Regime</Typography>
+                  <Trailing style={{ flexShrink: 1, maxWidth: "68%" }}>
+                    <Typography variant="body2" color="secondary" align="right">
+                      {edBadgeDetails.regime}
+                    </Typography>
+                  </Trailing>
+                </Item>
+              )}
+              {edBadgeDetails?.hasSchedule && (
+                <Stack gap={12} style={{ marginTop: 4 }}>
+                  <WeekTypeRow
+                    title="Midi (semaine type)"
+                    days={edBadgeDetails.lunch}
+                    accentColor={serviceColor}
+                    colors={colors}
+                  />
+                  <WeekTypeRow
+                    title="Soir (semaine type)"
+                    days={edBadgeDetails.dinner}
+                    accentColor={serviceColor}
+                    colors={colors}
+                  />
+                </Stack>
+              )}
             </Stack>
+          ) : (
+            <Stack card direction="horizontal" width="100%">
+              <Stack
+                width="50%"
+                vAlign="center"
+                hAlign="center"
+                style={{ borderRightWidth: 1, borderRightColor: colors.border }}
+                padding={12}
+              >
+                <Icon papicon opacity={0.5}>
+                  <Papicons name="PiggyBank" />
+                </Icon>
+                <Typography color="secondary">Solde</Typography>
+                <ContainedNumber color={serviceColor}>
+                  {(wallet.amount / 100).toFixed(2)} {wallet.currency}
+                </ContainedNumber>
+              </Stack>
 
-            <Stack width="50%" vAlign="center" hAlign="center" padding={12}>
-              <Icon papicon opacity={0.5}>
-                <Papicons name="Cutlery" />
-              </Icon>
-              <Typography color="secondary">Repas restants</Typography>
-              <ContainedNumber color={serviceColor}>{wallet.lunchPrice > 0 ? String(Math.floor(wallet.amount / wallet.lunchPrice)) : "Indéterminé"}</ContainedNumber>
+              <Stack width="50%" vAlign="center" hAlign="center" padding={12}>
+                <Icon papicon opacity={0.5}>
+                  <Papicons name="Cutlery" />
+                </Icon>
+                <Typography color="secondary">Repas restants</Typography>
+                <ContainedNumber color={serviceColor}>{wallet.lunchPrice > 0 ? String(Math.floor(wallet.amount / wallet.lunchPrice)) : "Indéterminé"}</ContainedNumber>
+              </Stack>
             </Stack>
-          </Stack>
+          )}
 
           {hasBookingCapacity && (
             <View>
-              <AnimatedPressable onPress={() => setShowDatePicker(prev => !prev)}>
+              <AnimatedPressable onPress={() => calendarRef.current?.toggle()}>
                 <Stack hAlign="center" vAlign="center" style={{ padding: 20 }}>
                   <Stack direction="horizontal" gap={5}>
                     <Typography color="secondary">Réserver mon repas</Typography>
@@ -288,7 +383,7 @@ export default function QRCodeAndCardsPage() {
             </View>
           )}
 
-          {loadingHistory && history.length === 0 && (
+          {hasHistoryCapacity && loadingHistory && history.length === 0 && (
             <Stack padding={20} hAlign="center" vAlign="center" gap={4}>
               <ActivityIndicator size={42} />
               <Typography align="center" variant="title" color="text" style={{ marginTop: 8 }}>
@@ -300,7 +395,7 @@ export default function QRCodeAndCardsPage() {
             </Stack>
           )}
 
-          {history.length > 0 && (
+          {hasHistoryCapacity && history.length > 0 && (
             <View style={{ display: "flex", gap: 13.5 }}>
               <Stack direction="horizontal" style={{ flex: 1, borderRightWidth: 1, borderRightColor: colors.border }} gap={5}>
                 <Icon papicon opacity={0.5}>
@@ -331,5 +426,67 @@ export default function QRCodeAndCardsPage() {
         </View>
       </ScrollView>
     </>
+  );
+}
+
+function WeekTypeRow({
+  title,
+  days,
+  accentColor,
+  colors,
+}: {
+  title: string;
+  days: EDCanteenWeekDayStatus[];
+  accentColor: string;
+  colors: {
+    border: string;
+    text: string;
+  };
+}) {
+  return (
+    <Stack gap={10} style={{ width: "100%" }}>
+      <Typography color="secondary">{title}</Typography>
+      <View
+        style={{
+          width: "100%",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          gap: 4,
+        }}
+      >
+        {days.map((day) => (
+          <View
+            key={`${title}-${day.label}`}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <Typography variant="body2" color="secondary">
+              {day.label}
+            </Typography>
+            <View
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: day.enabled ? `${accentColor}22` : colors.border,
+              }}
+            >
+              <Papicons
+                name={day.enabled ? "Check" : "Cross"}
+                size={18}
+                color={day.enabled ? accentColor : `${colors.text}80`}
+              />
+            </View>
+          </View>
+        ))}
+      </View>
+    </Stack>
   );
 }

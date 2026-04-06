@@ -2,9 +2,9 @@ import Barcode, { Format } from "@aramir/react-native-barcode";
 import { Phone } from "@getpapillon/papicons";
 import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Dimensions, Platform } from "react-native";
+import { Dimensions, Platform, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import QRCode from "react-native-qrcode-svg";
 import Reanimated, {
@@ -16,9 +16,13 @@ import Reanimated, {
 } from "react-native-reanimated";
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { getEDClassName } from "@/services/ecoledirecte/qrcode";
+import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
+import Avatar from "@/ui/components/Avatar";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { getInitials } from "@/utils/chats/initials";
 
 export default function QRCodePage() {
 
@@ -26,8 +30,30 @@ export default function QRCodePage() {
   const qr = String(search.qrcode);
   const type = String(search.type || "QR");
   const service = Number(search.service || Services.TURBOSELF);
+  const clientId = String(search.clientId || "");
 
   const { t } = useTranslation();
+  const accounts = useAccountStore((state) => state.accounts);
+  const account = useMemo(
+    () => accounts.find((item) => item.services.some((entry) => entry.id === clientId)),
+    [accounts, clientId]
+  );
+  const serviceAccount = useMemo(
+    () => account?.services.find((entry) => entry.id === clientId),
+    [account, clientId]
+  );
+  const displayName = useMemo(() => {
+    if (!account) {
+      return undefined;
+    }
+
+    return `${account.firstName} ${account.lastName}`.trim();
+  }, [account]);
+  const displayClassName =
+    account?.className ?? getEDClassName(serviceAccount?.auth.additionals);
+  const displayProfilePicture = account?.customisation?.profilePicture;
+  const showEDBadgeHeader =
+    service === Services.ECOLEDIRECTE && Boolean(displayName || displayClassName);
 
   const translationY = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -79,33 +105,62 @@ export default function QRCodePage() {
         >
           <Reanimated.View
             style={{
-              aspectRatio: 1,
               width: "100%",
+              minHeight: showEDBadgeHeader ? undefined : Dimensions.get("window").width,
               backgroundColor: "#FFF",
               position: "relative",
-              justifyContent: "center",
-              alignItems: "center",
               shadowRadius: 20,
               shadowColor: "#000",
               shadowOpacity: 0.3,
               borderRadius: 25,
+              overflow: "hidden",
             }}
             entering={FlipInEasyX.springify().delay(100)}
           >
-            {type === "QR" ? (
-              <QRCode
-                value={qr}
-                size={Dimensions.get("window").width * 0.8}
-                backgroundColor={"transparent"}
-                color={"#000"}
-              />
-            ) : (
-              <Barcode
-                value={qr}
-                format={type as Format}
-                background={"transparent"}
-              />
-            )}
+            <Stack
+              padding={showEDBadgeHeader ? [24, 20] : 20}
+              gap={showEDBadgeHeader ? 24 : 0}
+              hAlign="center"
+              vAlign="center"
+              style={{ width: "100%" }}
+            >
+              {showEDBadgeHeader && (
+                <Stack direction="horizontal" gap={14} hAlign="center" style={{ width: "100%" }}>
+                  <Avatar
+                    size={56}
+                    imageUrl={displayProfilePicture}
+                    initials={getInitials(displayName ?? "")}
+                  />
+                  <Stack inline flex gap={2}>
+                    <Typography variant="title" weight="bold" color="#111111">
+                      {displayName}
+                    </Typography>
+                    {displayClassName && (
+                      <Typography variant="body2" color="#666666">
+                        {displayClassName}
+                      </Typography>
+                    )}
+                  </Stack>
+                </Stack>
+              )}
+
+              <View style={{ width: "100%", alignItems: "center", justifyContent: "center" }}>
+                {type === "QR" ? (
+                  <QRCode
+                    value={qr}
+                    size={Dimensions.get("window").width * 0.8}
+                    backgroundColor={"transparent"}
+                    color={"#000"}
+                  />
+                ) : (
+                  <Barcode
+                    value={qr}
+                    format={type as Format}
+                    background={"transparent"}
+                  />
+                )}
+              </View>
+            </Stack>
           </Reanimated.View>
 
           <Stack

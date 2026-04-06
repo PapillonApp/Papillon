@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 
 import { Attachment } from "@/services/shared/attachment";
 import { Homework as SharedHomework } from "@/services/shared/homework";
-import { generateId } from "@/utils/generateId";
+import {
+  getHomeworkCacheId,
+  getHomeworkLegacyCacheIds,
+} from "@/utils/homework";
 import { warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
@@ -15,8 +18,10 @@ function mapHomeworkToShared(homework: Homework): SharedHomework {
     id: homework.homeworkId,
     subject: homework.subject,
     content: homework.content,
+    lessonContent: homework.lessonContent,
     dueDate: new Date(homework.dueDate),
     isDone: homework.isDone,
+    supportsCompletion: homework.supportsCompletion ?? true,
     returnFormat: homework.returnFormat,
     attachments: parseJsonArray(homework.attachments) as Attachment[],
     evaluation: homework.evaluation,
@@ -63,6 +68,10 @@ export async function getHomeworksFromCache(
 }
 
 export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
+  if (homeworks.length === 0) {
+    return;
+  }
+
   const db = getDatabaseInstance();
 
   const weekNumber = getWeekNumberFromDate(homeworks[0].dueDate);
@@ -73,12 +82,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
 
   const homeworkIds: string[] = [];
   for (const hw of homeworks) {
-    const oldId = generateId(hw.subject + hw.content + hw.createdByAccount);
-    const id = generateId(
-      hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
-    );
-
-    homeworkIds.push(oldId, id);
+    homeworkIds.push(getHomeworkCacheId(hw), ...getHomeworkLegacyCacheIds(hw));
   }
 
   const homeworksToDelete = dbHomeworks.filter(
@@ -90,19 +94,19 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   }
 
   for (const hw of homeworks) {
-    const oldId = generateId(hw.subject + hw.content + hw.createdByAccount);
-    const id = generateId(
-      hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
-    );
+    const id = getHomeworkCacheId(hw);
+    const legacyIds = getHomeworkLegacyCacheIds(hw);
 
     const existing = await db
       .get("homework")
       .query(Q.where("homeworkId", id))
       .fetch();
-    const oldExisting = await db
-      .get("homework")
-      .query(Q.where("homeworkId", oldId))
-      .fetch();
+    const oldExisting = legacyIds.length === 0
+      ? []
+      : await db
+        .get("homework")
+        .query(Q.where("homeworkId", Q.oneOf(legacyIds)))
+        .fetch();
 
     for (const oldRecord of oldExisting) {
       await oldRecord.markAsDeleted();
@@ -118,8 +122,10 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
               homeworkId: id,
               subject: hw.subject,
               content: hw.content,
+              lessonContent: hw.lessonContent,
               dueDate: hw.dueDate.getTime(),
               isDone: hw.isDone,
+              supportsCompletion: hw.supportsCompletion ?? true,
               returnFormat: hw.returnFormat,
               attachments: JSON.stringify(hw.attachments),
               evaluation: hw.evaluation,
@@ -143,8 +149,10 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
             Object.assign(homework, {
               subject: hw.subject,
               content: hw.content,
+              lessonContent: hw.lessonContent,
               dueDate: hw.dueDate.getTime(),
               isDone: hw.isDone,
+              supportsCompletion: hw.supportsCompletion ?? true,
               returnFormat: hw.returnFormat,
               attachments: JSON.stringify(hw.attachments),
               evaluation: hw.evaluation,
@@ -210,9 +218,9 @@ export function getDateRangeOfWeek(
   return { start, end };
 }
 
-export function parseJsonArray(s: string): unknown[] {
+export function parseJsonArray(s?: string | null): unknown[] {
   try {
-    const result = JSON.parse(s);
+    const result = JSON.parse(s ?? "[]");
     return Array.isArray(result) ? result : [];
   } catch {
     return [];

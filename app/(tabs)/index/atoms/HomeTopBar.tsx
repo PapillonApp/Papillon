@@ -9,7 +9,13 @@ import Stack from '@/ui/components/Stack';
 import HomeTopBarButton from '../components/HomeTopBarButton';
 import UserProfile from './UserProfile';
 
-const HomeTopBar = ({ height = 56 }: { height?: number }) => {
+const HomeTopBar = ({
+  height = 56,
+  isLoading = false,
+}: {
+  height?: number;
+  isLoading?: boolean;
+}) => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -52,7 +58,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
           gap: 16,
         }}
       >
-        <UserProfile />
+        <UserProfile isLoading={isLoading} />
 
         <Stack direction="horizontal" hAlign="center" vAlign="end" gap={7} inline>
           <HomeTopBarButton icon="palette" onPress={() => router.push("/(modals)/wallpaper")} />

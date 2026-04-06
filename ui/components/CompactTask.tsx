@@ -6,10 +6,39 @@ import Typography from "./Typography";
 import AnimatedPressable from "./AnimatedPressable";
 import { View } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
+import { Homework } from "@/services/shared/homework";
 import { formatHTML } from "@/utils/format/html";
 import i18n from "@/utils/i18n";
 
-function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, description, emoji, dueDate, done, magic }: { fromCache: boolean, setHomeworkAsDone: (ref: Homework) => void, ref: Homework, subject: string, color: string, description: string, emoji: string, dueDate: Date, done: boolean, magic?: string }) {
+function CompactTask({
+  fromCache,
+  setHomeworkAsDone,
+  ref,
+  subject,
+  color,
+  description,
+  emoji,
+  dueDate,
+  done,
+  magic,
+  hasLessonContent = false,
+  hasAttachments = false,
+  supportsCompletion = true,
+}: {
+  fromCache: boolean,
+  setHomeworkAsDone: (ref: Homework) => void,
+  ref: Homework,
+  subject: string,
+  color: string,
+  description: string,
+  emoji: string,
+  dueDate: Date,
+  done: boolean,
+  magic?: string,
+  hasLessonContent?: boolean,
+  hasAttachments?: boolean,
+  supportsCompletion?: boolean,
+}) {
   const { colors } = useTheme();
 
   return (
@@ -59,6 +88,16 @@ function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, descri
         <Stack style={{ flex: 1 }} gap={2}>
           <Typography variant="body2">{subject}</Typography>
           <Typography variant="body2" color={colors.text + "95"} numberOfLines={2}>{formatHTML(description)}</Typography>
+          {(hasLessonContent || hasAttachments) && (
+            <Stack direction="horizontal" gap={8} hAlign="center">
+              {hasLessonContent && (
+                <Typography variant="caption" color="secondary">Seance</Typography>
+              )}
+              {hasAttachments && (
+                <Typography variant="caption" color="secondary">Piece jointe</Typography>
+              )}
+            </Stack>
+          )}
           <Typography variant="caption" color="secondary">
             {dueDate.toLocaleDateString(i18n.language, { day: "2-digit", month: "2-digit" })}
           </Typography>
@@ -74,9 +113,10 @@ function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, descri
             borderRadius: 80,
             padding: 1.3,
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            opacity: supportsCompletion ? 1 : 0.45,
           }}
-          disabled={fromCache}
+          disabled={fromCache || !supportsCompletion}
           onPress={() => {
             setHomeworkAsDone(ref)
           }}

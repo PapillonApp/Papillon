@@ -16,7 +16,13 @@ export interface Attachment extends GenericInterface {
 
 export interface AttachmentMetadata {
   provider?: string;
-  role?: "subject" | "correction";
+  role?:
+    | "subject"
+    | "correction"
+    | "homework"
+    | "homework-resource"
+    | "homework-submission"
+    | "lesson";
   reference?: string;
   fileType?: string;
   downloadParams?: Record<string, string | number | boolean>;

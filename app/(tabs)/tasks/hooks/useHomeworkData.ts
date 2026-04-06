@@ -3,7 +3,7 @@ import { useAccountStore } from "@/stores/account";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
 import { useHomeworkForWeek, updateHomeworkIsDone } from "@/database/useHomework";
-import { generateId } from "@/utils/generateId";
+import { getHomeworkCacheId } from "@/utils/homework";
 import { error } from '@/utils/logger/logger';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
 
@@ -38,9 +38,7 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
         result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
         const newHomeworks: Record<string, Homework> = {};
         for (const hw of result) {
-          const id = generateId(
-            hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
-          );
+          const id = getHomeworkCacheId(hw);
           newHomeworks[id] = { ...hw, id: hw.id ?? id };
         }
         setHomework(newHomeworks);
@@ -72,12 +70,11 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
 
   const setAsDone = useCallback(
     async (item: Homework, done: boolean) => {
-      const id = generateId(
-        item.subject +
-        item.content +
-        item.createdByAccount +
-        new Date(item.dueDate).toDateString()
-      );
+      if (item.supportsCompletion === false) {
+        return;
+      }
+
+      const id = getHomeworkCacheId(item);
 
       try {
         const manager = getManager();

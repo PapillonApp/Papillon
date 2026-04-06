@@ -1,5 +1,6 @@
 import { Client } from "@blockshub/blocksdirecte";
 
+import { getEDModulesAdditionals } from "@/services/ecoledirecte/qrcode";
 import { useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";
 
@@ -32,6 +33,9 @@ export async function refreshEDAccount(accountId: string, credentials: Auth): Pr
       "cn": credentials.additionals?.["cn"] ?? "",
       "cv": credentials.additionals?.["cv"] ?? "",
       "deviceUUID": credentials.additionals!["deviceUUID"],
+      ...getEDModulesAdditionals(account.modules, {
+        className: account.profile?.classe?.libelle,
+      }),
       ...(token2fa ? { "token2fa": token2fa } : {})
     }
   }

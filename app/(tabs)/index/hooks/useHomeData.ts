@@ -11,6 +11,7 @@ import { useAlert } from '@/ui/components/AlertProvider';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { log, warn } from '@/utils/logger/logger';
 import { useAccountStore } from '@/stores/account';
+import { useState } from 'react';
 
 const HOME_SYNC_TTL_MS = 5 * 60 * 1000;
 const homeSyncState = new Map<
@@ -22,6 +23,7 @@ export const useHomeData = () => {
   const alert = useAlert();
   const settingsstore = useSettingsStore(state => state.personalization);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
@@ -46,9 +48,11 @@ export const useHomeData = () => {
 
   const initialize = useCallback(async () => {
     if (!lastUsedAccount) {
+      setIsLoading(false);
       return;
     }
 
+    setIsLoading(true);
     const state =
       homeSyncState.get(lastUsedAccount) ?? {
         lastSyncedAt: 0,
@@ -57,11 +61,16 @@ export const useHomeData = () => {
     homeSyncState.set(lastUsedAccount, state);
 
     if (state.inFlight) {
-      await state.inFlight;
+      try {
+        await state.inFlight;
+      } finally {
+        setIsLoading(false);
+      }
       return;
     }
 
     if (Date.now() - state.lastSyncedAt < HOME_SYNC_TTL_MS) {
+      setIsLoading(false);
       return;
     }
 
@@ -127,10 +136,15 @@ export const useHomeData = () => {
       await state.inFlight;
     } finally {
       state.inFlight = null;
+      setIsLoading(false);
     }
   }, [alert, fetchEDT, fetchGrades, settingsstore.showAlertAtLogin, lastUsedAccount]);
 
   useEffect(() => {
-    initialize();
+    void initialize();
   }, [initialize]);
+
+  return {
+    isLoading,
+  };
 };

@@ -25,6 +25,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import { fetchEDProfilePicture } from "@/services/ecoledirecte/profile";
+import { getEDModulesAdditionals } from "@/services/ecoledirecte/qrcode";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -102,11 +103,13 @@ export default function EDLoginWithCredentials() {
         const authentication = client.auth.getAccount();
         const token2fa = getEDToken2FA(client) ?? normalizeEDToken(token2faHint);
         const profilePicture = (await fetchEDProfilePicture(client).catch(() => "")) ?? "";
+        const className = authentication.profile?.classe?.libelle;
         const account: Account = {
           id: device,
           firstName: authentication.prenom,
           lastName: authentication.nom,
           schoolName: authentication.nomEtablissement,
+          className,
           customisation: {
             profilePicture,
             subjects: {}
@@ -121,6 +124,9 @@ export default function EDLoginWithCredentials() {
                   "cn": keys?.cn ?? "",
                   "cv": keys?.cv ?? "",
                   "deviceUUID": device,
+                  ...getEDModulesAdditionals(authentication.modules, {
+                    className,
+                  }),
                   ...(token2fa ? { "token2fa": token2fa } : {})
                 }
               },

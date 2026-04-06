@@ -8,10 +8,31 @@ import { generateId } from "@/utils/generateId";
 
 const ED_ATTACHMENT_PROVIDER = "ecoledirecte";
 const ED_ATTACHMENT_DEFAULT_FILE_TYPE = "CLOUD";
-const ED_ATTACHMENT_CACHE_VERSION = "v2";
+const ED_ATTACHMENT_CACHE_VERSION = "v4";
 const ED_ATTACHMENTS_DIRECTORY = new Directory(Paths.cache, "attachments", "ecoledirecte");
 const ANDROID_GRANT_READ_URI_PERMISSION = 1;
 const ANDROID_ATTACHMENT_NATIVE_MODULE_REBUILD_ERROR = "Android attachment opening requires rebuilding the app after adding expo-intent-launcher.";
+
+interface EDCloudFileLike {
+  id: number | string;
+  libelle?: string;
+  type?: string;
+}
+
+interface EDBinaryResponse {
+  data: ArrayBuffer;
+  contentType?: string;
+  contentDisposition?: string;
+  fileName?: string;
+}
+
+type EDBinaryDownloader = Client["downloader"] & {
+  getDownloadBinary?: (
+    fileId: string | number,
+    fileType: string,
+    bodyParams?: AttachmentMetadata["downloadParams"]
+  ) => Promise<EDBinaryResponse>;
+};
 
 type IntentLauncherModule = {
   startActivityAsync: (
@@ -60,6 +81,21 @@ export function createEDAttachment(
   };
 }
 
+export function createEDCloudFileAttachment(
+  session: Client,
+  accountId: string,
+  file: EDCloudFileLike | null | undefined,
+  role: NonNullable<AttachmentMetadata["role"]>
+): Attachment | undefined {
+  if (!file) {
+    return undefined;
+  }
+
+  return createEDAttachment(session, accountId, String(file.id), role, file.libelle, {
+    fileType: normalizeReference(file.type) || ED_ATTACHMENT_DEFAULT_FILE_TYPE,
+  });
+}
+
 export function isEDAttachment(attachment?: Attachment): boolean {
   return attachment?.metadata?.provider === ED_ATTACHMENT_PROVIDER;
 }
@@ -78,10 +114,26 @@ export async function openEDAttachment(attachment: Attachment): Promise<void> {
     ED_ATTACHMENTS_DIRECTORY.create({ idempotent: true, intermediates: true });
   }
 
-  const file = new File(ED_ATTACHMENTS_DIRECTORY, getCachedFileName(reference, attachment.name));
+  let file = getExistingCachedEDAttachmentFile(reference)
+    ?? new File(ED_ATTACHMENTS_DIRECTORY, getCachedFileName(reference, attachment.name));
   if (await shouldDownloadEDAttachmentFile(file, attachment.name)) {
-    const request = session.downloader.getDownloadRequest(reference, fileType, downloadParams);
-    await downloadEDAttachmentFile(file, request);
+    const downloader = session.downloader as EDBinaryDownloader;
+    if (typeof downloader.getDownloadBinary !== "function") {
+      throw new Error("EcoleDirecte attachment download requires the latest BlocksDirecte patch.");
+    }
+
+    const response = await downloader.getDownloadBinary(reference, fileType, downloadParams);
+    const resolvedName = getResolvedAttachmentName(
+      attachment.name,
+      response.fileName,
+      response.contentType
+    );
+    const downloadedFile = new File(
+      ED_ATTACHMENTS_DIRECTORY,
+      getCachedFileName(reference, resolvedName, response.contentType)
+    );
+    await writeEDAttachmentFile(downloadedFile, response);
+    file = downloadedFile;
   }
 
   if (Platform.OS === "android") {
@@ -102,32 +154,17 @@ export async function openEDAttachment(attachment: Attachment): Promise<void> {
   await Linking.openURL(file.uri);
 }
 
-async function downloadEDAttachmentFile(
+async function writeEDAttachmentFile(
   file: File,
-  request: {
-    url: string;
-    method?: string;
-    headers?: Record<string, string>;
-    body?: string;
-  }
+  response: EDBinaryResponse
 ): Promise<void> {
-  const response = await fetch(request.url, {
-    method: request.method ?? "GET",
-    headers: request.headers,
-    body: request.body,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to download EcoleDirecte attachment (${response.status})`);
-  }
-
-  const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+  const contentType = response.contentType?.toLowerCase() ?? "";
+  const bytes = new Uint8Array(response.data);
   if (contentType.includes("application/json")) {
-    const responseBody = await response.text();
+    const responseBody = new TextDecoder().decode(bytes);
     throw new Error(`EcoleDirecte attachment download returned JSON instead of a file: ${responseBody}`);
   }
 
-  const bytes = new Uint8Array(await response.arrayBuffer());
   file.create({ overwrite: true });
   file.write(bytes);
 
@@ -150,10 +187,41 @@ function getAttachmentName(reference: string, fallbackName?: string): string {
   return fileName || "document";
 }
 
-function getCachedFileName(reference: string, preferredName?: string): string {
-  const extension = getFileExtension(preferredName) || getFileExtension(reference) || "bin";
-  const baseName = sanitizeFileName(preferredName?.replace(/\.[^.]+$/, "") || "document");
+function getCachedFileName(
+  reference: string,
+  preferredName?: string,
+  contentType?: string
+): string {
+  const resolvedName = getResolvedAttachmentName(preferredName, undefined, contentType);
+  const extension = getFileExtension(resolvedName) || getFileExtension(reference) || "bin";
+  const baseName = sanitizeFileName(resolvedName.replace(/\.[^.]+$/, "") || "document");
   return `${baseName}-${ED_ATTACHMENT_CACHE_VERSION}-${generateId(reference)}.${extension}`;
+}
+
+function getExistingCachedEDAttachmentFile(reference: string): File | undefined {
+  const cacheKey = `-${ED_ATTACHMENT_CACHE_VERSION}-${generateId(reference)}.`;
+
+  try {
+    return ED_ATTACHMENTS_DIRECTORY
+      .list()
+      .find((entry): entry is File => entry instanceof File && entry.name.includes(cacheKey));
+  } catch {
+    return undefined;
+  }
+}
+
+function getResolvedAttachmentName(
+  preferredName?: string,
+  fileName?: string,
+  contentType?: string
+): string {
+  const normalizedName = normalizeReference(fileName) || normalizeReference(preferredName) || "document";
+  if (getFileExtension(normalizedName)) {
+    return normalizedName;
+  }
+
+  const contentTypeExtension = getExtensionFromContentType(contentType);
+  return contentTypeExtension ? `${normalizedName}.${contentTypeExtension}` : normalizedName;
 }
 
 function getReferenceFileName(reference: string): string {
@@ -194,6 +262,24 @@ function getMimeType(file: File): string | undefined {
     return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   default:
     return undefined;
+  }
+}
+
+function getExtensionFromContentType(contentType?: string): string {
+  const normalizedContentType = contentType?.split(";")[0]?.trim().toLowerCase();
+  switch (normalizedContentType) {
+  case "application/pdf":
+    return "pdf";
+  case "image/jpeg":
+    return "jpg";
+  case "image/png":
+    return "png";
+  case "application/msword":
+    return "doc";
+  case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    return "docx";
+  default:
+    return "";
   }
 }
 

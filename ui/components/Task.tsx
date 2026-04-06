@@ -29,7 +29,9 @@ interface TaskProps {
   date: Date;
   completed: boolean;
   hasAttachments: boolean;
+  hasLessonContent: boolean;
   magic?: string;
+  supportsCompletion?: boolean;
   onToggle: () => void;
   onPress: () => void;
 }
@@ -43,12 +45,16 @@ const Task: React.FC<TaskProps> = ({
   date,
   completed,
   hasAttachments,
+  hasLessonContent,
   magic,
+  supportsCompletion = true,
   onToggle,
   onPress
 }) => {
   const theme = useTheme();
   const tintedColor = adjust(color, theme.dark ? 0.3 : -0.3);
+  const itemColor = (theme.colors as typeof theme.colors & { item?: string }).item ?? theme.colors.card;
+  const Touchable = ListTouchable as React.ComponentType<any>;
 
   function formatDistanceDay(date: Date): string {
     // if yesterday, today or tomorrow
@@ -70,8 +76,8 @@ const Task: React.FC<TaskProps> = ({
   }
 
   return (
-    <ListTouchable onPress={onPress}>
-      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: (Platform.OS === 'android' && !theme.dark) ? "#FFF" : theme.colors.item, elevation: 2, overflow: "hidden" }}>
+    <Touchable onPress={onPress}>
+      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: (Platform.OS === 'android' && !theme.dark) ? "#FFF" : itemColor, elevation: 2, overflow: "hidden" }}>
         <Stack animated layout={Animation(LinearTransition, "list")} padding={[16, 14]} gap={12} radius={20} style={{ overflow: "hidden" }}>
           {Platform.OS !== "android" && (
             <LinearGradient
@@ -98,13 +104,6 @@ const Task: React.FC<TaskProps> = ({
               <Typography nowrap variant='body1' weight='semibold' color={tintedColor}>
                 {subject}
               </Typography>
-
-              {/* Attachments */}
-              {hasAttachments && (
-                <Icon size={18} fill={tintedColor}>
-                  <Papicons name="link" />
-                </Icon>
-              )}
             </Stack>
             {/* Date */}
             <Typography nowrap variant='body2' weight='medium' color={"secondary"}>
@@ -118,6 +117,28 @@ const Task: React.FC<TaskProps> = ({
               {formatHTML(description)}
             </Typography>
           </Stack>
+
+          {(hasLessonContent || hasAttachments) && (
+            <Stack direction="horizontal" gap={8} hAlign="center">
+              {hasLessonContent && (
+                <Stack padding={[8, 4]} radius={999} backgroundColor={theme.colors.text + "10"}>
+                  <Typography variant="caption" color="secondary" weight="medium">
+                    Seance
+                  </Typography>
+                </Stack>
+              )}
+              {hasAttachments && (
+                <Stack direction="horizontal" gap={6} hAlign="center">
+                  <Icon size={16} fill={theme.colors.text + "99"}>
+                    <Papicons name="link" />
+                  </Icon>
+                  <Typography variant="caption" color="secondary" weight="medium">
+                    Piece jointe
+                  </Typography>
+                </Stack>
+              )}
+            </Stack>
+          )}
 
           {/* Bottom */}
           <Stack animated layout={Animation(LinearTransition, "list")} direction="horizontal" gap={8} hAlign='center'>
@@ -144,11 +165,18 @@ const Task: React.FC<TaskProps> = ({
               )}
             </Stack>
             <Stack animated layout={Animation(LinearTransition, "list")} radius={300} inline hAlign='end' vAlign='center' style={{ overflow: Platform.OS === "android" ? "hidden" : undefined }}>
-              <ListTouchable scaleTo={0.8} animated layout={Animation(LinearTransition, "list")} onPress={onToggle}>
+              <Touchable
+                scaleTo={0.8}
+                animated
+                layout={Animation(LinearTransition, "list")}
+                onPress={supportsCompletion ? onToggle : undefined}
+                disabled={!supportsCompletion}
+              >
                 <Stack
                   animated
                   layout={Animation(LinearTransition, "list")}
                   card
+                  style={{ opacity: supportsCompletion ? 1 : 0.45 }}
                   backgroundColor={completed ? tintedColor : undefined}>
                   <Stack
                     animated
@@ -172,12 +200,12 @@ const Task: React.FC<TaskProps> = ({
                     }
                   </Stack>
                 </Stack>
-              </ListTouchable>
+              </Touchable>
             </Stack>
           </Stack>
         </Stack>
       </Stack>
-    </ListTouchable >
+    </Touchable >
   );
 };
 

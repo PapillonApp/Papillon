@@ -1,25 +1,31 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useRoute, useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import HTMLView from "react-native-htmlview";
+import { Alert, Platform, StyleSheet } from "react-native";
 
 import ModalOverhead from "@/components/ModalOverhead";
-import Homework from "@/database/models/Homework";
 import { updateHomeworkIsDone } from "@/database/useHomework";
+import { isEDAttachmentRebuildError } from "@/services/ecoledirecte/attachments";
+import { Attachment, AttachmentType } from "@/services/shared/attachment";
 import { getManager } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import { formatHTML } from "@/utils/format/html";
-import { generateId } from "@/utils/generateId";
+import {
+  getHomeworkCacheId,
+  getHomeworkSections,
+} from "@/utils/homework";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { Platform } from "react-native";
+import { warn } from "@/utils/logger/logger";
+import { openAttachment } from "@/utils/attachments/openAttachment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
@@ -38,21 +44,80 @@ const Task = () => {
   }
 
   const [isDone, setIsDone] = useState(task.isDone);
+  const [showRawHTML, setShowRawHTML] = useState(false);
+  const [openingAttachmentId, setOpeningAttachmentId] = useState<string | null>(null);
+  const sections = useMemo(() => getHomeworkSections(task), [task]);
+  const stylesheet = useMemo(
+    () =>
+      StyleSheet.create({
+        p: {
+          color: colors.text,
+          fontSize: 16,
+          lineHeight: 22,
+        },
+        div: {
+          color: colors.text,
+          fontSize: 16,
+          lineHeight: 22,
+        },
+        a: {
+          color: colors.primary,
+          textDecorationLine: "underline",
+        },
+        ul: {
+          color: colors.text,
+          fontSize: 16,
+          lineHeight: 22,
+          paddingHorizontal: 4,
+        },
+      }),
+    [colors.primary, colors.text]
+  );
 
   const setAsDone = async (done: boolean) => {
+    if (task.supportsCompletion === false) {
+      return;
+    }
+
     const manager = getManager();
     await manager.setHomeworkCompletion(task, done);
-
-    const id = generateId(
-      task.subject +
-      task.content +
-      task.createdByAccount +
-      new Date(task.dueDate).toDateString()
-    );
-
-    updateHomeworkIsDone(id, done);
+    updateHomeworkIsDone(getHomeworkCacheId(task), done);
     setIsDone(done);
   }
+
+  const openTaskAttachment = async (attachment: Attachment) => {
+    const attachmentId = [
+      attachment.metadata?.reference ?? attachment.url,
+      attachment.metadata?.role ?? "attachment",
+    ].join(":");
+
+    if (openingAttachmentId) {
+      return;
+    }
+
+    setOpeningAttachmentId(attachmentId);
+    try {
+      await openAttachment(attachment);
+    } catch (error) {
+      warn(String(error));
+      if (isEDAttachmentRebuildError(error)) {
+        Alert.alert(
+          t("Attachment_Open_Rebuild_Title"),
+          t("Attachment_Open_Rebuild_Description")
+        );
+        return;
+      }
+
+      Alert.alert(
+        t("Attachment_Open_Error_Title"),
+        t("Attachment_Open_Error_Description")
+      );
+    } finally {
+      setOpeningAttachmentId((currentId) =>
+        currentId === attachmentId ? null : currentId
+      );
+    }
+  };
 
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
@@ -106,7 +171,10 @@ const Task = () => {
 
           <List.Item>
             <List.Leading>
-              <AnimatedPressable onPress={() => setAsDone(!isDone)}>
+              <AnimatedPressable
+                disabled={task.supportsCompletion === false}
+                onPress={() => setAsDone(!isDone)}
+              >
                 <Stack
                   backgroundColor={isDone ? (Platform.OS === 'ios' ? subjectInfo.color : theme.colors.primary) : theme.colors.card}
                   card
@@ -115,6 +183,7 @@ const Task = () => {
                   height={28}
                   vAlign="center"
                   hAlign="center"
+                  style={{ opacity: task.supportsCompletion === false ? 0.45 : 1 }}
                 >
                   {isDone &&
                     <Papicons name="check" size={22} color="white" />
@@ -123,49 +192,111 @@ const Task = () => {
               </AnimatedPressable>
             </List.Leading>
             <Typography variant="title">
-              {isDone ? t("Task_Done") : t("Task_Undone")}
+              {task.supportsCompletion === false
+                ? "Contenu de seance"
+                : isDone
+                  ? t("Task_Done")
+                  : t("Task_Undone")}
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              {task.supportsCompletion === false
+                ? "Cette entree provient uniquement du contenu de seance et ne peut pas etre cochee."
+                : "Touchez pour changer l'etat du devoir."}
             </Typography>
           </List.Item>
         </List.Section>
 
-        <List.Section>
-          <List.SectionTitle>
-            <List.Label>{t("Modal_Task_Description")}</List.Label>
-          </List.SectionTitle>
+        {sections.map((section) => (
+          <List.Section key={section.key}>
+            <List.SectionTitle>
+              <List.Label>
+                {section.key === "work" ? "Travail a faire" : "Contenu de seance"}
+              </List.Label>
+            </List.SectionTitle>
 
-          <List.Item>
-            <Typography>
-              {formatHTML(task.content)}
-            </Typography>
-          </List.Item>
-        </List.Section>
+            {section.content.trim().length > 0 && (
+              <List.Item>
+                {showRawHTML ? (
+                  <HTMLView
+                    value={section.content}
+                    stylesheet={stylesheet}
+                    style={{ gap: 12 }}
+                    paragraphBreak=""
+                    bullet="  •  "
+                  />
+                ) : (
+                  <Typography>
+                    {formatHTML(section.content)}
+                  </Typography>
+                )}
+              </List.Item>
+            )}
 
-        <List.Section>
-          <List.SectionTitle>
-            <List.Label>{t("Modal_Task_Attachments")}</List.Label>
-          </List.SectionTitle>
+            {section.attachments.map((attachment) => {
+              const attachmentId = [
+                attachment.metadata?.reference ?? attachment.url,
+                attachment.metadata?.role ?? "attachment",
+              ].join(":");
 
-          {task.attachments.map((attachment) => (
-            <List.Item onPress={() => WebBrowser.openBrowserAsync(attachment.url, {
-              presentationStyle: "formSheet"
-            })}>
-              <List.Leading>
-                <Icon>
-                  <Papicons name={getAttachmentIcon(attachment)} />
-                </Icon>
-              </List.Leading>
-              <Typography variant="title" numberOfLines={1}>
-                {attachment.name || attachment.url}
+              return (
+                <List.Item
+                  key={attachmentId}
+                  onPress={() => openTaskAttachment(attachment)}
+                >
+                  <List.Leading>
+                    <Icon>
+                      <Papicons name={getAttachmentIcon(attachment)} />
+                    </Icon>
+                  </List.Leading>
+                  <Typography variant="title" numberOfLines={1}>
+                    {attachment.name || attachment.url}
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary" numberOfLines={1}>
+                    {openingAttachmentId === attachmentId
+                      ? "Ouverture..."
+                    : getTaskAttachmentSubtitle(attachment)}
+                  </Typography>
+                </List.Item>
+              );
+            })}
+          </List.Section>
+        ))}
+
+        {sections.some((section) => section.content.trim().length > 0) && (
+          <List.Section>
+            <List.Item onPress={() => setShowRawHTML((current) => !current)}>
+              <Typography variant="body1" color="textSecondary">
+                Le message ne s'affiche pas correctement ?
               </Typography>
-              <Typography variant="body1" color="textSecondary" numberOfLines={1}>
-                {attachment.url}
+              <Typography variant="title">
+                {showRawHTML ? "Revenir au rendu normal" : "Afficher le HTML brut"}
               </Typography>
             </List.Item>
-          ))}
-        </List.Section>
+          </List.Section>
+        )}
       </List>
     </>
   );
 };
 
 export default Task;
+
+function getTaskAttachmentSubtitle(attachment: Attachment): string {
+  if (attachment.metadata?.provider === "ecoledirecte") {
+    return "Piece jointe EcoleDirecte";
+  }
+
+  if (attachment.type === AttachmentType.LINK) {
+    return getAttachmentHostname(attachment.url) ?? "Lien";
+  }
+
+  return getAttachmentHostname(attachment.url) ?? "Piece jointe";
+}
+
+function getAttachmentHostname(url: string): string | undefined {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return undefined;
+  }
+}

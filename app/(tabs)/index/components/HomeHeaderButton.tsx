@@ -22,6 +22,7 @@ interface HomeHeaderButtonProps {
 
 const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
   const { colors } = useTheme();
+  const extendedColors = colors as typeof colors & { item?: string };
 
   return (
     <View
@@ -43,7 +44,7 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           paddingHorizontal: 10,
           paddingVertical: 13,
           borderRadius: 22,
-          backgroundColor: colors.item,
+          backgroundColor: extendedColors.item ?? colors.card,
           elevation: 4,
           overflow: 'hidden',
         }}

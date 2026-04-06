@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { t } from 'i18next';
 import { Homework } from "@/services/shared/homework";
+import { getHomeworkPlainText } from "@/utils/homework";
 import { getSubjectName } from "@/utils/subjects/name";
 
 export type SortMethod = 'date' | 'subject' | 'done';
@@ -22,25 +23,22 @@ export interface HomeworkSection {
   data: Homework[];
 }
 
-export const useTaskFilters = (
+interface TaskFilterOptions {
+  searchTerm: string;
+  showUndoneOnly: boolean;
+  sortMethod: SortMethod;
+}
+
+export const useTaskSections = (
   homeworksFromCache: Homework[],
-  homework: Record<string, Homework>
+  homework: Record<string, Homework>,
+  {
+    searchTerm,
+    showUndoneOnly,
+    sortMethod,
+  }: TaskFilterOptions
 ) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showUndoneOnly, setShowUndoneOnly] = useState(false);
-  const [sortMethod, setSortMethod] = useState<SortMethod>("date");
-  const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
-
-  const toggleGroup = useCallback((headerId: string) => {
-    setCollapsedGroups(prev => {
-      if (prev.includes(headerId)) {
-        return prev.filter(id => id !== headerId);
-      }
-      return [...prev, headerId];
-    });
-  }, []);
-
-  const sections = useMemo<HomeworkSection[]>(() => {
+  return useMemo<HomeworkSection[]>(() => {
     const mergedData = homeworksFromCache.map(cached => {
       const fresh = cached.id && homework[cached.id];
       return fresh || cached;
@@ -65,8 +63,7 @@ export const useTaskFilters = (
     if (searchTerm.trim().length > 0) {
       const term = normalize(searchTerm);
       data = data.filter(h => {
-        const cleanContent = h.content.replace(/<[^>]*>/g, "");
-        const normalizedContent = normalize(cleanContent);
+        const normalizedContent = normalize(getHomeworkPlainText(h));
         const normalizedSubject = normalize(h.subject);
         const normalizedSubjectName = normalize(getSubjectName(h.subject));
         return (
@@ -118,6 +115,31 @@ export const useTaskFilters = (
       }
     ];
   }, [homeworksFromCache, homework, showUndoneOnly, searchTerm, sortMethod]);
+};
+
+export const useTaskFilters = (
+  homeworksFromCache: Homework[],
+  homework: Record<string, Homework>
+) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showUndoneOnly, setShowUndoneOnly] = useState(false);
+  const [sortMethod, setSortMethod] = useState<SortMethod>("date");
+  const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
+
+  const toggleGroup = useCallback((headerId: string) => {
+    setCollapsedGroups(prev => {
+      if (prev.includes(headerId)) {
+        return prev.filter(id => id !== headerId);
+      }
+      return [...prev, headerId];
+    });
+  }, []);
+
+  const sections = useTaskSections(homeworksFromCache, homework, {
+    searchTerm,
+    showUndoneOnly,
+    sortMethod,
+  });
 
   return {
     searchTerm,

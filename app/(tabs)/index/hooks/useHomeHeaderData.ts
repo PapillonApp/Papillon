@@ -8,6 +8,15 @@ import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
 
+export interface HomeHeaderData {
+  availableCanteenCards: NonNullable<ReturnType<typeof useAccountStore.getState>["accounts"][number]>["services"];
+  attendancesPeriods: Period[];
+  attendances: Attendance[];
+  absencesCount: number;
+  chats: Chat[];
+  loadingAttendance: boolean;
+}
+
 export const useHomeHeaderData = () => {
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
@@ -30,6 +39,7 @@ export const useHomeHeaderData = () => {
   const attendancesPeriodsRef = useRef<Period[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [chats, setChats] = useState<Chat[]>([]);
+  const [loadingAttendance, setLoadingAttendance] = useState(true);
 
   const absencesCount = useMemo(() => {
     if (!attendances) return 0;
@@ -43,34 +53,69 @@ export const useHomeHeaderData = () => {
   }, [attendances]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const init = async () => {
       const cachedChats = await getChatsFromCache();
-      setChats(cachedChats);
+      if (!isMounted) {
+        return;
+      }
+
+      setChats(cachedChats ?? []);
     };
 
     init();
 
     const updateAttendance = async (manager: AccountManager) => {
-      const periods = await manager.getAttendancePeriods();
-      const currentPeriod = getCurrentPeriod(periods);
-      const fetchedAttendances = await manager.getAttendanceForPeriod(currentPeriod.name);
+      if (isMounted) {
+        setLoadingAttendance(true);
+      }
 
-      attendancesPeriodsRef.current = periods;
-      setAttendances(fetchedAttendances);
+      try {
+        const periods = await manager.getAttendancePeriods();
+        const currentPeriod = getCurrentPeriod(periods);
+        const fetchedAttendances = currentPeriod
+          ? await manager.getAttendanceForPeriod(currentPeriod.name)
+          : [];
+
+        if (!isMounted) {
+          return;
+        }
+
+        attendancesPeriodsRef.current = periods;
+        setAttendances(fetchedAttendances);
+      } finally {
+        if (isMounted) {
+          setLoadingAttendance(false);
+        }
+      }
     };
 
     const updateDiscussions = async (manager: AccountManager) => {
-      const fetchedChats = await manager.getChats();
-      setChats(fetchedChats);
+      try {
+        const fetchedChats = await manager.getChats();
+        if (!isMounted) {
+          return;
+        }
+
+        setChats(fetchedChats);
+      } catch {
+        if (isMounted) {
+          setChats([]);
+        }
+      }
     };
 
     const unsubscribe = subscribeManagerUpdate((_) => {
       const manager = getManager();
-      updateAttendance(manager);
-      updateDiscussions(manager);
+      void updateAttendance(manager);
+      void updateDiscussions(manager);
     });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   return {
@@ -78,6 +123,7 @@ export const useHomeHeaderData = () => {
     attendancesPeriods: attendancesPeriodsRef.current,
     attendances,
     absencesCount,
-    chats
+    chats,
+    loadingAttendance,
   };
 };

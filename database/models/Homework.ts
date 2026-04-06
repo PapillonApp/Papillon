@@ -15,8 +15,10 @@ export default class Homework extends Model {
   @field('homeworkId') homeworkId: string;
   @field('subject') subject: string;
   @field('content') content: string;
+  @field('lessonContent') lessonContent: string;
   @field('dueDate') dueDate: number;
   @field('isDone') isDone: boolean;
+  @field('supportsCompletion') supportsCompletion: boolean;
   @field('returnFormat') returnFormat: number;
   @field('attachments') attachments: string;
   @field('evaluation') evaluation: boolean;

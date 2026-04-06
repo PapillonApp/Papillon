@@ -1,5 +1,6 @@
 import { ImageSourcePropType } from "react-native";
 
+import { Balance } from "@/services/shared/balance";
 import { Services } from "@/stores/account/types";
 
 export function getServiceName(service: Services): string {
@@ -87,12 +88,59 @@ export function getCodeType(service: Services): string {
 }
 
 export function isSelfModuleEnabledED(additionals?: Record<string, any>): boolean {
-  if (!additionals) {return false;}
-  for (const module of additionals["modules"] as Array<{badge: number, code: string, enable: true, ordre: number, params: Array<any>}>) {
-    if (module.code === "CANTINE_BARCODE" && module.enable) {
-      if (module.params && module.params.numeroBadge)
-      {return true;}
-    }
+  if (!additionals) {
+    return false;
   }
-  return false;
+
+  const rawModules = additionals["edModules"] ?? additionals["modules"];
+  const modules = typeof rawModules === "string"
+    ? safelyParseModules(rawModules)
+    : Array.isArray(rawModules)
+      ? rawModules
+      : [];
+
+  return modules.some((module) => {
+    const badgeNumber = typeof module?.params?.numeroBadge === "string"
+      ? module.params.numeroBadge.trim()
+      : "";
+    return module?.code === "CANTINE_BARCODE" && module?.enable && badgeNumber.length > 0;
+  });
+}
+
+export function isQRCodeOnlyWallet(
+  service: Services,
+  wallet: Balance
+): boolean {
+  return service === Services.ECOLEDIRECTE && wallet.currency.trim().length === 0;
+}
+
+export function getWalletDisplayLabel(
+  wallet: Balance,
+  service: Services
+): string {
+  if (isQRCodeOnlyWallet(service, wallet)) {
+    return wallet.label || "Badge cantine";
+  }
+
+  return wallet.label;
+}
+
+export function getWalletDisplayAmount(
+  wallet: Balance,
+  service: Services
+): string {
+  if (isQRCodeOnlyWallet(service, wallet)) {
+    return "QR uniquement";
+  }
+
+  return `${(wallet.amount / 100).toFixed(2)} ${wallet.currency}`.trim();
+}
+
+function safelyParseModules(rawModules: string): any[] {
+  try {
+    const parsedModules = JSON.parse(rawModules);
+    return Array.isArray(parsedModules) ? parsedModules : [];
+  } catch {
+    return [];
+  }
 }

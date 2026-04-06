@@ -27,7 +27,7 @@ export default function CardView() {
   const selfCompatible = account?.services.filter(
     service => {
       if (service.serviceId === Services.ECOLEDIRECTE) {
-        return isSelfModuleEnabledED(service.additionals);
+        return isSelfModuleEnabledED(service.auth.additionals);
       }
       return [Services.TURBOSELF, Services.ARD, Services.IZLY].includes(service.serviceId);
     },

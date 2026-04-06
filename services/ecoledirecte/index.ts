@@ -4,6 +4,8 @@ import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 
 import { Attendance } from "../shared/attendance";
+import { Balance } from "../shared/balance";
+import { QRCode } from "../shared/canteen";
 import { Period, PeriodGrades } from "../shared/grade";
 import { Homework } from "../shared/homework";
 import { News } from "../shared/news";
@@ -13,6 +15,7 @@ import { fetchEDAttendance } from "./attendance";
 import { fetchEDGradePeriods, fetchEDGrades } from "./grades";
 import { fetchEDHomeworks, setEDHomeworkAsDone } from "./homework";
 import { fetchEDNews } from "./news";
+import { fetchEDCanteenBalances, fetchEDQRCode } from "./qrcode";
 import { refreshEDAccount } from "./refresh";
 import { fetchEDTimetable } from "./timetable";
 
@@ -26,7 +29,9 @@ export class EcoleDirecte implements SchoolServicePlugin {
     Capabilities.ATTENDANCE_PERIODS,
     Capabilities.GRADES,
     Capabilities.HOMEWORK,
-    Capabilities.TIMETABLE
+    Capabilities.TIMETABLE,
+    Capabilities.CANTEEN_BALANCE,
+    Capabilities.CANTEEN_QRCODE,
   ];
   session: Client | undefined;
   authData: Auth = {};
@@ -104,5 +109,13 @@ export class EcoleDirecte implements SchoolServicePlugin {
     }
 
     throw error("Session or account is not valid", "EcoleDirecte.setHomeworkCompletion");
+  }
+
+  async getCanteenBalances(): Promise<Balance[]> {
+    return fetchEDCanteenBalances(this.accountId, this.authData);
+  }
+
+  async getCanteenQRCodes(): Promise<QRCode> {
+    return fetchEDQRCode(this.accountId, this.authData);
   }
 }

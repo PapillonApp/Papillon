@@ -15,13 +15,11 @@ import HomeTopBar from './atoms/HomeTopBar';
 import Wallpaper from './atoms/Wallpaper';
 import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useHomeData } from './hooks/useHomeData';
+import { useHomeHeaderData } from './hooks/useHomeHeaderData';
 import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
-import { useAlert } from '@/ui/components/AlertProvider';
-import Button from '@/ui/new/Button';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
-import Typography from '@/ui/new/Typography';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -51,15 +49,11 @@ const HomeScreen = () => {
     }
   }, [accounts.length]);
 
-  useHomeData();
-
-  const [gradesWidgetHidden, setGradesWidgetHidden] = React.useState(true);
+  const { isLoading: isHomeLoading } = useHomeData();
+  const homeHeaderData = useHomeHeaderData();
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
-  const renderGrades = React.useCallback(
-    () => <GradesWidget onEmptyStateChange={setGradesWidgetHidden} />,
-    []
-  );
+  const renderGrades = React.useCallback(() => <GradesWidget />, []);
 
   const data: HomeWidgetItem[] = React.useMemo(() => [
     {
@@ -72,17 +66,16 @@ const HomeScreen = () => {
       icon: <Papicons name={"Grades"} />,
       title: t("Home_Widget_Grades_Average"),
       redirect: "(tabs)/grades",
-      hidden: gradesWidgetHidden,
       render: renderGrades
     }
-  ], [renderTimeTable, renderGrades, gradesWidgetHidden]);
+  ], [renderTimeTable, renderGrades]);
 
-  const alert = useAlert();
+  const isGlobalLoading = isHomeLoading || homeHeaderData.loadingAttendance;
 
   return (
     <>
       <Wallpaper />
-      <HomeTopBar />
+      <HomeTopBar isLoading={isGlobalLoading} />
       {focused && <StatusBar translucent animated barStyle={'light-content'} />}
       <MaskedView
         maskElement={
@@ -104,7 +97,7 @@ const HomeScreen = () => {
         <FlatList
           renderItem={({ item }) => <HomeWidget item={item} />}
           keyExtractor={(item) => item.title}
-          ListHeaderComponent={<HomeHeader />}
+          ListHeaderComponent={<HomeHeader data={homeHeaderData} />}
           style={{ flex: 1 }}
           contentContainerStyle={{
             paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 16,
@@ -115,7 +108,6 @@ const HomeScreen = () => {
           }}
           data={data}
         />
-        
       </MaskedView>
     </>
   );

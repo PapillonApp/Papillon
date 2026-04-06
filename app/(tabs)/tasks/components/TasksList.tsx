@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Homework } from "@/services/shared/homework";
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
-import { generateId } from "@/utils/generateId";
+import { getHomeworkCacheId } from "@/utils/homework";
 
 import DateHeader from '../atoms/DateHeader';
 import EmptyState from '../atoms/EmptyState';
@@ -57,10 +57,7 @@ const TasksList: React.FC<TasksListProps> = ({
       if (sortMethod === 'date' && collapsedGroups.includes(section.id)) {
         return null;
       }
-      // Generate the same ID used to store homeworks in the homework object
-      const generatedId = generateId(
-        item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString()
-      );
+      const generatedId = getHomeworkCacheId(item);
       const inFresh = homework[generatedId];
       const source = inFresh ?? item;
       const fromCache = !inFresh;
@@ -107,7 +104,7 @@ const TasksList: React.FC<TasksListProps> = ({
   );
 
   const keyExtractor = useCallback((item: Homework) => {
-    return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
+    return "hw:" + getHomeworkCacheId(item);
   }, []);
 
   const bottomTabBarHeight = useBottomTabBarHeight();

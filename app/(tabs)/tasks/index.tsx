@@ -1,50 +1,46 @@
-import React, { useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, Platform, StyleSheet, View } from 'react-native';
 
 import TasksHeader from './components/TasksHeader';
-import TasksList from './components/TasksList';
+import type { SortMethod } from './components/TasksHeader';
+import TasksWeekPage from './components/TasksWeekPage';
 import WeekPicker from './components/WeekPicker';
-import { useHomeworkData } from './hooks/useHomeworkData';
-import { useTaskFilters } from './hooks/useTaskFilters';
 import { useWeekSelection } from './hooks/useWeekSelection';
 
-import { useAlert } from "@/ui/components/AlertProvider";
 import { useTheme } from '@react-navigation/native';
 
 const TasksView: React.FC = () => {
-  const alert = useAlert();
   const [headerHeight, setHeaderHeight] = useState(0);
   const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showUndoneOnly, setShowUndoneOnly] = useState(false);
+  const [sortMethod, setSortMethod] = useState<SortMethod>("date");
+  const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
+  const [activeWeekLoading, setActiveWeekLoading] = useState(true);
 
   const {
     defaultWeek,
     selectedWeek,
+    flatListRef,
+    getWeekFromIndex,
     showWeekPicker,
     toggleWeekPicker,
     onSelectWeek,
+    onMomentumScrollEnd,
+    onScroll,
+    INITIAL_INDEX,
+    windowWidth,
     setShowWeekPicker,
   } = useWeekSelection();
 
-  const {
-    homework,
-    homeworksFromCache,
-    isLoading,
-    isRefreshing,
-    handleRefresh,
-    setAsDone,
-  } = useHomeworkData(selectedWeek, alert);
-
-  const {
-    searchTerm,
-    setSearchTerm,
-    showUndoneOnly,
-    setShowUndoneOnly,
-    sortMethod,
-    setSortMethod,
-    collapsedGroups,
-    toggleGroup,
-    sections,
-  } = useTaskFilters(homeworksFromCache, homework);
+  const toggleGroup = useCallback((headerId: string) => {
+    setCollapsedGroups(prev => {
+      if (prev.includes(headerId)) {
+        return prev.filter(id => id !== headerId);
+      }
+      return [...prev, headerId];
+    });
+  }, []);
 
   const theme = useTheme();
 
@@ -61,7 +57,7 @@ const TasksView: React.FC = () => {
         <TasksHeader
           defaultWeek={defaultWeek}
           selectedWeek={selectedWeek}
-          isLoading={isLoading}
+          isLoading={activeWeekLoading}
           onToggleWeekPicker={toggleWeekPicker}
           setHeaderHeight={setHeaderHeight}
           setShowUndoneOnly={setShowUndoneOnly}
@@ -71,17 +67,58 @@ const TasksView: React.FC = () => {
           shouldCollapseHeader={shouldCollapseHeader}
         />
 
-        <TasksList
-          sections={sections}
-          headerHeight={headerHeight}
-          searchTerm={searchTerm}
-          isRefreshing={isRefreshing}
-          onRefresh={handleRefresh}
-          collapsedGroups={collapsedGroups}
-          toggleGroup={toggleGroup}
-          sortMethod={sortMethod}
-          homework={homework}
-          setAsDone={setAsDone}
+        <FlatList<number>
+          ref={flatListRef}
+          data={Array.from({ length: 20001 }, (_, index) => index)}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          initialScrollIndex={INITIAL_INDEX}
+          getItemLayout={(_, index) => ({
+            length: windowWidth,
+            offset: windowWidth * index,
+            index,
+          })}
+          renderItem={({ item: index }) => {
+            const weekNumber = getWeekFromIndex(index);
+            return (
+              <TasksWeekPage
+                weekNumber={weekNumber}
+                width={windowWidth}
+                headerHeight={headerHeight}
+                searchTerm={searchTerm}
+                showUndoneOnly={showUndoneOnly}
+                sortMethod={sortMethod}
+                collapsedGroups={collapsedGroups}
+                toggleGroup={toggleGroup}
+                isActive={weekNumber === selectedWeek}
+                onActiveStateChange={({ isLoading }) => {
+                  if (weekNumber === selectedWeek) {
+                    setActiveWeekLoading(isLoading);
+                  }
+                }}
+              />
+            );
+          }}
+          keyExtractor={(item) => `tasks-week:${item}`}
+          onScroll={onScroll}
+          decelerationRate={Platform.OS === 'ios' ? 0.98 : undefined}
+          disableIntervalMomentum
+          scrollEventThrottle={16}
+          onMomentumScrollEnd={onMomentumScrollEnd}
+          snapToInterval={windowWidth}
+          bounces={false}
+          windowSize={4}
+          maxToRenderPerBatch={3}
+          initialNumToRender={3}
+          removeClippedSubviews
+          extraData={{
+            headerHeight,
+            selectedWeek,
+            searchTerm,
+            showUndoneOnly,
+            sortMethod,
+            collapsedGroups,
+          }}
         />
       </View>
     </>

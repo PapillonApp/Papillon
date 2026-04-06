@@ -7,6 +7,7 @@ import React from 'react';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { Pressable } from 'react-native';
 
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
 import { initializeAccountManager } from '@/services/shared';
 import { useAccountStore } from '@/stores/account';
 import Avatar from '@/ui/components/Avatar';
@@ -29,7 +30,15 @@ type UserProfileMenuAction = MenuAction & {
   papicon?: React.ComponentProps<typeof Papicons>["name"];
 };
 
-const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
+const UserProfile = ({
+  subtitle,
+  onPress,
+  isLoading = false,
+}: {
+  subtitle?: string,
+  onPress?: () => void,
+  isLoading?: boolean,
+}) => {
   const router = useRouter();
   const { firstName, lastName, initials, profilePicture, level, establishment } = useUserProfileData() ?? {};
   const accounts = useAccountStore((state) => state.accounts);
@@ -112,6 +121,14 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                   {firstName && lastName ? `${firstName} ${lastName}` : "Mon compte"}
                 </Typography>
                 <Papicons name="chevrondown" size={20} color="white" opacity={0.5} style={{ marginRight: 0 }} />
+                {isLoading && (
+                  <ActivityIndicator
+                    size={16}
+                    strokeWidth={2.5}
+                    color="#FFFFFFCC"
+                    style={{ marginLeft: 2 }}
+                  />
+                )}
               </Stack>
               {subtitle &&
                 <Typography nowrap color='white' variant='body1' style={{ opacity: 0.7 }}>
