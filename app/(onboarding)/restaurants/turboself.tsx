@@ -32,8 +32,6 @@ export default function TurboSelfLoginWithCredentials() {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const [username, setUsername] = useState<string>("")
-  const [password, setPassword] = useState<string>("");
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const params = useLocalSearchParams();
   const action = String(params.action);
@@ -65,10 +63,10 @@ export default function TurboSelfLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  const loginTurboself = async () => {
+  const loginTurboself = async (submittedUsername: string, submittedPassword: string) => {
     try {
       setIsLoggingIn(true);
-      const authentification = await authenticateWithCredentials(username, password, true, false)
+      const authentification = await authenticateWithCredentials(submittedUsername, submittedPassword, true, false)
       const siblings = await authentification.getSiblings();
       if (siblings.length === 0) {
         const accountId = uuid()
@@ -77,8 +75,8 @@ export default function TurboSelfLoginWithCredentials() {
           id: accountId,
           auth: {
             additionals: {
-              username,
-              password,
+              username: submittedUsername,
+              password: submittedPassword,
               "hoteId": authentification.host?.id ?? "N/A"
             }
           },
@@ -128,8 +126,8 @@ export default function TurboSelfLoginWithCredentials() {
         pathname: "/(onboarding)/restaurants/turboselfHost",
         params: {
           siblings: JSON.stringify(global),
-          username,
-          password
+          username: submittedUsername,
+          password: submittedPassword
         }
       });
     } catch (error) {
@@ -140,7 +138,10 @@ export default function TurboSelfLoginWithCredentials() {
 
   return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={32}>
-        <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+        >
           <LoginView
             color="#cf0000"
             serviceName="TurboSelf"
@@ -148,9 +149,7 @@ export default function TurboSelfLoginWithCredentials() {
             loading={isLoggingIn}
             onSubmit={(values) => {
               if (!isLoggingIn && values.username && values.password) {
-                setPassword(values.password);
-                setUsername(values.username);
-                loginTurboself();
+                loginTurboself(values.username, values.password);
               }
             }}
           />

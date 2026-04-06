@@ -163,11 +163,11 @@ export default function EDLoginWithCredentials() {
     }
   }
 
-  const loginED = async () => {
-    if (!username.trim() || !password.trim()) { return; }
+  const loginED = async (submittedUsername = username, submittedPassword = password) => {
+    if (!submittedUsername.trim() || !submittedPassword.trim()) { return; }
     setIsLoggingIn(true);
     Keyboard.dismiss();
-    await handleLogin(username, password);
+    await handleLogin(submittedUsername, submittedPassword);
     setIsLoggingIn(false);
   };
 
@@ -235,21 +235,24 @@ export default function EDLoginWithCredentials() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, marginBottom: insets.bottom }} behavior="padding">
-      <ScrollView contentContainerStyle={{ paddingTop: finalHeaderHeight, paddingBottom: insets.bottom }}>
-              <LoginView
-                color="#1788bc"
-                serviceName="ÉcoleDirecte"
-                serviceIcon={require('@/assets/images/service_ed.png')}
-                loading={isLoggingIn}
-                onSubmit={(values) => {
-                  if (!isLoggingIn && values.username && values.password) {
-                    setUsername(values.username);
-                    setPassword(values.password);
-                    loginED();
-                  }
-                }}
-              />
-            </ScrollView>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingTop: finalHeaderHeight, paddingBottom: insets.bottom }}
+      >
+        <LoginView
+          color="#1788bc"
+          serviceName="ÉcoleDirecte"
+          serviceIcon={require('@/assets/images/service_ed.png')}
+          loading={isLoggingIn}
+          onSubmit={(values) => {
+            if (!isLoggingIn && values.username && values.password) {
+              setUsername(values.username);
+              setPassword(values.password);
+              loginED(values.username, values.password);
+            }
+          }}
+        />
+      </ScrollView>
 
       <Modal
         visible={challengeModalVisible}
