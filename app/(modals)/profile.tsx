@@ -1,6 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
-import { useHeaderHeight } from "@react-navigation/elements";
+import { MenuAction, NativeActionEvent } from "@react-native-menu/menu";
 import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker"
 import { router } from "expo-router";
@@ -8,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   View,
@@ -16,14 +14,26 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { fetchEDProfilePicture } from "@/services/ecoledirecte/profile";
+import { refreshEDAccount } from "@/services/ecoledirecte/refresh";
 import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
 import Avatar from "@/ui/components/Avatar";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
+import { warn } from "@/utils/logger/logger";
+import {
+  createProfilePictureDataUri,
+  getAccountProfilePictureUri,
+} from "@/utils/profilePicture";
 import ActionMenu from "@/ui/components/ActionMenu";
+
+type ProfileMenuAction = MenuAction & {
+  papicon?: React.ComponentProps<typeof Papicons>["name"];
+};
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
@@ -35,21 +45,27 @@ export default function CustomProfileScreen() {
 
   const [firstName, setFirstName] = useState<string>(account?.firstName ?? "");
   const [lastName, setLastName] = useState<string>(account?.lastName ?? "");
-  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(account?.customisation?.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : null);
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(getAccountProfilePictureUri(account?.customisation?.profilePicture) ?? null);
+  const [isImportingProfilePicture, setIsImportingProfilePicture] = useState(false);
 
   useEffect(() => {
-    if (account) {
-      setFirstName(account.firstName);
-      setLastName(account.lastName);
-      setProfilePictureUrl(account.customisation?.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : null);
+    if (!account) {
+      setFirstName("");
+      setLastName("");
+      setProfilePictureUrl(null);
+      return;
     }
+
+    setFirstName(account.firstName);
+    setLastName(account.lastName);
+    setProfilePictureUrl(getAccountProfilePictureUri(account.customisation?.profilePicture) ?? null);
   }, [account]);
 
   const insets = useSafeAreaInsets()
 
   const updateProfilePictureFromLibrary = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -57,31 +73,97 @@ export default function CustomProfileScreen() {
     });
 
     if (!result.canceled) {
-      const b64 = result.assets[0].base64 ?? "";
-      store.setAccountProfilePicture(lastUsedAccount, b64);
+      const asset = result.assets[0];
+      const profilePicture = createProfilePictureDataUri(asset.base64 ?? "", asset.mimeType);
+      store.setAccountProfilePicture(lastUsedAccount, profilePicture);
+      setProfilePictureUrl(getAccountProfilePictureUri(profilePicture) ?? null);
     }
   }
 
   const updateProfilePictureFromService = async () => {
-    Alert.alert(
-      t("Feature_Soon"),
-      "Cette fonctionnalité n'est pas encore disponible, mais elle le sera dans une prochaine mise à jour.",
-      [{ text: "OK" }]
-    );
+    if (!account || isImportingProfilePicture) {
+      return;
+    }
+
+    const edService = account.services.find((service) => service.serviceId === Services.ECOLEDIRECTE);
+    if (!edService) {
+      Alert.alert(
+        "Photo de profil",
+        "Cette option est disponible uniquement pour les comptes EcoleDirecte."
+      );
+      return;
+    }
+
+    setIsImportingProfilePicture(true);
+
+    try {
+      const { account: session } = await refreshEDAccount(edService.id, edService.auth);
+      const profilePicture = await fetchEDProfilePicture(session);
+      if (!profilePicture) {
+        Alert.alert(
+          "Photo de profil",
+          "Aucune photo n'est disponible sur EcoleDirecte pour ce compte."
+        );
+        return;
+      }
+
+      store.setAccountProfilePicture(lastUsedAccount, profilePicture);
+      setProfilePictureUrl(getAccountProfilePictureUri(profilePicture) ?? null);
+    } catch (error) {
+      warn(`Failed to import ED profile picture: ${String(error)}`);
+      Alert.alert(
+        "Photo de profil",
+        "Impossible de recuperer la photo de profil depuis EcoleDirecte."
+      );
+    } finally {
+      setIsImportingProfilePicture(false);
+    }
   }
 
   const { colors } = useTheme();
-  const height = useHeaderHeight();
+  const profilePictureActions: ProfileMenuAction[] = [
+    {
+      id: 'photo_library',
+      title: t("Button_Change_ProfilePicture_FromLibrary"),
+      papicon: 'Gallery',
+      image: Platform.select({
+        ios: 'photo',
+        android: 'ic_menu_gallery',
+      }),
+      imageColor: colors.text
+    },
+    {
+      id: 'from_service',
+      title: t("Button_Change_ProfilePicture_FromService"),
+      papicon: 'archive',
+      image: Platform.select({
+        ios: 'square.and.arrow.down',
+        android: 'ic_menu_save',
+      }),
+      imageColor: colors.text
+    },
+    {
+      id: 'remove_photo',
+      title: t("Button_Change_ProfilePicture_Remove"),
+      attributes: { destructive: true },
+      papicon: 'Trash',
+      image: Platform.select({
+        ios: 'trash',
+        android: 'ic_menu_delete',
+      }),
+      imageColor: "#FF0000"
+    }
+  ];
 
   return (
-    <KeyboardAvoidingView
-      behavior={"position"}
-      keyboardVerticalOffset={-insets.top * 3.2}
-      style={{ flex: 1 }}
-    >
+    <View style={{ flex: 1 }}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={{ height: "100%" }}
+        keyboardShouldPersistTaps="handled"
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: insets.bottom + 24,
+        }}
       >
         <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
           <Avatar
@@ -91,40 +173,12 @@ export default function CustomProfileScreen() {
           />
 
           <ActionMenu
-            actions={[
-              {
-                id: 'photo_library',
-                title: t("Button_Change_ProfilePicture_FromLibrary"),
-                papicon: 'gallery',
-                image: Platform.select({
-                  ios: 'photo',
-                  android: 'ic_menu_gallery',
-                }),
-                imageColor: colors.text
-              },
-              {
-                id: 'from_service',
-                title: t("Button_Change_ProfilePicture_FromService"),
-                papicon: 'crown',
-                image: Platform.select({
-                  ios: 'square.and.arrow.down',
-                  android: 'ic_menu_save',
-                }),
-                imageColor: colors.text
-              },
-              {
-                id: 'remove_photo',
-                title: t("Button_Change_ProfilePicture_Remove"),
-                attributes: { destructive: true },
-                papicon: 'trash',
-                image: Platform.select({
-                  ios: 'trash',
-                  android: 'ic_menu_delete',
-                }),
-                imageColor: "#FF0000"
-              }
-            ]}
+            actions={profilePictureActions}
             onPressAction={(e: NativeActionEvent) => {
+              if (isImportingProfilePicture) {
+                return;
+              }
+
               switch (e.nativeEvent.event) {
                 case 'photo_library':
                   updateProfilePictureFromLibrary();
@@ -134,6 +188,7 @@ export default function CustomProfileScreen() {
                   break;
                 case 'remove_photo':
                   store.setAccountProfilePicture(lastUsedAccount, "");
+                  setProfilePictureUrl(null);
                   break;
               }
             }}
@@ -141,6 +196,8 @@ export default function CustomProfileScreen() {
             <Button
               inline
               size="small"
+              loading={isImportingProfilePicture}
+              disabled={isImportingProfilePicture}
               icon={<Papicons name="Camera" />}
               title={t("Button_Change_ProfilePicture")}
             />
@@ -181,6 +238,6 @@ export default function CustomProfileScreen() {
 
         </NativeHeaderSide>
       </ScrollView>
-    </ KeyboardAvoidingView >
+    </View>
   );
 }

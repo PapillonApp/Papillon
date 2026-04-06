@@ -17,10 +17,11 @@ interface CompactGradeProps {
   title: string;
   description: string;
   score: number;
-  outOf: number;
+  outOf?: number;
   date: Date;
   disabled?: boolean;
   status?: string;
+  showOutOf?: boolean;
   onPress?: () => void,
   hasMaxScore?: boolean,
   color?: string;
@@ -37,6 +38,7 @@ export const CompactGrade = ({
   date,
   disabled,
   status,
+  showOutOf = true,
   onPress,
   hasMaxScore,
   variant,
@@ -142,23 +144,25 @@ export const CompactGrade = ({
           {description ? description : t('Grade_NoDescription', { subject: title })}
         </Typography>
 
-        <Stack noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
+        <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
           {disabled ? (
             <>
-              <Typography color={trailingForeground} variant='navigation'>
+              <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
                 {status}
               </Typography>
             </>
           ) : (
             <>
-              <Typography color={trailingForeground} variant='navigation'>
+              <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
                 {score.toFixed(2)}
               </Typography>
             </>
           )}
-          <Typography color={trailingForeground + "99"} variant='body2'>
-            /{outOf}
-          </Typography>
+          {showOutOf && typeof outOf === "number" && (
+            <Typography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
+              /{outOf}
+            </Typography>
+          )}
 
           {hasMaxScore && (
             <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />

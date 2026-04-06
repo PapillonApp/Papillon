@@ -2,21 +2,28 @@ import { Papicons } from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React from "react";
-import { Platform, View } from "react-native";
+import { Alert, Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
+import { isEDAttachmentRebuildError } from "@/services/ecoledirecte/attachments";
+import { Attachment } from "@/services/shared/attachment";
 import { Grade as SharedGrade } from "@/services/shared/grade";
 import ContainedNumber from "@/ui/components/ContainedNumber";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import TypographyLegacy from "@/ui/components/Typography";
+import { openAttachment } from "@/utils/attachments/openAttachment";
 import adjust from '@/utils/adjustColor';
 import { colorCheck } from '@/utils/colorCheck';
+import { formatGradeScore, getGradeScoreDenominator, hasDisplayableGradeScore, isNumericGradeScore, isSameNumericScore } from '@/utils/grades/score';
+import { warn } from "@/utils/logger/logger";
+import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
+import { GradeDisplaySettings } from '@/services/shared/grade';
 
 interface SubjectInfo {
   name: string;
@@ -28,6 +35,7 @@ interface SubjectInfo {
 interface GradesModalProps {
   grade: SharedGrade;
   subjectInfo: SubjectInfo;
+  display?: GradeDisplaySettings;
   avgInfluence: number;
   avgClass: number;
 }
@@ -59,17 +67,118 @@ export default function GradesModal() {
   const { params } = useRoute();
   const theme = useTheme();
   const colors = theme.colors;
+  const [openingAttachmentId, setOpeningAttachmentId] = React.useState<string | null>(null);
 
   if (!params) {
     return null;
   }
-  const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
+  const { grade, subjectInfo, display, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
 
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0
   });
+  const averageScale = display?.scale ?? 20;
+  const scoreLabel = formatGradeScore(grade.studentScore) ?? "";
+  const scoreDenominator = getGradeScoreDenominator(grade.studentScore, grade.outOf?.value);
+  const showGradeCoefficient = display?.showGradeCoefficient ?? true;
+  const showGradeClassAverage = display?.showGradeClassAverage ?? hasDisplayableGradeScore(grade.averageScore);
+  const showGradeMinimum = display?.showGradeMinimum ?? hasDisplayableGradeScore(grade.minScore);
+  const showGradeMaximum = display?.showGradeMaximum ?? hasDisplayableGradeScore(grade.maxScore);
+  const hasBestGrade = isSameNumericScore(grade.studentScore, grade.maxScore);
+  const attachments = [grade.subjectFile, grade.correctionFile].filter(Boolean) as Attachment[];
+
+  const summaryCards = [
+    showGradeCoefficient ? {
+      key: "coefficient",
+      icon: "Coefficient",
+      label: t("Grades_Coefficient"),
+      value: `x${(grade.coefficient ?? 1).toFixed(2)}`,
+      denominator: undefined,
+    } : null,
+    showGradeClassAverage && hasDisplayableGradeScore(grade.averageScore) ? {
+      key: "classAverage",
+      icon: "Apple",
+      label: t("Grades_Avg_Group_Short"),
+      value: formatGradeScore(grade.averageScore),
+      denominator: typeof getGradeScoreDenominator(grade.averageScore, grade.outOf?.value) === "number"
+        ? "/" + getGradeScoreDenominator(grade.averageScore, grade.outOf?.value)
+        : undefined,
+    } : null,
+  ].filter(Boolean) as Array<{
+    key: string;
+    icon: string;
+    label: string;
+    value?: string;
+    denominator?: string;
+  }>;
+
+  const detailsItems = [
+    isNumericGradeScore(grade.studentScore) && typeof grade.outOf?.value === "number" && grade.outOf.value !== averageScale ? {
+      key: "normalized",
+      icon: "Star",
+      title: t("Grades_NormalizedGrade_Title"),
+      subtitle: t("Grades_NormalizedGrade_Description"),
+      value: ((grade.studentScore.value / grade.outOf.value) * averageScale).toFixed(2),
+      denominator: `/${averageScale}`,
+    } : null,
+    showGradeMaximum && hasDisplayableGradeScore(grade.maxScore) ? {
+      key: "maximum",
+      icon: "Plus",
+      title: t("Grades_HighestGrade_Title"),
+      subtitle: t("Grades_HighestGrade_Description"),
+      value: formatGradeScore(grade.maxScore),
+      denominator: typeof getGradeScoreDenominator(grade.maxScore, grade.outOf?.value) === "number"
+        ? "/" + getGradeScoreDenominator(grade.maxScore, grade.outOf?.value)
+        : undefined,
+    } : null,
+    showGradeMinimum && hasDisplayableGradeScore(grade.minScore) ? {
+      key: "minimum",
+      icon: "Minus",
+      title: t("Grades_LowestGrade_Title"),
+      subtitle: t("Grades_LowestGrade_Description"),
+      value: formatGradeScore(grade.minScore),
+      denominator: typeof getGradeScoreDenominator(grade.minScore, grade.outOf?.value) === "number"
+        ? "/" + getGradeScoreDenominator(grade.minScore, grade.outOf?.value)
+        : undefined,
+    } : null,
+  ].filter(Boolean) as Array<{
+    key: string;
+    icon: string;
+    title: string;
+    subtitle: string;
+    value?: string;
+    denominator?: string;
+  }>;
+
+  const openGradeAttachment = async (attachment: Attachment) => {
+    const attachmentId = getGradeAttachmentKey(attachment);
+    if (openingAttachmentId) {
+      return;
+    }
+
+    setOpeningAttachmentId(attachmentId);
+    try {
+      await openAttachment(attachment);
+    } catch (error) {
+      warn(String(error));
+      if (isEDAttachmentRebuildError(error)) {
+        Alert.alert(
+          t("Attachment_Open_Rebuild_Title"),
+          t("Attachment_Open_Rebuild_Description")
+        );
+        return;
+      }
+
+      Alert.alert(
+        t("Attachment_Open_Error_Title"),
+        t("Attachment_Open_Error_Description")
+      );
+    } finally {
+      setOpeningAttachmentId(currentId => currentId === attachmentId ? null : currentId);
+    }
+  };
 
   return (
     <>
@@ -105,17 +214,17 @@ export default function GradesModal() {
               emoji={subjectInfo.emoji}
               subject={subjectInfo.name}
               title={grade.description}
-              date={new Date(grade.givenAt)}
+              date={grade.givenAt ? new Date(grade.givenAt) : undefined}
               overhead={
                 <ModalOverHeadScore
                   color={Platform.OS === 'ios' ? subjectInfo.color : colors.primary}
-                  score={grade.studentScore?.disabled ? String(grade.studentScore?.status) : String(grade.studentScore?.value.toFixed(2))}
-                  outOf={grade.outOf?.value}
+                  score={scoreLabel}
+                  outOf={scoreDenominator}
                 />
               }
             />
 
-            {grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore?.disabled &&
+            {hasBestGrade &&
               <GradeBadge
                 icon="crown"
                 label={t("Modal_Grades_BestGrade")}
@@ -143,125 +252,114 @@ export default function GradesModal() {
                 is_outlined={true}
               />
             }
-            <Stack
-              card
-              direction="horizontal"
-              width={"100%"}
-              style={{ marginTop: 8 }}
-            >
+            {summaryCards.length > 0 && (
               <Stack
-                width={"50%"}
-                vAlign="center"
-                hAlign="center"
-                style={{ borderRightWidth: 1, borderRightColor: colors.border }}
-                padding={12}
+                card
+                direction="horizontal"
+                width={"100%"}
+                style={{ marginTop: 8 }}
               >
-                <Icon papicon opacity={0.5}>
-                  <Papicons name={"Coefficient"} />
-                </Icon>
-                <TypographyLegacy color="secondary">
-                  {t("Grades_Coefficient")}
-                </TypographyLegacy>
-                <ContainedNumber color={Platform.OS === 'android' ? theme.colors.tint : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}>
-                  x{(grade.coefficient ?? 1).toFixed(2)}
-                </ContainedNumber>
+                {summaryCards.map((card, index) => (
+                  <Stack
+                    key={card.key}
+                    width={`${100 / summaryCards.length}%`}
+                    vAlign="center"
+                    hAlign="center"
+                    style={index < summaryCards.length - 1 ? { borderRightWidth: 1, borderRightColor: colors.border } : undefined}
+                    padding={12}
+                  >
+                    <Icon papicon opacity={0.5}>
+                      <Papicons name={card.icon} />
+                    </Icon>
+                    <TypographyLegacy color="secondary">
+                      {card.label}
+                    </TypographyLegacy>
+                    <ContainedNumber
+                      color={Platform.OS === 'android' ? colors.primary : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}
+                      denominator={card.denominator}
+                    >
+                      {card.value}
+                    </ContainedNumber>
+                  </Stack>
+                ))}
               </Stack>
-              <Stack
-                width={"50%"}
-                vAlign="center"
-                hAlign="center"
-                padding={12}
-              >
-                <Icon papicon opacity={0.5}>
-                  <Papicons name={"Apple"} />
-                </Icon>
-                <TypographyLegacy color="secondary">
-                  {t("Grades_Avg_Group_Short")}
-                </TypographyLegacy>
-                <ContainedNumber color={Platform.OS === 'android' ? theme.colors.tint : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} denominator={"/" + grade.outOf?.value}>
-                  {grade.averageScore?.value.toFixed(2)}
-                </ContainedNumber>
-              </Stack>
-            </Stack>
+            )}
           </View>
         }
         style={{ backgroundColor: "transparent" }}
         contentContainerStyle={{ padding: 16,
               paddingBottom: 16 + insets.bottom }}
       >
-        <List.Section>
-          <List.SectionTitle>
-            <List.Label>{t("Grades_Details_Title")}</List.Label>
-          </List.SectionTitle>
+        {detailsItems.length > 0 && (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>{t("Grades_Details_Title")}</List.Label>
+            </List.SectionTitle>
 
-          {grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? (
-            <List.Item>
-              <List.Leading>
-                <Icon>
-                  <Papicons name={"Star"} />
-                </Icon>
-              </List.Leading>
-              <Typography variant="title">
-                {t("Grades_NormalizedGrade_Title")}
-              </Typography>
-              <Typography variant="body1" color="textSecondary">
-                {t("Grades_NormalizedGrade_Description")}
-              </Typography>
-              <List.Trailing>
-                <ContainedNumber
-                  color={subjectInfo.color}
-                  denominator={"/20"}
-                >
-                  {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
-                </ContainedNumber>
-              </List.Trailing>
-            </List.Item>
-          ) : null}
+            {detailsItems.map((item) => (
+              <List.Item key={item.key}>
+                <List.Leading>
+                  <Icon>
+                    <Papicons name={item.icon} />
+                  </Icon>
+                </List.Leading>
+                <Typography variant="title">
+                  {item.title}
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  {item.subtitle}
+                </Typography>
+                <List.Trailing>
+                  <ContainedNumber
+                    color={item.key === "normalized" ? subjectInfo.color : (Platform.OS === 'android' ? colors.primary : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3))}
+                    denominator={item.denominator}
+                  >
+                    {item.value}
+                  </ContainedNumber>
+                </List.Trailing>
+              </List.Item>
+            ))}
+          </List.Section>
+        )}
 
-          <List.Item>
-            <List.Leading>
-              <Icon>
-                <Papicons name={"Plus"} />
-              </Icon>
-            </List.Leading>
-            <Typography variant="title">
-              {t("Grades_HighestGrade_Title")}
-            </Typography>
-            <Typography variant="body1" color="textSecondary">
-              {t("Grades_HighestGrade_Description")}
-            </Typography>
-            <List.Trailing>
-              <ContainedNumber
-                color={Platform.OS === 'android' ? theme.colors.tint : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}
-                denominator={"/" + grade.outOf?.value}
+        {attachments.length > 0 && (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>{t("Modal_Task_Attachments")}</List.Label>
+            </List.SectionTitle>
+
+            {attachments.map((attachment) => (
+              <List.Item
+                key={getGradeAttachmentKey(attachment)}
+                onPress={() => void openGradeAttachment(attachment)}
               >
-                {grade.maxScore?.value.toFixed(2)}
-              </ContainedNumber>
-            </List.Trailing>
-          </List.Item>
-
-          <List.Item>
-            <List.Leading>
-              <Icon>
-                <Papicons name={"Minus"} />
-              </Icon>
-            </List.Leading>
-            <Typography variant="title">
-              {t("Grades_LowestGrade_Title")}
-            </Typography>
-            <Typography variant="body1" color="textSecondary">
-              {t("Grades_LowestGrade_Description")}
-            </Typography>
-            <List.Trailing>
-              <ContainedNumber
-                color={Platform.OS === 'android' ? theme.colors.tint : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}
-                denominator={"/" + grade.outOf?.value}
-              >
-                {grade.minScore?.value.toFixed(2)}
-              </ContainedNumber>
-            </List.Trailing>
-          </List.Item>
-        </List.Section>
+                <List.Leading>
+                  <Icon>
+                    <Papicons name={getAttachmentIcon(attachment)} />
+                  </Icon>
+                </List.Leading>
+                <Typography variant="title">
+                  {getGradeAttachmentTitle(attachment)}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" numberOfLines={1}>
+                  {attachment.name}
+                </Typography>
+                <List.Trailing>
+                  {openingAttachmentId === getGradeAttachmentKey(attachment) ? (
+                    <ActivityIndicator
+                      size={20}
+                      color={Platform.OS === 'android' ? colors.primary : subjectInfo.color}
+                    />
+                  ) : (
+                    <Icon opacity={0.5}>
+                      <Papicons name="ArrowRight" />
+                    </Icon>
+                  )}
+                </List.Trailing>
+              </List.Item>
+            ))}
+          </List.Section>
+        )}
 
         <List.Section>
           <List.SectionTitle>
@@ -309,4 +407,19 @@ export default function GradesModal() {
       </List>
     </>
   )
+}
+
+function getGradeAttachmentTitle(attachment: Attachment): string {
+  switch (attachment.metadata?.role) {
+  case "subject":
+    return t("Modal_Grades_SubjectAttachment");
+  case "correction":
+    return t("Modal_Grades_CorrectionAttachment");
+  default:
+    return attachment.name;
+  }
+}
+
+function getGradeAttachmentKey(attachment: Attachment): string {
+  return `${attachment.metadata?.role ?? "attachment"}-${attachment.url}`;
 }

@@ -77,6 +77,10 @@ export class AccountManager {
     return this.account;
   }
 
+  getServicePlugin(clientId: string): SchoolServicePlugin | undefined {
+    return this.clients[clientId];
+  }
+
   async refreshAllAccounts(): Promise<boolean> {
     log("We're refreshing all services for the account " + this.account.id);
 

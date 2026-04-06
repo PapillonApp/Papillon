@@ -82,7 +82,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
   )
 }
 
-const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score: string, outOf: number }) => {
+const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score: string, outOf?: number }) => {
   const theme = useTheme();
 
   return (
@@ -93,12 +93,14 @@ const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score: str
       gap={2}
       style={{ marginBottom: -4 }}
     >
-      <Typography variant='h0' weight='medium' inline color={adjust(color, theme.dark ? 0.3 : -0.3)}>
+      <Typography variant='h0' weight='medium' inline nowrap color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ flexShrink: 0 }}>
         {score}
       </Typography>
-      <Typography variant='h3' weight='semibold' color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
-        /{outOf}
-      </Typography>
+      {typeof outOf === "number" && (
+        <Typography variant='h3' weight='semibold' nowrap color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5, flexShrink: 0 }}>
+          /{outOf}
+        </Typography>
+      )}
     </Stack>
   )
 }

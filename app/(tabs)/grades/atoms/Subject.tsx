@@ -5,24 +5,30 @@ import { t } from 'i18next';
 import React, { useCallback, useMemo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 
-import { Grade } from '@/database/models/Grades';
-import Subject from '@/database/models/Subject';
-import Item, { Trailing } from '@/ui/components/Item';
-import LegacyList from '@/ui/components/List';
+import { Grade, GradeDisplaySettings, Subject } from '@/services/shared/grade';
 import Stack from '@/ui/components/Stack';
 import LegacyTypography from '@/ui/components/Typography';
 import adjust from '@/utils/adjustColor';
+import { formatGradeScore, getGradeScoreDenominator, isSameNumericScore } from '@/utils/grades/score';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
 
-const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
+const GradeItem = React.memo(({ grade, subjectName, subjectColor, display, onPress }: { grade: Grade, subjectName: string, subjectColor: string, display?: GradeDisplaySettings, onPress: (grade: Grade) => void }) => {
   const dateString = useMemo(() => {
     // @ts-expect-error date type
     return grade.givenAt.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' });
   }, [grade.givenAt]);
+
+  const subtitle = useMemo(() => {
+    if (display?.showGradeCoefficient && grade.coefficient !== 1) {
+      return `${dateString} · Coef. ${grade.coefficient.toFixed(2)}`;
+    }
+
+    return dateString;
+  }, [dateString, display?.showGradeCoefficient, grade.coefficient]);
 
   const handlePress = useCallback(() => {
     requestAnimationFrame(() => onPress(grade));
@@ -30,9 +36,11 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
 
   const theme = useTheme();
 
-  const hasMaxScore = grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore.disabled;
+  const hasMaxScore = isSameNumericScore(grade.studentScore, grade.maxScore);
   const trailingBackground = hasMaxScore ? adjust(subjectColor, theme.dark ? -0.2 : 0) : subjectColor + "15";
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
+  const scoreLabel = formatGradeScore(grade.studentScore);
+  const scoreDenominator = getGradeScoreDenominator(grade.studentScore, grade.outOf?.value);
 
   return (
     <List.Item onPress={handlePress}>
@@ -40,27 +48,19 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
         {grade.description ? grade.description : t('Grade_NoDescription', { subject: subjectName })}
       </Typography>
       <Typography variant='body1' color='textSecondary'>
-        {dateString}
+        {subtitle}
       </Typography>
 
       <List.Trailing>
-        <Stack pointerEvents='none' noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
-          {grade.studentScore.disabled ? (
-            <>
-              <LegacyTypography color={trailingForeground} variant='navigation'>
-                {grade.studentScore.status}
-              </LegacyTypography>
-            </>
-          ) : (
-            <>
-              <LegacyTypography color={trailingForeground} variant='navigation'>
-                {grade.studentScore.value.toFixed(2)}
-              </LegacyTypography>
-            </>
-          )}
-          <LegacyTypography color={trailingForeground + "99"} variant='body2'>
-            /{grade.outOf.value}
+        <Stack pointerEvents='none' inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
+          <LegacyTypography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
+            {scoreLabel}
           </LegacyTypography>
+          {typeof scoreDenominator === "number" && (
+            <LegacyTypography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
+              /{scoreDenominator}
+            </LegacyTypography>
+          )}
 
           {hasMaxScore && (
             <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
@@ -71,7 +71,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
   );
 });
 
-export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }> = React.memo(({ subject, grades, getAvgInfluence, getAvgClassInfluence }) => {
+export const SubjectItem: React.FC<{ subject: Subject, display?: GradeDisplaySettings, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }> = React.memo(({ subject, display, getAvgInfluence, getAvgClassInfluence }) => {
   const theme = useTheme();
   const navigation = useNavigation()
 
@@ -83,13 +83,23 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
 
   const subjectName = useMemo(() => getSubjectName(subject.name), [subject.name]);
   const subjectEmoji = useMemo(() => getSubjectEmoji(subject.name), [subject.name]);
+  const subjectAverageLabel = useMemo(() => formatGradeScore(subject.studentAverage), [subject.studentAverage]);
+  const subjectAverageDenominator = useMemo(
+    () => getGradeScoreDenominator(subject.studentAverage, subject.outOf?.value),
+    [subject.studentAverage, subject.outOf?.value]
+  );
+  const hasTopAverage = useMemo(
+    () => isSameNumericScore(subject.studentAverage, subject.maximum),
+    [subject.studentAverage, subject.maximum]
+  );
 
   const handlePressSubject = useCallback(() => {
     // @ts-expect-error navigation types
     navigation.navigate('modals/SubjectInfo', {
-      subject: subject
+      subject: subject,
+      display,
     });
-  }, [navigation, subject]);
+  }, [navigation, subject, display]);
 
   const handlePressGrade = useCallback(
     (grade: Grade) => {
@@ -102,11 +112,12 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
           emoji: subjectEmoji,
           originalName: subject.name
         },
+        display,
         avgInfluence: getAvgInfluence(grade),
         avgClass: getAvgClassInfluence(grade),
       });
     },
-    [navigation, subjectName, subjectAdjustedColor, subjectEmoji, subject.name, grades]
+    [navigation, subjectName, subjectAdjustedColor, subjectEmoji, subject.name, display]
   );
 
   return (
@@ -124,31 +135,29 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
               <Typography numberOfLines={1} variant='title' weight='bold' color={subjectAdjustedColor}>
                 {subjectName}
               </Typography>
+              {display?.showSubjectCoefficient && subject.coefficient && subject.coefficient !== 1 && (
+                <Typography variant='body2' color='textSecondary'>
+                  {`Coef. ${subject.coefficient.toFixed(2)}`}
+                </Typography>
+              )}
             </Stack>
 
             <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
-              {subject.studentAverage.disabled ? (
-                <LegacyTypography variant='h5' inline style={{ marginTop: 0 }}>
-                  {subject.studentAverage.status}
-                </LegacyTypography>
-              ) : (
-                <LegacyTypography
-                  variant='h5'
-                  inline
-                  style={{ marginTop: 0, fontSize: 19 }}
-                  color={
-                    subject.studentAverage.value === subject.maximum.value
-                      ? subjectAdjustedColor
-                      : undefined
-                  }
-                >
-                  {subject.studentAverage.value.toFixed(2)}
+              <LegacyTypography
+                variant='h5'
+                inline
+                nowrap
+                style={{ marginTop: 0, fontSize: 19 }}
+                color={hasTopAverage ? subjectAdjustedColor : undefined}
+              >
+                {subjectAverageLabel}
+              </LegacyTypography>
+              {typeof subjectAverageDenominator === "number" && (
+                <LegacyTypography inline nowrap variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4, flexShrink: 0 }}>
+                  /{subjectAverageDenominator}
                 </LegacyTypography>
               )}
-              <LegacyTypography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
-                /{subject.outOf.value}
-              </LegacyTypography>
-              {subject.studentAverage.value === subject.maximum.value && !subject.studentAverage.disabled && (
+              {hasTopAverage && (
                 <Papicons style={{ alignSelf: 'center', marginLeft: 4 }} name="crown" color={subjectAdjustedColor} size={20} />
               )}
             </Stack>
@@ -162,9 +171,8 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
           grade={grade}
           subjectName={subjectName}
           subjectColor={subjectAdjustedColor}
+          display={display}
           onPress={handlePressGrade}
-          getAvgInfluence={getAvgInfluence}
-          getAvgClassInfluence={getAvgClassInfluence}
         />
       ))}
     </List.Section>

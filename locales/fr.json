@@ -292,6 +292,13 @@
   "Grades_Avg_Subject_Title": "Moyenne des matières",
   "Grades_Avg_Subject_Short": "Moy. matières",
   "Grades_Avg_Subject_Description": "Calcule la moyenne pondérée des moyennes de matières",
+  "Grades_Avg_Timeline_Averages": "Moyenne",
+  "Grades_Avg_Timeline_Grades": "Notes",
+  "Grades_Avg_Notes_Title": "Notes dans le temps",
+  "Grades_Avg_Source_Service": "par l'établissement",
+  "Grades_Avg_Source_EstimatedAt": "estimée au {{date}}",
+  "Grades_Avg_Source_GradeAt": "{{label}} - {{date}}",
+  "Grades_Avg_Source_GradeOn": "note du {{date}}",
   "Grades_Avg_Median_Title": "Médiane",
   "Grades_Avg_Median_Short": "Médiane",
 
@@ -356,7 +363,9 @@
 
   "Modal_Grades_Title": "Détail de la note",
   "Modal_Grades_BestGrade": "Meilleure note du groupe",
-
+  "Modal_Grades_SubjectAttachment": "Sujet",
+  "Modal_Grades_CorrectionAttachment": "Corrigé",
+  
   "Modal_Grades_OptionalGrade": "Note optionnelle",
   "Modal_Grades_BonusGrade": "Note bonus",
 
@@ -552,7 +561,11 @@
   "Modal_Task_Status": "État du devoir",
   "Modal_Task_Description": "Description du devoir",
   "Modal_Task_Attachments": "Pièces jointes",
-
+  "Attachment_Open_Error_Title": "Impossible d'ouvrir cette pièce jointe",
+  "Attachment_Open_Error_Description": "Papillon n'a pas réussi à télécharger ou ouvrir ce document.",
+  "Attachment_Open_Rebuild_Title": "Rebuild Android requis",
+  "Attachment_Open_Rebuild_Description": "Cette version de l'app n'inclut pas encore le module nécessaire pour ouvrir les pièces jointes. Rebuild l'application Android puis réessaie.",
+  
   "Today": "Aujourd'hui",
   "Yesterday": "Hier",
   "Tomorrow": "Demain",

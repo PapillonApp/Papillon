@@ -11,6 +11,15 @@ export interface Attachment extends GenericInterface {
   type: AttachmentType;
   name: string;
   url: string;
+  metadata?: AttachmentMetadata;
+}
+
+export interface AttachmentMetadata {
+  provider?: string;
+  role?: "subject" | "correction";
+  reference?: string;
+  fileType?: string;
+  downloadParams?: Record<string, string | number | boolean>;
 }
 
 export enum AttachmentType {

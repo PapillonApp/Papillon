@@ -23,6 +23,7 @@ export class EcoleDirecte implements SchoolServicePlugin {
     Capabilities.REFRESH, 
     Capabilities.NEWS, 
     Capabilities.ATTENDANCE, 
+    Capabilities.ATTENDANCE_PERIODS,
     Capabilities.GRADES,
     Capabilities.HOMEWORK,
     Capabilities.TIMETABLE
@@ -79,6 +80,14 @@ export class EcoleDirecte implements SchoolServicePlugin {
     }
 
     throw error("Session or account is not valid", "EcoleDirecte.getAttendanceForPeriod");
+  }
+
+  async getAttendancePeriods(): Promise<Period[]> {
+    if (this.session) {
+      return fetchEDGradePeriods(this.session, this.accountId)
+    }
+
+    throw error("Session or account is not valid", "EcoleDirecte.getAttendancePeriods");
   }
 
   async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {

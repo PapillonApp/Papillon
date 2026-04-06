@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
-import { Period, Subject as SharedSubject } from "@/services/shared/grade";
+import { GradeDisplaySettings, Period, Subject as SharedSubject } from "@/services/shared/grade";
+import { isNumericGradeScore } from "@/utils/grades/score";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { error } from "@/utils/logger/logger";
 import Averages from "../../grades/atoms/Averages";
@@ -25,9 +26,11 @@ const gradesCache = new Map<
     fetchedAt: number;
     subjects: SharedSubject[];
     serviceAverage?: number;
+    display?: GradeDisplaySettings;
     inFlight?: Promise<{
       subjects: SharedSubject[];
       serviceAverage?: number;
+      display?: GradeDisplaySettings;
     }>;
   }
 >();
@@ -47,6 +50,7 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
     const [subjects, setSubjects] = useState<SharedSubject[]>([]);
     const [currentPeriod, setCurrentPeriod] = useState<Period | undefined>(period);
     const [serviceAverage, setServiceAverage] = useState<number | undefined>(undefined);
+    const [display, setDisplay] = useState<GradeDisplaySettings | undefined>(undefined);
 
     const grades = useMemo(
       () =>
@@ -141,6 +145,7 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
         if (cache && Date.now() - cache.fetchedAt < GRADES_TTL_MS) {
           setSubjects(cache.subjects);
           setServiceAverage(cache.serviceAverage);
+          setDisplay(cache.display);
           return;
         }
 
@@ -148,6 +153,7 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
           const cachedGrades = await cache.inFlight;
           setSubjects(cachedGrades.subjects);
           setServiceAverage(cachedGrades.serviceAverage);
+          setDisplay(cachedGrades.display);
           return;
         }
 
@@ -158,7 +164,10 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
           );
           return {
             subjects: result.subjects,
-            serviceAverage: result.studentOverall.value || undefined,
+            serviceAverage: isNumericGradeScore(result.studentOverall)
+              ? result.studentOverall.value
+              : undefined,
+            display: result.display,
           };
         })();
 
@@ -166,6 +175,7 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
           fetchedAt: cache?.fetchedAt ?? 0,
           subjects: cache?.subjects ?? [],
           serviceAverage: cache?.serviceAverage,
+          display: cache?.display,
           inFlight,
         });
 
@@ -175,9 +185,11 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
             fetchedAt: Date.now(),
             subjects: nextGrades.subjects,
             serviceAverage: nextGrades.serviceAverage,
+            display: nextGrades.display,
           });
           setSubjects(nextGrades.subjects);
           setServiceAverage(nextGrades.serviceAverage);
+          setDisplay(nextGrades.display);
         } catch (err) {
           gradesCache.delete(periodKey);
           error(`Failed to fetch grades: ${err}`);
@@ -202,7 +214,7 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
 
     return (
       <View style={{ width: "100%" }}>
-        <Averages grades={grades} realAverage={serviceAverage} inline />
+        <Averages grades={grades} realAverage={serviceAverage} scale={display?.scale ?? 20} inline />
       </View>
     );
   } catch (err) {

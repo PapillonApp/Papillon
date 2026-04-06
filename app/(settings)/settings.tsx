@@ -20,10 +20,11 @@ import TableFlatList from "@/ui/components/TableFlatList";
 import TypographyLegacy from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import { error } from "@/utils/logger/logger";
+import { getAccountProfilePictureUri } from "@/utils/profilePicture";
 
 import packagejson from "../../package.json"
-import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import List, { ListTouchable } from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -312,7 +313,7 @@ export default function SettingsIndex() {
               <Avatar
                 size={72}
                 initials={getInitials(`${account?.firstName} ${account?.lastName}`)}
-                imageUrl={account && account.customisation && account.customisation.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : undefined}
+                imageUrl={getAccountProfilePictureUri(account?.customisation?.profilePicture)}
                 style={{ marginBottom: 8 }}
               />
               <TypographyLegacy variant="h3" align="center">

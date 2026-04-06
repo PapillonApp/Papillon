@@ -2,13 +2,16 @@
 export interface GraphPoint {
   value: number;
   date: Date;
+  label?: string;
   originalValue?: number;
   originalDate?: Date;
+  originalLabel?: string;
 }
 
 export interface AverageHistoryItem {
   average: number;
   date: Date | string;
+  label?: string;
 }
 
 export const calculateAmplifiedGraphPoints = (
@@ -17,21 +20,37 @@ export const calculateAmplifiedGraphPoints = (
 ): GraphPoint[] => {
   if (!currentAverageHistory) { return []; }
 
-  const points = currentAverageHistory
+  const rawPoints = currentAverageHistory
     .filter(item => !isNaN(item.average) && item.average !== null && item.average !== undefined)
     .map(item => ({
       value: item.average,
       date: new Date(item.date),
+      label: item.label,
       originalValue: item.average,
-      originalDate: new Date(item.date)
+      originalDate: new Date(item.date),
+      originalLabel: item.label,
     }));
 
-  if (points.length === 0) return [];
+  if (rawPoints.length === 0) return [];
+
+  const points = expandSparseGraphPoints(rawPoints);
 
   const values = points.map(p => p.value);
   const dataMin = Math.min(...values);
   const dataMax = Math.max(...values);
   const dataRange = dataMax - dataMin;
+
+  if (dataRange <= 0.01) {
+    const firstDate = points[0].date.getTime();
+    const DAY_MS = 86400000;
+    const COMPRESSED_SPACING = DAY_MS * 0.50;
+
+    return points.map((point, index) => ({
+      ...point,
+      value: Math.round(point.value * 100) / 100,
+      date: new Date(firstDate + (index * COMPRESSED_SPACING))
+    }));
+  }
 
   const recentCount = Math.max(5, Math.floor(points.length * 0.5));
   const recentPoints = points.slice(-recentCount);
@@ -118,3 +137,19 @@ export const calculateAmplifiedGraphPoints = (
     date: new Date(firstDate + (index * COMPRESSED_SPACING))
   }));
 };
+
+const SPARSE_GRAPH_POINT_SPACING_MS = 24 * 60 * 60 * 1000;
+
+function expandSparseGraphPoints(points: GraphPoint[]): GraphPoint[] {
+  if (points.length !== 1) {
+    return points;
+  }
+
+  const point = points[0];
+  const centerDate = point.date.getTime();
+
+  return [-1, 0, 1].map((offset) => ({
+    ...point,
+    date: new Date(centerDate + offset * SPARSE_GRAPH_POINT_SPACING_MS),
+  }));
+}

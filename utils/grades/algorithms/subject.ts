@@ -78,7 +78,7 @@ const PapillonSubjectAvg = (grades: Grade[], key: ScoreProperty = "studentScore"
   }
 
   const groupedBySubject: Record<string, Grade[]> = {};
-  let countedSubjects = 0;
+  let totalWeight = 0;
   let totalAverage = 0;
 
   // Group grades by subject
@@ -95,14 +95,18 @@ const PapillonSubjectAvg = (grades: Grade[], key: ScoreProperty = "studentScore"
 
   // Calculate average for each subject
   for (let i = 0; i < subjects.length; i++) {
-    const nAvg = getSubjectAverage(subjects[i], false, key);
+    const subjectGrades = subjects[i];
+    const nAvg = getSubjectAverage(subjectGrades, false, key);
     if (nAvg !== -1) {
-      countedSubjects++;
-      totalAverage += nAvg;
+      const subjectWeight = subjectGrades[0]?.subjectCoefficient && subjectGrades[0].subjectCoefficient > 0
+        ? subjectGrades[0].subjectCoefficient
+        : 1;
+      totalWeight += subjectWeight;
+      totalAverage += nAvg * subjectWeight;
     }
   }
 
-  return countedSubjects > 0 ? totalAverage / countedSubjects : 0;
+  return totalWeight > 0 ? totalAverage / totalWeight : 0;
 };
 
 export default PapillonSubjectAvg;

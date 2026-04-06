@@ -24,6 +24,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import { fetchEDProfilePicture } from "@/services/ecoledirecte/profile";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -84,7 +85,12 @@ export default function EDLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  const handleLogin = async (username: string, password: string, keys?: DoubleAuthResult) => {
+  const handleLogin = async (
+    username: string,
+    password: string,
+    keys?: DoubleAuthResult,
+    token2faHint?: string
+  ) => {
     const client = new Client();
     const device = uuid();
     const store = useAccountStore.getState();
@@ -94,11 +100,17 @@ export default function EDLoginWithCredentials() {
       if (tokens) {
         client.auth.setAccount(0);
         const authentication = client.auth.getAccount();
+        const token2fa = getEDToken2FA(client) ?? normalizeEDToken(token2faHint);
+        const profilePicture = (await fetchEDProfilePicture(client).catch(() => "")) ?? "";
         const account: Account = {
           id: device,
           firstName: authentication.prenom,
           lastName: authentication.nom,
           schoolName: authentication.nomEtablissement,
+          customisation: {
+            profilePicture,
+            subjects: {}
+          },
           services: [
             {
               id: device,
@@ -108,7 +120,8 @@ export default function EDLoginWithCredentials() {
                   "token": authentication.accessToken,
                   "cn": keys?.cn ?? "",
                   "cv": keys?.cv ?? "",
-                  "deviceUUID": device
+                  "deviceUUID": device,
+                  ...(token2fa ? { "token2fa": token2fa } : {})
                 }
               },
               serviceId: Services.ECOLEDIRECTE,
@@ -158,7 +171,7 @@ export default function EDLoginWithCredentials() {
     if (!session || !doubleAuthChallenge?.propositions?.[index]) { return }
     try {
       const keys = await session.auth.send2FAQuestion(doubleAuthChallenge.propositions[index], token ?? "");
-      queueMicrotask(() => void handleLogin(username, password, keys));
+      queueMicrotask(() => void handleLogin(username, password, keys, token));
     } catch {
       throw new Error("2FA challenge failed");
     }
@@ -250,4 +263,18 @@ export default function EDLoginWithCredentials() {
       </Modal>
     </KeyboardAvoidingView>
   );
+}
+
+function getEDToken2FA(client: Client): string | undefined {
+  try {
+    return client.getToken2FA();
+  } catch {
+    return undefined;
+  }
+}
+
+function normalizeEDToken(value?: string): string | undefined {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : undefined;
 }

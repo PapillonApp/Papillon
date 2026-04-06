@@ -1,11 +1,11 @@
 import ModalOverhead, { ModalOverHeadScore } from "@/components/ModalOverhead";
-import Subject from "@/database/models/Subject";
+import { GradeDisplaySettings, Subject } from "@/services/shared/grade";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import TypographyLegacy from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
+import { formatGradeScore, getGradeScoreDenominator, hasDisplayableGradeScore, isNumericGradeScore, isSameNumericScore } from "@/utils/grades/score";
 import { Papicons } from "@getpapillon/papicons";
 import { useRoute, useTheme } from "@react-navigation/native";
 import React from "react";
@@ -17,6 +17,8 @@ import i18n from "@/utils/i18n";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import Icon from "@/ui/components/Icon";
+import Averages from "../atoms/Averages";
+import { ErrorBoundary } from "@/ui/components/ErrorBoundary";
 
 const SubjectInfo = () => {
   const { params } = useRoute();
@@ -24,38 +26,78 @@ const SubjectInfo = () => {
   const colors = theme.colors;
 
   const subject: Subject = params?.subject;
+  const display = params?.display as GradeDisplaySettings | undefined;
   const subjectColor = getSubjectColor(subject?.name);
   const subjectName = getSubjectName(subject?.name);
   const subjectEmoji = getSubjectEmoji(subject?.name);
-
-  const outOf = subject.outOf.value;
+  const outOf = getGradeScoreDenominator(subject.studentAverage, subject.outOf?.value);
+  const hasTopAverage = isSameNumericScore(subject.studentAverage, subject.maximum);
+  const showSubjectClassAverage = display?.showSubjectClassAverage ?? hasDisplayableGradeScore(subject.classAverage);
+  const showSubjectMaximum = display?.showSubjectMaximum ?? hasDisplayableGradeScore(subject.maximum);
+  const showSubjectMinimum = display?.showSubjectMinimum ?? hasDisplayableGradeScore(subject.minimum);
+  const showSubjectRank = display?.showSubjectRank ?? hasDisplayableGradeScore(subject.rank);
+  const showSubjectCoefficient = display?.showSubjectCoefficient ?? typeof subject.coefficient === "number";
+  const realAverage = isNumericGradeScore(subject.studentAverage)
+    ? subject.studentAverage.value
+    : undefined;
 
   const averagesData = [
-    {
+    showSubjectClassAverage && hasDisplayableGradeScore(subject.classAverage) ? {
+      key: "classAverage",
       title: i18n.t("SubjectInfo_ClassAverage_Label"),
       subtitle: i18n.t("SubjectInfo_ClassAverage_Description"),
-      disabled: subject.classAverage.disabled,
-      value: subject.classAverage.value.toFixed(2),
-      status: subject.classAverage.status,
+      value: formatGradeScore(subject.classAverage),
+      denominator: typeof getGradeScoreDenominator(subject.classAverage, subject.outOf?.value) === "number"
+        ? "/" + getGradeScoreDenominator(subject.classAverage, subject.outOf?.value)
+        : undefined,
       icon: "GraduationHat",
-    },
-    {
+    } : null,
+    showSubjectMaximum && hasDisplayableGradeScore(subject.maximum) ? {
+      key: "maximum",
       title: i18n.t("SubjectInfo_MaxAverage_Label"),
       subtitle: i18n.t("SubjectInfo_MaxAverage_Description"),
-      disabled: subject.maximum.disabled,
-      value: subject.maximum.value.toFixed(2),
-      status: subject.maximum.status,
+      value: formatGradeScore(subject.maximum),
+      denominator: typeof getGradeScoreDenominator(subject.maximum, subject.outOf?.value) === "number"
+        ? "/" + getGradeScoreDenominator(subject.maximum, subject.outOf?.value)
+        : undefined,
       icon: "ArrowRightUp",
-    },
-    {
+    } : null,
+    showSubjectMinimum && hasDisplayableGradeScore(subject.minimum) ? {
+      key: "minimum",
       title: i18n.t("SubjectInfo_MinAverage_Label"),
       subtitle: i18n.t("SubjectInfo_MinAverage_Description"),
-      disabled: subject.minimum.disabled,
-      value: subject.minimum.value.toFixed(2),
-      status: subject.minimum.status,
+      value: formatGradeScore(subject.minimum),
+      denominator: typeof getGradeScoreDenominator(subject.minimum, subject.outOf?.value) === "number"
+        ? "/" + getGradeScoreDenominator(subject.minimum, subject.outOf?.value)
+        : undefined,
       icon: "Minus",
-    }
-  ]
+    } : null,
+    showSubjectRank && hasDisplayableGradeScore(subject.rank) ? {
+      key: "rank",
+      title: i18n.t("Grades_Tab_Rank"),
+      subtitle: i18n.t("Grades_Tab_Rank_Description"),
+      value: formatGradeScore(subject.rank, 0),
+      denominator: typeof subject.rank?.outOf === "number"
+        ? "/" + subject.rank.outOf
+        : undefined,
+      icon: "crown",
+    } : null,
+    showSubjectCoefficient && typeof subject.coefficient === "number" ? {
+      key: "coefficient",
+      title: i18n.t("Grades_Coefficient"),
+      subtitle: i18n.t("Grades_Avg_All_Pond_Description"),
+      value: subject.coefficient.toFixed(2),
+      denominator: undefined,
+      icon: "Coefficient",
+    } : null,
+  ].filter(Boolean) as Array<{
+    key: string;
+    title: string;
+    subtitle: string;
+    value?: string;
+    denominator?: string;
+    icon: string;
+  }>;
 
   return (
     <>
@@ -89,16 +131,16 @@ const SubjectInfo = () => {
               overhead={
                 <ModalOverHeadScore
                   color={Platform.OS === 'ios' ? subjectColor : colors.primary}
-                  score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(subject.studentAverage.value.toFixed(2))}
+                  score={formatGradeScore(subject.studentAverage) ?? ""}
                   outOf={outOf}
                 />
               }
               style={{
-                marginBottom: (!subject.studentAverage.disabled && subject.studentAverage.value === subject.maximum.value) ? 12 : 0
+                marginBottom: hasTopAverage ? 12 : 0
               }}
             />
 
-            {(!subject.studentAverage.disabled && subject.studentAverage.value === subject.maximum.value) && (
+            {hasTopAverage && (
               <Stack
                 direction="horizontal"
                 gap={8}
@@ -114,6 +156,21 @@ const SubjectInfo = () => {
                 </TypographyLegacy>
               </Stack>
             )}
+
+            {subject.grades.length > 0 && (
+              <View style={{ width: "100%", marginTop: 16 }}>
+                <ErrorBoundary>
+                  <Averages
+                    grades={subject.grades}
+                    realAverage={realAverage}
+                    color={subjectColor}
+                    scale={outOf ?? display?.scale ?? 20}
+                    variant="subject"
+                    averageTitle={i18n.t("SubjectInfo_StudentAverage_Label")}
+                  />
+                </ErrorBoundary>
+              </View>
+            )}
           </View>
         }
 
@@ -128,8 +185,8 @@ const SubjectInfo = () => {
             </List.Label>
           </List.SectionTitle>
 
-          {averagesData.map((average, index) => (
-            <List.Item>
+          {averagesData.map((average) => (
+            <List.Item key={average.key}>
               <List.Leading>
                 <Icon>
                   <Papicons name={average.icon} />
@@ -144,13 +201,15 @@ const SubjectInfo = () => {
               </Typography>
 
               <List.Trailing>
-                <Stack gap={2} direction="horizontal" vAlign="center" hAlign="end">
-                  <TypographyLegacy variant="header" weight="semibold" inline>
-                    {average.disabled ? average.status : average.value}
+                <Stack gap={2} direction="horizontal" vAlign="center" hAlign="end" style={{ flexShrink: 0 }}>
+                  <TypographyLegacy variant="header" weight="semibold" inline nowrap style={{ flexShrink: 0 }}>
+                    {average.value}
                   </TypographyLegacy>
-                  <TypographyLegacy variant="body2" inline color="secondary">
-                    /{outOf}
-                  </TypographyLegacy>
+                  {average.denominator && (
+                    <TypographyLegacy variant="body2" inline nowrap color="secondary" style={{ flexShrink: 0 }}>
+                      {average.denominator}
+                    </TypographyLegacy>
+                  )}
                 </Stack>
               </List.Trailing>
             </List.Item>

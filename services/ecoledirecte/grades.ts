@@ -3,9 +3,20 @@ import { Client } from "@blockshub/blocksdirecte";
 
 import { getSubjectAverageByProperty } from "@/utils/grades/algorithms/helpers";
 import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
+import { createMissingGradeScore, isMissingGradeScore } from "@/utils/grades/score";
 import { warn } from "@/utils/logger/logger";
 
-import { Grade, GradeScore, Period, PeriodGrades, Subject } from "../shared/grade";
+import { createEDAttachment } from "./attachments";
+import {
+  Grade,
+  GradeDisplaySettings,
+  GradeScore,
+  Period,
+  PeriodGrades,
+  Subject
+} from "../shared/grade";
+
+const DEFAULT_AVERAGE_SCALE = 20;
 
 export async function fetchEDGradePeriods(session: Client, accountId: string): Promise<Period[]> {
   try {
@@ -25,75 +36,163 @@ export async function fetchEDGradePeriods(session: Client, accountId: string): P
 export async function fetchEDGrades(session: Client, accountId: string, period: Period): Promise<PeriodGrades> {
   try {
     const overview = await session.marks.getMark()
+    const display = getDisplaySettings(overview.parametrage)
     const periodReport = overview.periodes.find(
       item => item.codePeriode === period.id || item.idPeriode === period.id
     )
     const grades = getGradesForPeriod(overview.notes, period)
 
-    if (!periodReport) {
+    if (!periodReport && grades.length === 0) {
       warn("Invalid grades data structure or period not found")
-      return emptyPeriodGrades(accountId)
+      return emptyPeriodGrades(accountId, display)
     }
-    
+
+    const reportSubjects = periodReport?.ensembleMatieres?.disciplines ?? []
+    const reportSubjectsById = new Map<string, (typeof reportSubjects)[number]>(
+      reportSubjects.map(subject => [
+        getEDSubjectId(subject.codeMatiere, subject.codeSousMatiere, subject.discipline),
+        subject
+      ])
+    )
+
+    const allMappedGrades: Grade[] = grades.map(g => {
+      const subjectId = getEDSubjectId(g.codeMatiere, g.codeSousMatiere, g.libelleMatiere)
+      const reportSubject = reportSubjectsById.get(subjectId)
+        ?? findClosestReportSubject(reportSubjects, g.codeMatiere)
+      const gradeOutOf = parseNumericValue(g.noteSur, display.scale) ?? display.scale
+
+      return {
+        id: String(g.id),
+        subjectId,
+        subjectName: reportSubject?.discipline || g.libelleMatiere,
+        description: g.devoir?.trim() || g.commentaire?.trim() || "",
+        givenAt: new Date(g.date),
+        subjectFile: createEDAttachment(
+          session,
+          accountId,
+          g.uncSujet,
+          "subject",
+          g.devoir?.trim() || g.libelleMatiere,
+          {
+            fileType: "NODEVOIR",
+            downloadParams: { idDevoir: g.id },
+          }
+        ),
+        correctionFile: createEDAttachment(
+          session,
+          accountId,
+          g.uncCorrige,
+          "correction",
+          g.devoir?.trim() || g.libelleMatiere,
+          {
+            fileType: "NODEVOIR",
+            downloadParams: { idDevoir: g.id },
+          }
+        ),
+        bonus: false,
+        optional: g.nonSignificatif,
+        outOf: createNumericScore(gradeOutOf),
+        coefficient: parseNumericValue(g.coef, 1) ?? 1,
+        subjectCoefficient: parseNumericValue(reportSubject?.coef, 1) ?? 1,
+        studentScore: parseGradeValue(g.valeur, gradeOutOf),
+        averageScore: display.showGradeClassAverage ? parseGradeValue(g.moyenneClasse, gradeOutOf) : undefined,
+        minScore: display.showGradeMinimum ? parseGradeValue(g.minClasse, gradeOutOf) : undefined,
+        maxScore: display.showGradeMaximum ? parseGradeValue(g.maxClasse, gradeOutOf) : undefined,
+        createdByAccount: accountId
+      }
+    })
+
+    const gradesBySubject = groupGradesBySubject(allMappedGrades)
     const subjects: Record<string, Subject> = {}
-    const allMappedGrades: Grade[] = grades.map(g => ({
-      id: String(g.id),
-      subjectId: g.codeMatiere,
-      subjectName: g.libelleMatiere,
-      description: g.devoir?.trim() || g.commentaire?.trim() || "",
-      givenAt: new Date(g.date),
-      subjectFile: undefined,
-      correctionFile: undefined,
-      bonus: false,
-      optional: g.nonSignificatif,
-      outOf: parseGradeValue(g.noteSur),
-      coefficient: parseNumericValue(g.coef, 1) ?? 1,
-      studentScore: parseGradeValue(g.valeur),
-      averageScore: parseGradeValue(g.moyenneClasse),
-      minScore: parseGradeValue(g.minClasse),
-      maxScore: parseGradeValue(g.maxClasse),
-      createdByAccount: accountId
-    }))
-    
-    for (const subject of periodReport.ensembleMatieres?.disciplines ?? []) {
-      const parsedAverage = parseGradeValue(subject.moyenne)
-      const parsedClassAverage = parseGradeValue(subject.moyenneClasse)
-      const parsedMaximum = parseGradeValue(subject.moyenneMax)
-      const parsedMinimum = parseGradeValue(subject.moyenneMin)
-      const grades = allMappedGrades.filter(grade => grade.subjectId === subject.codeMatiere)
+
+    for (const subject of reportSubjects) {
+      const subjectId = getEDSubjectId(subject.codeMatiere, subject.codeSousMatiere, subject.discipline)
+      const grades = gradesBySubject.get(subjectId) ?? []
       const computedAverage = getSubjectAverage(grades)
       const computedClassAverage = getSubjectAverageByProperty(grades, "averageScore")
       const computedMaximum = getSubjectAverageByProperty(grades, "maxScore")
       const computedMinimum = getSubjectAverageByProperty(grades, "minScore")
 
-      subjects[subject.codeMatiere] = {
-        id: subject.codeMatiere,
+      subjects[subjectId] = {
+        id: subjectId,
         name: subject.discipline,
-        studentAverage: parsedAverage.disabled && computedAverage >= 0 ? { value: computedAverage } : parsedAverage,
-        classAverage: parsedClassAverage.disabled && computedClassAverage >= 0 ? { value: computedClassAverage } : parsedClassAverage,
-        maximum: parsedMaximum.disabled && computedMaximum >= 0 ? { value: computedMaximum } : parsedMaximum,
-        minimum: parsedMinimum.disabled && computedMinimum >= 0 ? { value: computedMinimum } : parsedMinimum,
-        outOf: { value: 20 },
-        grades
+        studentAverage: getResolvedScore(subject.moyenne, computedAverage, display.scale),
+        classAverage: display.showSubjectClassAverage
+          ? getResolvedScore(subject.moyenneClasse, computedClassAverage, display.scale)
+          : createMissingGradeScore(),
+        maximum: display.showSubjectMaximum
+          ? getResolvedScore(subject.moyenneMax, computedMaximum, display.scale)
+          : undefined,
+        minimum: display.showSubjectMinimum
+          ? getResolvedScore(subject.moyenneMin, computedMinimum, display.scale)
+          : undefined,
+        outOf: createNumericScore(display.scale),
+        grades: grades.map(grade => ({
+            ...grade,
+            subjectName: subject.discipline,
+            subjectCoefficient: parseNumericValue(subject.coef, 1) ?? 1
+          })),
+        coefficient: parseNumericValue(subject.coef, 1) ?? 1,
+        rank: display.showSubjectRank ? parseRankScore(subject.rang, subject.effectif) : undefined,
+      }
+    }
+
+    for (const [subjectId, subjectGrades] of gradesBySubject.entries()) {
+      if (subjects[subjectId]) {
+        continue
+      }
+
+      const firstGrade = subjectGrades[0]
+      const computedAverage = getSubjectAverage(subjectGrades)
+      const computedClassAverage = getSubjectAverageByProperty(subjectGrades, "averageScore")
+      const computedMaximum = getSubjectAverageByProperty(subjectGrades, "maxScore")
+      const computedMinimum = getSubjectAverageByProperty(subjectGrades, "minScore")
+
+      subjects[subjectId] = {
+        id: subjectId,
+        name: firstGrade?.subjectName || "Inconnu",
+        studentAverage: getResolvedScore(undefined, computedAverage, display.scale),
+        classAverage: display.showSubjectClassAverage
+          ? getResolvedScore(undefined, computedClassAverage, display.scale)
+          : createMissingGradeScore(),
+        maximum: display.showSubjectMaximum
+          ? getResolvedScore(undefined, computedMaximum, display.scale)
+          : undefined,
+        minimum: display.showSubjectMinimum
+          ? getResolvedScore(undefined, computedMinimum, display.scale)
+          : undefined,
+        outOf: createNumericScore(display.scale),
+        grades: subjectGrades,
+        coefficient: firstGrade?.subjectCoefficient ?? 1,
       }
     }
 
     const subjectValues = Object.values(subjects).filter(subject => subject.grades?.length)
     const average = getAverageScore(
-      parseGradeValue(periodReport.ensembleMatieres?.moyenneGenerale),
+      parseGradeValue(periodReport?.ensembleMatieres?.moyenneGenerale, display.scale),
       subjectValues,
-      "studentAverage"
+      "studentAverage",
+      display.useSubjectCoefficients,
+      display.scale
     )
     const classAverage = getAverageScore(
-      parseGradeValue(periodReport.ensembleMatieres?.moyenneClasse),
+      display.showOverallClassAverage
+        ? parseGradeValue(periodReport?.ensembleMatieres?.moyenneClasse, display.scale)
+        : createMissingGradeScore(),
       subjectValues,
-      "classAverage"
+      "classAverage",
+      display.useSubjectCoefficients,
+      display.scale
     )
 
     return {
       studentOverall: average,
       classAverage,
+      rank: display.showOverallRank
+        ? parseRankScore(periodReport?.ensembleMatieres?.rang, periodReport?.ensembleMatieres?.effectif)
+        : undefined,
       subjects: subjectValues,
+      display,
       createdByAccount: accountId
     }
   } catch (error) {
@@ -102,22 +201,28 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
   }
 }
 
-function emptyPeriodGrades(accountId: string): PeriodGrades {
+function emptyPeriodGrades(accountId: string, display: GradeDisplaySettings = getDisplaySettings()): PeriodGrades {
   return {
     createdByAccount: accountId,
-    classAverage: { value: 16.66, disabled: true },
-    studentOverall: { value: 16.66, disabled: true },
-    subjects: []
+    classAverage: createMissingGradeScore(),
+    studentOverall: createMissingGradeScore(),
+    subjects: [],
+    display
   }
 }
 
-function parseGradeValue(value?: string | number | null): GradeScore {
+function parseGradeValue(value?: string | number | null, outOf?: number): GradeScore {
   const score = parseNumericValue(value);
   if (typeof score === "number" && Number.isFinite(score)) {
-    return { value: score };
+    return createNumericScore(score, outOf);
   }
 
-  return { value: 0, disabled: true, status: formatGradeStatus(value) };
+  const status = formatGradeStatus(value)
+  if (status) {
+    return { value: 0, disabled: true, status, kind: "status" };
+  }
+
+  return createMissingGradeScore();
 }
 
 function getGradesForPeriod<T extends { codePeriode?: string; date?: string }>(grades: T[], period: Period): T[] {
@@ -164,7 +269,7 @@ function isGradeInPeriod(grade: { date?: string }, period: Period): boolean {
 
 function formatGradeStatus(value?: string | number | null): string {
   if (typeof value !== "string") {
-    return "Inconnu"
+    return ""
   }
 
   const normalized = value
@@ -172,7 +277,7 @@ function formatGradeStatus(value?: string | number | null): string {
     .trim()
 
   if (!normalized) {
-    return "Inconnu"
+    return ""
   }
 
   switch (normalized.toLowerCase()) {
@@ -193,22 +298,139 @@ function formatGradeStatus(value?: string | number | null): string {
 function getAverageScore(
   directScore: GradeScore,
   subjects: Subject[],
-  key: "studentAverage" | "classAverage"
+  key: "studentAverage" | "classAverage",
+  useSubjectCoefficients: boolean = false,
+  outOf?: number
 ): GradeScore {
   if (!directScore.disabled && Number.isFinite(directScore.value)) {
     return directScore
   }
 
-  const validValues = subjects
-    .map(subject => subject[key])
-    .filter(score => !score.disabled && Number.isFinite(score.value))
-    .map(score => score.value)
+  let weightedTotal = 0
+  let totalWeight = 0
 
-  if (validValues.length === 0) {
-    return { value: 0, disabled: true, status: "Inconnu" }
+  for (const subject of subjects) {
+    const score = subject[key]
+    if (score.disabled || !Number.isFinite(score.value)) {
+      continue
+    }
+
+    const weight = useSubjectCoefficients
+      ? getSafeCoefficient(subject.coefficient)
+      : 1
+
+    weightedTotal += score.value * weight
+    totalWeight += weight
   }
 
+  if (totalWeight === 0) {
+    return createMissingGradeScore()
+  }
+
+  return createNumericScore(weightedTotal / totalWeight, outOf)
+}
+
+function getDisplaySettings(settings?: {
+  affichageMoyenneDevoir?: boolean
+  affichagePositionMatiere?: boolean
+  coefficientNote?: boolean
+  colonneCoefficientMatiere?: boolean
+  moyenneClasse?: boolean
+  moyenneCoefMatiere?: boolean
+  moyenneMax?: boolean
+  moyenneMin?: boolean
+  moyenneRang?: boolean
+  moyenneSur?: number
+}): GradeDisplaySettings {
   return {
-    value: validValues.reduce((sum, currentValue) => sum + currentValue, 0) / validValues.length
+    scale: parseNumericValue(settings?.moyenneSur, DEFAULT_AVERAGE_SCALE) ?? DEFAULT_AVERAGE_SCALE,
+    showOverallClassAverage: Boolean(settings?.moyenneClasse),
+    showOverallRank: Boolean(settings?.moyenneRang),
+    showSubjectClassAverage: Boolean(settings?.moyenneClasse),
+    showSubjectMinimum: Boolean(settings?.moyenneMin),
+    showSubjectMaximum: Boolean(settings?.moyenneMax),
+    showSubjectRank: Boolean(settings?.affichagePositionMatiere || settings?.moyenneRang),
+    showSubjectCoefficient: Boolean(settings?.colonneCoefficientMatiere || settings?.moyenneCoefMatiere),
+    showGradeClassAverage: Boolean(settings?.affichageMoyenneDevoir && settings?.moyenneClasse),
+    showGradeMinimum: Boolean(settings?.affichageMoyenneDevoir && settings?.moyenneMin),
+    showGradeMaximum: Boolean(settings?.affichageMoyenneDevoir && settings?.moyenneMax),
+    showGradeCoefficient: Boolean(settings?.coefficientNote),
+    useSubjectCoefficients: Boolean(settings?.moyenneCoefMatiere),
   }
+}
+
+function getResolvedScore(
+  value: string | number | null | undefined,
+  computedValue: number,
+  outOf?: number
+): GradeScore {
+  const directScore = parseGradeValue(value, outOf)
+  if (!isMissingGradeScore(directScore)) {
+    return directScore
+  }
+
+  if (computedValue >= 0) {
+    return createNumericScore(computedValue, outOf)
+  }
+
+  return directScore
+}
+
+function createNumericScore(value: number, outOf?: number): GradeScore {
+  return {
+    value,
+    outOf,
+    kind: "numeric"
+  }
+}
+
+function parseRankScore(value?: string | number | null, total?: string | number | null): GradeScore | undefined {
+  const rank = parseNumericValue(value)
+  if (typeof rank !== "number" || rank <= 0) {
+    return undefined
+  }
+
+  const outOf = parseNumericValue(total)
+  return createNumericScore(rank, outOf)
+}
+
+function getEDSubjectId(codeMatiere?: string, codeSousMatiere?: string, fallbackName?: string): string {
+  const parts = [normalizeString(codeMatiere), normalizeString(codeSousMatiere)].filter(Boolean)
+
+  if (parts.length > 0) {
+    return parts.join("::")
+  }
+
+  return normalizeString(fallbackName) || "unknown-subject"
+}
+
+function normalizeString(value?: string | null): string {
+  return typeof value === "string"
+    ? value.replace(/\u00A0/g, " ").trim()
+    : ""
+}
+
+function findClosestReportSubject<T extends { codeMatiere?: string }>(
+  subjects: T[],
+  codeMatiere?: string
+): T | undefined {
+  return subjects.find(subject => subject.codeMatiere === codeMatiere)
+}
+
+function groupGradesBySubject(grades: Grade[]): Map<string, Grade[]> {
+  const grouped = new Map<string, Grade[]>()
+
+  for (const grade of grades) {
+    const currentGrades = grouped.get(grade.subjectId) ?? []
+    currentGrades.push(grade)
+    grouped.set(grade.subjectId, currentGrades)
+  }
+
+  return grouped
+}
+
+function getSafeCoefficient(value?: number): number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? value
+    : 1
 }

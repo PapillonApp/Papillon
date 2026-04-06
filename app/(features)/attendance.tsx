@@ -98,7 +98,7 @@ export default function AttendanceView() {
           modal={Platform.OS !== "android"}
           onHeightChanged={setHeaderHeight}
           title={
-            <ActionMenu
+          <ActionMenu
                 key={String(period?.id ?? "")}
                 onPressAction={async ({ nativeEvent }) => {
                   const actionId = nativeEvent.event;

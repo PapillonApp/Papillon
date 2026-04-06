@@ -14,6 +14,16 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
     return avgs;
   }, [subjects]);
 
+  const subjectWeights = useMemo(() => {
+    const weights: Record<string, number> = {};
+    subjects.forEach(subject => {
+      weights[subject.id] = subject.coefficient && subject.coefficient > 0
+        ? subject.coefficient
+        : 1;
+    });
+    return weights;
+  }, [subjects]);
+
   const subjectClassAverages = useMemo(() => {
     const avgs: Record<string, number> = {};
     subjects.forEach(subject => {
@@ -24,27 +34,29 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
 
   const globalAverage = useMemo(() => {
     let total = 0;
-    let count = 0;
-    Object.values(subjectAverages).forEach(avg => {
+    let totalWeight = 0;
+    Object.entries(subjectAverages).forEach(([id, avg]) => {
       if (avg !== -1) {
-        total += avg;
-        count++;
+        const weight = subjectWeights[id] ?? 1;
+        total += avg * weight;
+        totalWeight += weight;
       }
     });
-    return count > 0 ? total / count : 0;
-  }, [subjectAverages]);
+    return totalWeight > 0 ? total / totalWeight : 0;
+  }, [subjectAverages, subjectWeights]);
 
   const globalClassAverage = useMemo(() => {
     let total = 0;
-    let count = 0;
-    Object.values(subjectClassAverages).forEach(avg => {
+    let totalWeight = 0;
+    Object.entries(subjectClassAverages).forEach(([id, avg]) => {
       if (avg !== -1) {
-        total += avg;
-        count++;
+        const weight = subjectWeights[id] ?? 1;
+        total += avg * weight;
+        totalWeight += weight;
       }
     });
-    return count > 0 ? total / count : 0;
-  }, [subjectClassAverages]);
+    return totalWeight > 0 ? total / totalWeight : 0;
+  }, [subjectClassAverages, subjectWeights]);
 
   const getAvgInfluence = useCallback((grade: Grade) => {
     const subjectId = grade.subjectId;
@@ -67,32 +79,35 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
     if (newSubjectAvg === -1) {
       // Subject is removed from global average
       let total = 0;
-      let count = 0;
+      let totalWeight = 0;
       Object.entries(subjectAverages).forEach(([id, avg]) => {
         if (id !== subjectId && avg !== -1) {
-          total += avg;
-          count++;
+          const weight = subjectWeights[id] ?? 1;
+          total += avg * weight;
+          totalWeight += weight;
         }
       });
-      newGlobalAverage = count > 0 ? total / count : 0;
+      newGlobalAverage = totalWeight > 0 ? total / totalWeight : 0;
     } else {
       // Subject average changes
       let total = 0;
-      let count = 0;
+      let totalWeight = 0;
       Object.entries(subjectAverages).forEach(([id, avg]) => {
         if (id !== subjectId && avg !== -1) {
-          total += avg;
-          count++;
+          const weight = subjectWeights[id] ?? 1;
+          total += avg * weight;
+          totalWeight += weight;
         }
       });
       // Add the new subject average
-      total += newSubjectAvg;
-      count++;
-      newGlobalAverage = count > 0 ? total / count : 0;
+      const currentSubjectWeight = subjectWeights[subjectId] ?? 1;
+      total += newSubjectAvg * currentSubjectWeight;
+      totalWeight += currentSubjectWeight;
+      newGlobalAverage = totalWeight > 0 ? total / totalWeight : 0;
     }
 
     return Number((globalAverage - newGlobalAverage).toFixed(2));
-  }, [subjectAverages, globalAverage, getSubjectById]);
+  }, [subjectAverages, subjectWeights, globalAverage, getSubjectById]);
 
   const getAvgClassInfluence = useCallback((grade: Grade) => {
     const subjectId = grade.subjectId;
@@ -109,30 +124,33 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
 
     if (newSubjectAvg === -1) {
       let total = 0;
-      let count = 0;
+      let totalWeight = 0;
       Object.entries(subjectClassAverages).forEach(([id, avg]) => {
         if (id !== subjectId && avg !== -1) {
-          total += avg;
-          count++;
+          const weight = subjectWeights[id] ?? 1;
+          total += avg * weight;
+          totalWeight += weight;
         }
       });
-      newGlobalAverage = count > 0 ? total / count : 0;
+      newGlobalAverage = totalWeight > 0 ? total / totalWeight : 0;
     } else {
       let total = 0;
-      let count = 0;
+      let totalWeight = 0;
       Object.entries(subjectClassAverages).forEach(([id, avg]) => {
         if (id !== subjectId && avg !== -1) {
-          total += avg;
-          count++;
+          const weight = subjectWeights[id] ?? 1;
+          total += avg * weight;
+          totalWeight += weight;
         }
       });
-      total += newSubjectAvg;
-      count++;
-      newGlobalAverage = count > 0 ? total / count : 0;
+      const currentSubjectWeight = subjectWeights[subjectId] ?? 1;
+      total += newSubjectAvg * currentSubjectWeight;
+      totalWeight += currentSubjectWeight;
+      newGlobalAverage = totalWeight > 0 ? total / totalWeight : 0;
     }
 
     return Number((globalClassAverage - newGlobalAverage).toFixed(2));
-  }, [subjectClassAverages, globalClassAverage, getSubjectById]);
+  }, [subjectClassAverages, subjectWeights, globalClassAverage, getSubjectById]);
 
   return {
     getAvgInfluence,

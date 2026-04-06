@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { useAccountStore } from '@/stores/account';
 import { getInitials } from '@/utils/chats/initials';
+import { getAccountProfilePictureUri } from '@/utils/profilePicture';
 
 export const useUserProfileData = () => {
   const accounts = useAccountStore((state) => state.accounts);
@@ -22,11 +23,8 @@ export const useUserProfileData = () => {
   const initials = useMemo(() => getInitials(`${account?.firstName} ${account?.lastName}`), [account]);
   
   const profilePicture = useMemo(() => {
-    if (account && account.customisation && account.customisation.profilePicture && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+")) {
-      return `data:image/png;base64,${account.customisation.profilePicture}`;
-    }
-    return undefined;
-  }, [account]);
+    return getAccountProfilePictureUri(account?.customisation?.profilePicture);
+  }, [account?.customisation?.profilePicture]);
 
   if(!account) {return null;}
 

@@ -12,6 +12,7 @@ interface ContainedNumberProps {
 const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, children, ...rest }) => {
   const theme = useTheme();
   const finalColor = color || theme.colors.tint;
+  const hasChildren = children !== undefined && children !== null && children !== "";
 
   return (
     <View
@@ -30,13 +31,13 @@ const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, c
         justifyContent: "center"
       }}
     >
-      {children && (
-        <Typography variant='h5' color={finalColor}>
+      {hasChildren && (
+        <Typography variant='h5' color={finalColor} nowrap style={{ flexShrink: 0 }}>
           {children}
         </Typography>
       )}
       {denominator && (
-        <Typography variant='body2' color={finalColor + "a6"} style={{ marginBottom: 3 }}>
+        <Typography variant='body2' color={finalColor + "a6"} nowrap style={{ marginBottom: 3, flexShrink: 0 }}>
           {denominator}
         </Typography>
       )}

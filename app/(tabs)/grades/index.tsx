@@ -1,6 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
-import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
@@ -11,7 +10,7 @@ import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
-import { GradeScore, Period, Subject } from "@/services/shared/grade";
+import { GradeDisplaySettings, GradeScore, Period, Subject } from "@/services/shared/grade";
 import { useSettingsStore } from "@/stores/settings";
 import ChipButton from '@/ui/components/ChipButton';
 import { CompactGrade } from '@/ui/components/CompactGrade';
@@ -28,6 +27,7 @@ import LegacyTypography from '@/ui/components/Typography';
 import { useKeyboardHeight } from '@/ui/hooks/useKeyboardHeight';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { getGradeScoreDenominator, isNumericGradeScore, isSameNumericScore } from '@/utils/grades/score';
 import i18n from '@/utils/i18n';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { getSubjectColor } from "@/utils/subjects/colors";
@@ -41,8 +41,6 @@ import { useGradeInfluence } from './hooks/useGradeInfluence';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
 import ActionMenu from '@/ui/components/ActionMenu';
-
-const MemoizedSubjectItem = React.memo(SubjectItem);
 
 const GradesView: React.FC = () => {
   // Layout du header
@@ -161,6 +159,7 @@ const GradesView: React.FC = () => {
   // Obtention des notes
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [features, setFeatures] = useState<GradeFeatures | null>(null);
+  const [gradeDisplay, setGradeDisplay] = useState<GradeDisplaySettings | null>(null);
   const [serviceAverage, setServiceAverage] = useState<number | null>(null);
   const [serviceRank, setServiceRank] = useState<GradeScore | null>(null);
 
@@ -169,21 +168,20 @@ const GradesView: React.FC = () => {
     if (period && managerToUse) {
       const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
 
-      if (grades?.features) {
-        setFeatures(grades.features);
-      }
+      setFeatures(grades?.features ?? null);
+      setGradeDisplay(grades?.display ?? null);
       if (!grades || !grades.subjects) {
         setGradesLoading(false);
         return;
       }
       setSubjects(grades.subjects);
-      if (grades.studentOverall && typeof grades.studentOverall.value === 'number') {
+      if (isNumericGradeScore(grades.studentOverall)) {
         setServiceAverage(grades.studentOverall.value)
       } else {
         setServiceAverage(null);
       }
 
-      if (grades.rank && typeof grades.rank.value === 'number' && !grades.rank.disabled) {
+      if (isNumericGradeScore(grades.rank)) {
         setServiceRank(grades.rank)
       } else {
         setServiceRank(null);
@@ -216,10 +214,10 @@ const GradesView: React.FC = () => {
   // Sort
   // Sort grades in subjects by date descending then sort subjects by latest grade descending
   const sortedSubjects = useMemo(() => {
-    const subjectsCopy = [...subjects];
-    subjectsCopy.forEach((subject) => {
-      subject.grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
-    });
+    const subjectsCopy = subjects.map(subject => ({
+      ...subject,
+      grades: [...(subject.grades ?? [])].sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()),
+    }));
 
     switch (sortMethod) {
       case "alphabetical":
@@ -232,8 +230,8 @@ const GradesView: React.FC = () => {
 
       case "averages":
         subjectsCopy.sort((a, b) => {
-          const aAvg = a.studentAverage.value;
-          const bAvg = b.studentAverage.value;
+          const aAvg = isNumericGradeScore(a.studentAverage) ? a.studentAverage.value : -1;
+          const bAvg = isNumericGradeScore(b.studentAverage) ? b.studentAverage.value : -1;
           return bAvg - aAvg;
         });
         break;
@@ -296,16 +294,6 @@ const GradesView: React.FC = () => {
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod, periods]);
 
-  const renderItem = useCallback(({ item }: { item: any }) => {
-    const subject = item as Subject;
-    return (
-      <ErrorBoundary>
-        {/* @ts-expect-error navigation types */}
-        <MemoizedSubjectItem subject={subject} grades={grades} getAvgInfluence={getAvgInfluence} getAvgClassInfluence={getAvgClassInfluence} />
-      </ErrorBoundary>
-    )
-  }, [grades]);
-
   const keyboardHeight = useKeyboardHeight();
 
   const footerStyle = useAnimatedStyle(() => ({
@@ -322,7 +310,8 @@ const GradesView: React.FC = () => {
         <Averages
           grades={grades}
           color={colors.primary}
-          realAverage={serviceAverage || undefined}
+          realAverage={serviceAverage ?? undefined}
+          scale={gradeDisplay?.scale ?? 20}
         />
       </ErrorBoundary>
 
@@ -350,9 +339,11 @@ const GradesView: React.FC = () => {
                 <LegacyTypography variant='h3' inline color='text'>
                   {serviceRank.value}
                 </LegacyTypography>
-                <LegacyTypography variant='body1' inline color='secondary'>
-                  /{serviceRank.outOf}
-                </LegacyTypography>
+                {typeof serviceRank.outOf === "number" && (
+                  <LegacyTypography variant='body1' inline color='secondary'>
+                    /{serviceRank.outOf}
+                  </LegacyTypography>
+                )}
               </Stack>
             </Trailing>
           </Item>
@@ -387,18 +378,19 @@ const GradesView: React.FC = () => {
             keyExtractor={(item) => item.id}
             renderItem={({ item: grade }) =>
               <ErrorBoundary fallback={<View style={{ width: 140, height: 140 }} />}>
-                <CompactGrade
+              <CompactGrade
                   key={grade.id + "_compactGrade_header"}
                   emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
                   title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
                   description={grade.description}
-                  score={grade.studentScore?.value || 0}
-                  outOf={grade.outOf?.value || 20}
+                  score={isNumericGradeScore(grade.studentScore) ? grade.studentScore.value : 0}
+                  outOf={getGradeScoreDenominator(grade.studentScore, grade.outOf?.value ?? gradeDisplay?.scale ?? 20)}
                   disabled={grade.studentScore?.disabled}
                   status={grade.studentScore?.status}
+                  showOutOf={isNumericGradeScore(grade.studentScore)}
                   color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
                   date={grade.givenAt}
-                  hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
+                  hasMaxScore={isSameNumericScore(grade.studentScore, grade.maxScore)}
                   onPress={() => {
                     // @ts-expect-error navigation types
                     navigation.navigate('(modals)/grade', {
@@ -409,6 +401,7 @@ const GradesView: React.FC = () => {
                         emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
                         originalName: getSubjectById(grade.subjectId)?.name || ""
                       },
+                      display: gradeDisplay,
                       avgInfluence: getAvgInfluence(grade),
                       avgClass: getAvgClassInfluence(grade),
                     })
@@ -435,7 +428,7 @@ const GradesView: React.FC = () => {
         </Stack>
       </Dynamic>
     </View>
-  ) : null), [sortedGrades, searchText]);
+  ) : null), [sortedGrades, searchText, grades, colors.primary, serviceAverage, serviceRank, features, gradeDisplay, navigation, getSubjectById, getAvgInfluence, getAvgClassInfluence]);
 
   return (
     <View
@@ -574,7 +567,7 @@ const GradesView: React.FC = () => {
           <SubjectItem
             key={subject.id}
             subject={subject}
-            grades={grades}
+            display={gradeDisplay ?? undefined}
             getAvgInfluence={getAvgInfluence}
             getAvgClassInfluence={getAvgClassInfluence}
           />

@@ -14,6 +14,7 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { formatSchoolName } from "@/utils/format/formatSchoolName";
+import { getAccountProfilePictureUri } from "@/utils/profilePicture";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
 import ActionMenu from "@/ui/components/ActionMenu";
 
@@ -98,12 +99,7 @@ export default function AccountsView() {
                 initials={getInitials(
                   account.firstName + " " + account.lastName
                 )}
-                imageUrl={
-                  account.customisation?.profilePicture
-                    ? "data:image/png;base64," +
-                      account.customisation?.profilePicture
-                    : undefined
-                }
+                imageUrl={getAccountProfilePictureUri(account.customisation?.profilePicture)}
                 size={38}
               />
             </List.Leading>
