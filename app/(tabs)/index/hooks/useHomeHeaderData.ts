@@ -73,16 +73,25 @@ export const useHomeHeaderData = () => {
 
       try {
         const periods = await manager.getAttendancePeriods();
-        const currentPeriod = getCurrentPeriod(periods);
-        const fetchedAttendances = currentPeriod
-          ? await manager.getAttendanceForPeriod(currentPeriod.name)
-          : [];
 
         if (!isMounted) {
           return;
         }
 
         attendancesPeriodsRef.current = periods;
+        const currentPeriod = getCurrentPeriod(periods);
+
+        if (!currentPeriod) {
+          setAttendances([]);
+          return;
+        }
+
+        const fetchedAttendances = await manager.getAttendanceForPeriod(currentPeriod.name);
+
+        if (!isMounted) {
+          return;
+        }
+
         setAttendances(fetchedAttendances);
       } finally {
         if (isMounted) {

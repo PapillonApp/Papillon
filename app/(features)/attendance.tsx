@@ -166,7 +166,6 @@ export default function AttendanceView() {
               if (actionId.startsWith("period:")) {
                 const selectedPeriodId = actionId.replace("period:", "");
                 const selectedPeriod = periods.find(item => item.id === selectedPeriodId);
-
                 if (!selectedPeriod) {
                   error(t("Attendance_InvalidPeriod"));
                   return;

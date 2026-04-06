@@ -11,7 +11,7 @@ import { Homework } from "../shared/homework";
 import { News } from "../shared/news";
 import { CourseDay } from "../shared/timetable";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
-import { fetchEDAttendance } from "./attendance";
+import { fetchEDAttendance, fetchEDAttendancePeriods } from "./attendance";
 import { fetchEDGradePeriods, fetchEDGrades } from "./grades";
 import { fetchEDHomeworks, setEDHomeworkAsDone } from "./homework";
 import { fetchEDNews } from "./news";
@@ -79,9 +79,9 @@ export class EcoleDirecte implements SchoolServicePlugin {
     throw error("Session or account is not valid", "EcoleDirecte.getGradesPeriods");
   }
 
-  async getAttendanceForPeriod(): Promise<Attendance> {
+  async getAttendanceForPeriod(period: string): Promise<Attendance> {
     if (this.session) {
-      return fetchEDAttendance(this.session, this.accountId);
+      return fetchEDAttendance(this.session, this.accountId, period);
     }
 
     throw error("Session or account is not valid", "EcoleDirecte.getAttendanceForPeriod");
@@ -89,7 +89,7 @@ export class EcoleDirecte implements SchoolServicePlugin {
 
   async getAttendancePeriods(): Promise<Period[]> {
     if (this.session) {
-      return fetchEDGradePeriods(this.session, this.accountId)
+      return fetchEDAttendancePeriods(this.session, this.accountId);
     }
 
     throw error("Session or account is not valid", "EcoleDirecte.getAttendancePeriods");

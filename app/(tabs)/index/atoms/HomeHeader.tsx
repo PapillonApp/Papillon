@@ -94,11 +94,15 @@ const HomeHeader = ({ data }: HomeHeaderProps) => {
         (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular"))
         : t("Home_Attendance_Button_Description_None"),
       onPress: () => {
+        if (!currentAttendancePeriod) {
+          return;
+        }
+
         router.push({
           pathname: "/(features)/attendance",
           params: {
             periods: JSON.stringify(attendancesPeriods),
-            currentPeriod: currentAttendancePeriod ? JSON.stringify(currentAttendancePeriod) : "",
+            currentPeriod: JSON.stringify(currentAttendancePeriod),
             attendances: JSON.stringify(attendances),
           },
         });
