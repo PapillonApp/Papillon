@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { Stack } from 'expo-router';
+import { Stack } from "expo-router";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
-import { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { AndroidHeaderProps } from "@/components/AndroidHeaderBackground";
 
 export default function OnboardingLayout() {
   const { t } = useTranslation();
