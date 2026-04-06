@@ -19,6 +19,10 @@ export default function OnboardingLayout() {
   return (
     <Stack>
       <Stack.Screen
+        name="locate"
+        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_HEADER_LOCATION_SEARCH") }}
+      />
+      <Stack.Screen
         name="credentials"
         options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_HEADER_WEBUNTIS_LOGIN") }}
       />
