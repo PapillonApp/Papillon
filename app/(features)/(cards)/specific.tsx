@@ -36,6 +36,7 @@ import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import ChipButton from "@/ui/components/ChipButton";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import NativeSwitch from "@/ui/native/NativeSwitch";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -259,7 +260,7 @@ export default function QRCodeAndCardsPage() {
                             Borne {item.label}
                           </Typography>
                           <Trailing>
-                            <Switch
+                            <NativeSwitch
                               disabled={accountKind === CanteenKind.FORFAIT ? false : !item.canBook || (wallet.lunchRemaining < 1 && wallet.lunchPrice !== 0)}
                               value={item.booked}
                               onValueChange={() => handleToggle(index)}

@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
 import { FlatList, Platform, StatusBar, View } from 'react-native';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
@@ -25,7 +24,7 @@ import Typography from '@/ui/new/Typography';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const bottomTabBarHeight = useBottomTabBarHeight();
+  const bottomTabBarHeight = insets.bottom + 16;
   const focused = useIsFocused();
 
   // Account
@@ -84,23 +83,7 @@ const HomeScreen = () => {
       <Wallpaper />
       <HomeTopBar />
       {focused && <StatusBar translucent animated barStyle={'light-content'} />}
-      <MaskedView
-        maskElement={
-          Platform.OS === 'android' ? (
-          <View style={{ flex: 1, backgroundColor: 'transparent' }}>
-            <LinearGradient
-              colors={['#ff000022', 'red']}
-              locations={[0.5, 1]}
-              style={{ height: insets.top + 72 }}
-            />
-            <View style={{ flex: 1, backgroundColor: 'red' }} />
-          </View>
-          ) : (
-            <View style={{ flex: 1, backgroundColor: 'transparent' }} />
-          )
-        }
-        style={{ flex: 1 }}
-      >
+      <HomeViewContainer>
         <FlatList
           renderItem={({ item }) => <HomeWidget item={item} />}
           keyExtractor={(item) => item.title}
@@ -115,10 +98,31 @@ const HomeScreen = () => {
           }}
           data={data}
         />
-        
-      </MaskedView>
+      </HomeViewContainer>
     </>
   );
 };
+
+const HomeViewContainer = ({ children }) => {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <MaskedView
+      maskElement={
+        <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+          <LinearGradient
+            colors={['#ff000022', 'red']}
+            locations={[0.5, 1]}
+            style={{ height: insets.top + 68 }}
+          />
+          <View style={{ flex: 1, backgroundColor: 'red' }} />
+        </View>
+      }
+      style={{ flex: 1 }}
+    >
+      {children}
+    </MaskedView>
+  )
+}
 
 export default HomeScreen;

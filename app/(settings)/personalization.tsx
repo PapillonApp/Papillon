@@ -19,6 +19,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 import List from "@/ui/new/List";
+import NativeSwitch from "@/ui/native/NativeSwitch";
 
 
 const PersonalizationSettings = () => {
@@ -107,7 +108,7 @@ const PersonalizationSettings = () => {
                 {t("Settings_Personalization_MaterialYou_Description")}
               </Typography>
               <List.Trailing>
-                <Switch
+                <NativeSwitch
                   value={useMaterialYou}
                   onValueChange={(value) => {
                     mutateProperty("personalization", { useMaterialYou: value });
