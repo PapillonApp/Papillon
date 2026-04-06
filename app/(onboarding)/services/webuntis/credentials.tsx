@@ -1,0 +1,203 @@
+import { useTheme } from "@react-navigation/native";
+import { router } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, } from "react-native";
+import { useSharedValue, withTiming } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAccountStore } from "@/stores/account";
+import { Account, Services } from "@/stores/account/types";
+import { useAlert } from "@/ui/components/AlertProvider";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import uuid from "@/utils/uuid/uuid";
+import { ScrollView } from "react-native-gesture-handler";
+import LoginView from "../../components/LoginView";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { Credentials, WebUntisClient } from "webuntis-client";
+
+const ANIMATION_DURATION = 170;
+export const PlatformPressable =
+    Platform.OS === "android" ? Pressable : AnimatedPressable;
+
+export default function WebUntisLoginWithCredentials() {
+    const insets = useSafeAreaInsets();
+    const theme = useTheme();
+    const { colors } = theme;
+
+    const alert = useAlert();
+    const { t } = useTranslation();
+
+    const [session, setSession] = useState<WebUntisClient | null>(null);
+    const [token, setToken] = useState<string>();
+
+    const [school, setSchool] = useState<string>("");
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
+    const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+
+    const opacity = useSharedValue(1);
+    const scale = useSharedValue(1);
+
+    const keyboardListeners = useMemo(
+        () => ({
+            show: () => {
+                "worklet";
+                opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+                scale.value = withTiming(0.8, { duration: ANIMATION_DURATION });
+            },
+            hide: () => {
+                "worklet";
+                opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
+                scale.value = withTiming(1, { duration: ANIMATION_DURATION });
+            },
+        }),
+        [opacity]
+    );
+
+    useEffect(() => {
+        const showSub = Keyboard.addListener(
+            "keyboardWillShow",
+            keyboardListeners.show
+        );
+        const hideSub = Keyboard.addListener(
+            "keyboardWillHide",
+            keyboardListeners.hide
+        );
+
+        return () => {
+            showSub.remove();
+            hideSub.remove();
+        };
+    }, [keyboardListeners]);
+
+    const handleLogin = async (
+        school: string,
+        username: string,
+        password: string
+    ) => {
+        const credentials = new Credentials(school, username, password);
+        const client = new WebUntisClient(credentials);
+
+        const store = useAccountStore.getState();
+        const device = uuid();
+
+        try {
+            const session = await client.auth.login(
+                credentials.username,
+                credentials.password
+            );
+
+            const createdAt = new Date().toISOString();
+
+            const account: Account = {
+                id: device,
+                firstName: "", // TODO: Get from app data
+                lastName: "",
+                schoolName: "",
+                services: [
+                    {
+                        id: device,
+                        auth: {
+                            additionals: {
+                                username: username,
+                                token: password,
+                                deviceUUID: device,
+                            },
+                        },
+                        serviceId: Services.WEBUNTIS,
+                        createdAt: createdAt,
+                        updatedAt: createdAt,
+                    },
+                ],
+                createdAt: createdAt,
+                updatedAt: createdAt,
+            };
+
+            store.addAccount(account);
+            store.setLastUsedAccount(device);
+
+            queueMicrotask(() => {
+                router.push({
+                    pathname: "../end/color",
+                    params: { accountId: device },
+                });
+            });
+        } catch ( e ) {
+            setIsLoggingIn(false);
+
+            Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
+        }
+    };
+
+    const loginWebUntis = async () => {
+        const cleanedSchool = school.trim();
+        const cleanedUsername = username.trim();
+        const cleanedPassword = password.trim();
+
+        if ( !cleanedSchool || !cleanedUsername || !cleanedPassword ) {
+            return;
+        }
+
+        setIsLoggingIn(true);
+        Keyboard.dismiss();
+
+        await handleLogin(cleanedSchool, cleanedUsername, cleanedPassword);
+
+        setIsLoggingIn(false);
+    };
+
+    const headerHeight = useHeaderHeight();
+    const finalHeaderHeight = Platform.select({
+        android: headerHeight,
+        default: insets.top,
+    });
+
+    return (
+        <KeyboardAvoidingView
+            style={{ flex: 1, marginBottom: insets.bottom }}
+            behavior="padding"
+        >
+            <ScrollView
+                contentContainerStyle={{
+                    paddingTop: finalHeaderHeight,
+                    paddingBottom: insets.bottom,
+                }}
+            >
+                <LoginView
+                    color="#1788bc"
+                    serviceName="WebUntis"
+                    serviceIcon={require("@/assets/images/service_webuntis.png")}
+                    loading={isLoggingIn}
+                    fields={[
+                        {
+                            name: "school",
+                            placeholder: t("INPUT_SCHOOL"),
+                            secureTextEntry: false,
+                            textContentType: "username" as const,
+                        },
+                        {
+                            name: "username",
+                            placeholder: t("INPUT_USERNAME"),
+                            secureTextEntry: false,
+                            textContentType: "username" as const,
+                        },
+                        {
+                            name: "password",
+                            placeholder: t("INPUT_PASSWORD"),
+                            secureTextEntry: true,
+                            textContentType: "password" as const,
+                        }
+                    ]}
+                    onSubmit={values => {
+                        if ( !isLoggingIn && values.school && values.username && values.password ) {
+                            setUsername(values.username);
+                            setPassword(values.password);
+                            void loginWebUntis();
+                        }
+                    }}
+                />
+            </ScrollView>
+        </KeyboardAvoidingView>
+    );
+}
