@@ -1,4 +1,4 @@
-
+import { Papicons } from "@getpapillon/papicons";
 import { Client, DoubleAuthQuestions, DoubleAuthResult, Require2FA } from "@blockshub/blocksdirecte";
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
@@ -8,49 +8,170 @@ import {
   Alert,
   Keyboard,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   View,
 } from "react-native";
-import Reanimated, {
-  FadeInDown,
-  FadeOutUp,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import { useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import { fetchEDProfilePicture } from "@/services/ecoledirecte/profile";
 import { getEDModulesAdditionals } from "@/services/ecoledirecte/qrcode";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
-import { useAlert } from "@/ui/components/AlertProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import Button from "@/ui/components/Button";
+import { Dynamic } from "@/ui/components/Dynamic";
+import SheetModal from "@/ui/components/SheetModal";
 import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
+import Button from "@/ui/new/Button";
+import Divider from "@/ui/new/Divider";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
+import { PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
+import adjust from "@/utils/adjustColor";
 import uuid from "@/utils/uuid/uuid";
 import { ScrollView } from "react-native-gesture-handler";
 import LoginView from "../../components/LoginView";
 import { useHeaderHeight } from "@react-navigation/elements";
 
 const ANIMATION_DURATION = 170;
+const CHALLENGE_COLOR = "#E50052";
 export const PlatformPressable = Platform.OS === 'android' ? Pressable : AnimatedPressable;
+
+function EDDoubleAuthModal({
+  question,
+  visible,
+  options,
+  selectedIndex,
+  submitting,
+  onClose,
+  onContinue,
+  onSelect,
+}: {
+  question: string;
+  visible: boolean;
+  options: string[];
+  selectedIndex: number | null;
+  submitting: boolean;
+  onClose: () => void;
+  onContinue: () => void;
+  onSelect: (index: number | null) => void;
+}) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const { colors } = theme;
+  const insets = useSafeAreaInsets();
+
+  const selectedBackground = adjust(CHALLENGE_COLOR, theme.dark ? -0.82 : 0.92);
+  const selectedBadgeBackground = CHALLENGE_COLOR + (theme.dark ? "22" : "18");
+
+  return (
+    <SheetModal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <List
+          ListHeaderComponent={() => (
+            <Stack padding={[4, 0]}>
+              <Typography variant="h2">
+                {question}
+              </Typography>
+              <Divider height={6} ghost />
+              <Typography variant="action" color="textSecondary">
+                {t("ONBOARDING_DOUBLE_AUTH_DESCRIPTION")}
+              </Typography>
+              <Divider height={18} ghost />
+            </Stack>
+          )}
+          contentContainerStyle={{
+            padding: 16,
+            flexGrow: 1,
+            gap: 10,
+            paddingTop: insets.top + 20,
+            paddingBottom: 20,
+          }}
+          style={{ flex: 1 }}
+        >
+          {options.map((option, index) => {
+            const isSelected = selectedIndex === index;
+
+            return (
+              <List.Item
+                key={`${option}-${index}`}
+                onPress={() => {
+                  if (!submitting) {
+                    onSelect(isSelected ? null : index);
+                  }
+                }}
+                style={{
+                  backgroundColor: isSelected ? selectedBackground : colors.card,
+                  minHeight: 68,
+                }}
+              >
+                <List.Leading>
+                  <Stack
+                    width={32}
+                    height={32}
+                    vAlign="center"
+                    hAlign="center"
+                    radius={32}
+                    backgroundColor={isSelected ? selectedBadgeBackground : colors.text + (theme.dark ? "12" : "08")}
+                  >
+                    <Dynamic animated entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+                      {isSelected ? (
+                        <Papicons
+                          name="check"
+                          size={16}
+                          fill={CHALLENGE_COLOR}
+                        />
+                      ) : (
+                        <Typography variant="caption" color="textSecondary">
+                          {index + 1}
+                        </Typography>
+                      )}
+                    </Dynamic>
+                  </Stack>
+                </List.Leading>
+
+                <Typography variant="action" style={{ paddingVertical: 6 }}>
+                  {option}
+                </Typography>
+              </List.Item>
+            );
+          })}
+        </List>
+
+        <View
+          style={{
+            padding: 20,
+            paddingBottom: insets.bottom + 20,
+            borderTopColor: colors.border,
+            borderTopWidth: 1,
+            backgroundColor: colors.background,
+          }}
+        >
+          <Button
+            label={t("ONBOARDING_CONTINUE")}
+            onPress={onContinue}
+            disabled={selectedIndex === null || submitting}
+          />
+        </View>
+      </View>
+    </SheetModal>
+  );
+}
 
 export default function EDLoginWithCredentials() {
   const insets = useSafeAreaInsets();
-  const theme = useTheme();
-  const { colors } = theme;
-
-  const alert = useAlert();
   const { t } = useTranslation();
 
   const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
   const [doubleAuthChallenge, setDoubleAuthChallenge] = useState<DoubleAuthQuestions | null>(null);
+  const [selectedChallengeIndex, setSelectedChallengeIndex] = useState<number | null>(null);
+  const [isSubmittingChallenge, setIsSubmittingChallenge] = useState<boolean>(false);
 
   const [session, setSession] = useState<Client | null>(null);
   const [token, setToken] = useState<string>();
@@ -85,6 +206,13 @@ export default function EDLoginWithCredentials() {
       hideSub.remove();
     };
   }, [keyboardListeners]);
+
+  useEffect(() => {
+    if (!challengeModalVisible) {
+      setSelectedChallengeIndex(null);
+      setIsSubmittingChallenge(false);
+    }
+  }, [challengeModalVisible]);
 
   const handleLogin = async (
     username: string,
@@ -171,60 +299,20 @@ export default function EDLoginWithCredentials() {
     setIsLoggingIn(false);
   };
 
-  async function handleChallenge(index: number) {
-    setChallengeModalVisible(false);
+  async function handleChallenge() {
+    if (selectedChallengeIndex === null || !session || !doubleAuthChallenge?.propositions?.[selectedChallengeIndex]) { return; }
 
-    if (!session || !doubleAuthChallenge?.propositions?.[index]) { return }
+    setIsSubmittingChallenge(true);
+
     try {
-      const keys = await session.auth.send2FAQuestion(doubleAuthChallenge.propositions[index], token ?? "");
+    const keys = await session.auth.send2FAQuestion(doubleAuthChallenge.propositions[selectedChallengeIndex], token ?? "");
+    setChallengeModalVisible(false);
+    setIsLoggingIn(true);
       queueMicrotask(() => void handleLogin(username, password, keys, token));
     } catch {
-      throw new Error("2FA challenge failed");
+      setIsSubmittingChallenge(false);
+      Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
     }
-  }
-
-  function questionComponent({ item, index }: { item: unknown; index: number }) {
-    return (
-      <Reanimated.View
-        entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
-        exiting={FadeOutUp.springify().duration(400).delay(index * 80 + 150)}
-      >
-        <PlatformPressable
-          onPress={() => {
-            handleChallenge(index);
-          }}
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 10,
-            paddingRight: 18,
-            borderColor: colors.border,
-            borderWidth: 1.5,
-            borderRadius: 80,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
-          <Stack
-            width={45}
-            height={45}
-            vAlign="center"
-            hAlign="center"
-            radius={80}
-            backgroundColor={colors.border}
-          >
-            <Typography variant="h4" color={colors.text}>
-              {index + 1}
-            </Typography>
-          </Stack>
-          <Stack gap={0} style={{ width: "80%" }}>
-            <Typography nowrap variant="title" style={{ width: "100%" }}>
-              {String(item)}
-            </Typography>
-          </Stack>
-        </PlatformPressable>
-      </Reanimated.View>
-    );
   }
 
   const headerHeight = useHeaderHeight();
@@ -254,22 +342,16 @@ export default function EDLoginWithCredentials() {
         />
       </ScrollView>
 
-      <Modal
+      <EDDoubleAuthModal
         visible={challengeModalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setChallengeModalVisible(false)}
-      >
-        <OnboardingScrollingFlatList
-          title={doubleAuthChallenge?.question ?? t("ONBOARDING_DOUBLE_AUTH")}
-          color={"#E50052"}
-          step={3}
-          hasReturnButton={false}
-          totalSteps={3}
-          elements={doubleAuthChallenge?.propositions ?? []}
-          renderItem={questionComponent}
-        />
-      </Modal>
+        question={doubleAuthChallenge?.question ?? t("ONBOARDING_DOUBLE_AUTH")}
+        options={(doubleAuthChallenge?.propositions ?? []).map((option) => String(option))}
+        selectedIndex={selectedChallengeIndex}
+        submitting={isSubmittingChallenge}
+        onSelect={setSelectedChallengeIndex}
+        onClose={() => setChallengeModalVisible(false)}
+        onContinue={handleChallenge}
+      />
     </KeyboardAvoidingView>
   );
 }
