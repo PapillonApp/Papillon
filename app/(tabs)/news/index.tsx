@@ -45,7 +45,7 @@ const NewsView = () => {
   const news = useNews()
 
   const sortedNews = useMemo(() => {
-    return news.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    return [...news].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
   }, [news])
 
   const fetchNews = useCallback(async (showLoading = true) => {
@@ -60,7 +60,7 @@ const NewsView = () => {
       }
       await manager.getNews()
     } catch (error) {
-      console.error('Error fetching news:', error)
+      warn(`Error fetching news: ${String(error)}`)
     } finally {
       if (showLoading) {
         setIsLoading(false)
