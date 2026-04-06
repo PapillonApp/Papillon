@@ -23,6 +23,12 @@ import Avatar from "@/ui/components/Avatar";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
+import {
+  ANONYMOUS_PROFILE_BLUR_RADIUS,
+  getDisplayInitials,
+  getDisplayPersonName,
+  useAnonymousMode,
+} from "@/utils/privacy/anonymize";
 
 export default function QRCodePage() {
 
@@ -33,6 +39,7 @@ export default function QRCodePage() {
   const clientId = String(search.clientId || "");
 
   const { t } = useTranslation();
+  const anonymousMode = useAnonymousMode();
   const accounts = useAccountStore((state) => state.accounts);
   const account = useMemo(
     () => accounts.find((item) => item.services.some((entry) => entry.id === clientId)),
@@ -42,13 +49,18 @@ export default function QRCodePage() {
     () => account?.services.find((entry) => entry.id === clientId),
     [account, clientId]
   );
-  const displayName = useMemo(() => {
-    if (!account) {
-      return undefined;
-    }
-
-    return `${account.firstName} ${account.lastName}`.trim();
-  }, [account]);
+  const displayName = useMemo(
+    () => getDisplayPersonName(account?.firstName, account?.lastName, anonymousMode),
+    [account?.firstName, account?.lastName, anonymousMode]
+  );
+  const displayInitials = useMemo(
+    () =>
+      getDisplayInitials(
+        getInitials(`${account?.firstName ?? ""} ${account?.lastName ?? ""}`),
+        anonymousMode
+      ),
+    [account?.firstName, account?.lastName, anonymousMode]
+  );
   const displayClassName =
     account?.className ?? getEDClassName(serviceAccount?.auth.additionals);
   const displayProfilePicture = account?.customisation?.profilePicture;
@@ -129,7 +141,8 @@ export default function QRCodePage() {
                   <Avatar
                     size={56}
                     imageUrl={displayProfilePicture}
-                    initials={getInitials(displayName ?? "")}
+                    initials={displayInitials}
+                    blurRadius={anonymousMode ? ANONYMOUS_PROFILE_BLUR_RADIUS : 0}
                   />
                   <Stack inline flex gap={2}>
                     <Typography variant="title" weight="bold" color="#111111">
