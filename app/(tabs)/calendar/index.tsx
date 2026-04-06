@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { useCallback, useRef, useState } from "react";
-import { FlatList, Platform, StyleSheet,View } from "react-native";
+import { FlatList, Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CourseStatus } from "@/services/shared/timetable";
@@ -21,7 +21,7 @@ export default function TabOneScreen() {
 
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
-  const account = accounts.find(a => a.id === lastUsedAccount)!;
+  const account = accounts.find(a => a.id === lastUsedAccount);
 
   const {
     date,
@@ -63,10 +63,14 @@ export default function TabOneScreen() {
         headerHeight={headerHeight}
         insets={insets}
         tabBarHeight={tabBarHeight}
-        transportInfo={account.transport ?? undefined}
+        transportInfo={account?.transport ?? undefined}
       />
     );
-  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
+  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight, account]);
+
+  if ( !account ) {
+    return null;
+  }
 
   return (
     <>
@@ -86,11 +90,15 @@ export default function TabOneScreen() {
           pagingEnabled={false}
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={INITIAL_INDEX}
-          getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
+          getItemLayout={(_, index) => ({
+            length: windowWidth,
+            offset: windowWidth * index,
+            index
+          })}
           renderItem={renderDay}
           keyExtractor={(_, index) => "renderDay:" + String(index)}
           onScroll={onScroll}
-          decelerationRate={Platform.OS === 'ios' ? 0.98 : undefined}
+          decelerationRate={Platform.OS === "ios" ? 0.98 : undefined}
           disableIntervalMomentum={true}
           scrollEventThrottle={16}
           onMomentumScrollEnd={onMomentumScrollEnd}
@@ -115,16 +123,16 @@ const styles = StyleSheet.create({
 });
 
 export function getStatusText(status?: CourseStatus): string {
-  switch (status) {
-  case CourseStatus.ONLINE:
-    return t("Online_Course")
-  case CourseStatus.EDITED:
-    return t("Edited_Course")
-  case CourseStatus.CANCELED:
-    return t("Canceled_Course")
-  case CourseStatus.EVALUATED:
-    return t("Evaluated_Course")
-  default:
-    return ""
+  switch ( status ) {
+    case CourseStatus.ONLINE:
+      return t("Online_Course")
+    case CourseStatus.EDITED:
+      return t("Edited_Course")
+    case CourseStatus.CANCELED:
+      return t("Canceled_Course")
+    case CourseStatus.EVALUATED:
+      return t("Evaluated_Course")
+    default:
+      return ""
   }
 }
