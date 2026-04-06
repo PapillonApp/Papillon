@@ -13,9 +13,10 @@ import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeH
 import Icon from "@/ui/components/Icon"
 import { router } from "expo-router";
 import { Papicons } from "@getpapillon/papicons"
-import { MenuView } from "@react-native-menu/menu"
+import { t } from "i18next";
 
 import * as ImagePicker from 'expo-image-picker';
+import ActionMenu from "@/ui/components/ActionMenu"
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
 
@@ -235,11 +236,11 @@ const WallpaperModal = () => {
             </Icon>
           </NativeHeaderPressable>
         )}
-        <MenuView
+        <ActionMenu
           actions={[
             {
               id: "background:clear",
-              title: "Supprimer le fond d'écran personnalisé",
+              title: t("Modal_Wallpaper_Clear"),
               imageColor: "#FF0000",
               image: Platform.select({
                 ios: "trash.fill"
@@ -248,7 +249,7 @@ const WallpaperModal = () => {
             },
             {
               id: "background:downloads",
-              title: "Téléchargements",
+              title: t("Modal_Wallpaper_Downloads"),
               imageColor: colors.text,
               image: Platform.select({
                 ios: "square.and.arrow.down"
@@ -256,12 +257,12 @@ const WallpaperModal = () => {
               displayInline: false,
               subactions: [
                 {
-                  title: "Taille des téléchargements",
+                  title: t("Modal_Wallpaper_Downloads_Size"),
                   subtitle: (wallpaperDirectory.info().size / (1024 * 1024)).toFixed(2) + " MB"
                 },
                 {
                   id: "downloads:clear",
-                  title: "Vider les téléchargements",
+                  title: t("Modal_Wallpaper_ClearDownloads"),
                   imageColor: "#FF0000",
                   image: Platform.select({
                     ios: "trash.fill"
@@ -271,6 +272,7 @@ const WallpaperModal = () => {
               ]
             },
           ]}
+          placement="below"
           onPressAction={({ nativeEvent }) => {
             const action = nativeEvent.event;
             if (action === "downloads:clear") {
@@ -291,7 +293,7 @@ const WallpaperModal = () => {
               <Papicons name="Gears" />
             </Icon>
           </NativeHeaderPressable>
-        </MenuView>
+        </ActionMenu>
       </NativeHeaderSide>
     </>
   )

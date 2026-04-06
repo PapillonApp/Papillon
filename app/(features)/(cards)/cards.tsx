@@ -2,7 +2,7 @@ import { getManager } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
-import Button from "@/ui/components/Button";
+import Button from "@/ui/new/Button";
 import ChipButton from "@/ui/components/ChipButton";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { EmptyItem } from "@/ui/components/EmptyItem";
@@ -49,7 +49,8 @@ export default function QRCodeAndCardsPage() {
   return (
     <>
       <TabHeader
-        modal={Platform.OS === "ios"}
+        showAndroidBackButton
+        modal
         onHeightChanged={setHeaderHeight}
         title={
           <TabHeaderTitle
@@ -58,7 +59,7 @@ export default function QRCodeAndCardsPage() {
             subtitle={t("Profile_QRCards_Subtitle", { count: wallets.length })}
           />
         }
-        trailing={
+        trailing={Platform.OS === "ios" && (
           <ChipButton
             single
             icon="cross"
@@ -66,7 +67,7 @@ export default function QRCodeAndCardsPage() {
               router.dismiss();
             }}
           />
-        }
+        )}
       />
 
       <ScrollView
@@ -108,9 +109,9 @@ export default function QRCodeAndCardsPage() {
 
         <Dynamic animated>
           <Button
-            inline
-            title="Ajouter"
-            icon={<Plus />}
+            fullWidth
+            label="Ajouter"
+            leading={<Plus color="#FFF" />}
             onPress={() => {
               router.navigate({
                 pathname: "/(onboarding)/restaurants/method"

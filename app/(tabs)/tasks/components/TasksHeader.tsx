@@ -39,9 +39,9 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
 
   const sortingOptions = useMemo(
     () => [
-      { label: t('Tasks_Sorting_Methods_DueDate'), value: "date", icon: "calendar" },
-      { label: t('Tasks_Sorting_Methods_Subject'), value: "subject", icon: "font" },
-      { label: t('Tasks_Sorting_Methods_Done'), value: "done", icon: "check" },
+      { label: t('Tasks_Sorting_Methods_DueDate'), value: "date", icon: "calendar", papicon: "calendar" },
+      { label: t('Tasks_Sorting_Methods_Subject'), value: "subject", icon: "font", papicon: "font" },
+      { label: t('Tasks_Sorting_Methods_Done'), value: "done", icon: "check", papicon: "check" },
     ],
     []
   );
@@ -51,7 +51,6 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
 
   return (
     <TabHeader
-      backgroundColor={(Platform.OS === "android" && !theme.dark) ? colors.item : 'transparent'}
       onHeightChanged={setHeaderHeight}
       title={
         <TabHeaderTitle
@@ -76,9 +75,11 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
           actions={[
             {
               title: t('Task_Sorting_Title'),
+              papicon: "filter",
               subactions: sortingOptions.map((method) => ({
                 title: method.label,
                 id: "sort:" + method.value,
+                papicon: method.papicon,
                 state: (sortMethod === method.value ? 'on' : 'off'),
                 image: Platform.select({
                   ios:

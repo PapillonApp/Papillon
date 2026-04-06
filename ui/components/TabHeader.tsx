@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { runsIOS26 } from '../utils/IsLiquidGlass';
 import { TabHeaderTitleProps } from './TabHeaderTitle';
+import AndroidBackButton from '@/utils/theme/AndroidBackButton';
 
 
 interface TabHeaderProps {
@@ -18,6 +19,7 @@ interface TabHeaderProps {
   shouldCollapseHeader?: boolean,
   modal?: boolean,
   backgroundColor?: string,
+  showAndroidBackButton?: boolean,
 };
 
 const TabHeader: React.FC<TabHeaderProps> = ({
@@ -28,6 +30,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   shouldCollapseHeader,
   modal,
   backgroundColor,
+  showAndroidBackButton,
 }) => {
   const isModal = Platform.OS === 'ios' ? modal : false;
   const theme = useTheme();
@@ -99,7 +102,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           style={{
             flex: 1,
             flexDirection: 'row',
-            gap: 16,
+            gap: 8,
             paddingHorizontal: 16,
             paddingLeft: isModal ? 24 : 16,
             height: 40,
@@ -107,6 +110,14 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             justifyContent: 'center',
           }}
         >
+          {showAndroidBackButton && Platform.OS === 'android' && (
+            <View style={{
+              marginTop: -2,
+            }}>
+              <AndroidBackButton />
+            </View>
+          )}
+
           {title}
 
           <View

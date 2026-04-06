@@ -15,6 +15,7 @@ import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { formatSchoolName } from "@/utils/format/formatSchoolName";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
+import ActionMenu from "@/ui/components/ActionMenu";
 
 export default function AccountsView() {
   const accounts = useAccountStore(state => state.accounts);
@@ -114,7 +115,7 @@ export default function AccountsView() {
               {formatSchoolName(account.schoolName ?? "")}
             </Typography>
             <List.Trailing>
-              <MenuView
+              <ActionMenu
                 actions={[
                   {
                     id: "delete",
@@ -131,13 +132,13 @@ export default function AccountsView() {
                 <Icon opacity={0.7}>
                   <Papicons name="Menu" />
                 </Icon>
-              </MenuView>
+              </ActionMenu>
             </List.Trailing>
           </List.Item>
         ))}
         <List.Item
           onPress={() =>
-            router.replace({
+            router.push({
               pathname: "/(onboarding)/ageSelection",
               params: { action: "addService" },
             })
@@ -195,7 +196,7 @@ export default function AccountsView() {
               })}
             </Typography>
             <List.Trailing>
-              <MenuView
+              <ActionMenu
                 actions={[
                   {
                     id: "delete",
@@ -215,7 +216,7 @@ export default function AccountsView() {
                 <Icon opacity={0.7}>
                   <Papicons name="Menu" />
                 </Icon>
-              </MenuView>
+              </ActionMenu>
             </List.Trailing>
           </List.Item>
         ))}

@@ -332,6 +332,8 @@
       "ALLEMANDp LV2",
       "ALLEMANbD LV1",
       "ALhLEMADN LV1",
+      "ALLEMAND LVB",
+      "ALLEMAND LV B",
       "Allemand Lv1",
       "Allemand Lv2",
       "ApLLEMAND LV",
@@ -531,6 +533,8 @@
       "ANGLAIS LV2",
       "ANGLAIS LV2 (TP)",
       "ANGLAIS LV2 CAP",
+      "ANGLAIS LVA",
+      "ANGLAIS LV A",
       "ANGLAIS VL2",
       "ANGLAISLV1",
       "ANGLAISLV2",
@@ -2253,6 +2257,17 @@
     ]
   },
   {
+    "label": "histoiregeodnl",
+    "pretty": "Histoire-Géographie DNL",
+    "emoji": "🌎",
+    "formats": [
+      "HIST-GEO / HIST-GEO DNL",
+      "HIST-GEO / HIST-GEO  DNL",
+      "HIST-GEO DNL",
+      "HISTOIRE-GEO DNL"
+    ]
+  },
+  {
     "label": "ses",
     "pretty": "Sciences Économiques Et Sociales",
     "emoji": "📊",
@@ -3559,6 +3574,8 @@
       "ESPAGNOL LV3",
       "ESPAGNOL LV3 1ere",
       "ESPAGNOL LV3 CAP",
+      "ESPAGNOL LVB",
+      "ESPAGNOL LV B",
       "ESPAGNOLL V3",
       "ESPAGNOLLV2",
       "ESPAGNOLLV3",
@@ -4403,6 +4420,18 @@
       "histg eo educ civiq",
       "histgeoeducciviq",
       "ist geo educd civiq"
+    ]
+  },
+  {
+    "label": "histoire-geographie-emc",
+    "pretty": "Histoire-Géographie et EMC",
+    "emoji": "🌍",
+    "formats": [
+      "HISTOIRE-GEOGRAPHIE et EMC",
+      "Histoire-Géographie et EMC",
+      "Histoire Géographie et EMC",
+      "Histoire Géographie EMC",
+      "Histoire Géo EMC"
     ]
   },
   {
@@ -6101,6 +6130,7 @@
     "emoji": "💻",
     "formats": [
       "NUMÉRIQUE & SCIENCES INFORMATIQUES",
+      "NUMERIQUE SC.INFORM.",
       "Numerique & Sciences Informatiques",
       "Numerique Et Sciences Informatiques",
       "Numéirque & Sciences nformatiques",
@@ -8534,6 +8564,33 @@
     "emoji": "📈",
     "formats": [
       "strategie de com et marketing"
+    ]
+  },
+  {
+    "label": "cesce",
+    "pretty": "Comité d'éducation à la santé, à la citoyenneté et à l'environnement",
+    "emoji": "🩺",
+    "formats": [
+      "CESCE",
+      "Cesce",
+      "cesce"
+    ]
+  },
+  {
+    "label": "langueetlitterature",
+    "pretty": "Langue &amp Littérature",
+    "emoji": "📖",
+    "formats": [
+      "LANGUE &amp; LITTÉRATURE",
+      "LANGUE &amp LITTÉRATURE"
+    ]
+  },
+  {
+    "label": "sectionamericaine",
+    "pretty": "Anglais LV1 Section Américaine",
+    "emoji": "🇺🇸",
+    "formats": [
+      "AMERICAIN LV SECTION"
     ]
   }
 ]

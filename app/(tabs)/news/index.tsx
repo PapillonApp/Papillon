@@ -20,7 +20,6 @@ import { router, useRouter } from 'expo-router'
 import { t } from 'i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Platform, View } from 'react-native'
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -31,7 +30,7 @@ const NewsView = () => {
   const insets = useSafeAreaInsets()
 
   const [headerHeight, setHeaderHeight] = useState(0)
-  const bottomTabBarHeight = useBottomTabBarHeight()
+  const bottomTabBarHeight = insets.bottom + 16;
 
   const [isLoading, setIsLoading] = useState(false)
   const [isManuallyLoading, setIsManuallyLoading] = useState(false)
@@ -114,7 +113,7 @@ const NewsView = () => {
           }
           ListFooterComponent={<Reanimated.View style={footerStyle} />}
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
-          ListHeaderComponent={<View style={{ height: headerHeight }} />}
+          ListHeaderComponent={<View style={{ height: headerHeight - (Platform.OS === "ios" ? insets.top : 0) }} />}
           ListEmptyComponent={
             <Dynamic animated key='empty-list:warn' entering={PapillonAppearIn} exiting={PapillonAppearOut}>
               <Stack

@@ -10,8 +10,6 @@ import {
   View,
   Platform,
   Modal,
-  TouchableOpacity,
-  FlatList,
 } from "react-native";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { Colors } from "@/utils/subjects/colors";
@@ -27,21 +25,39 @@ import Button from "@/ui/new/Button";
 import { UnicodeEmojis } from "@/constants/UnicodeEmojis";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
+import { PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
+import { ListTouchable } from "@/ui/new/List";
+import { LegendList, LegendListRef } from "@legendapp/list";
+import { FlashList } from "@shopify/flash-list";
 
-const EmojiItem = memo(({ item, onPress }: {item: string, onPress: (emoji: string) => void}) => {
+const EmojiItem = memo(({ item, onPress, isSelected }: {item: string, onPress: (emoji: string) => void, isSelected: boolean}) => {
+  const theme = useTheme();
   return (
-    <TouchableOpacity
+    <ListTouchable
+      onPress={() => onPress(item)}
       style={{
-        padding: 5,
-        height: 50,
-        width: 50,
+        flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: 10,
-        marginVertical: 5,
-        marginHorizontal: "auto"
       }}
-      onPress={() => onPress(item)}
+    >
+    <View
+      style={[
+        {
+          height: 56,
+          width: 56,
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 10,
+          marginVertical: 5,
+          marginHorizontal: "auto"
+        },
+        isSelected && {
+          backgroundColor: Platform.OS === "ios" ? theme.colors.primary + "20" : theme.colors.primary + "30",
+          borderWidth: Platform.OS === "ios" ? 2 : 0,
+          borderColor: theme.colors.primary,
+        }
+      ]}
     >
       <Typography
         style={{
@@ -51,7 +67,8 @@ const EmojiItem = memo(({ item, onPress }: {item: string, onPress: (emoji: strin
       >
         {item}
       </Typography>
-    </TouchableOpacity>
+    </View>
+    </ListTouchable>
   );
 });
 
@@ -66,7 +83,7 @@ function EmojiPicker({
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
-  const flatListRef = useRef<FlatList | null>(null);
+  const flatListRef = useRef<LegendListRef | null>(null);
   const scale = useSharedValue(1);
 
   const emojis = useMemo(() => {
@@ -93,19 +110,29 @@ function EmojiPicker({
 
   const handleSelect = useCallback(item => {
     setSelectedEmoji(item);
-    scale.value = 0.8;
-    scale.value = withSpring(1);
   }, []);
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [selectedEmoji, setSelectedEmoji] = useState<string>("😀");
 
-  const emojiContainerAnimatedStyle = useAnimatedStyle(() => ({
+  const emojiContainerStyle = {
     height: 180,
     alignItems: "center",
     justifyContent: "center",
-    transform: [{ scale: scale.value }],
-  }));
+  };
+
+  const [selectedTab, setSelectedTab] = useState(emojis[0].title);
+
+  const selectTab = (tab) => {
+    setSelectedTab(tab);
+    const section = emojis.find(s => s.title === tab);
+    if (section) {
+      const index = emojis
+        .slice(0, emojis.indexOf(section))
+        .reduce((acc, curr) => acc + curr.data.length, 0);
+      flatListRef.current?.scrollToOffset({ offset: index * 56, animated: false });
+    }
+  }
 
   return (
     <View
@@ -127,7 +154,12 @@ function EmojiPicker({
         }
         trailing={<ChipButton single icon="cross" onPress={onCancel} />}
       />
-      <Animated.View style={[emojiContainerAnimatedStyle]}>
+      <Animated.View
+        style={[emojiContainerStyle]}
+        key={selectedEmoji + "_preview"}
+        entering={PapillonZoomIn}
+        exiting={PapillonZoomOut}
+      >
         <Typography
           style={{
             fontSize: 100,
@@ -151,47 +183,55 @@ function EmojiPicker({
         }}
       >
         {emojis.map((value, index) => (
-          <TouchableOpacity
-            style={{
-              padding: 5,
-              height: 40,
-              width: 40,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+          <ListTouchable
+            key={index}
+            onPress={() => selectTab(value.title)}
+            >
+          <View
+            style={[
+              {
+                padding: 5,
+                height: 50,
+                width: 40,
+                alignItems: "center",
+                justifyContent: "center",
+                borderBottomWidth: 3,
+                borderColor: "transparent",
+              },
+              selectedTab === value.title && {
+                borderBottomColor: theme.colors.primary,
+
+              },
+            ]}
             key={index}
             onPress={() => {
-              const indexToScroll = flatEmojis.indexOf(
-                String.fromCodePoint(value.data[0])
-              );
-
-              flatListRef.current?.scrollToOffset({
-                offset: 60 * Math.floor(indexToScroll / 6),
-                animated: true,
-              });
+              selectTab(value.title);
             }}
           >
             <Papicons
               name={value.title}
               size={24}
-              color={theme.colors.text + "70"}
+              color={selectedTab === value.title ? theme.colors.primary : theme.colors.text + "7F"}
             />
-          </TouchableOpacity>
+          </View>
+          </ListTouchable>
         ))}
       </View>
-      <FlatList
+      <FlashList
         ref={flatListRef}
         data={flatEmojis}
         numColumns={6}
-        removeClippedSubviews={true}
-        keyExtractor={(item, index) => index.toString()}
+        drawDistance={900}
+        recycleItems
+        estimatedItemSize={66}
+        keyExtractor={(item, index) => item + index}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           padding: 5,
           paddingBottom: 80,
         }}
         renderItem={({ item }) => (
-          <EmojiItem item={item} onPress={handleSelect} />
+          <EmojiItem item={item} onPress={handleSelect} isSelected={item === selectedEmoji} />
         )}
       />
       <View

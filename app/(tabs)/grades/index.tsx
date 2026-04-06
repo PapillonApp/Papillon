@@ -6,7 +6,6 @@ import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, Platform, RefreshControl, View } from 'react-native';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -40,17 +39,18 @@ import { SubjectItem } from './atoms/Subject';
 import { useGradeInfluence } from './hooks/useGradeInfluence';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
+import ActionMenu from '@/ui/components/ActionMenu';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
 
 const GradesView: React.FC = () => {
   // Layout du header
   const [headerHeight, setHeaderHeight] = useState(0);
-  const bottomTabBarHeight = useBottomTabBarHeight();
 
   // Thème
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const bottomTabBarHeight = 0;
   const navigation = useNavigation();
 
   // Chargement
@@ -80,6 +80,7 @@ const GradesView: React.FC = () => {
     {
       label: t("Grades_Sorting_Alphabetical"),
       value: "alphabetical",
+      papicon: "letter",
       icon: {
         ios: "character",
         android: "ic_alphabetical",
@@ -89,6 +90,7 @@ const GradesView: React.FC = () => {
     {
       label: t("Grades_Sorting_Date"),
       value: "date",
+      papicon: "calendar",
       icon: {
         ios: "calendar",
         android: "ic_date",
@@ -98,6 +100,7 @@ const GradesView: React.FC = () => {
     {
       label: t("Grades_Sorting_Averages"),
       value: "averages",
+      papicon: "grades",
       icon: {
         ios: "chart.xyaxis.line",
         android: "ic_averages",
@@ -446,7 +449,7 @@ const GradesView: React.FC = () => {
         onHeightChanged={setHeaderHeight}
         /* Nom de la période */
         title={
-          <MenuView
+          <ActionMenu
             onPressAction={({ nativeEvent }) => {
               const actionId = nativeEvent.event;
 
@@ -487,7 +490,7 @@ const GradesView: React.FC = () => {
               loading={loading}
               chevron={periods.length > 1}
             />
-          </MenuView>
+          </ActionMenu>
         }
         /* Filtres */
         trailing={
@@ -504,6 +507,7 @@ const GradesView: React.FC = () => {
                 id: "sort:" + s.value,
                 title: s.label,
                 state: sortMethod === s.value ? "on" : "off",
+                papicon: s.icon.papicon,
                 image: Platform.select({
                   ios: s.icon.ios,
                   android: s.icon.android,
@@ -524,7 +528,7 @@ const GradesView: React.FC = () => {
 
       <List
       animated
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: (headerHeight - (Platform.OS === "ios" ? insets.top : 0)) + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
 
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}

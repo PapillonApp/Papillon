@@ -15,4 +15,5 @@ export default class News extends Model {
   @text('content') content!: string;
   @text('author') author!: string;
   @text('category') category!: string;
+  @field('question') question!: boolean;
 }
