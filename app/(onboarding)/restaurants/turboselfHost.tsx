@@ -246,12 +246,7 @@ export default function TurboSelfSelectHost() {
                 })
 
                 store.setLastUsedAccount(accountId)
-                return router.push({
-                  pathname: "../end/color",
-                  params: {
-                    accountId
-                  }
-                });
+                return router.push("/index");
               }}>
                 <Stack
                   hAlign="center"

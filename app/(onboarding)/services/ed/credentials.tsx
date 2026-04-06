@@ -271,10 +271,7 @@ export default function EDLoginWithCredentials() {
         store.setLastUsedAccount(device);
 
         queueMicrotask(() => {
-          router.push({
-            pathname: "../end/color",
-            params: { accountId: device },
-          });
+          router.push("/index");
         });
       }
     } catch (e) {
