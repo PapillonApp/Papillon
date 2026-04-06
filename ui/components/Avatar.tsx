@@ -19,6 +19,7 @@ export interface AvatarProps extends ViewProps {
   size?: number;
   initials?: string;
   imageUrl?: string;
+  blurRadius?: number;
   shape?: "circle" | "square";
   color?: string;
   skeleton?: boolean;
@@ -28,6 +29,7 @@ const Avatar = ({
   size = 40,
   initials,
   imageUrl,
+  blurRadius = 0,
   shape = "circle",
   color,
   skeleton = false,
@@ -92,6 +94,7 @@ const Avatar = ({
             key={reloadKey}
             source={{ uri: imageUrl }}
             style={{ width: size, height: size, borderRadius: borderRadius }}
+            blurRadius={blurRadius}
             resizeMode="cover"
             onError={() => setHasFailed(true)}
           />

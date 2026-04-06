@@ -12,6 +12,7 @@ import { Course as SharedCourse } from "@/services/shared/timetable";
 import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { getDisplayTeacherName, useAnonymousMode } from "@/utils/privacy/anonymize";
 import { getSubjectName } from '@/utils/subjects/name';
 
 import { getStatusText } from "../(tabs)/calendar/components/CalendarDay";
@@ -32,6 +33,7 @@ interface GradesModalProps {
 export default function CourseModal() {
   const { params } = useRoute();
   const { colors } = useTheme();
+  const anonymousMode = useAnonymousMode();
 
   if (!params) {
     return null;
@@ -173,7 +175,7 @@ export default function CourseModal() {
               {t("Modal_Course_Teacher")}
             </Typography>
             <Typography variant="body1" color="textSecondary">
-              {item.teacher}
+              {getDisplayTeacherName(item.teacher, anonymousMode)}
             </Typography>
           </List.Item>
 

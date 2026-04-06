@@ -48,35 +48,40 @@ const NewsView = () => {
     return news.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
   }, [news])
 
-  const fetchNews = useCallback(() => {
-    try {
+  const fetchNews = useCallback(async (showLoading = true) => {
+    if (showLoading) {
       setIsLoading(true)
+    }
+    try {
       const manager = getManager()
       if (!manager) {
         warn('Manager is null, skipping news fetch')
         return
       }
-      manager.getNews()
+      await manager.getNews()
     } catch (error) {
       console.error('Error fetching news:', error)
     } finally {
-      setIsLoading(false)
+      if (showLoading) {
+        setIsLoading(false)
+      }
       setIsManuallyLoading(false)
     }
   }, [])
 
   useEffect(() => {
+    void fetchNews()
     const unsubscribe = subscribeManagerUpdate(() => {
-      fetchNews()
+      void fetchNews()
     })
 
     return () => unsubscribe()
-  }, [])
+  }, [fetchNews])
 
   const [searchText, setSearchText] = useState('')
 
   const filteredNews = useMemo(() => {
-    return sortedNews.filter((item) => item.title.toLowerCase().includes(searchText.toLowerCase()))
+    return sortedNews.filter((item) => (item.title ?? '').toLowerCase().includes(searchText.toLowerCase()))
   }, [sortedNews, searchText])
 
   return (
@@ -107,7 +112,7 @@ const NewsView = () => {
               refreshing={isManuallyLoading}
               onRefresh={() => {
                 setIsManuallyLoading(true)
-                fetchNews()
+                void fetchNews(false)
               }}
               progressViewOffset={headerHeight}
             />
@@ -139,6 +144,7 @@ const NewsView = () => {
           {filteredNews.map((item) => {
             const profileColor = getProfileColorByName(item.author)
             const profileInitials = getInitials(item.author)
+            const title = item.title ?? ''
 
             return (
               <List.Item
@@ -160,7 +166,7 @@ const NewsView = () => {
                 </List.Leading>
 
                 <Typography variant='title' numberOfLines={2}>
-                  {item.title}
+                  {title}
                 </Typography>
                 <Typography variant='body1' color='textSecondary' numberOfLines={3}>
                   {item.content ? truncateString(cleanContent(item.content), 100) : ''}

@@ -30,6 +30,12 @@ import {
   getAccountProfilePictureUri,
 } from "@/utils/profilePicture";
 import ActionMenu from "@/ui/components/ActionMenu";
+import {
+  ANONYMOUS_PROFILE_BLUR_RADIUS,
+  getDisplayInitials,
+  getDisplayPersonName,
+  useAnonymousMode,
+} from "@/utils/privacy/anonymize";
 
 type ProfileMenuAction = MenuAction & {
   papicon?: React.ComponentProps<typeof Papicons>["name"];
@@ -42,6 +48,7 @@ export default function CustomProfileScreen() {
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
+  const anonymousMode = useAnonymousMode();
 
   const [firstName, setFirstName] = useState<string>(account?.firstName ?? "");
   const [lastName, setLastName] = useState<string>(account?.lastName ?? "");
@@ -121,6 +128,9 @@ export default function CustomProfileScreen() {
   }
 
   const { colors } = useTheme();
+  const displayName = getDisplayPersonName(firstName, lastName, anonymousMode);
+  const [displayFirstName, ...displayLastNameParts] = displayName.split(" ");
+  const displayLastName = displayLastNameParts.join(" ");
   const profilePictureActions: ProfileMenuAction[] = [
     {
       id: 'photo_library',
@@ -168,8 +178,9 @@ export default function CustomProfileScreen() {
         <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
           <Avatar
             size={117}
-            initials={getInitials(`${firstName} ${lastName}`)}
+            initials={getDisplayInitials(getInitials(`${firstName} ${lastName}`), anonymousMode)}
             imageUrl={profilePictureUrl || undefined}
+            blurRadius={anonymousMode ? ANONYMOUS_PROFILE_BLUR_RADIUS : 0}
           />
 
           <ActionMenu
@@ -209,18 +220,18 @@ export default function CustomProfileScreen() {
             <Typography color="secondary">Prénom</Typography>
             <OnboardingInput
               placeholder={"Prénom"}
-              text={firstName}
+              text={anonymousMode ? displayFirstName : firstName}
               setText={setFirstName}
               icon={"Font"}
-              inputProps={{}}
+              inputProps={{ editable: !anonymousMode }}
             />
             <Typography color="secondary">Nom</Typography>
             <OnboardingInput
               placeholder={"Nom"}
-              text={lastName}
+              text={anonymousMode ? displayLastName : lastName}
               setText={setLastName}
               icon={"Bold"}
-              inputProps={{}}
+              inputProps={{ editable: !anonymousMode }}
             />
           </View>
         </View>

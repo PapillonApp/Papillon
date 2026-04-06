@@ -14,6 +14,13 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { formatSchoolName } from "@/utils/format/formatSchoolName";
+import {
+  ANONYMOUS_PROFILE_BLUR_RADIUS,
+  getDisplayInitials,
+  getDisplayPersonName,
+  getDisplaySchoolName,
+  useAnonymousMode,
+} from "@/utils/privacy/anonymize";
 import { getAccountProfilePictureUri } from "@/utils/profilePicture";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
 import ActionMenu from "@/ui/components/ActionMenu";
@@ -21,6 +28,7 @@ import ActionMenu from "@/ui/components/ActionMenu";
 export default function AccountsView() {
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const anonymousMode = useAnonymousMode();
   const account = accounts.find(a => a.id === lastUsedAccount);
   const store = useAccountStore.getState();
 
@@ -29,7 +37,7 @@ export default function AccountsView() {
   const askDeleteAccount = (targetAccount: (typeof accounts)[number]) => {
     Alert.alert(
       "Supprimer le compte",
-      `${targetAccount.firstName} ${targetAccount.lastName}`,
+      getDisplayPersonName(targetAccount.firstName, targetAccount.lastName, anonymousMode),
       [
         {
           text: "Annuler",
@@ -96,19 +104,22 @@ export default function AccountsView() {
           <List.Item key={account.id}>
             <List.Leading>
               <Avatar
-                initials={getInitials(
+                initials={getDisplayInitials(getInitials(
                   account.firstName + " " + account.lastName
-                )}
+                ), anonymousMode)}
                 imageUrl={getAccountProfilePictureUri(account.customisation?.profilePicture)}
+                blurRadius={anonymousMode ? ANONYMOUS_PROFILE_BLUR_RADIUS : 0}
                 size={38}
               />
             </List.Leading>
             <Typography variant="title">
-              {account.firstName} {account.lastName}
+              {getDisplayPersonName(account.firstName, account.lastName, anonymousMode)}
             </Typography>
             <Typography variant="body2" color="textSecondary">
               {account.className ? account.className + " " : ""}
-              {formatSchoolName(account.schoolName ?? "")}
+              {anonymousMode
+                ? (getDisplaySchoolName(account.schoolName, anonymousMode) ?? "")
+                : formatSchoolName(account.schoolName ?? "")}
             </Typography>
             <List.Trailing>
               <ActionMenu

@@ -32,6 +32,10 @@ const HomeHeader = () => {
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const currentVersion = packageJson.version;
   const releaseNotesUrl = `https://papillon.bzh/release-notes/${currentVersion}`;
+  const currentAttendancePeriod = useMemo(
+    () => attendancesPeriods.length > 0 ? getCurrentPeriod(attendancesPeriods) : undefined,
+    [attendancesPeriods]
+  );
 
   useEffect(() => {
     const installedVersion = settingsStore.installedVersion;
@@ -82,7 +86,7 @@ const HomeHeader = () => {
           pathname: "/(features)/attendance",
           params: {
             periods: JSON.stringify(attendancesPeriods),
-            currentPeriod: JSON.stringify(getCurrentPeriod(attendancesPeriods)),
+            currentPeriod: currentAttendancePeriod ? JSON.stringify(currentAttendancePeriod) : "",
             attendances: JSON.stringify(attendances),
           },
         });
@@ -99,7 +103,7 @@ const HomeHeader = () => {
         router.push("/(features)/soon");
       }
     }
-  ], [availableCanteenCards, absencesCount, chats, attendancesPeriods, attendances, t]);
+  ], [availableCanteenCards, absencesCount, chats, attendancesPeriods, attendances, currentAttendancePeriod, t]);
 
   return (
     <View style={{ paddingHorizontal: 0, width: "100%", flex: 1 }}>

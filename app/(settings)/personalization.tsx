@@ -1,23 +1,18 @@
-import { Alert, Platform, ScrollView, Switch } from "react-native";
-import Stack from "@/ui/components/Stack";
-import { EarthIcon } from "lucide-react-native";
+import { Platform, Switch } from "react-native";
 import React, { useEffect } from "react";
 import Typography from "@/ui/new/Typography";
 import Icon from "@/ui/components/Icon";
-import { Papicons, PapillonApp } from "@getpapillon/papicons";
+import Stack from "@/ui/components/Stack";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import AppColorsSelector from "@/components/AppColorsSelector";
 import { AppColors } from "@/utils/colors";
 import LinearGradient from "react-native-linear-gradient";
-import adjust from "@/utils/adjustColor";
-import { useAccountStore } from "@/stores/account";
 import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from "@/stores/settings";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { FadeIn, FadeOut } from "react-native-reanimated";
 import List from "@/ui/new/List";
 
 
@@ -25,42 +20,32 @@ const PersonalizationSettings = () => {
   const theme = useTheme();
   const { t } = useTranslation()
 
-  const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const useMaterialYou = settingsStore.useMaterialYou ?? DEFAULT_MATERIAL_YOU_ENABLED;
-
-  const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
-  const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
-  const [selectedTheme, setSelectedTheme] = React.useState<"light" | "dark" | "auto">("auto");
+  const [selectedTheme, setSelectedTheme] = React.useState<"light" | "dark" | "auto">(settingsStore.theme ?? "auto");
 
   const height = useHeaderHeight()
 
   useEffect(() => {
-    if (settingsStore.theme) {
-      setSelectedTheme(settingsStore.theme);
+    if ((settingsStore.theme ?? "auto") !== selectedTheme) {
+      mutateProperty('personalization', { theme: selectedTheme });
     }
-  }, []);
-
-  useEffect(() => {
-    mutateProperty('personalization', { theme: selectedTheme });
-  }, [selectedTheme]);
+  }, [mutateProperty, selectedTheme, settingsStore.theme]);
 
   return (
     <>
-      <Dynamic animated entering={FadeIn} exiting={FadeOut} key={'color-grad-stgs:' + theme.colors.primary}>
-        <LinearGradient
-          colors={[theme.colors.primary, theme.colors.primary + "00"]}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 400,
-            opacity: useMaterialYou ? 0.4 : 1,
-          }}
-        />
-      </Dynamic>
+      <LinearGradient
+        colors={[theme.colors.primary, theme.colors.primary + "00"]}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 400,
+          opacity: useMaterialYou ? 0.4 : 1,
+        }}
+      />
       <List
         contentContainerStyle={{ padding: 16 }}
         contentInsetAdjustmentBehavior="always"
@@ -74,7 +59,6 @@ const PersonalizationSettings = () => {
             <List.View>
               <AppColorsSelector
                 onChangeColor={(color: string) => {
-                  setSelectedColor(color);
                   setTimeout(() => {
                     const colorData = AppColors.find(appColor => appColor.mainColor === color);
                     if (colorData) {
@@ -84,7 +68,6 @@ const PersonalizationSettings = () => {
                     }
                   }, 50);
                 }}
-                accountId={store.lastUsedAccount}
               />
             </List.View>
           </List.Section>

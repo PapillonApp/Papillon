@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, View, useWindowDimensions } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 
@@ -87,7 +87,8 @@ const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsS
 }) {
   const settingsStore = useSettingsStore(state => state.personalization);
   const theme = useTheme();
-  const [containerWidth, setContainerWidth] = useState(0);
+  const { width: windowWidth } = useWindowDimensions();
+  const [containerWidth, setContainerWidth] = useState(Math.max(windowWidth - 32, 0));
 
   const defaultColorData = useMemo(
     () => AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0],
@@ -95,22 +96,22 @@ const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsS
   );
 
   const [selectedColor, setSelectedColor] = useState<string>(defaultColorData.mainColor);
-  const [color, setColor] = useState<Colors>(settingsStore.colorSelected || Colors.PINK);
+
+  useEffect(() => {
+    setContainerWidth(Math.max(windowWidth - 32, 0));
+  }, [windowWidth]);
 
   const itemWidth = useMemo(() => {
-    if (containerWidth === 0) return 100;
-    return (containerWidth - 36) / 3;
+    return Math.max((containerWidth - 36) / 3, 0);
   }, [containerWidth]);
 
   useEffect(() => {
     const colorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
     setSelectedColor(colorData.mainColor);
-    setColor(colorData.colorEnum);
   }, [settingsStore.colorSelected]);
 
   const handleColorPress = useCallback((item: typeof AppColors[0]) => {
     setSelectedColor(item.mainColor);
-    setColor(item.colorEnum);
     onChangeColor?.(item.mainColor);
   }, [onChangeColor]);
 

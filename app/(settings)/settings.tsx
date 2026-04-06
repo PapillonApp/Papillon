@@ -22,6 +22,13 @@ import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import { error } from "@/utils/logger/logger";
+import {
+  ANONYMOUS_PROFILE_BLUR_RADIUS,
+  getDisplayInitials,
+  getDisplayPersonName,
+  getDisplaySchoolName,
+  useAnonymousMode,
+} from "@/utils/privacy/anonymize";
 import { getAccountProfilePictureUri } from "@/utils/profilePicture";
 
 import packagejson from "../../package.json"
@@ -42,6 +49,7 @@ export default function SettingsIndex() {
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
   const settingsStore = useSettingsStore(state => state.personalization);
+  const anonymousMode = useAnonymousMode();
   const currentVersion = packagejson.version;
   const releaseNotesUrl = `https://papillon.bzh/release-notes/${currentVersion}`;
 
@@ -50,13 +58,13 @@ export default function SettingsIndex() {
   const [firstName, lastName, level, establishment] = useMemo(() => {
     if (!account) { return [null, null, null, null]; }
 
-    const firstName = account.firstName;
-    const lastName = account.lastName;
+    const displayName = getDisplayPersonName(account.firstName, account.lastName, anonymousMode);
+    const [displayFirstName, ...displayLastNameParts] = displayName.split(" ");
     const level = account.className;
-    const establishment = account.schoolName;
+    const establishment = getDisplaySchoolName(account.schoolName, anonymousMode);
 
-    return [firstName, lastName, level, establishment];
-  }, [account]);
+    return [displayFirstName ?? null, displayLastNameParts.join(" ") || null, level, establishment];
+  }, [account, anonymousMode]);
 
   const logout = useCallback(() => {
     const accounts = useAccountStore.getState().accounts;
@@ -312,8 +320,9 @@ export default function SettingsIndex() {
             >
               <Avatar
                 size={72}
-                initials={getInitials(`${account?.firstName} ${account?.lastName}`)}
+                initials={getDisplayInitials(getInitials(`${account?.firstName} ${account?.lastName}`), anonymousMode)}
                 imageUrl={getAccountProfilePictureUri(account?.customisation?.profilePicture)}
+                blurRadius={anonymousMode ? ANONYMOUS_PROFILE_BLUR_RADIUS : 0}
                 style={{ marginBottom: 8 }}
               />
               <TypographyLegacy variant="h3" align="center">
@@ -321,7 +330,7 @@ export default function SettingsIndex() {
               </TypographyLegacy>
               {establishment &&
                 <TypographyLegacy variant="body1" align="center" color="secondary">
-                  {level} {(level && establishment) && " — "} {formatSchoolName(establishment)}
+                  {level} {(level && establishment) && " — "} {anonymousMode ? establishment : formatSchoolName(establishment)}
                 </TypographyLegacy>
               }
             </Stack>

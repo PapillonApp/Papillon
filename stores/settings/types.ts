@@ -30,6 +30,7 @@ export interface Personalization {
   theme?: "light" | "dark" | "auto";
   useMaterialYou?: boolean;
   magicEnabled?: boolean;
+  anonymousMode?: boolean;
   hideNameOnHomeScreen?: boolean;
   showAlertAtLogin?: boolean;
   showDevMode?: boolean;

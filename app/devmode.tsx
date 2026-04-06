@@ -61,6 +61,32 @@ export default function Devmode() {
     >
       <DevModeNotice />
 
+      <SectionHeader
+        title="Confidentialite"
+        leading={
+          <Icon>
+            <Papicons name="Ghost" size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item>
+          <Typography variant="title">Mode anonyme</Typography>
+          <Typography variant="body2">
+            Floute la photo de profil et masque noms, profs et etablissement.
+          </Typography>
+          <Trailing>
+            <Switch
+              value={Boolean(settingStore.anonymousMode)}
+              onValueChange={(value) =>
+                mutateProperty("personalization", { anonymousMode: value })
+              }
+            />
+          </Trailing>
+        </Item>
+      </List>
+
       <List>
         <Item>
           <Trailing>

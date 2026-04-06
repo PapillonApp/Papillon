@@ -8,6 +8,7 @@ import { error } from '@/utils/logger/logger';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
 
 export const useHomeworkData = (selectedWeek: number, alert: any) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [homework, setHomework] = useState<Record<string, Homework>>({});
@@ -22,8 +23,16 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
     .filter(h => services.includes(h.createdByAccount));
 
   const fetchHomeworks = useCallback(
-    async (managerToUse = manager) => {
-      if (!managerToUse) { return; }
+    async (managerToUse = manager, showLoading = true) => {
+      if (showLoading) {
+        setIsLoading(true);
+      }
+      if (!managerToUse) {
+        if (showLoading) {
+          setIsLoading(false);
+        }
+        return;
+      }
       try {
         const result: Homework[] = await managerToUse.getHomeworks(selectedWeek);
         result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
@@ -38,24 +47,28 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
         setRefreshTrigger(p => p + 1);
       } catch (e) {
         error("Fetch error", String(e));
+      } finally {
+        if (showLoading) {
+          setIsLoading(false);
+        }
       }
     },
     [selectedWeek, manager]
   );
 
   useEffect(() => {
-    fetchHomeworks();
+    void fetchHomeworks();
     const unsubscribe = subscribeManagerUpdate((updatedManager) => {
-      fetchHomeworks(updatedManager);
+      void fetchHomeworks(updatedManager);
     });
     return () => unsubscribe();
   }, [selectedWeek, fetchHomeworks]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await fetchHomeworks();
+    await fetchHomeworks(manager, false);
     setIsRefreshing(false);
-  }, [fetchHomeworks]);
+  }, [fetchHomeworks, manager]);
 
   const setAsDone = useCallback(
     async (item: Homework, done: boolean) => {
@@ -112,6 +125,7 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
   return {
     homework,
     homeworksFromCache,
+    isLoading,
     isRefreshing,
     handleRefresh,
     setAsDone,

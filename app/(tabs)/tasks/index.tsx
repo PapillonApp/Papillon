@@ -28,6 +28,7 @@ const TasksView: React.FC = () => {
   const {
     homework,
     homeworksFromCache,
+    isLoading,
     isRefreshing,
     handleRefresh,
     setAsDone,
@@ -60,6 +61,7 @@ const TasksView: React.FC = () => {
         <TasksHeader
           defaultWeek={defaultWeek}
           selectedWeek={selectedWeek}
+          isLoading={isLoading}
           onToggleWeekPicker={toggleWeekPicker}
           setHeaderHeight={setHeaderHeight}
           setShowUndoneOnly={setShowUndoneOnly}

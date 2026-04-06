@@ -8,6 +8,7 @@ import { Platform, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
+import { getDisplayTeacherName, useAnonymousMode } from "@/utils/privacy/anonymize";
 
 import { formatDuration } from "../utils/Duration";
 import AnimatedPressable from "./AnimatedPressable";
@@ -95,6 +96,8 @@ const Course = React.memo((props: CourseProps) => {
   const duration = end - start;
   const { t } = useTranslation();
   const { colors, dark } = useTheme();
+  const anonymousMode = useAnonymousMode();
+  const displayTeacher = getDisplayTeacherName(teacher, anonymousMode);
 
   const fStart = new Date(start * 1000);
   const fEnd = new Date(end * 1000);
@@ -338,7 +341,7 @@ const Course = React.memo((props: CourseProps) => {
                   style={[styles.teacher, { color: textColor }]}
                   skeleton={skeleton}
                 >
-                  {teacher}
+                  {displayTeacher}
                 </Typography>
               </View>
             </Stack>
@@ -371,7 +374,7 @@ const Course = React.memo((props: CourseProps) => {
         </Stack>
       </Stack>
     </Stack>
-  ), [colors.border, colors.card, colors.text, compact, containerStyle, dark, duration, name, room, skeleton, status, textColor, t, teacher, variant, color]);
+  ), [colors.border, colors.card, colors.text, compact, containerStyle, dark, displayTeacher, duration, name, room, skeleton, status, textColor, t, variant, color]);
 
   /** Cours principale */
   const renderCourseCard = useCallback(() => (

@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { MenuView } from '@react-native-menu/menu';
+import type { MenuAction } from '@react-native-menu/menu';
 import { useTheme } from '@react-navigation/native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useRouter } from 'expo-router';
@@ -18,6 +18,16 @@ import { useUserProfileData } from '../hooks/useUserProfileData';
 import { t } from 'i18next';
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import ActionMenu from '@/ui/components/ActionMenu';
+import {
+  ANONYMOUS_PROFILE_BLUR_RADIUS,
+  getDisplayPersonName,
+  getDisplaySchoolName,
+  useAnonymousMode,
+} from '@/utils/privacy/anonymize';
+
+type UserProfileMenuAction = MenuAction & {
+  papicon?: React.ComponentProps<typeof Papicons>["name"];
+};
 
 const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
   const router = useRouter();
@@ -25,13 +35,39 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const theme = useTheme();
+  const anonymousMode = useAnonymousMode();
 
-  const AccountsMenuItems = (accounts && accounts.length > 0) && accounts.map((account) => ({
+  const AccountsMenuItems: UserProfileMenuAction[] = (accounts && accounts.length > 0) ? accounts.map((account) => ({
     id: account.id,
-    title: account.firstName + ' ' + account.lastName,
-    subtitle: formatSchoolName(account.schoolName ?? ""),
-    state: account.id === lastUsedAccount ? 'on' : 'off',
-  })) || [];
+    title: getDisplayPersonName(account.firstName, account.lastName, anonymousMode),
+    subtitle: anonymousMode
+      ? (getDisplaySchoolName(account.schoolName, true) ?? "")
+      : formatSchoolName(account.schoolName ?? ""),
+    state: account.id === lastUsedAccount ? "on" : "off",
+  })) : [];
+
+  const menuActions: UserProfileMenuAction[] = [
+    ...(Platform.OS === "ios" ? [{
+      id: 'workspaces',
+      title: '',
+      displayInline: true,
+      subactions: AccountsMenuItems,
+    }] : AccountsMenuItems),
+    {
+      id: 'edit',
+      title: t('Home_Edit_Profile'),
+      image: 'person.crop.circle',
+      papicon: 'user',
+      imageColor: theme.colors.text,
+    },
+    {
+      id: 'add',
+      title: t('Home_Add_Profile'),
+      image: 'plus',
+      papicon: 'add',
+      imageColor: theme.colors.text,
+    },
+  ];
 
   return (
     <Stack inline flex>
@@ -41,20 +77,12 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
         gap={10}
       >
         <Pressable onPress={() => router.push('/(modals)/profile')}>
-          <UserProfileItemContainer
-            glassType="clear"
-            isInteractive={true}
-            glassTintColor="transparent"
-            glassOpacity={0}
-            style={{
-              borderRadius: 300,
-              zIndex: 999999,
-            }}
-          >
+          <UserProfileItemContainer>
             <Avatar
               size={40}
               initials={initials}
               imageUrl={profilePicture}
+              blurRadius={anonymousMode ? ANONYMOUS_PROFILE_BLUR_RADIUS : 0}
             />
           </UserProfileItemContainer>
         </Pressable>
@@ -76,28 +104,7 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
               store.setLastUsedAccount(nativeEvent.event);
               await initializeAccountManager();
             }}
-            actions={[
-              ...Platform.OS === "ios" ? [{
-                id: 'workspaces',
-                title: '',
-                displayInline: true,
-                subactions: AccountsMenuItems,
-              }] : AccountsMenuItems,
-              {
-                id: 'edit',
-                title: t('Home_Edit_Profile'),
-                image: 'person.crop.circle',
-                papicon: 'user',
-                imageColor: theme.colors.text,
-              },
-              {
-                id: 'add',
-                title: t('Home_Add_Profile'),
-                image: 'plus',
-                papicon: 'add',
-                imageColor: theme.colors.text,
-              },
-            ]}
+            actions={menuActions}
           >
             <Stack direction="vertical" vAlign="center" gap={0} style={{ height: 42, paddingHorizontal: 12 }}>
               <Stack direction="horizontal" hAlign="center" gap={6}>

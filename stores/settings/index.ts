@@ -16,6 +16,7 @@ const defaultPersonalization: Personalization = {
   theme: "auto",
   useMaterialYou: DEFAULT_MATERIAL_YOU_ENABLED,
   magicEnabled: true,
+  anonymousMode: false,
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,
   showDevMode: false,

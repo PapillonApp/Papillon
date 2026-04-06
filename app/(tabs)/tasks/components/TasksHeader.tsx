@@ -1,4 +1,5 @@
 import { useTheme } from '@react-navigation/native';
+import type { MenuAction } from '@react-native-menu/menu';
 import { t } from 'i18next';
 import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
@@ -10,10 +11,12 @@ import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
 
 export type SortMethod = 'date' | 'subject' | 'done';
+type TasksHeaderMenuAction = MenuAction & { papicon?: string };
 
 interface TasksHeaderProps {
   defaultWeek: number;
   selectedWeek: number;
+  isLoading: boolean;
   onToggleWeekPicker: () => void;
   setHeaderHeight: (height: number) => void;
   setShowUndoneOnly: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,6 +29,7 @@ interface TasksHeaderProps {
 const TasksHeader: React.FC<TasksHeaderProps> = ({
   defaultWeek,
   selectedWeek,
+  isLoading,
   onToggleWeekPicker,
   setHeaderHeight,
   setShowUndoneOnly,
@@ -48,6 +52,28 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
 
   const activeSortLabel = sortingOptions.find(s => s.value === sortMethod)?.label;
   const menuTitle = (activeSortLabel || t("Tasks_Sort_Default"));
+  const menuActions: TasksHeaderMenuAction[] = [
+    {
+      title: t('Task_Sorting_Title'),
+      papicon: "filter",
+      subactions: sortingOptions.map((method) => ({
+        title: method.label,
+        id: "sort:" + method.value,
+        papicon: method.papicon,
+        state: (sortMethod === method.value ? 'on' : 'off'),
+        image: Platform.select({
+          ios:
+            method.value === 'date'
+              ? "calendar"
+              : method.value === 'subject'
+                ? "character"
+                : "checkmark.circle"
+        }),
+        imageColor: colors.text,
+      })),
+      displayInline: true
+    }
+  ];
 
   return (
     <TabHeader
@@ -58,6 +84,7 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
           subtitle={selectedWeek === defaultWeek ? t('Tasks_ThisWeek') : undefined}
           number={getWeekNumberFromDate(getDateRangeOfWeek(selectedWeek, new Date().getFullYear()).start).toString()}
           color='#C54CB3'
+          loading={isLoading}
           onPress={onToggleWeekPicker}
           height={56}
         />
@@ -72,28 +99,7 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
               setSortMethod(actionId.replace("sort:", "") as SortMethod);
             }
           }}
-          actions={[
-            {
-              title: t('Task_Sorting_Title'),
-              papicon: "filter",
-              subactions: sortingOptions.map((method) => ({
-                title: method.label,
-                id: "sort:" + method.value,
-                papicon: method.papicon,
-                state: (sortMethod === method.value ? 'on' : 'off'),
-                image: Platform.select({
-                  ios:
-                    method.value === 'date'
-                      ? "calendar"
-                      : method.value === 'subject'
-                        ? "character"
-                        : "checkmark.circle"
-                }),
-                imageColor: colors.text,
-              })),
-              displayInline: true
-            }
-          ]}
+          actions={menuActions}
           icon="filter"
           chevron
         >
