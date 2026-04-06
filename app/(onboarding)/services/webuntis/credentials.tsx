@@ -79,13 +79,20 @@ export default function WebUntisLoginWithCredentials() {
         credentials.password
       );
 
+      const displayName = await client.data.getPersonDisplayName();
+      const tenantName = await client.data.getTenantName();
+
+      const parts = displayName.split(" ");
+      const firstName = parts[0];
+      const lastName = parts.slice(1).join(" ");
+
       const createdAt = new Date().toISOString();
 
       const account: Account = {
         id: device,
-        firstName: "", // TODO: Get from app data
-        lastName: "",
-        schoolName: "",
+        firstName: firstName,
+        lastName: lastName,
+        schoolName: tenantName,
         services: [
           {
             id: device,
