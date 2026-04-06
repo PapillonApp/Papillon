@@ -113,6 +113,8 @@
   "ONBOARDING_ALERT_NO_POSITION_DESCRIPTION": "Nous n'avons pas pu récupérer ta position. Vérifie que le mode avion est désactivé et que l'application dispose des autorisations nécessaires.",
   "ONBOARDING_LANNION_ANDROID_TITLE": "Lannion n'est pas encore disponible sur Android",
   "ONBOARDING_LANNION_ANDROID_DESCRIPTION": "On travaille dur pour rendre les librairies nécessaires disponibles sur Android.",
+  "ONBOARDING_WEBUNTIS_SEARCH_TITLE": "Entre le nom de ton établissement",
+  "ONBOARDING_WEBUNTIS_LOGIN_CREDENTIALS": "Me connecter avec mes identifiants",
   "ONBOARDING_UNKNOWN_NAME": "Inconnu",
   "ONBOARDING_UNKNOWN_STUDENT": "Étudiant",
   "ONBOARDING_DEFAULT_USER_FIRSTNAME": "Utilisateur",
