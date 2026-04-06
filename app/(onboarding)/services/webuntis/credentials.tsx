@@ -1,12 +1,11 @@
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, } from "react-native";
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, } from "react-native";
 import { useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import uuid from "@/utils/uuid/uuid";
 import { ScrollView } from "react-native-gesture-handler";
 import LoginView from "../../components/LoginView";
@@ -14,10 +13,8 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { Credentials, WebUntisClient } from "webuntis-client";
 
 const ANIMATION_DURATION = 170;
-export const PlatformPressable =
-  Platform.OS === "android" ? Pressable : AnimatedPressable;
 
-export default function WebUntisLoginWithCredentials() {
+export default function WebUntisLoginCredentials() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
