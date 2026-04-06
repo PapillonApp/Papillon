@@ -1,4 +1,3 @@
-import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,7 +6,6 @@ import { useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
-import { useAlert } from "@/ui/components/AlertProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import uuid from "@/utils/uuid/uuid";
 import { ScrollView } from "react-native-gesture-handler";
@@ -21,14 +19,7 @@ export const PlatformPressable =
 
 export default function WebUntisLoginWithCredentials() {
   const insets = useSafeAreaInsets();
-  const theme = useTheme();
-  const { colors } = theme;
-
-  const alert = useAlert();
   const { t } = useTranslation();
-
-  const [session, setSession] = useState<WebUntisClient | null>(null);
-  const [token, setToken] = useState<string>();
 
   const [school, setSchool] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -83,7 +74,7 @@ export default function WebUntisLoginWithCredentials() {
     const device = uuid();
 
     try {
-      const session = await client.auth.login(
+      await client.auth.login(
         credentials.username,
         credentials.password
       );
