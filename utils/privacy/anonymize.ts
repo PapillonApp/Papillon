@@ -48,6 +48,18 @@ export function getDisplaySchoolName(
   return anonymousMode ? maskText(normalizedSchoolName) : normalizedSchoolName;
 }
 
+export function getDisplayLocationName(
+  locationName?: string | null,
+  anonymousMode?: boolean
+): string | undefined {
+  const normalizedLocationName = locationName?.trim();
+  if (!normalizedLocationName) {
+    return undefined;
+  }
+
+  return anonymousMode ? maskText(normalizedLocationName) : normalizedLocationName;
+}
+
 export function getDisplayInitials(
   initials?: string | null,
   anonymousMode?: boolean

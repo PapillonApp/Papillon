@@ -15,6 +15,7 @@ import * as TransitService from "@/services/transit";
 import { Route } from "@/services/transit/models/Route";
 import { TransportAddress } from "@/stores/account/types";
 import Typography from "@/ui/components/Typography";
+import { getDisplayLocationName, useAnonymousMode } from "@/utils/privacy/anonymize";
 
 const TransitLogo = (props: PathProps) => (
   <Svg width={12} height={12} fill="none" viewBox="0 0 14 14">
@@ -70,6 +71,7 @@ export const Transit = ({
   const transit: TransitService.default = new TransitService.default();
   const theme = useTheme();
   const { t } = useTranslation();
+  const anonymousMode = useAnonymousMode();
   const [status] = Location.useForegroundPermissions();
 
   const [routeFound, setRouteFound] = React.useState(false);
@@ -243,6 +245,11 @@ export const Transit = ({
     return null;
   }
 
+  const destinationLabel = getDisplayLocationName(
+    isDeparture ? schoolAddress.firstTitle : homeAddress.firstTitle,
+    anonymousMode
+  ) ?? "";
+
   return (
     <TouchableOpacity
       style={{
@@ -331,7 +338,7 @@ export const Transit = ({
               numberOfLines={1}
               style={{ flex: 1, overflow: "hidden" }}
             >
-              {isDeparture ? schoolAddress.firstTitle : homeAddress.firstTitle}
+              {destinationLabel}
             </Typography>
           </View>
           <View

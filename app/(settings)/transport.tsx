@@ -15,6 +15,7 @@ import { AddressModal } from "@/app/(modals)/address";
 import { TransportAddress } from "@/stores/account/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { getDisplayLocationName, useAnonymousMode } from "@/utils/privacy/anonymize";
 
 export default function TransportView() {
   const accountStore = useAccountStore();
@@ -24,6 +25,7 @@ export default function TransportView() {
 
   const theme = useTheme();
   const { t } = useTranslation();
+  const anonymousMode = useAnonymousMode();
 
   const [transportEnabled, setTransportEnabled] = React.useState(
     transport?.enabled ?? false
@@ -47,7 +49,11 @@ export default function TransportView() {
     if (address.firstTitle === "current_location") {
       return t("Settings_Transport_Current_Position");
     }
-    return `${address.firstTitle}, ${address.secondTitle}`;
+
+    const firstTitle = getDisplayLocationName(address.firstTitle, anonymousMode) ?? "";
+    const secondTitle = getDisplayLocationName(address.secondTitle, anonymousMode) ?? "";
+
+    return secondTitle ? `${firstTitle}, ${secondTitle}` : firstTitle;
   };
 
   useEffect(
