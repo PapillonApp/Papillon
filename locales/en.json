@@ -148,7 +148,7 @@
   "Tab_Calendar_Icals_Add_Title": "Missing title",
   "Tab_Calendar_Icals_Add_Description": "Give a name to this iCal URL to add it.",
   "Tab_Calendar_Icals_Empty": "No iCal URL added",
-  "TabUnderConstruction_Title": "This tab is under construction.",
+  "TabUnderConstruction_Title": "This tab is currently under development.",
   "TabUnderConstruction_Details": "Please check back later for updates.",
   "TabDevModeNotice_Title": "Development Mode",
   "TabDevModeNotice_Details": "Full testing environment for developers.",
