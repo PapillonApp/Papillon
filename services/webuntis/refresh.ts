@@ -4,7 +4,7 @@ import { Credentials, WebUntisClient } from "webuntis-client";
 
 export async function refreshWebUntisAccount(accountId: string, credentials: Auth): Promise<{
   auth: Auth,
-  session: WebUntisClient
+  client: WebUntisClient
 }> {
   if ( credentials.additionals === undefined ) {
     throw new Error("There is no additional credentials");
@@ -32,6 +32,6 @@ export async function refreshWebUntisAccount(accountId: string, credentials: Aut
 
   return {
     auth: auth,
-    session: client
+    client: client
   };
 }

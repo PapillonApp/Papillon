@@ -3,6 +3,10 @@ import { Capabilities, SchoolServicePlugin } from "../shared/types";
 
 import { refreshWebUntisAccount } from "./refresh";
 import { WebUntisClient } from "webuntis-client";
+import { Attendance } from "@/services/shared/attendance";
+import { error } from "@/utils/logger/logger";
+import { fetchWebUntisAttendance, fetchWebUntisAttendancePeriods } from "@/services/webuntis/attendance";
+import { Period } from "@/services/shared/grade";
 
 export class WebUntis implements SchoolServicePlugin {
   displayName = "WebUntis";
@@ -23,9 +27,34 @@ export class WebUntis implements SchoolServicePlugin {
     const refresh = await refreshWebUntisAccount(this.accountId, credentials);
 
     this.authData = refresh.auth;
-    this.session = refresh.session;
+    this.session = refresh.client;
 
     return this;
+  }
+
+  async getAttendancePeriods(): Promise<Period[]> {
+    if ( this.session ) {
+      return fetchWebUntisAttendancePeriods(this.session, this.accountId);
+    }
+
+    error("Session is not valid", "Pronote.getAttendancePeriods");
+    return [];
+  }
+
+  async getAttendanceForPeriod(): Promise<Attendance> {
+    if ( this.session ) {
+      return fetchWebUntisAttendance(this.session, this.accountId);
+    }
+
+    error("Session or account is not valid", "WebUntis.getAttendanceForPeriod");
+
+    return {
+      createdByAccount: this.accountId,
+      observations: [],
+      punishments: [],
+      absences: [],
+      delays: [],
+    }
   }
 
   // async getHomeworks(weekNumber: number): Promise<Homework[]> {
@@ -34,14 +63,6 @@ export class WebUntis implements SchoolServicePlugin {
   //   }
   //
   //   error("Session or account is not valid", "WebUntis.getHomeworks")
-  // }
-  //
-  // async getAttendanceForPeriod(): Promise<Attendance> {
-  //   if ( this.session ) {
-  //     return fetchEDAttendance(this.session, this.accountId);
-  //   }
-  //
-  //   error("Session or account is not valid", "WebUntis.getAttendanceForPeriod");
   // }
   //
   // async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
