@@ -8,6 +8,8 @@ import { error } from "@/utils/logger/logger";
 import { fetchWebUntisAttendance } from "@/services/webuntis/attendance";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { fetchWebUntisPeriods } from "@/services/webuntis/periods";
+import { fetchWebUntisHomeworks } from "@/services/webuntis/homework";
+import { Homework } from "@/services/shared/homework";
 
 export class WebUntis implements SchoolServicePlugin {
   displayName = "WebUntis";
@@ -78,14 +80,15 @@ export class WebUntis implements SchoolServicePlugin {
     return [];
   }
 
-  // async getHomeworks(weekNumber: number): Promise<Homework[]> {
-  //   if ( this.session ) {
-  //     return fetchEDHomeworks(this.session, this.accountId, weekNumber);
-  //   }
-  //
-  //   error("Session or account is not valid", "WebUntis.getHomeworks")
-  // }
-  //
+  async getHomeworks(weekNumber: number): Promise<Homework[]> {
+    if ( this.session ) {
+      return fetchWebUntisHomeworks(this.session, this.accountId, weekNumber);
+    }
+
+    error("Session or account is not valid", "WebUntis.getHomeworks");
+    return [];
+  }
+
   // async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
   //   if ( this.session ) {
   //     return fetchEDTimetable(this.session, this.accountId, weekNumber)
