@@ -16,6 +16,7 @@ export async function fetchWebUntisHomeworks(client: WebUntisClient, accountId: 
       content: homework.text,
       dueDate: homework.dueDate,
       isDone: homework.completed,
+      canComplete: false,
       attachments: [],
       evaluation: false,
       custom: false,
