@@ -36,6 +36,8 @@ import { Skolengo } from "../skolengo";
 import { TurboSelf } from "../turboself";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
+import { WebUntisClient } from "webuntis-client";
+import { WebUntis } from "@/services/webuntis";
 
 /** Represents a plugin for a school service.
  *
@@ -55,6 +57,7 @@ export interface SchoolServicePlugin {
     | SessionHandle
     | SkolengoSession
     | Client
+    | WebUntisClient
     | TurboselfClient
     | User
     | LannionClient
@@ -62,7 +65,7 @@ export interface SchoolServicePlugin {
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | Lannion>;
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | WebUntis | Multi | TurboSelf | ARD | Izly | Alise | Appscho | Lannion>;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
