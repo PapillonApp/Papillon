@@ -1,6 +1,7 @@
 import { GradeScore, GradeScoreKind } from "@/services/shared/grade";
 
 const UNKNOWN_SCORE_STATUS = "Inconnu";
+type NumericGradeScore = GradeScore & { disabled?: false };
 
 export function createMissingGradeScore(status: string = UNKNOWN_SCORE_STATUS): GradeScore {
   return {
@@ -29,7 +30,7 @@ export function getGradeScoreKind(score?: GradeScore): GradeScoreKind {
   return "numeric";
 }
 
-export function isNumericGradeScore(score?: GradeScore): score is GradeScore {
+export function isNumericGradeScore(score?: GradeScore): score is NumericGradeScore {
   return !!score && !score.disabled && Number.isFinite(score.value);
 }
 
@@ -46,11 +47,19 @@ export function hasDisplayableGradeScore(score?: GradeScore): boolean {
 }
 
 export function formatGradeScore(score?: GradeScore, digits: number = 2): string | undefined {
+  if (!score) {
+    return undefined;
+  }
+
   if (isNumericGradeScore(score)) {
     return score.value.toFixed(digits);
   }
 
-  return score?.status;
+  if (isStatusGradeScore(score)) {
+    return score.status;
+  }
+
+  return undefined;
 }
 
 export function getGradeScoreDenominator(score?: GradeScore, fallback?: number): number | undefined {

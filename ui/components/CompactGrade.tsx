@@ -50,6 +50,15 @@ export const CompactGrade = ({
 }: CompactGradeProps) => {
   const theme = useTheme();
   const { colors } = theme;
+  const normalizedStatus = typeof status === "string" ? status.trim() : "";
+  const showStatus = Boolean(
+    disabled
+    && normalizedStatus
+    && normalizedStatus.toLowerCase() !== "inconnu"
+    && normalizedStatus.toLowerCase() !== "unknown"
+  );
+  const showNumericScore = !disabled && typeof score === "number" && Number.isFinite(score);
+  const showMixedScore = showNumericScore && skillLevel.length > 0;
 
   const trailingBase = adjust(color, theme.dark ? 0.2 : -0.4);
   const trailingBackground = hasMaxScore ? trailingBase : trailingBase + "15";
@@ -147,14 +156,40 @@ export const CompactGrade = ({
           {description ? description : t('Grade_NoDescription', { subject: title })}
         </Typography>
 
+        {showMixedScore ? (
+          <Stack inline noShadow direction='horizontal' gap={6} hAlign='end' vAlign='end'>
+            <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground}>
+              <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
+                {score.toFixed(2)}
+              </Typography>
+              {showOutOf && typeof outOf === "number" && (
+                <Typography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
+                  /{outOf}
+                </Typography>
+              )}
+              {hasMaxScore && (
+                <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
+              )}
+            </Stack>
+
+            <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[8, 3]} radius={32} backgroundColor={trailingBackground}>
+              <SkillChip level={skillLevel[0]} />
+              {skillLevel.length > 1 && (
+                <Typography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
+                  {`+${skillLevel.length - 1}`}
+                </Typography>
+              )}
+            </Stack>
+          </Stack>
+        ) : (
         <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
-          {disabled ? (
+          {showStatus ? (
             <>
               <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
-                {status}
+                {normalizedStatus}
               </Typography>
             </>
-          ) : typeof score === "number" && Number.isFinite(score) ? (
+          ) : showNumericScore ? (
             <>
               <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
                 {score.toFixed(2)}
@@ -199,6 +234,7 @@ export const CompactGrade = ({
             <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
           )}
         </Stack>
+        )}
       </View>
     </AnimatedPressable>
   );

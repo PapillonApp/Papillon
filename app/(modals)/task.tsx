@@ -2,7 +2,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useRoute, useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { t } from "i18next";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import HTMLView from "react-native-htmlview";
 import { Alert, Platform, StyleSheet } from "react-native";
 
@@ -12,7 +12,7 @@ import { isEDAttachmentRebuildError } from "@/services/ecoledirecte/attachments"
 import { Attachment, AttachmentType } from "@/services/shared/attachment";
 import { getManager } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import { formatHTML } from "@/utils/format/html";
@@ -44,6 +44,8 @@ const Task = () => {
   }
 
   const [isDone, setIsDone] = useState(task.isDone);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const statusUpdateInFlight = useRef(false);
   const [showRawHTML, setShowRawHTML] = useState(false);
   const [openingAttachmentId, setOpeningAttachmentId] = useState<string | null>(null);
   const sections = useMemo(() => getHomeworkSections(task), [task]);
@@ -75,14 +77,24 @@ const Task = () => {
   );
 
   const setAsDone = async (done: boolean) => {
-    if (task.supportsCompletion === false) {
+    if (task.supportsCompletion === false || statusUpdateInFlight.current) {
       return;
     }
 
-    const manager = getManager();
-    await manager.setHomeworkCompletion(task, done);
-    updateHomeworkIsDone(getHomeworkCacheId(task), done);
-    setIsDone(done);
+    statusUpdateInFlight.current = true;
+    setIsUpdatingStatus(true);
+
+    try {
+      const manager = getManager();
+      await manager.setHomeworkCompletion(task, done);
+      await updateHomeworkIsDone(getHomeworkCacheId(task), done);
+      setIsDone(done);
+    } catch (error) {
+      warn(String(error));
+    } finally {
+      statusUpdateInFlight.current = false;
+      setIsUpdatingStatus(false);
+    }
   }
 
   const openTaskAttachment = async (attachment: Attachment) => {
@@ -169,27 +181,30 @@ const Task = () => {
             <List.Label>{t("Modal_Task_Status")}</List.Label>
           </List.SectionTitle>
 
-          <List.Item>
+          <List.Item
+            onPress={task.supportsCompletion !== false && !isUpdatingStatus
+              ? () => {
+                void setAsDone(!isDone);
+              }
+              : undefined}
+          >
             <List.Leading>
-              <AnimatedPressable
-                disabled={task.supportsCompletion === false}
-                onPress={() => setAsDone(!isDone)}
+              <Stack
+                backgroundColor={isDone ? (Platform.OS === 'ios' ? subjectInfo.color : theme.colors.primary) : theme.colors.card}
+                card
+                radius={100}
+                width={28}
+                height={28}
+                vAlign="center"
+                hAlign="center"
+                style={{ opacity: task.supportsCompletion === false ? 0.45 : 1 }}
               >
-                <Stack
-                  backgroundColor={isDone ? (Platform.OS === 'ios' ? subjectInfo.color : theme.colors.primary) : theme.colors.card}
-                  card
-                  radius={100}
-                  width={28}
-                  height={28}
-                  vAlign="center"
-                  hAlign="center"
-                  style={{ opacity: task.supportsCompletion === false ? 0.45 : 1 }}
-                >
-                  {isDone &&
-                    <Papicons name="check" size={22} color="white" />
-                  }
-                </Stack>
-              </AnimatedPressable>
+                {isUpdatingStatus ? (
+                  <ActivityIndicator size={14} strokeWidth={2} color={isDone ? "#FFFFFF" : (Platform.OS === 'ios' ? subjectInfo.color : theme.colors.primary)} />
+                ) : isDone ? (
+                  <Papicons name="check" size={22} color="white" />
+                ) : null}
+              </Stack>
             </List.Leading>
             <Typography variant="title">
               {task.supportsCompletion === false
@@ -201,7 +216,9 @@ const Task = () => {
             <Typography variant="body1" color="textSecondary">
               {task.supportsCompletion === false
                 ? "Cette entree provient uniquement du contenu de seance et ne peut pas etre cochee."
-                : "Touchez pour changer l'etat du devoir."}
+                : isUpdatingStatus
+                  ? "Mise a jour en cours..."
+                  : "Touchez pour changer l'etat du devoir."}
             </Typography>
           </List.Item>
         </List.Section>

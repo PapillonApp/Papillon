@@ -10,7 +10,7 @@ import Stack from '@/ui/components/Stack';
 import LegacyTypography from '@/ui/components/Typography';
 import { SkillChip } from '@/ui/components/SkillChip';
 import adjust from '@/utils/adjustColor';
-import { formatGradeScore, getGradeScoreDenominator, isSameNumericScore } from '@/utils/grades/score';
+import { formatGradeScore, getGradeScoreDenominator, isNumericGradeScore, isSameNumericScore } from '@/utils/grades/score';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
@@ -41,9 +41,11 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, display, onPre
   const trailingBackground = hasMaxScore ? adjust(subjectColor, theme.dark ? -0.2 : 0) : subjectColor + "15";
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
   const scoreLabel = formatGradeScore(grade.studentScore);
+  const hasNumericScore = isNumericGradeScore(grade.studentScore);
   const scoreDenominator = getGradeScoreDenominator(grade.studentScore, grade.outOf?.value);
   const skills = grade.skills ?? [];
   const hasSkills = skills.length > 0;
+  const showMixedScore = Boolean(scoreLabel && hasNumericScore && hasSkills);
 
   return (
     <List.Item onPress={handlePress}>
@@ -55,9 +57,9 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, display, onPre
       </Typography>
 
       <List.Trailing>
-        <Stack pointerEvents='none' inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
-          {scoreLabel ? (
-            <>
+        {showMixedScore ? (
+          <Stack pointerEvents='none' inline noShadow direction='horizontal' gap={6} hAlign='end' vAlign='end'>
+            <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground}>
               <LegacyTypography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
                 {scoreLabel}
               </LegacyTypography>
@@ -66,40 +68,67 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, display, onPre
                   /{scoreDenominator}
                 </LegacyTypography>
               )}
-            </>
-          ) : hasSkills ? (
-            <Stack direction='horizontal' hAlign='center'>
-              <Stack direction='horizontal'>
-                {skills.slice(0, 4).map((item, index) => (
-                  <SkillChip
-                    key={index}
-                    level={item.score}
-                    style={{
-                      marginLeft: index > 0 ? -13 : -5,
-                      marginRight:
-                        skills.length <= 4 && index === Math.min(skills.length - 1, 3)
-                          ? -5
-                          : 0,
-                    }}
-                  />
-                ))}
-              </Stack>
-              {skills.length > 4 && (
-                <LegacyTypography color={trailingForeground + "99"} variant='body2'>
-                  {`+${skills.length - 4}`}
+              {hasMaxScore && (
+                <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
+              )}
+            </Stack>
+
+            <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[8, 3]} radius={32} backgroundColor={trailingBackground}>
+              <SkillChip level={skills[0].score} />
+              {skills.length > 1 && (
+                <LegacyTypography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
+                  {`+${skills.length - 1}`}
                 </LegacyTypography>
               )}
             </Stack>
-          ) : (
-            <LegacyTypography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
-              {t('Grade_Unavailable')}
-            </LegacyTypography>
-          )}
+          </Stack>
+        ) : (
+          <Stack pointerEvents='none' inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
+            {scoreLabel ? (
+              <>
+                <LegacyTypography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
+                  {scoreLabel}
+                </LegacyTypography>
+                {hasNumericScore && typeof scoreDenominator === "number" && (
+                  <LegacyTypography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
+                    /{scoreDenominator}
+                  </LegacyTypography>
+                )}
+              </>
+            ) : hasSkills ? (
+              <Stack direction='horizontal' hAlign='center'>
+                <Stack direction='horizontal'>
+                  {skills.slice(0, 4).map((item, index) => (
+                    <SkillChip
+                      key={index}
+                      level={item.score}
+                      style={{
+                        marginLeft: index > 0 ? -13 : -5,
+                        marginRight:
+                          skills.length <= 4 && index === Math.min(skills.length - 1, 3)
+                            ? -5
+                            : 0,
+                      }}
+                    />
+                  ))}
+                </Stack>
+                {skills.length > 4 && (
+                  <LegacyTypography color={trailingForeground + "99"} variant='body2'>
+                    {`+${skills.length - 4}`}
+                  </LegacyTypography>
+                )}
+              </Stack>
+            ) : (
+              <LegacyTypography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
+                {t('Grade_Unavailable')}
+              </LegacyTypography>
+            )}
 
-          {hasMaxScore && (
-            <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
-          )}
-        </Stack>
+            {hasMaxScore && (
+              <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
+            )}
+          </Stack>
+        )}
       </List.Trailing>
     </List.Item>
   );

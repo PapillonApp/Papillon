@@ -26,7 +26,7 @@ import LegacyTypography from '@/ui/components/Typography';
 import { useKeyboardHeight } from '@/ui/hooks/useKeyboardHeight';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
-import { getGradeScoreDenominator, isNumericGradeScore, isSameNumericScore } from '@/utils/grades/score';
+import { getGradeScoreDenominator, isNumericGradeScore, isSameNumericScore, isStatusGradeScore } from '@/utils/grades/score';
 import i18n from '@/utils/i18n';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { getSubjectColor } from "@/utils/subjects/colors";
@@ -416,8 +416,8 @@ const GradesView: React.FC = () => {
                   skillLevel={grade.skills?.map((item) => item.score) ?? []}
                   score={isNumericGradeScore(grade.studentScore) ? grade.studentScore.value : undefined}
                   outOf={getGradeScoreDenominator(grade.studentScore, grade.outOf?.value ?? gradeDisplay?.scale ?? 20)}
-                  disabled={grade.studentScore?.disabled}
-                  status={grade.studentScore?.status}
+                  disabled={isStatusGradeScore(grade.studentScore)}
+                  status={isStatusGradeScore(grade.studentScore) ? grade.studentScore?.status : undefined}
                   showOutOf={isNumericGradeScore(grade.studentScore)}
                   color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
                   date={grade.givenAt}

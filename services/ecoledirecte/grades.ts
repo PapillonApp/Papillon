@@ -3,7 +3,7 @@ import { Client } from "@blockshub/blocksdirecte";
 
 import { getSubjectAverageByProperty } from "@/utils/grades/algorithms/helpers";
 import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
-import { createMissingGradeScore, isMissingGradeScore } from "@/utils/grades/score";
+import { createMissingGradeScore, isMissingGradeScore, isNumericGradeScore } from "@/utils/grades/score";
 import { warn } from "@/utils/logger/logger";
 import { SkillChipLevel } from "@/ui/components/SkillChip";
 import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
@@ -68,6 +68,17 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
       const reportSubject = reportSubjectsById.get(subjectId)
         ?? findClosestReportSubject(reportSubjects, g.codeMatiere)
       const gradeOutOf = parseNumericValue(g.noteSur, display.scale) ?? display.scale
+      const parsedSkills = (g.elementsProgramme ?? [])
+        .map(skill => ({
+          name: skill.libelleCompetence?.trim() ?? "",
+          description: skill.descriptif?.trim() ?? "",
+          score: parseSkillLevel(parseNumericValue(skill.valeur) ?? 0, skillColors),
+        }))
+        .filter(skill => skill.name || skill.description)
+      const parsedStudentScore = parseGradeValue(g.valeur, gradeOutOf)
+      const studentScore = parsedSkills.length > 0 && !isNumericGradeScore(parsedStudentScore)
+        ? undefined
+        : parsedStudentScore
 
       return {
         id: String(g.id),
@@ -102,17 +113,11 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
         outOf: createNumericScore(gradeOutOf),
         coefficient: parseNumericValue(g.coef, 1) ?? 1,
         subjectCoefficient: parseNumericValue(reportSubject?.coef, 1) ?? 1,
-        studentScore: parseGradeValue(g.valeur, gradeOutOf),
+        studentScore,
         averageScore: display.showGradeClassAverage ? parseGradeValue(g.moyenneClasse, gradeOutOf) : undefined,
         minScore: display.showGradeMinimum ? parseGradeValue(g.minClasse, gradeOutOf) : undefined,
         maxScore: display.showGradeMaximum ? parseGradeValue(g.maxClasse, gradeOutOf) : undefined,
-        skills: (g.elementsProgramme ?? [])
-          .map(skill => ({
-            name: skill.libelleCompetence?.trim() ?? "",
-            description: skill.descriptif?.trim() ?? "",
-            score: parseSkillLevel(parseNumericValue(skill.valeur) ?? 0, skillColors),
-          }))
-          .filter(skill => skill.name || skill.description),
+        skills: parsedSkills,
         createdByAccount: accountId
       }
     })
