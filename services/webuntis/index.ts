@@ -44,7 +44,7 @@ export class WebUntis implements SchoolServicePlugin {
     return [];
   }
 
-  async getAttendanceForPeriod(period: string): Promise<Attendance> {
+  async getAttendanceForPeriod(): Promise<Attendance> {
     if ( this.session ) {
       return fetchWebUntisAttendance(this.session, this.accountId);
     }
