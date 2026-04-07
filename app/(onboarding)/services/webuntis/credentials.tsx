@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, } from "react-native";
@@ -23,9 +23,6 @@ export default function WebUntisLoginCredentials() {
 
   const { chosenSchool } = useLocalSearchParams<{ chosenSchool: string }>();
   const selectedSchool = chosenSchool ? JSON.parse(chosenSchool) as School : null;
-
-  const settingsStore = useSettingsStore(state => state.personalization);
-  const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
@@ -113,8 +110,7 @@ export default function WebUntisLoginCredentials() {
       accountStore.addAccount(account);
       accountStore.setLastUsedAccount(device);
 
-      mutateProperty("personalization", {
-        ...settingsStore,
+      useSettingsStore.getState().mutateProperty("personalization", {
         disabledTabs: ["grades", "news"]
       });
 
