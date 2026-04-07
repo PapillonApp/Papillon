@@ -274,12 +274,24 @@ export default function EDLoginWithCredentials() {
         queueMicrotask(() => {
           void checkConsent()
             .then((consent) => {
-              router.dismissAll();
-              router.replace(consent.given ? "/index" : "/consent");
+              if (consent.given) {
+                if (router.canDismiss()) {
+                  router.dismissTo("/index");
+                } else {
+                  router.navigate("/index");
+                }
+                return;
+              }
+
+              router.replace("/consent");
             })
             .catch(() => {
-              router.dismissAll();
-              router.replace("/index");
+              if (router.canDismiss()) {
+                router.dismissTo("/index");
+                return;
+              }
+
+              router.navigate("/index");
             });
         });
       }

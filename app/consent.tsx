@@ -74,7 +74,12 @@ export default function ConsentScreen() {
 
   const saveConsentState = async (consent: string) => {
     await setConsent(consent as "none" | "required" | "optional" | "advanced");
-    router.back();
+    if (router.canDismiss()) {
+      router.dismissTo("/index");
+      return;
+    }
+
+    router.navigate("/index");
   };
 
   return (

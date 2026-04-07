@@ -10,6 +10,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useRoute, useTheme } from "@react-navigation/native";
 import React from "react";
 import { Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { colorCheck } from '@/utils/colorCheck';
 import adjust from "@/utils/adjustColor";
@@ -24,9 +25,21 @@ const SubjectInfo = () => {
   const { params } = useRoute();
   const theme = useTheme();
   const colors = theme.colors;
+  const insets = useSafeAreaInsets();
+  const finalHeaderHeight = Platform.select({
+    android: insets.top + 32,
+    default: 0,
+  });
 
-  const subject: Subject = params?.subject;
-  const display = params?.display as GradeDisplaySettings | undefined;
+  const routeParams = params as { subject?: Subject; display?: GradeDisplaySettings } | undefined;
+  const subject = routeParams?.subject;
+  const display = routeParams?.display;
+
+  if (!subject) {
+    return null;
+  }
+
+  const grades = subject.grades ?? [];
   const subjectColor = getSubjectColor(subject?.name);
   const subjectName = getSubjectName(subject?.name);
   const subjectEmoji = getSubjectEmoji(subject?.name);
@@ -100,7 +113,7 @@ const SubjectInfo = () => {
   }>;
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {Platform.OS !== 'android' && (
         <LinearGradient
           colors={[subjectColor, colors.background]}
@@ -120,14 +133,23 @@ const SubjectInfo = () => {
       <List
         contentInsetAdjustmentBehavior="automatic"
         engine='FlashList'
+        style={{ flex: 1, backgroundColor: colors.background }}
 
         ListHeaderComponent={
-          <View style={{ marginBottom: 24, alignItems: 'center' }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              marginVertical: 20,
+              paddingTop: finalHeaderHeight,
+            }}
+          >
             <ModalOverhead
               subject={subjectName}
               color={Platform.OS === 'ios' ? subjectColor : colors.primary}
               emoji={subjectEmoji}
-              overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: subject.grades.length })}
+              overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: grades.length })}
               overhead={
                 <ModalOverHeadScore
                   color={Platform.OS === 'ios' ? subjectColor : colors.primary}
@@ -157,12 +179,12 @@ const SubjectInfo = () => {
               </Stack>
             )}
 
-            {subject.grades.length > 0 && (
+            {grades.length > 0 && (
               <View style={{ width: "100%", marginTop: 16 }}>
                 <ErrorBoundary>
                   <Averages
-                    key={`subject-averages:${subject.id}:${subject.grades.length}`}
-                    grades={subject.grades}
+                    key={`subject-averages:${subject.id}:${grades.length}`}
+                    grades={grades}
                     realAverage={realAverage}
                     color={subjectColor}
                     scale={outOf ?? display?.scale ?? 20}
@@ -217,7 +239,7 @@ const SubjectInfo = () => {
           ))}
         </List.Section>
       </List>
-    </>
+    </View>
   );
 };
 

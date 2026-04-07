@@ -83,6 +83,7 @@ type TimelineSummary = {
 
 const DOT_SIZE = 6;
 const DOT_GAP = 6;
+const PAGE_CARD_MIN_HEIGHT = 209;
 
 const Averages = ({ grades, realAverage, color, scale = 20, inline = false, variant = "overall", averageTitle }: AveragesProps) => {
   try {
@@ -638,7 +639,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
                 backgroundColor: "transparent",
                 marginTop: -8,
               } : {
-                minHeight: 188,
+                minHeight: PAGE_CARD_MIN_HEIGHT,
               }
             ]}
           >
@@ -714,7 +715,11 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
                           </View>
                         ))}
                       </Reanimated.View>
-                    ) : null
+                    ) : (
+                      <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
+                        {renderGraph(resolvedSelectedMode, "page")}
+                      </View>
+                    )
                   ) : (
                     <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
                       {renderGraph(resolvedSelectedMode, "page")}
@@ -762,7 +767,11 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
                           </View>
                         ))}
                       </Reanimated.ScrollView>
-                    ) : <View style={{ width: "100%", minHeight: 72 }} />
+                    ) : (
+                      <View style={{ width: "100%", minHeight: 72, justifyContent: "center" }}>
+                        {renderSummaryContent(resolvedSelectedMode, "center")}
+                      </View>
+                    )
                   ) : (
                     <View style={{ width: "100%", minHeight: 72, justifyContent: "center" }}>
                       {renderSummaryContent(resolvedSelectedMode, "center")}

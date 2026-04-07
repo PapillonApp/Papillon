@@ -37,6 +37,7 @@ export function RootNavigator() {
       <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
 
         <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="(tabs)/index" options={{ headerShown: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
         <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
         <Stack.Screen
@@ -106,6 +107,17 @@ export function RootNavigator() {
           options={{
             headerShown: Platform.OS !== 'ios',
             headerTitle: t("Modal_Grades_Title"),
+            headerLargeTitle: false,
+            headerTransparent: true,
+            presentation: "modal",
+            headerBackground: AndroidHeaderBackground
+          }}
+        />
+        <Stack.Screen
+          name="(modals)/subject"
+          options={{
+            headerShown: Platform.OS !== 'ios',
+            headerTitle: t("Grades_SubjectInfo"),
             headerLargeTitle: false,
             headerTransparent: true,
             presentation: "modal",

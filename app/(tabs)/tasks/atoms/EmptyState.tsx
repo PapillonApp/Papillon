@@ -18,7 +18,7 @@ const EmptyState = memo(({ isSearching }: EmptyStateProps) => (
     entering={PapillonAppearIn}
     exiting={PapillonAppearOut}
   >
-    <Stack hAlign="center" vAlign="center" flex style={{ width: "100%" }}>
+    <Stack hAlign="center" vAlign="start" style={{ width: "100%", marginTop: 16 }}>
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
         <Papicons name={isSearching ? "Search" : "tasks"} />
       </Icon>

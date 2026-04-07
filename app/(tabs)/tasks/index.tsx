@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, Platform, StyleSheet, View } from 'react-native';
+import { FlatList, Platform, StatusBar, StyleSheet, View } from 'react-native';
 
 import TasksHeader from './components/TasksHeader';
 import type { SortMethod } from './components/TasksHeader';
@@ -7,13 +7,16 @@ import TasksWeekPage from './components/TasksWeekPage';
 import WeekPicker from './components/WeekPicker';
 import { useWeekSelection } from './hooks/useWeekSelection';
 
-import { useTheme } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TasksView: React.FC = () => {
   const insets = useSafeAreaInsets();
-  const [headerHeight, setHeaderHeight] = useState(insets.top + 118);
-  const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
+  const fallbackTopInset = initialWindowMetrics?.insets.top ?? 0;
+  const safeTopInset = Platform.OS === 'android'
+    ? Math.max(insets.top, fallbackTopInset, StatusBar.currentHeight ?? 0)
+    : Math.max(insets.top, fallbackTopInset);
+  const headerHeight = safeTopInset + 118;
+  const shouldCollapseHeader = false;
   const [searchTerm, setSearchTerm] = useState("");
   const [showUndoneOnly, setShowUndoneOnly] = useState(false);
   const [sortMethod, setSortMethod] = useState<SortMethod>("date");
@@ -44,8 +47,6 @@ const TasksView: React.FC = () => {
     });
   }, []);
 
-  const theme = useTheme();
-
   return (
     <>
       {showWeekPicker && (
@@ -61,7 +62,7 @@ const TasksView: React.FC = () => {
           selectedWeek={selectedWeek}
           isLoading={activeWeekLoading}
           onToggleWeekPicker={toggleWeekPicker}
-          setHeaderHeight={setHeaderHeight}
+          setHeaderHeight={() => {}}
           setShowUndoneOnly={setShowUndoneOnly}
           setSortMethod={setSortMethod}
           setSearchTerm={setSearchTerm}

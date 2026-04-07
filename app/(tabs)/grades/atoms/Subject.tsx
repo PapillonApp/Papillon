@@ -129,7 +129,7 @@ export const SubjectItem: React.FC<{ subject: Subject, display?: GradeDisplaySet
 
   const handlePressSubject = useCallback(() => {
     // @ts-expect-error navigation types
-    navigation.navigate('modals/SubjectInfo', {
+    navigation.navigate('(modals)/subject', {
       subject: subject,
       display,
     });
