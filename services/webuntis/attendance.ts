@@ -1,5 +1,4 @@
 import { Absence, Attendance } from "@/services/shared/attendance";
-import { Period } from "@/services/shared/grade";
 import { Absence as WebUntisAbsence, WebUntisClient } from "webuntis-client";
 
 export async function fetchWebUntisAttendance(client: WebUntisClient, accountId: string): Promise<Attendance> {
@@ -19,22 +18,6 @@ export async function fetchWebUntisAttendance(client: WebUntisClient, accountId:
     punishments: [],
     delays: [],
   }
-}
-
-export async function fetchWebUntisAttendancePeriods(client: WebUntisClient, accountId: string): Promise<Period[]> {
-  const data = await client.data.get();
-  const currentSchoolYear = data.currentSchoolYear;
-
-  const start = new Date(currentSchoolYear.dateRange.start);
-  const end = new Date(currentSchoolYear.dateRange.end);
-
-  return [{
-    id: currentSchoolYear.id.toString(),
-    name: currentSchoolYear.name,
-    start: start,
-    end: end,
-    createdByAccount: accountId
-  }];
 }
 
 function mapAbsences(absences: WebUntisAbsence[], accountId: string): Absence[] {

@@ -5,8 +5,9 @@ import { refreshWebUntisAccount } from "./refresh";
 import { WebUntisClient } from "webuntis-client";
 import { Attendance } from "@/services/shared/attendance";
 import { error } from "@/utils/logger/logger";
-import { fetchWebUntisAttendance, fetchWebUntisAttendancePeriods } from "@/services/webuntis/attendance";
+import { fetchWebUntisAttendance } from "@/services/webuntis/attendance";
 import { Period } from "@/services/shared/grade";
+import { fetchWebUntisPeriods } from "@/services/webuntis/periods";
 
 export class WebUntis implements SchoolServicePlugin {
   displayName = "WebUntis";
@@ -14,6 +15,8 @@ export class WebUntis implements SchoolServicePlugin {
   capabilities: Capabilities[] = [
     Capabilities.REFRESH,
     Capabilities.ATTENDANCE,
+    Capabilities.ATTENDANCE_PERIODS,
+    Capabilities.GRADES,
     Capabilities.TIMETABLE,
     Capabilities.HOMEWORK,
   ];
@@ -34,14 +37,14 @@ export class WebUntis implements SchoolServicePlugin {
 
   async getAttendancePeriods(): Promise<Period[]> {
     if ( this.session ) {
-      return fetchWebUntisAttendancePeriods(this.session, this.accountId);
+      return fetchWebUntisPeriods(this.session, this.accountId);
     }
 
     error("Session is not valid", "Pronote.getAttendancePeriods");
     return [];
   }
 
-  async getAttendanceForPeriod(): Promise<Attendance> {
+  async getAttendanceForPeriod(period: string): Promise<Attendance> {
     if ( this.session ) {
       return fetchWebUntisAttendance(this.session, this.accountId);
     }
@@ -55,6 +58,15 @@ export class WebUntis implements SchoolServicePlugin {
       absences: [],
       delays: [],
     }
+  }
+
+  async getGradesPeriods(): Promise<Period[]> {
+    if ( this.session ) {
+      return fetchWebUntisPeriods(this.session, this.accountId);
+    }
+
+    error("Session is not valid", "Pronote.getGradesPeriods");
+    return [];
   }
 
   // async getHomeworks(weekNumber: number): Promise<Homework[]> {

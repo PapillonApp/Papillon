@@ -1,13 +1,7 @@
 import * as Network from "expo-network";
 
-import {
-  addAttendanceToDatabase,
-  getAttendanceFromCache,
-} from "@/database/useAttendance";
-import {
-  addBalancesToDatabase,
-  getBalancesFromCache,
-} from "@/database/useBalance";
+import { addAttendanceToDatabase, getAttendanceFromCache, } from "@/database/useAttendance";
+import { addBalancesToDatabase, getBalancesFromCache, } from "@/database/useBalance";
 import {
   addCanteenMenuToDatabase,
   addCanteenTransactionToDatabase,
@@ -28,34 +22,18 @@ import {
   getGradePeriodsFromCache,
   getPeriodsFromCache,
 } from "@/database/useGrades";
-import {
-  addHomeworkToDatabase,
-  getHomeworksFromCache,
-} from "@/database/useHomework";
+import { addHomeworkToDatabase, getHomeworksFromCache, } from "@/database/useHomework";
 import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
-import {
-  addCourseDayToDatabase,
-  getCoursesFromCache,
-} from "@/database/useTimetable";
+import { addCourseDayToDatabase, getCoursesFromCache, } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
-import {
-  Booking,
-  BookingDay,
-  CanteenHistoryItem,
-  CanteenMenu,
-  QRCode,
-} from "@/services/shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, CanteenMenu, QRCode, } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
 import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
-import {
-  Capabilities,
-  FetchOptions,
-  SchoolServicePlugin,
-} from "@/services/shared/types";
+import { Capabilities, FetchOptions, SchoolServicePlugin, } from "@/services/shared/types";
 import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
@@ -67,7 +45,8 @@ import { Kid } from "./kid";
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
 
-  constructor(readonly account: Account) {}
+  constructor(readonly account: Account) {
+  }
 
   removeService(id: string): void {
     delete this.clients[id];
@@ -84,12 +63,12 @@ export class AccountManager {
 
     let refreshedAtLeastOne = false;
 
-    for (const service of this.account.services) {
+    for ( const service of this.account.services ) {
       try {
         log("Trying to refresh " + service.id);
         const plugin = this.getServicePluginForAccount(service);
 
-        if (plugin?.capabilities.includes(Capabilities.REFRESH)) {
+        if ( plugin?.capabilities.includes(Capabilities.REFRESH) ) {
           this.clients[service.id] = await plugin.refreshAccount(service.auth);
           refreshedAtLeastOne = true;
           log("Successfully refreshed " + service.id);
@@ -97,18 +76,18 @@ export class AccountManager {
           this.clients[service.id] = plugin;
           log(
             "Plugin for " +
-              service.id +
-              " doesn't support refresh but is available for other capabilities"
+            service.id +
+            " doesn't support refresh but is available for other capabilities"
           );
         }
-      } catch (e) {
+      } catch ( e ) {
         throw new AuthenticationError(String(e), service)
       }
     }
 
     log(
       "Finished refreshing process for all services, services refreshed: " +
-        Object.keys(this.clients).length
+      Object.keys(this.clients).length
     );
     return refreshedAtLeastOne;
   }
@@ -209,7 +188,7 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.ATTENDANCE,
       async client => {
-        if (!client.getAttendanceForPeriod) {
+        if ( !client.getAttendanceForPeriod ) {
           throw new Error(
             "getAttendanceForPeriod not implemented but the capability is set."
           );
@@ -348,7 +327,7 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.CHAT_REPLY,
       async client => {
-        if (client.sendMessageInChat) {
+        if ( client.sendMessageInChat ) {
           await client.sendMessageInChat(chat, content);
         }
       },
@@ -392,7 +371,7 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.CHAT_CREATE,
       async client => {
-        if (client.createMail) {
+        if ( client.createMail ) {
           return await client.createMail(subject, content, recipients, cc, bcc);
         }
         throw new Error("createMail not implemented");
@@ -480,7 +459,7 @@ export class AccountManager {
 
   clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
     const client = this.clients[clientId];
-    if (client?.capabilities.includes(capatibility)) {
+    if ( client?.capabilities.includes(capatibility) ) {
       return true;
     }
     return false;
@@ -497,9 +476,9 @@ export class AccountManager {
   ): Promise<T | T[] | void> {
     const networkState = await Network.getNetworkStateAsync();
     const hasInternet = networkState.isInternetReachable ?? false;
-    if (!hasInternet) {
+    if ( !hasInternet ) {
       warn("No internet connection, using fallback if available.");
-      if (options?.fallback) {
+      if ( options?.fallback ) {
         return await options.fallback();
       }
       throw new Error("Internet not reachable and no fallback provided.");
@@ -524,25 +503,25 @@ export class AccountManager {
     options?: FetchOptions<T | T[]> & { multiple?: boolean }
   ): Promise<T | T[]> {
     const resultFromFallback = await this.handleHasInternet<T>(options);
-    if (resultFromFallback !== undefined) {
+    if ( resultFromFallback !== undefined ) {
       return resultFromFallback;
     }
     try {
-      if (options?.clientId !== undefined) {
+      if ( options?.clientId !== undefined ) {
         const client = this.clients[options.clientId];
-        if (!client) {
+        if ( !client ) {
           error("Client ID missing");
         }
-        if (!client.capabilities.includes(capability)) {
+        if ( !client.capabilities.includes(capability) ) {
           error(
             "Capability " +
-              capability +
-              " not supported by client " +
-              options.clientId
+            capability +
+            " not supported by client " +
+            options.clientId
           );
         }
         const result = await callback(client);
-        if (options.saveToCache) {
+        if ( options.saveToCache ) {
           await options.saveToCache(result);
         }
         return result;
@@ -550,30 +529,30 @@ export class AccountManager {
 
       const availableClients = this.getAvailableClients(capability);
 
-      if (availableClients.length === 0) {
+      if ( availableClients.length === 0 ) {
         log(
           `No clients available for capability ${capability}, falling back to cache`
         );
-        if (options?.fallback) {
+        if ( options?.fallback ) {
           return await options.fallback();
         }
         throw new Error(`No clients available for capability: ${capability}`);
       }
 
-      if (options?.multiple) {
+      if ( options?.multiple ) {
         const results = await Promise.all(
           availableClients.map(client => callback(client) as Promise<T[]>)
         );
         const combinedResult = results.flat();
 
-        if (options?.saveToCache) {
+        if ( options?.saveToCache ) {
           await options.saveToCache(combinedResult);
         }
 
         return combinedResult;
       }
-    } catch (e) {
-      if (options?.fallback) {
+    } catch ( e ) {
+      if ( options?.fallback ) {
         return await options.fallback();
       }
       throw e;
@@ -587,61 +566,67 @@ export class AccountManager {
   private getServicePluginForAccount(
     service: ServiceAccount
   ): SchoolServicePlugin {
-    if (service.serviceId === Services.PRONOTE) {
+    if ( service.serviceId === Services.PRONOTE ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/pronote/index");
       return new module.Pronote(service.id);
     }
 
-    if (service.serviceId === Services.SKOLENGO) {
+    if ( service.serviceId === Services.SKOLENGO ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/skolengo/index");
       return new module.Skolengo(service.id);
     }
 
-    if (service.serviceId === Services.ECOLEDIRECTE) {
+    if ( service.serviceId === Services.ECOLEDIRECTE ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/ecoledirecte/index");
       return new module.EcoleDirecte(service.id);
     }
 
-    if (service.serviceId === Services.MULTI) {
+    if ( service.serviceId === Services.WEBUNTIS ) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/webuntis/index");
+      return new module.WebUntis(service.id);
+    }
+
+    if ( service.serviceId === Services.MULTI ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/multi/index");
       return new module.Multi(service.id);
     }
 
-    if (service.serviceId === Services.TURBOSELF) {
+    if ( service.serviceId === Services.TURBOSELF ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/turboself/index");
       return new module.TurboSelf(service.id);
     }
 
-    if (service.serviceId === Services.ARD) {
+    if ( service.serviceId === Services.ARD ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/ard/index");
       return new module.ARD(service.id);
     }
 
-    if (service.serviceId === Services.IZLY) {
+    if ( service.serviceId === Services.IZLY ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/izly/index");
       return new module.Izly(service.id);
     }
 
-    if (service.serviceId === Services.ALISE) {
+    if ( service.serviceId === Services.ALISE ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/alise/index");
       return new module.Alise(service.id);
     }
 
-    if (service.serviceId === Services.APPSCHO) {
+    if ( service.serviceId === Services.APPSCHO ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/appscho/index");
       return new module.Appscho(service.id);
     }
 
-    if (service.serviceId === Services.LANNION) {
+    if ( service.serviceId === Services.LANNION ) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/lannion/index");
       return new module.Lannion(service.id);
@@ -649,8 +634,8 @@ export class AccountManager {
 
     error(
       "We're not able to find a plugin for service: " +
-        service.serviceId +
-        ". Please review your implementation",
+      service.serviceId +
+      ". Please review your implementation",
       "AccountManager.getServicePluginForAccount"
     );
   }
@@ -663,12 +648,12 @@ export const subscribeManagerUpdate = (
   listener: (manager: AccountManager) => void
 ) => {
   managerListeners.push(listener);
-  if (globalManager) {
+  if ( globalManager ) {
     listener(globalManager);
   }
   return () => {
     const idx = managerListeners.indexOf(listener);
-    if (idx !== -1) {
+    if ( idx !== -1 ) {
       managerListeners.splice(idx, 1);
     }
   };
@@ -681,9 +666,9 @@ const notifyManagerListeners = (manager: AccountManager) => {
 export const initializeAccountManager = async (
   accountId?: string
 ): Promise<AccountManager> => {
-  if (!accountId) {
+  if ( !accountId ) {
     const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
-    if (!lastUsedAccount) {
+    if ( !lastUsedAccount ) {
       error("No account ID provided and no last used account found.");
     }
     accountId = lastUsedAccount;
@@ -692,7 +677,7 @@ export const initializeAccountManager = async (
     .getState()
     .accounts.find(acc => acc.id === accountId);
 
-  if (!account) {
+  if ( !account ) {
     error("Account not found for ID: " + accountId);
   }
 
@@ -704,7 +689,7 @@ export const initializeAccountManager = async (
 };
 
 export const getManager = (): AccountManager => {
-  if (!globalManager) {
+  if ( !globalManager ) {
     warn(
       "Account manager not initialized. Call initializeAccountManager first."
     );
