@@ -22,6 +22,7 @@ export async function refreshWebUntisAccount(accountId: string, credentials: Aut
 
   const auth: Auth = {
     additionals: {
+      school: school,
       username: username,
       password: password,
       deviceUUID: deviceUUID,

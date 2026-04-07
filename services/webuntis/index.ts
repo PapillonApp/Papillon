@@ -6,7 +6,7 @@ import { WebUntisClient } from "webuntis-client";
 import { Attendance } from "@/services/shared/attendance";
 import { error } from "@/utils/logger/logger";
 import { fetchWebUntisAttendance } from "@/services/webuntis/attendance";
-import { Period } from "@/services/shared/grade";
+import { Period, PeriodGrades } from "@/services/shared/grade";
 import { fetchWebUntisPeriods } from "@/services/webuntis/periods";
 
 export class WebUntis implements SchoolServicePlugin {
@@ -58,6 +58,15 @@ export class WebUntis implements SchoolServicePlugin {
       absences: [],
       delays: [],
     }
+  }
+
+  async getGradesForPeriod(): Promise<PeriodGrades> {
+    return {
+      createdByAccount: this.accountId,
+      studentOverall: { value: 0 },
+      classAverage: { value: 0 },
+      subjects: [],
+    };
   }
 
   async getGradesPeriods(): Promise<Period[]> {
