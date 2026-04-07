@@ -2,7 +2,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { Client, DoubleAuthQuestions, DoubleAuthResult, Require2FA } from "@blockshub/blocksdirecte";
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -62,9 +62,33 @@ function EDDoubleAuthModal({
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
+  const isScrollingRef = useRef(false);
+  const pendingSelectionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedBackground = adjust(CHALLENGE_COLOR, theme.dark ? -0.82 : 0.92);
   const selectedBadgeBackground = CHALLENGE_COLOR + (theme.dark ? "22" : "18");
+
+  const clearPendingSelection = () => {
+    if (pendingSelectionTimeoutRef.current) {
+      clearTimeout(pendingSelectionTimeoutRef.current);
+      pendingSelectionTimeoutRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      clearPendingSelection();
+    };
+  }, []);
+
+  const handleScrollStart = () => {
+    isScrollingRef.current = true;
+    clearPendingSelection();
+  };
+
+  const handleScrollEnd = () => {
+    isScrollingRef.current = false;
+  };
 
   return (
     <SheetModal
@@ -75,6 +99,13 @@ function EDDoubleAuthModal({
     >
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <List
+          keyboardShouldPersistTaps="always"
+          removeClippedSubviews={false}
+          onScrollBeginDrag={handleScrollStart}
+          onMomentumScrollBegin={handleScrollStart}
+          onScrollEndDrag={handleScrollEnd}
+          onMomentumScrollEnd={handleScrollEnd}
+          scrollEventThrottle={16}
           ListHeaderComponent={() => (
             <Stack padding={[4, 0]}>
               <Typography variant="h2">
@@ -98,14 +129,25 @@ function EDDoubleAuthModal({
         >
           {options.map((option, index) => {
             const isSelected = selectedIndex === index;
+            const selectOption = () => {
+              if (!submitting && !isScrollingRef.current) {
+                onSelect(index);
+              }
+            };
 
             return (
               <List.Item
                 key={`${option}-${index}`}
+                onPressIn={() => {
+                  clearPendingSelection();
+                  pendingSelectionTimeoutRef.current = setTimeout(() => {
+                    pendingSelectionTimeoutRef.current = null;
+                    selectOption();
+                  }, 120);
+                }}
                 onPress={() => {
-                  if (!submitting) {
-                    onSelect(isSelected ? null : index);
-                  }
+                  clearPendingSelection();
+                  selectOption();
                 }}
                 style={{
                   backgroundColor: isSelected ? selectedBackground : colors.card,

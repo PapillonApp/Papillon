@@ -11,7 +11,7 @@
     "lint": "eslint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "postinstall": "patch-package"
+    "postinstall": "bun patch-package"
   },
   "jest": {
     "preset": "jest-expo"
@@ -38,7 +38,7 @@
     "@react-navigation/native-stack": "^7.3.16",
     "@sbaiahmed1/react-native-blur": "^4.2.1",
     "@shopify/flash-list": "2.0.2",
-    "@shopify/react-native-skia": "2.4.18",
+    "@shopify/react-native-skia": "^2.6.2",
     "@types/uuid": "^10.0.0",
     "alise-api": "^0.2.5",
     "appscho": "file:./stubs/appscho",
@@ -131,5 +131,8 @@
       "IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS": true,
       "USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS": true
     }
-  }
+  },
+  "trustedDependencies": [
+    "@shopify/react-native-skia"
+  ]
 }

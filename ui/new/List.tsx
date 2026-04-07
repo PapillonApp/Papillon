@@ -17,6 +17,7 @@ type ListItemProps = MarkerProps & {
   id?: string;
   animated?: boolean;
   onPress?: () => void;
+  onPressIn?: () => void;
   containerStyle?: any;
   style?: any;
   entering?: any;
@@ -127,26 +128,29 @@ const renderListRow = ({
         Platform.OS === "android"
           ? { marginBottom: !isLast ? 4 : 0 }
           : {
-              borderColor: colors.border,
-              backgroundColor: colors.border,
-              borderLeftWidth: 1,
-              borderRightWidth: 1,
-              borderBottomWidth: 1,
-              borderTopWidth: isFirst ? 1 : 0,
-              shadowColor: "#000000",
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.1,
-              shadowRadius: 2,
-              elevation: 1,
-              overflow: "visible",
-              ...itemProps.containerStyle,
-            },
+            borderColor: colors.border,
+            backgroundColor: colors.border,
+            borderLeftWidth: 1,
+            borderRightWidth: 1,
+            borderBottomWidth: 1,
+            borderTopWidth: isFirst ? 1 : 0,
+            shadowColor: "#000000",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.1,
+            shadowRadius: 2,
+            elevation: 1,
+            overflow: "visible",
+            ...itemProps.containerStyle,
+          },
       ]}
       layout={itemProps.animated ? Animation(LinearTransition, "list") : undefined}
       entering={entering}
       exiting={exiting}
     >
-      <ListTouchable {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}>
+      <ListTouchable
+        {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}
+        {...(itemProps.onPressIn ? { onPressIn: itemProps.onPressIn } : {})}
+      >
         <View
           style={[
             styles.row,
@@ -159,11 +163,11 @@ const renderListRow = ({
             },
             Platform.OS === "android"
               ? {
-                  borderTopLeftRadius: isFirst ? 20 : 8,
-                  borderTopRightRadius: isFirst ? 20 : 8,
-                  borderBottomLeftRadius: isLast ? 20 : 8,
-                  borderBottomRightRadius: isLast ? 20 : 8,
-                }
+                borderTopLeftRadius: isFirst ? 20 : 8,
+                borderTopRightRadius: isFirst ? 20 : 8,
+                borderBottomLeftRadius: isLast ? 20 : 8,
+                borderBottomRightRadius: isLast ? 20 : 8,
+              }
               : null,
           ]}
         >
