@@ -93,8 +93,9 @@ export default function WebUntisLoginCredentials() {
             id: device,
             auth: {
               additionals: {
+                school: school,
                 username: username,
-                token: password,
+                password: password,
                 deviceUUID: device,
               },
             },
