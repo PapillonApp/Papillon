@@ -18,9 +18,9 @@ import { School, SchoolsClient } from "webuntis-client";
 
 const client = new SchoolsClient();
 
-const WebUntisSearchHeader = memo(({ city, setCity, loading, t }: {
-  city: string,
-  setCity: (text: string) => void,
+const WebUntisSearchHeader = memo(({ school, setSchool, loading, t }: {
+  school: string,
+  setSchool: (text: string) => void,
   loading: boolean,
   t: (key: string, options?: any) => string
 }) => (
@@ -30,8 +30,8 @@ const WebUntisSearchHeader = memo(({ city, setCity, loading, t }: {
 
     <Divider height={6} ghost/>
 
-    <Search placeholder={t("ONBOARDING_METHOD_SEARCH")} style={{ width: "100%" }} value={city}
-            setValue={setCity} onTextChange={setCity} autoFocus={city.trim().length === 0}/>
+    <Search placeholder={t("ONBOARDING_METHOD_SEARCH")} style={{ width: "100%" }} value={school}
+            setValue={setSchool} onTextChange={setSchool} autoFocus={school.trim().length === 0}/>
 
     {loading &&
         <Dynamic animated>
@@ -60,7 +60,6 @@ export default function WebUntisLoginLocate() {
   const [debouncedSchool, setDebouncedSchool] = useState("");
   const [schools, setSchools] = useState<Array<School>>([]);
   const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -98,8 +97,8 @@ export default function WebUntisLoginLocate() {
     }
   }, [debouncedSchool]);
 
-  const selectCity = (school: School) => {
-    (navigation.navigate as Function)("select", { school });
+  const selectSchool = (school: School) => {
+    (navigation.navigate as Function)("credentials", { chosenSchool: JSON.stringify(school) });
   }
 
   return (
@@ -108,7 +107,8 @@ export default function WebUntisLoginLocate() {
       <List
         ListHeaderComponent={
           <WebUntisSearchHeader
-            city={school} setCity={setSchool}
+            school={school}
+            setSchool={setSchool}
             loading={loading && schools.length === 0}
             t={t}
           />
@@ -136,7 +136,7 @@ export default function WebUntisLoginLocate() {
 
         {schools.map((school, _) => (
           <List.Item animated={true} key={school.schoolId} id={school.schoolId} onPress={() => {
-            selectCity(school)
+            selectSchool(school)
           }}>
             <List.Leading>
               <Icon><Papicons name="mappin"/></Icon>

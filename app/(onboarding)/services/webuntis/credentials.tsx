@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, } from "react-native";
@@ -10,7 +10,8 @@ import uuid from "@/utils/uuid/uuid";
 import { ScrollView } from "react-native-gesture-handler";
 import LoginView from "../../components/LoginView";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Credentials, WebUntisClient } from "webuntis-client";
+import { Credentials, School, WebUntisClient } from "webuntis-client";
+import { useSettingsStore } from "@/stores/settings";
 
 const ANIMATION_DURATION = 170;
 
@@ -18,11 +19,13 @@ export default function WebUntisLoginCredentials() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
-  const [school, setSchool] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+
+  const { chosenSchool } = useLocalSearchParams<{ chosenSchool: string }>();
+  const selectedSchool = chosenSchool ? JSON.parse(chosenSchool) as School : null;
+
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
@@ -30,12 +33,10 @@ export default function WebUntisLoginCredentials() {
   const keyboardListeners = useMemo(
     () => ({
       show: () => {
-        "worklet";
         opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
         scale.value = withTiming(0.8, { duration: ANIMATION_DURATION });
       },
       hide: () => {
-        "worklet";
         opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
         scale.value = withTiming(1, { duration: ANIMATION_DURATION });
       },
@@ -67,7 +68,7 @@ export default function WebUntisLoginCredentials() {
     const credentials = new Credentials(school, username, password);
     const client = new WebUntisClient(credentials);
 
-    const store = useAccountStore.getState();
+    const accountStore = useAccountStore.getState();
     const device = uuid();
 
     try {
@@ -109,9 +110,15 @@ export default function WebUntisLoginCredentials() {
         updatedAt: createdAt,
       };
 
-      store.addAccount(account);
-      store.setLastUsedAccount(device);
+      accountStore.addAccount(account);
+      accountStore.setLastUsedAccount(device);
 
+      mutateProperty("personalization", {
+        ...settingsStore,
+        disabledTabs: ["grades", "news"]
+      });
+
+      // TODO: Use new route
       queueMicrotask(() => {
         router.push({
           pathname: "../end/color",
@@ -125,7 +132,7 @@ export default function WebUntisLoginCredentials() {
     }
   };
 
-  const loginWebUntis = async () => {
+  const login = async (school: string, username: string, password: string) => {
     const cleanedSchool = school.trim();
     const cleanedUsername = username.trim();
     const cleanedPassword = password.trim();
@@ -154,6 +161,7 @@ export default function WebUntisLoginCredentials() {
       behavior="padding"
     >
       <ScrollView
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           paddingTop: finalHeaderHeight,
           paddingBottom: insets.bottom,
@@ -165,24 +173,24 @@ export default function WebUntisLoginCredentials() {
           serviceIcon={require("@/assets/images/service_webuntis.png")}
           loading={isLoggingIn}
           fields={[
-            {
+            ...(!selectedSchool ? [{
               name: "school",
               placeholder: t("INPUT_ETABID"),
               secureTextEntry: false,
-              textContentType: "username" as const,
-            },
+              textContentType: "username" as const
+            }] : []),
             {
               name: "username",
               placeholder: t("INPUT_USERNAME"),
               secureTextEntry: false,
-              textContentType: "username" as const,
+              textContentType: "username" as const
             },
             {
               name: "password",
               placeholder: t("INPUT_PASSWORD"),
               secureTextEntry: true,
-              textContentType: "password" as const,
-            }
+              textContentType: "password" as const
+            },
           ]}
           actions={[
             {
@@ -192,12 +200,12 @@ export default function WebUntisLoginCredentials() {
             }
           ]}
           onSubmit={values => {
-            if ( !isLoggingIn && values.school && values.username && values.password ) {
-              setSchool(values.school);
-              setUsername(values.username);
-              setPassword(values.password);
+            if ( !isLoggingIn && (selectedSchool || values.school) && values.username && values.password ) {
+              const school = selectedSchool?.loginName ?? values.school;
+              const username = values.username;
+              const password = values.password;
 
-              void loginWebUntis();
+              void login(school, username, password);
             }
           }}
         />
