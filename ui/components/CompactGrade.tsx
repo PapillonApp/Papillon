@@ -157,8 +157,8 @@ export const CompactGrade = ({
         </Typography>
 
         {showMixedScore ? (
-          <Stack inline noShadow direction='horizontal' gap={6} hAlign='end' vAlign='end'>
-            <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground}>
+          <Stack inline noShadow direction='horizontal' gap={6} hAlign='start' vAlign='end' style={{ alignSelf: 'flex-start' }}>
+            <Stack inline noShadow direction='horizontal' gap={2} card hAlign='start' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} style={{ alignSelf: 'flex-start' }}>
               <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
                 {score.toFixed(2)}
               </Typography>
@@ -172,7 +172,7 @@ export const CompactGrade = ({
               )}
             </Stack>
 
-            <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[8, 3]} radius={32} backgroundColor={trailingBackground}>
+            <Stack inline noShadow direction='horizontal' gap={2} card hAlign='start' vAlign='end' padding={[8, 3]} radius={32} backgroundColor={trailingBackground} style={{ alignSelf: 'flex-start' }}>
               <SkillChip level={skillLevel[0]} />
               {skillLevel.length > 1 && (
                 <Typography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
@@ -182,7 +182,7 @@ export const CompactGrade = ({
             </Stack>
           </Stack>
         ) : (
-        <Stack inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
+        <Stack inline noShadow direction='horizontal' gap={2} card hAlign='start' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} style={{ alignSelf: 'flex-start' }}>
           {showStatus ? (
             <>
               <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
@@ -201,7 +201,7 @@ export const CompactGrade = ({
               )}
             </>
           ) : skillLevel.length > 0 ? (
-            <Stack direction='horizontal' hAlign='center'>
+            <Stack direction='horizontal' hAlign='start'>
               <Stack direction='horizontal'>
                 {skillLevel.slice(0, 4).map((item, index) => (
                   <SkillChip
