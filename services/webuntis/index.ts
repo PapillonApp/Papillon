@@ -10,6 +10,8 @@ import { Period, PeriodGrades } from "@/services/shared/grade";
 import { fetchWebUntisPeriods } from "@/services/webuntis/periods";
 import { fetchWebUntisHomeworks } from "@/services/webuntis/homework";
 import { Homework } from "@/services/shared/homework";
+import { CourseDay } from "@/services/shared/timetable";
+import { fetchWebUntisTimetable } from "@/services/webuntis/timetable";
 
 export class WebUntis implements SchoolServicePlugin {
   displayName = "WebUntis";
@@ -42,7 +44,7 @@ export class WebUntis implements SchoolServicePlugin {
       return fetchWebUntisPeriods(this.session, this.accountId);
     }
 
-    error("Session is not valid", "Pronote.getAttendancePeriods");
+    error("Session is not valid", "WebUntis.getAttendancePeriods");
     return [];
   }
 
@@ -76,7 +78,7 @@ export class WebUntis implements SchoolServicePlugin {
       return fetchWebUntisPeriods(this.session, this.accountId);
     }
 
-    error("Session is not valid", "Pronote.getGradesPeriods");
+    error("Session is not valid", "WebUntis.getGradesPeriods");
     return [];
   }
 
@@ -89,11 +91,12 @@ export class WebUntis implements SchoolServicePlugin {
     return [];
   }
 
-  // async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
-  //   if ( this.session ) {
-  //     return fetchEDTimetable(this.session, this.accountId, weekNumber)
-  //   }
-  //
-  //   error("Session or account is not valid", "WebUntis.getWeeklyTimetable")
-  // }
+  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+    if ( this.session ) {
+      return fetchWebUntisTimetable(this.session, this.accountId, weekNumber)
+    }
+
+    error("Session or account is not valid", "WebUntis.getWeeklyTimetable");
+    return [];
+  }
 }
