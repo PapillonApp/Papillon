@@ -14,10 +14,9 @@ import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import { Credentials, School, WebUntisClient } from "webuntis-client";
+import { School, SchoolsClient } from "webuntis-client";
 
-const credentials = new Credentials("", "", "");
-const client = new WebUntisClient(credentials);
+const client = new SchoolsClient();
 
 const WebUntisSearchHeader = memo(({ city, setCity, loading, t }: {
   city: string,
@@ -83,7 +82,7 @@ export default function WebUntisLoginLocate() {
 
       setLoading(true);
 
-      client.schools.search(debouncedSchool)
+      client.search(debouncedSchool)
         .then((results) => {
           if ( canceled ) return;
           setSchools(results.slice(0, 10));
