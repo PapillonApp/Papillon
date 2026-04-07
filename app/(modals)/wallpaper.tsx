@@ -214,7 +214,7 @@ const WallpaperModal = () => {
 
       <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + (hasCustomWallpaper ? "true" : "false")}>
         {Platform.OS === 'android' ? (
-          <NativeHeaderPressable onPress={() => router.back()}>
+          <NativeHeaderPressable onPressIn={() => router.back()}>
             <Icon size={28}>
               <Papicons name="Cross" />
             </Icon>
@@ -230,7 +230,7 @@ const WallpaperModal = () => {
 
       <NativeHeaderSide side="Right" key={currentWallpaper?.id + ":" + wallpaperDirectory.exists}>
         {Platform.OS === 'android' && (
-          <NativeHeaderPressable onPress={() => uploadCustomWallpaper()}>
+          <NativeHeaderPressable onPressIn={() => uploadCustomWallpaper()}>
             <Icon size={28} fill={hasCustomWallpaper ? colors.primary : undefined}>
               <Papicons name="Gallery" />
             </Icon>

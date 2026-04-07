@@ -44,9 +44,9 @@ export default function SettingsIndex() {
   const theme = useTheme();
   const { colors } = theme;
 
-  const accountStore = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const clearAccounts = useAccountStore((state) => state.clearAccounts);
 
   const settingsStore = useSettingsStore(state => state.personalization);
   const anonymousMode = useAnonymousMode();
@@ -67,13 +67,10 @@ export default function SettingsIndex() {
   }, [account, anonymousMode]);
 
   const logout = useCallback(() => {
-    const accounts = useAccountStore.getState().accounts;
-    for (const account of accounts) {
-      useAccountStore.getState().removeAccount(account);
-    }
+    clearAccounts();
     router.replace("/(onboarding)/welcome");
 
-  }, [account, accountStore, router]);
+  }, [clearAccounts, router]);
 
   const MoreSettingsList = [
     {
@@ -147,7 +144,7 @@ export default function SettingsIndex() {
           icon: <InfoIcon />,
           papicon: <Papicons name={"Check"} />,
           color: "#797979",
-          onPress: () => router.navigate("../consent"),
+          onPress: () => router.navigate("/consent"),
         },
         {
           title: t("Settings_Logout_Title"),

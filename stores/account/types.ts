@@ -11,6 +11,7 @@ export interface AccountsStorage {
   lastUsedAccount: string;
   accounts: Account[];
   removeAccount: (account: Account) => void;
+  clearAccounts: () => void;
   addAccount: (account: Account) => void;
   setLastUsedAccount: (accountId: string) => void;
   updateServiceAuthData: (serviceId: string, authData: Auth) => void;

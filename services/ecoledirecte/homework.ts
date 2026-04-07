@@ -52,43 +52,47 @@ export async function fetchEDHomeworks(
   weekNumber: number
 ): Promise<Homework[]> {
   const weekdays = weekNumberToDaysList(weekNumber);
-  const response: Homework[] = [];
   const upcoming = await session.homework.getUpcomingHomework() as unknown as Record<
     string,
     EDHomeworkUpcomingItemLike[] | undefined
   >;
 
-  for (const date of weekdays) {
-    const formattedDate = formatDate(date);
-    const summaryEntries = normalizeUpcomingEntries(upcoming[formattedDate]);
-    const matchedSummaryIds = new Set<number>();
-    const { matieres } = await session.homework.getHomeworksForDate(formattedDate) as {
-      matieres: EDHomeworkSubjectLike[];
-    };
+  const dailyResponses = await Promise.all(
+    weekdays.map(async (date) => {
+      const formattedDate = formatDate(date);
+      const summaryEntries = normalizeUpcomingEntries(upcoming[formattedDate]);
+      const matchedSummaryIds = new Set<number>();
+      const { matieres = [] } = await session.homework.getHomeworksForDate(formattedDate) as {
+        matieres?: EDHomeworkSubjectLike[];
+      };
+      const dayResponse: Homework[] = [];
 
-    for (const subject of matieres) {
-      const homework = mapEDHomeworkSubject(
-        session,
-        accountId,
-        date,
-        subject,
-        summaryEntries,
-        matchedSummaryIds
-      );
+      for (const subject of matieres) {
+        const homework = mapEDHomeworkSubject(
+          session,
+          accountId,
+          date,
+          subject,
+          summaryEntries,
+          matchedSummaryIds
+        );
 
-      if (homework) {
-        response.push(homework);
+        if (homework) {
+          dayResponse.push(homework);
+        }
       }
-    }
 
-    for (const summaryEntry of summaryEntries) {
-      if (!matchedSummaryIds.has(summaryEntry.idDevoir)) {
-        response.push(createSummaryFallbackHomework(accountId, date, summaryEntry));
+      for (const summaryEntry of summaryEntries) {
+        if (!matchedSummaryIds.has(summaryEntry.idDevoir)) {
+          dayResponse.push(createSummaryFallbackHomework(accountId, date, summaryEntry));
+        }
       }
-    }
-  }
 
-  return dedupeHomeworks(response);
+      return dayResponse;
+    })
+  );
+
+  return dedupeHomeworks(dailyResponses.flat());
 }
 
 export async function setEDHomeworkAsDone(session: Client, homework: Homework, state?: boolean): Promise<Homework> {

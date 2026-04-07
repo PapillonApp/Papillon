@@ -4,7 +4,7 @@ import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   LayoutChangeEvent,
   NativeScrollEvent,
@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { LineGraph } from "react-native-graph";
 import Reanimated, {
+  Easing,
   Extrapolation,
   LayoutAnimationConfig,
   interpolate,
@@ -23,6 +24,7 @@ import Reanimated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 import type { SharedValue } from "react-native-reanimated";
 
@@ -103,7 +105,6 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
     }, [averageTitle, variant]);
 
     const [algorithm, setAlgorithm] = useState(availableAlgorithms[0]);
-    const [selectedMode, setSelectedMode] = useState<TimelineMode>("average");
     const [active, setActive] = useState(false);
 
     useEffect(() => {
@@ -160,11 +161,10 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
       return ["average"];
     }, [currentGradesHistory.length, inline]);
 
-    useEffect(() => {
-      if (!carouselModes.includes(selectedMode)) {
-        setSelectedMode(carouselModes[0]);
-      }
-    }, [carouselModes, selectedMode]);
+    const [selectedMode, setSelectedMode] = useState<TimelineMode>(() => carouselModes[0] ?? "average");
+    const resolvedSelectedMode = carouselModes.includes(selectedMode)
+      ? selectedMode
+      : (carouselModes[0] ?? "average");
 
     const buildInitialTimelinePoint = useCallback((mode: TimelineMode): TimelineSummary => {
       if (mode === "average" && algorithm.canInjectRealAverage && typeof realAverage === "number") {
@@ -198,7 +198,11 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
     const [timelineStateByMode, setTimelineStateByMode] = useState<Record<TimelineMode, TimelineSummary>>(initialTimelinePoints);
 
     useEffect(() => {
-      setTimelineStateByMode(initialTimelinePoints);
+      setTimelineStateByMode((previous) => {
+        return areTimelineStatesEqual(previous, initialTimelinePoints)
+          ? previous
+          : initialTimelinePoints;
+      });
       setActive(false);
     }, [initialTimelinePoints]);
 
@@ -266,6 +270,11 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
       grades: getStableGraphRange(currentGradesHistory, graphPointsByMode.grades, scale),
     }), [currentAverageHistory, currentGradesHistory, graphPointsByMode, scale]);
 
+    const hasGraphByMode = useMemo<Record<TimelineMode, boolean>>(() => ({
+      average: graphPointsByMode.average.length > 0,
+      grades: graphPointsByMode.grades.length > 0,
+    }), [graphPointsByMode.average.length, graphPointsByMode.grades.length]);
+
     const backgroundColor = useMemo(() => {
       return adjust(accent, theme.dark ? -0.89 : 0.8);
     }, [accent, theme.dark]);
@@ -273,26 +282,22 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
     const showPager = !inline && carouselModes.length > 1;
     const [pagerWidth, setPagerWidth] = useState(0);
     const pagerRef = useRef<ScrollView>(null);
-    const selectedModeRef = useRef(selectedMode);
     const scrollX = useSharedValue(0);
+    const graphAppearProgress = useSharedValue(0);
 
-    useEffect(() => {
-      selectedModeRef.current = selectedMode;
-    }, [selectedMode]);
-
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (!showPager || pagerWidth <= 0) {
         scrollX.value = 0;
         return;
       }
 
-      const targetOffset = Math.max(0, carouselModes.indexOf(selectedModeRef.current)) * pagerWidth;
+      const targetOffset = Math.max(0, carouselModes.indexOf(resolvedSelectedMode)) * pagerWidth;
       scrollX.value = targetOffset;
       pagerRef.current?.scrollTo({
         x: targetOffset,
         animated: false,
       });
-    }, [carouselModes, pagerWidth, scrollX, showPager]);
+    }, [carouselModes, pagerWidth, resolvedSelectedMode, scrollX, showPager]);
 
     const handlePagerLayout = useCallback((event: LayoutChangeEvent) => {
       const nextWidth = Math.round(event.nativeEvent.layout.width);
@@ -329,13 +334,47 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
       scrollX.value = offsetX;
       const nextIndex = Math.round(offsetX / pagerWidth);
       const nextMode = carouselModes[nextIndex];
-      if (nextMode && nextMode !== selectedMode) {
+      if (nextMode && nextMode !== resolvedSelectedMode) {
         setSelectedMode(nextMode);
       }
-    }, [carouselModes, pagerWidth, scrollX, selectedMode]);
+    }, [carouselModes, pagerWidth, resolvedSelectedMode, scrollX]);
 
     const graphTrackStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: -scrollX.value }],
+    }));
+
+    const isGraphReadyToAppear = useMemo(() => {
+      if (showPager) {
+        return pagerWidth > 0 && carouselModes.every((mode) => hasGraphByMode[mode]);
+      }
+
+      return hasGraphByMode[resolvedSelectedMode];
+    }, [carouselModes, hasGraphByMode, pagerWidth, resolvedSelectedMode, showPager]);
+
+    useEffect(() => {
+      if (!isGraphReadyToAppear) {
+        graphAppearProgress.value = 0;
+        return;
+      }
+
+      graphAppearProgress.value = 0;
+      const animationFrameId = requestAnimationFrame(() => {
+        graphAppearProgress.value = withTiming(1, {
+          duration: 500,
+          easing: Easing.out(Easing.cubic),
+        });
+      });
+
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+      };
+    }, [graphAppearProgress, isGraphReadyToAppear]);
+
+    const graphAppearStyle = useAnimatedStyle(() => ({
+      opacity: graphAppearProgress.value,
+      transform: [{
+        scale: interpolate(graphAppearProgress.value, [0, 1], [0.95, 1], Extrapolation.CLAMP),
+      }],
     }));
 
     const getSummaryState = useCallback((mode: TimelineMode): TimelineSummary => {
@@ -501,7 +540,11 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
       );
     };
 
-    const renderGraph = (mode: TimelineMode, layout: "inline" | "page") => {
+    const renderGraph = (
+      mode: TimelineMode,
+      layout: "inline" | "page",
+      animateAppearance = false,
+    ) => {
       const graphAxis = graphPointsByMode[mode];
       const graphRange = graphRangesByMode[mode];
       const compactGraph = stableModes[mode];
@@ -536,7 +579,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
           marginTop: compactGraph ? 0 : -6,
         };
       return (
-        <View style={outerStyle}>
+        <Reanimated.View style={[outerStyle, layout === "inline" && animateAppearance ? graphAppearStyle : undefined]}>
           <View style={innerStyle}>
             {graphAxis.length > 0 ? (
               <LineGraph
@@ -561,13 +604,13 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
               />
             ) : null}
           </View>
-        </View>
+        </Reanimated.View>
       );
     };
 
     const graphViewportHeight = showPager
       ? Math.max(...carouselModes.map((mode) => stableModes[mode] ? 82 : 102))
-      : (stableModes[selectedMode] ? 82 : 102);
+      : (stableModes[resolvedSelectedMode] ? 82 : 102);
 
     return (
       <Reanimated.View
@@ -617,7 +660,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
 
             {inline ? (
               <>
-                {renderGraph(selectedMode, "inline")}
+                {renderGraph(resolvedSelectedMode, "inline", true)}
                 <View
                   style={{
                     flex: 1,
@@ -627,7 +670,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
                     justifyContent: "center",
                   }}
                 >
-                  {renderSummaryContent(selectedMode, "left")}
+                  {renderSummaryContent(resolvedSelectedMode, "left")}
                 </View>
               </>
             ) : (
@@ -635,44 +678,49 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
                 style={{ width: "100%", minHeight: 176 }}
                 onLayout={handlePagerLayout}
               >
-                <View
-                  style={{
-                    width: "100%",
-                    height: graphViewportHeight,
-                    overflow: "hidden",
-                    justifyContent: "center",
-                    paddingTop: 6,
-                  }}
+                <Reanimated.View
+                  style={[
+                    {
+                      width: "100%",
+                      height: graphViewportHeight,
+                      overflow: "hidden",
+                      justifyContent: "center",
+                      paddingTop: 6,
+                    },
+                    graphAppearStyle,
+                  ]}
                 >
-                  {showPager && pagerWidth > 0 ? (
-                    <Reanimated.View
-                      style={[
-                        {
-                          width: pagerWidth * carouselModes.length,
-                          flexDirection: "row",
-                        },
-                        graphTrackStyle,
-                      ]}
-                    >
-                      {carouselModes.map((mode) => (
-                        <View
-                          key={mode}
-                          style={{
-                            width: pagerWidth,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          {renderGraph(mode, "page")}
-                        </View>
-                      ))}
-                    </Reanimated.View>
+                  {showPager ? (
+                    pagerWidth > 0 ? (
+                      <Reanimated.View
+                        style={[
+                          {
+                            width: pagerWidth * carouselModes.length,
+                            flexDirection: "row",
+                          },
+                          graphTrackStyle,
+                        ]}
+                      >
+                        {carouselModes.map((mode) => (
+                          <View
+                            key={mode}
+                            style={{
+                              width: pagerWidth,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            {renderGraph(mode, "page")}
+                          </View>
+                        ))}
+                      </Reanimated.View>
+                    ) : null
                   ) : (
                     <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
-                      {renderGraph(selectedMode, "page")}
+                      {renderGraph(resolvedSelectedMode, "page")}
                     </View>
                   )}
-                </View>
+                </Reanimated.View>
 
                 <View
                   style={{
@@ -682,45 +730,47 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
                     paddingTop: 4,
                   }}
                 >
-                  {showPager && pagerWidth > 0 ? (
-                    <Reanimated.ScrollView
-                      ref={pagerRef}
-                      horizontal
-                      pagingEnabled={false}
-                      bounces={false}
-                      directionalLockEnabled
-                      disableIntervalMomentum
-                      snapToInterval={pagerWidth}
-                      decelerationRate={Platform.OS === "ios" ? 0.98 : undefined}
-                      showsHorizontalScrollIndicator={false}
-                      onScroll={pagerScrollHandler}
-                      onMomentumScrollEnd={handlePagerScrollEnd}
-                      overScrollMode="never"
-                      scrollEventThrottle={16}
-                      contentContainerStyle={{ alignItems: "stretch" }}
-                    >
-                      {carouselModes.map((mode) => (
-                        <View
-                          key={mode}
-                          style={{
-                            width: pagerWidth,
-                            minHeight: 72,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          {renderSummaryContent(mode, "center")}
-                        </View>
-                      ))}
-                    </Reanimated.ScrollView>
+                  {showPager ? (
+                    pagerWidth > 0 ? (
+                      <Reanimated.ScrollView
+                        ref={pagerRef}
+                        horizontal
+                        pagingEnabled={false}
+                        bounces={false}
+                        directionalLockEnabled
+                        disableIntervalMomentum
+                        snapToInterval={pagerWidth}
+                        decelerationRate={Platform.OS === "ios" ? 0.98 : undefined}
+                        showsHorizontalScrollIndicator={false}
+                        onScroll={pagerScrollHandler}
+                        onMomentumScrollEnd={handlePagerScrollEnd}
+                        overScrollMode="never"
+                        scrollEventThrottle={16}
+                        contentContainerStyle={{ alignItems: "stretch" }}
+                      >
+                        {carouselModes.map((mode) => (
+                          <View
+                            key={mode}
+                            style={{
+                              width: pagerWidth,
+                              minHeight: 72,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            {renderSummaryContent(mode, "center")}
+                          </View>
+                        ))}
+                      </Reanimated.ScrollView>
+                    ) : <View style={{ width: "100%", minHeight: 72 }} />
                   ) : (
                     <View style={{ width: "100%", minHeight: 72, justifyContent: "center" }}>
-                      {renderSummaryContent(selectedMode, "center")}
+                      {renderSummaryContent(resolvedSelectedMode, "center")}
                     </View>
                   )}
                 </View>
 
-                {showPager && (
+                {showPager && pagerWidth > 0 && (
                   <View
                     style={{
                       width: "100%",
@@ -759,6 +809,26 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false, vari
 };
 
 export default Averages;
+
+function areTimelineStatesEqual(
+  previous: Record<TimelineMode, TimelineSummary>,
+  next: Record<TimelineMode, TimelineSummary>,
+): boolean {
+  const isModeEqual = (mode: TimelineMode) => {
+    const previousMode = previous[mode];
+    const nextMode = next[mode];
+
+    if (!previousMode || !nextMode) {
+      return false;
+    }
+
+    return previousMode.average === nextMode.average
+      && previousMode.date.getTime() === nextMode.date.getTime()
+      && previousMode.label === nextMode.label;
+  };
+
+  return isModeEqual("average") && isModeEqual("grades");
+}
 
 function PagerDot({
   index,

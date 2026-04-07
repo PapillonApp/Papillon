@@ -40,6 +40,7 @@ import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import ChipButton from "@/ui/components/ChipButton";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   EDCanteenWeekDayStatus,
   getEDCanteenBadgeDetails,
@@ -68,6 +69,7 @@ export default function QRCodeAndCardsPage() {
 
   const [history, setHistory] = useState<CanteenHistoryItem[]>([]);
   const [qrcode, setQR] = useState("");
+  const [loadingQRCode, setLoadingQRCode] = useState(false);
   const [accountKind, setAccountKind] = useState<CanteenKind>(CanteenKind.ARGENT)
   const [date, setDate] = useState(new Date());
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
@@ -87,14 +89,19 @@ export default function QRCodeAndCardsPage() {
   const fetchQRCode = useCallback(async () => {
     if (!hasQRCodeCapacity) {
       setQR("");
+      setLoadingQRCode(false);
       return;
     }
 
+    setLoadingQRCode(true);
     try {
       const { data } = await manager.getCanteenQRCodes(wallet.createdByAccount);
-      setQR(data);
+      setQR(data ?? "");
     } catch (error) {
       warn(String(error));
+      setQR("");
+    } finally {
+      setLoadingQRCode(false);
     }
   }, [hasQRCodeCapacity, manager, wallet.createdByAccount]);
 
@@ -181,8 +188,9 @@ export default function QRCodeAndCardsPage() {
   };
 
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(insets.top + 66);
   const serviceAccount = useMemo(
     () =>
       accounts
@@ -240,17 +248,24 @@ export default function QRCodeAndCardsPage() {
         <View style={{ padding: 15, flex: 1, gap: 20 }}>
           <Card index={0} service={service} wallet={wallet} disabled inSpecificView />
 
-          {hasQRCodeCapacity && qrcode && (
+          {hasQRCodeCapacity && (
             <AnimatedPressable
-              onPress={() => router.push({
-                pathname: "/(features)/(cards)/qrcode",
-                params: {
-                  qrcode,
-                  type: getCodeType(service),
-                  service,
-                  clientId: wallet.createdByAccount,
+              onPress={() => {
+                if (!qrcode || loadingQRCode) {
+                  return;
                 }
-              })}
+
+                router.push({
+                  pathname: "/(features)/(cards)/qrcode",
+                  params: {
+                    qrcode,
+                    type: getCodeType(service),
+                    service,
+                    clientId: wallet.createdByAccount,
+                  }
+                })
+              }}
+              disabled={!qrcode || loadingQRCode}
               style={{
                 width: "100%",
                 backgroundColor: colors.background,
@@ -258,11 +273,15 @@ export default function QRCodeAndCardsPage() {
                 borderRadius: 25,
                 borderWidth: 1,
                 borderColor: colors.border,
+                opacity: qrcode && !loadingQRCode ? 1 : 0.75,
               }}
             >
               <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
                 <QrCode color={getServiceColor(service)} />
-                <Typography variant="h6">Afficher le QR-Code</Typography>
+                <Typography variant="h6">
+                  {loadingQRCode ? "Chargement du QR-Code..." : "Afficher le QR-Code"}
+                </Typography>
+                {loadingQRCode && <ActivityIndicator size={16} />}
               </Stack>
             </AnimatedPressable>
           )}
@@ -455,9 +474,9 @@ function WeekTypeRow({
           gap: 4,
         }}
       >
-        {days.map((day) => (
+        {days.map((day, index) => (
           <View
-            key={`${title}-${day.label}`}
+            key={`${title}-${day.label}-${index}`}
             style={{
               flex: 1,
               minWidth: 0,

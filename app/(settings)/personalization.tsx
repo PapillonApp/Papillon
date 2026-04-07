@@ -14,6 +14,9 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
 import List from "@/ui/new/List";
+import Reanimated, { LinearTransition } from "react-native-reanimated";
+import { Animation } from "@/ui/utils/Animation";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 
 
 const PersonalizationSettings = () => {
@@ -47,31 +50,38 @@ const PersonalizationSettings = () => {
         }}
       />
       <List
+        animated
         contentContainerStyle={{ padding: 16 }}
         contentInsetAdjustmentBehavior="always"
         style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0 }}
       >
-        {!useMaterialYou &&
-          <List.Section>
-            <List.SectionTitle>
-              <List.Label>Choix de la couleur</List.Label>
-            </List.SectionTitle>
-            <List.View>
-              <AppColorsSelector
-                onChangeColor={(color: string) => {
-                  setTimeout(() => {
-                    const colorData = AppColors.find(appColor => appColor.mainColor === color);
-                    if (colorData) {
-                      mutateProperty('personalization', {
-                        colorSelected: colorData.colorEnum
-                      });
-                    }
-                  }, 50);
-                }}
-              />
-            </List.View>
-          </List.Section>
-        }
+        {!useMaterialYou && (
+          <Reanimated.View
+            entering={PapillonAppearIn}
+            exiting={PapillonAppearOut}
+            layout={Animation(LinearTransition, "smooth")}
+          >
+            <List.Section>
+              <List.SectionTitle>
+                <List.Label>Choix de la couleur</List.Label>
+              </List.SectionTitle>
+              <List.View>
+                <AppColorsSelector
+                  onChangeColor={(color: string) => {
+                    setTimeout(() => {
+                      const colorData = AppColors.find(appColor => appColor.mainColor === color);
+                      if (colorData) {
+                        mutateProperty('personalization', {
+                          colorSelected: colorData.colorEnum
+                        });
+                      }
+                    }, 50);
+                  }}
+                />
+              </List.View>
+            </List.Section>
+          </Reanimated.View>
+        )}
 
         <List.Section>
           <List.SectionTitle>

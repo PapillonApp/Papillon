@@ -45,7 +45,7 @@ const TasksWeekPage: React.FC<TasksWeekPageProps> = ({
     isRefreshing,
     handleRefresh,
     setAsDone,
-  } = useHomeworkData(weekNumber, alert);
+  } = useHomeworkData(weekNumber, alert, { enabled: isActive });
 
   const sections = useTaskSections(homeworksFromCache, homework, {
     searchTerm,

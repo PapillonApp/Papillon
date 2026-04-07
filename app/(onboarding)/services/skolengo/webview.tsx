@@ -110,7 +110,7 @@ export default function WebViewScreen() {
       
               router.back();
               router.dismissAll();
-              return router.push("/");
+              return router.replace("/index");
     }
     return true;
   };

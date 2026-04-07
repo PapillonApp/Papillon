@@ -30,7 +30,7 @@ const NewsView = () => {
   const colors = theme.colors
   const insets = useSafeAreaInsets()
 
-  const [headerHeight, setHeaderHeight] = useState(0)
+  const [headerHeight, setHeaderHeight] = useState(insets.top + 118)
   const bottomTabBarHeight = useBottomTabBarHeight()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -153,7 +153,7 @@ const NewsView = () => {
                 onPress={() =>
                   router.push({
                     pathname: '/(modals)/news',
-                    params: { news: JSON.stringify(item) },
+                    params: { newsId: item.id },
                   })
                 }
               >

@@ -7,7 +7,15 @@ import { getHomeworkCacheId } from "@/utils/homework";
 import { error } from '@/utils/logger/logger';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
 
-export const useHomeworkData = (selectedWeek: number, alert: any) => {
+interface UseHomeworkDataOptions {
+  enabled?: boolean;
+}
+
+export const useHomeworkData = (
+  selectedWeek: number,
+  alert: any,
+  { enabled = true }: UseHomeworkDataOptions = {}
+) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -17,13 +25,12 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
   const account = store.accounts.find(acc => acc.id === store.lastUsedAccount);
   type Service = { id: string };
   const services = useMemo(() => account?.services?.map((s: Service) => s.id) ?? [], [account]);
-  const manager = getManager();
 
   const homeworksFromCache = useHomeworkForWeek(selectedWeek, refreshTrigger)
     .filter(h => services.includes(h.createdByAccount));
 
   const fetchHomeworks = useCallback(
-    async (managerToUse = manager, showLoading = true) => {
+    async (managerToUse = getManager(), showLoading = true) => {
       if (showLoading) {
         setIsLoading(true);
       }
@@ -51,22 +58,38 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
         }
       }
     },
-    [selectedWeek, manager]
+    [selectedWeek]
   );
 
   useEffect(() => {
-    void fetchHomeworks();
+    if (!enabled) {
+      setIsLoading(false);
+      return;
+    }
+
     const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+      if (!updatedManager) {
+        setIsLoading(false);
+        return;
+      }
       void fetchHomeworks(updatedManager);
     });
+
     return () => unsubscribe();
-  }, [selectedWeek, fetchHomeworks]);
+  }, [enabled, fetchHomeworks]);
 
   const handleRefresh = useCallback(async () => {
+    if (!enabled) {
+      return;
+    }
+
     setIsRefreshing(true);
-    await fetchHomeworks(manager, false);
-    setIsRefreshing(false);
-  }, [fetchHomeworks, manager]);
+    try {
+      await fetchHomeworks(getManager(), false);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [enabled, fetchHomeworks]);
 
   const setAsDone = useCallback(
     async (item: Homework, done: boolean) => {

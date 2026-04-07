@@ -134,7 +134,7 @@ export default function TurboSelfLoginWithCredentials() {
     
             router.back();
             router.dismissAll();
-            return router.push('/')
+            return router.replace('/index')
   }, [password, action]);
 
   useEffect(() => {

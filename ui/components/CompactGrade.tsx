@@ -5,6 +5,7 @@ import { t } from "i18next";
 import { Platform, Text, View } from "react-native";
 
 import SkeletonView from "@/ui/components/SkeletonView";
+import { SkillChip, SkillChipLevel } from "@/ui/components/SkillChip";
 import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
 
@@ -16,9 +17,10 @@ interface CompactGradeProps {
   emoji: string;
   title: string;
   description: string;
-  score: number;
+  score?: number;
   outOf?: number;
-  date: Date;
+  skillLevel?: Array<SkillChipLevel | string>;
+  date?: Date;
   disabled?: boolean;
   status?: string;
   showOutOf?: boolean;
@@ -35,6 +37,7 @@ export const CompactGrade = ({
   description,
   score,
   outOf,
+  skillLevel = [],
   date,
   disabled,
   status,
@@ -151,16 +154,44 @@ export const CompactGrade = ({
                 {status}
               </Typography>
             </>
-          ) : (
+          ) : typeof score === "number" && Number.isFinite(score) ? (
             <>
               <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
                 {score.toFixed(2)}
               </Typography>
+              {showOutOf && typeof outOf === "number" && (
+                <Typography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
+                  /{outOf}
+                </Typography>
+              )}
             </>
-          )}
-          {showOutOf && typeof outOf === "number" && (
-            <Typography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
-              /{outOf}
+          ) : skillLevel.length > 0 ? (
+            <Stack direction='horizontal' hAlign='center'>
+              <Stack direction='horizontal'>
+                {skillLevel.slice(0, 4).map((item, index) => (
+                  <SkillChip
+                    key={index}
+                    level={item}
+                    style={{
+                      marginLeft: index > 0 ? -13 : -5,
+                      marginRight:
+                        skillLevel.length <= 4
+                        && index === Math.min(skillLevel.length - 1, 3)
+                          ? -5
+                          : 0,
+                    }}
+                  />
+                ))}
+              </Stack>
+              {skillLevel.length > 4 && (
+                <Typography color={trailingForeground + "99"} variant='body2'>
+                  {`+${skillLevel.length - 4}`}
+                </Typography>
+              )}
+            </Stack>
+          ) : (
+            <Typography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
+              {t("Grade_Unavailable")}
             </Typography>
           )}
 

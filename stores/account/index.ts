@@ -15,15 +15,16 @@ export const useAccountStore = create<AccountsStorage>()(
       removeAccount: account => {
         const accounts = get().accounts.filter(a => a.id !== account.id);
         const lastUsedAccount = get().lastUsedAccount;
+        const nextLastUsed = accounts.some(a => a.id === lastUsedAccount)
+          ? lastUsedAccount
+          : (accounts[0]?.id ?? "");
 
         set({
           accounts,
-          lastUsedAccount:
-            lastUsedAccount === account.id
-              ? (accounts[0]?.id ?? "")
-              : lastUsedAccount,
+          lastUsedAccount: nextLastUsed,
         });
       },
+      clearAccounts: () => set({ accounts: [], lastUsedAccount: "" }),
       addAccount: account => set({ accounts: [...get().accounts, account] }),
       updateServiceAuthData: (serviceId: string, authData: Auth) =>
         set({

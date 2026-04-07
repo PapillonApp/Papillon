@@ -39,7 +39,13 @@ export function RootNavigator() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
         <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
-        <Stack.Screen name="(settings)" options={{ headerShown: false, presentation: "modal" }} />
+        <Stack.Screen
+          name="(settings)"
+          options={{
+            headerShown: false,
+            presentation: Platform.OS === "android" ? "card" : "modal"
+          }}
+        />
         <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
         <Stack.Screen name="page" />
         <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />

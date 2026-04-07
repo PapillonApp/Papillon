@@ -42,14 +42,49 @@ import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
 import ActionMenu from '@/ui/components/ActionMenu';
 
-const GradesView: React.FC = () => {
-  // Layout du header
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const bottomTabBarHeight = useBottomTabBarHeight();
+function getSafeTimestamp(date: Date | undefined, fallback: number): number {
+  if (!(date instanceof Date)) {
+    return fallback;
+  }
 
+  const timestamp = date.getTime();
+  return Number.isFinite(timestamp) ? timestamp : fallback;
+}
+
+function comparePeriodsForDisplay(a: Period, b: Period): number {
+  const aEnd = getSafeTimestamp(a.end, Number.POSITIVE_INFINITY);
+  const bEnd = getSafeTimestamp(b.end, Number.POSITIVE_INFINITY);
+  const endDifference = aEnd - bEnd;
+  if (endDifference !== 0) {
+    return endDifference;
+  }
+
+  const aStart = getSafeTimestamp(a.start, Number.NEGATIVE_INFINITY);
+  const bStart = getSafeTimestamp(b.start, Number.NEGATIVE_INFINITY);
+  const startDifference = bStart - aStart;
+  if (startDifference !== 0) {
+    return startDifference;
+  }
+
+  const aDuration = aEnd - aStart;
+  const bDuration = bEnd - bStart;
+  if (Number.isFinite(aDuration) && Number.isFinite(bDuration)) {
+    const durationDifference = aDuration - bDuration;
+    if (durationDifference !== 0) {
+      return durationDifference;
+    }
+  }
+
+  return (a.name || "").localeCompare(b.name || "", i18n.language);
+}
+
+const GradesView: React.FC = () => {
   // Thème
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  // Layout du header
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const bottomTabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
 
   // Chargement
@@ -132,21 +167,16 @@ const GradesView: React.FC = () => {
       }
     }
 
-    // sort by time, then put Semestre and Trimestre on top
-    const sortedResult = [...result].sort((a, b) => {
-      const isAKey = a.name.startsWith("Semestre") || a.name.startsWith("Trimestre");
-      const isBKey = b.name.startsWith("Semestre") || b.name.startsWith("Trimestre");
-
-      if (isAKey && !isBKey) { return -1; }
-      if (!isAKey && isBKey) { return 1; }
-
-      return a.start.getTime() - b.start.getTime();
-    });
+    const sortedResult = [...result].sort(comparePeriodsForDisplay);
 
     setPeriods(sortedResult);
     setCurrentPeriod(currentPeriodFound);
     setPeriodsLoading(false);
   };
+
+  const sortedPeriods = useMemo(() => {
+    return [...periods].sort(comparePeriodsForDisplay);
+  }, [periods]);
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((updatedManager) => {
@@ -383,7 +413,8 @@ const GradesView: React.FC = () => {
                   emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
                   title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
                   description={grade.description}
-                  score={isNumericGradeScore(grade.studentScore) ? grade.studentScore.value : 0}
+                  skillLevel={grade.skills?.map((item) => item.score) ?? []}
+                  score={isNumericGradeScore(grade.studentScore) ? grade.studentScore.value : undefined}
                   outOf={getGradeScoreDenominator(grade.studentScore, grade.outOf?.value ?? gradeDisplay?.scale ?? 20)}
                   disabled={grade.studentScore?.disabled}
                   status={grade.studentScore?.status}
@@ -449,7 +480,7 @@ const GradesView: React.FC = () => {
 
               if (actionId.startsWith("period:")) {
                 const selectedPeriodId = actionId.replace("period:", "");
-                const newPeriod = periods.find(period => period.id === selectedPeriodId);
+                const newPeriod = sortedPeriods.find(period => period.id === selectedPeriodId);
                 setCurrentPeriod(newPeriod);
                 if (newPeriod?.id) {
                   mutateSettings('personalization', { gradesPeriodId: newPeriod.id });
@@ -457,7 +488,7 @@ const GradesView: React.FC = () => {
               }
             }}
             actions={
-              periods.map((period) => ({
+              sortedPeriods.map((period) => ({
                 id: "period:" + period.id,
                 title: (getPeriodName(period.name || "") + " " + (isPeriodWithNumber(period.name || "") ? getPeriodNumber(period.name || "0") : "")).trim(),
                 subtitle: `${period.start.toLocaleDateString(i18n.language, {
@@ -479,10 +510,10 @@ const GradesView: React.FC = () => {
           >
             <TabHeaderTitle
               color={colors.primary}
-              leading={periods.length > 0 ? getPeriodName(currentPeriod?.name || '') : t("Tab_Grades")}
+              leading={sortedPeriods.length > 0 ? getPeriodName(currentPeriod?.name || '') : t("Tab_Grades")}
               number={isPeriodWithNumber(currentPeriod?.name || '') ? getPeriodNumber(currentPeriod?.name || '') : undefined}
               loading={loading}
-              chevron={periods.length > 1}
+              chevron={sortedPeriods.length > 1}
             />
           </ActionMenu>
         }

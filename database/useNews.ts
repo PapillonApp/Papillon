@@ -19,9 +19,11 @@ export function useNews(refresh = 0) {
 
     const query = database.get<News>('news').query();
 
-    const sub = query.observe().subscribe(news =>
+    const sub = query.observe().subscribe(records =>
       setNews(
-        news.map(mapNewsToShared).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+        deduplicateNewsRecords(records)
+          .map(mapNewsToShared)
+          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
       )
     );
 
@@ -34,66 +36,63 @@ export function useNews(refresh = 0) {
 export async function addNewsToDatabase(news: SharedNews[]) {
   const db = getDatabaseInstance();
 
-  const itemsToCreate: Array<{ id: string; item: SharedNews }> = [];
-  const itemsToUpdate: Array<{ record: Model; item: SharedNews }> = [];
+  const deduplicatedNews = deduplicateIncomingNews(news);
 
-  for (const item of news) {
-    const id = generateId(item.author + item.title + item.createdByAccount);
-
-    const existingRecords = await db.get('news')
-      .query(Q.where("newsId", id))
-      .fetch();
-
-    if (existingRecords.length === 0) {
-      itemsToCreate.push({ id, item });
-    } else {
-      itemsToUpdate.push({ record: existingRecords[0], item });
-    }
+  if (deduplicatedNews.length === 0) {
+    info("🍉 No news items to process");
+    return;
   }
 
-  if (itemsToCreate.length > 0 || itemsToUpdate.length > 0) {
-    await safeWrite(
-      db,
-      async () => {
-        const createPromises = itemsToCreate.map(({ id, item }) =>
-          db.get('news').create((record: Model) => {
-            const newsModel = record as News;
-            newsModel.newsId = id;
-            newsModel.title = item.title ?? "";
-            newsModel.createdAt = item.createdAt.getTime();
-            newsModel.acknowledged = item.acknowledged;
-            newsModel.attachments = JSON.stringify(item.attachments ?? []);
-            newsModel.content = item.content ?? "";
-            newsModel.author = item.author ?? "";
-            newsModel.category = item.category ?? "";
-            newsModel.createdByAccount = item.createdByAccount ?? "";
-            newsModel.question = item.question ?? false;
-          })
-        );
+  await safeWrite(
+    db,
+    async () => {
+      const collection = db.get<News>("news");
+      const incomingIds = deduplicatedNews.map(({ id }) => id);
 
-        const updatePromises = itemsToUpdate.map(({ record, item }) =>
-          record.update((model: Model) => {
-            const newsModel = model as News;
-            newsModel.title = item.title ?? newsModel.title;
-            newsModel.createdAt = item.createdAt.getTime();
-            newsModel.acknowledged = item.acknowledged;
-            newsModel.attachments = JSON.stringify(item.attachments ?? []);
-            newsModel.content = item.content ?? newsModel.content;
-            newsModel.author = item.author ?? newsModel.author;
-            newsModel.category = item.category ?? newsModel.category;
-            newsModel.createdByAccount = item.createdByAccount ?? newsModel.createdByAccount;
-            newsModel.question = item.question ?? newsModel.question;
-          })
-        );
+      const existingRecords = await collection
+        .query(Q.where("newsId", Q.oneOf(incomingIds)))
+        .fetch();
 
-        await Promise.all([...createPromises, ...updatePromises]);
-      },
-      10000,
-      `add_news_${itemsToCreate.length}_create_${itemsToUpdate.length}_update`
-    );
-  } else {
-    info(`🍉 No news items to process`);
-  }
+      const existingById = new Map<string, News[]>();
+      for (const record of existingRecords) {
+        const recordsForId = existingById.get(record.newsId) ?? [];
+        recordsForId.push(record);
+        existingById.set(record.newsId, recordsForId);
+      }
+
+      const operations: Array<Promise<unknown>> = [];
+
+      for (const { id, item } of deduplicatedNews) {
+        const recordsForId = existingById.get(id) ?? [];
+        const [recordToKeep, ...duplicateRecords] = recordsForId;
+
+        if (recordToKeep) {
+          operations.push(
+            recordToKeep.update((model: Model) => {
+              const newsModel = model as News;
+              updateNewsModelFields(newsModel, item);
+            })
+          );
+        } else {
+          operations.push(
+            collection.create((record: Model) => {
+              const newsModel = record as News;
+              newsModel.newsId = id;
+              updateNewsModelFields(newsModel, item);
+            })
+          );
+        }
+
+        for (const duplicateRecord of duplicateRecords) {
+          operations.push(duplicateRecord.markAsDeleted());
+        }
+      }
+
+      await Promise.all(operations);
+    },
+    10000,
+    `add_news_${deduplicatedNews.length}_upsert`
+  );
 }
 
 
@@ -106,7 +105,7 @@ export async function getNewsFromCache(): Promise<SharedNews[]> {
       .query()
       .fetch();
 
-    return news
+    return deduplicateNewsRecords(news)
       .map(mapNewsToShared)
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   } catch (e) {
@@ -128,4 +127,42 @@ function mapNewsToShared(news: News): SharedNews {
     createdByAccount: news.createdByAccount,
     fromCache: true
   };
+}
+
+function updateNewsModelFields(newsModel: News, item: SharedNews) {
+  newsModel.title = item.title ?? newsModel.title;
+  newsModel.createdAt = item.createdAt.getTime();
+  newsModel.acknowledged = item.acknowledged;
+  newsModel.attachments = JSON.stringify(item.attachments ?? []);
+  newsModel.content = item.content ?? newsModel.content;
+  newsModel.author = item.author ?? newsModel.author;
+  newsModel.category = item.category ?? newsModel.category;
+  newsModel.createdByAccount = item.createdByAccount ?? newsModel.createdByAccount;
+  newsModel.question = item.question ?? newsModel.question;
+}
+
+function deduplicateIncomingNews(news: SharedNews[]): Array<{ id: string; item: SharedNews }> {
+  const deduplicatedById = new Map<string, SharedNews>();
+
+  for (const item of news) {
+    deduplicatedById.set(getNewsCacheId(item), item);
+  }
+
+  return Array.from(deduplicatedById.entries()).map(([id, item]) => ({ id, item }));
+}
+
+function deduplicateNewsRecords(records: News[]): News[] {
+  const deduplicatedById = new Map<string, News>();
+
+  for (const record of records) {
+    if (!deduplicatedById.has(record.newsId)) {
+      deduplicatedById.set(record.newsId, record);
+    }
+  }
+
+  return Array.from(deduplicatedById.values());
+}
+
+function getNewsCacheId(item: SharedNews): string {
+  return generateId(item.author + item.title + item.createdByAccount);
 }

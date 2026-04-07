@@ -23,6 +23,7 @@ import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
+import { SkillChip } from '@/ui/components/SkillChip';
 import { GradeDisplaySettings } from '@/services/shared/grade';
 
 interface SubjectInfo {
@@ -290,6 +291,28 @@ export default function GradesModal() {
         contentContainerStyle={{ padding: 16,
               paddingBottom: 16 + insets.bottom }}
       >
+        {grade.skills && grade.skills.length > 0 && (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>{t("Grades_Skills_Title")}</List.Label>
+            </List.SectionTitle>
+
+            {grade.skills.map((skill, index) => (
+              <List.Item key={`${skill.name}-${index}`}>
+                <Typography variant="title">{skill.name}</Typography>
+                {skill.description ? (
+                  <Typography variant="body1" color="textSecondary">
+                    {skill.description}
+                  </Typography>
+                ) : null}
+                <List.Trailing>
+                  <SkillChip level={skill.score} />
+                </List.Trailing>
+              </List.Item>
+            ))}
+          </List.Section>
+        )}
+
         {detailsItems.length > 0 && (
           <List.Section>
             <List.SectionTitle>

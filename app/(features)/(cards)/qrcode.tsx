@@ -2,17 +2,18 @@ import Barcode, { Format } from "@aramir/react-native-barcode";
 import { Phone } from "@getpapillon/papicons";
 import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions, Platform, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import QRCode from "react-native-qrcode-svg";
 import Reanimated, {
-  FlipInEasyX,
+  interpolate,
   runOnJS,
+  useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withSpring,
-  ZoomInDown,
 } from "react-native-reanimated";
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
@@ -70,8 +71,51 @@ export default function QRCodePage() {
   const translationY = useSharedValue(0);
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
+  const introContainer = useSharedValue(0);
+  const introCard = useSharedValue(0);
 
   const finalTranslation = Dimensions.get("window").height / 2;
+  const introStartOffset = Dimensions.get("window").height * 0.42;
+
+  useEffect(() => {
+    introContainer.value = withSpring(1, {
+      damping: 18,
+      stiffness: 170,
+      mass: 0.9,
+    });
+    introCard.value = withDelay(
+      40,
+      withSpring(1, {
+        damping: 16,
+        stiffness: 160,
+        mass: 0.85,
+      })
+    );
+  }, [introCard, introContainer]);
+
+  const containerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(introContainer.value, [0, 0.14, 1], [0, 0.2, 1]) * opacity.value,
+    transform: [
+      {
+        translateY:
+          interpolate(introContainer.value, [0, 1], [introStartOffset, 0]) + translationY.value,
+      },
+      {
+        scale:
+          interpolate(introContainer.value, [0, 1], [0.98, 1]) * scale.value,
+      },
+    ],
+  }), [introStartOffset]);
+
+  const cardAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(introCard.value, [0, 0.2, 1], [0, 0, 1]),
+    transform: [
+      { perspective: 1200 },
+      { translateY: interpolate(introCard.value, [0, 1], [120, 0]) },
+      { rotateX: `${interpolate(introCard.value, [0, 1], [90, 0])}deg` },
+      { scale: interpolate(introCard.value, [0, 1], [0.92, 1]) },
+    ],
+  }));
 
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
@@ -104,30 +148,32 @@ export default function QRCodePage() {
         tint={"dark"}
       >
         <Reanimated.View
-          entering={ZoomInDown.springify()}
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 20,
-            transform: [{ translateY: translationY }, { scale: scale }],
-            opacity: opacity,
-            padding: 20,
-          }}
+          style={[
+            {
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 20,
+              padding: 20,
+            },
+            containerAnimatedStyle,
+          ]}
         >
           <Reanimated.View
-            style={{
-              width: "100%",
-              minHeight: showEDBadgeHeader ? undefined : Dimensions.get("window").width,
-              backgroundColor: "#FFF",
-              position: "relative",
-              shadowRadius: 20,
-              shadowColor: "#000",
-              shadowOpacity: 0.3,
-              borderRadius: 25,
-              overflow: "hidden",
-            }}
-            entering={FlipInEasyX.springify().delay(100)}
+            style={[
+              {
+                width: "100%",
+                minHeight: showEDBadgeHeader ? undefined : Dimensions.get("window").width,
+                backgroundColor: "#FFF",
+                position: "relative",
+                shadowRadius: 20,
+                shadowColor: "#000",
+                shadowOpacity: 0.3,
+                borderRadius: 25,
+                overflow: "hidden",
+              },
+              cardAnimatedStyle,
+            ]}
           >
             <Stack
               padding={showEDBadgeHeader ? [24, 20] : 20}

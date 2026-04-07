@@ -100,7 +100,7 @@ export default function AliseLoginWithCredentials() {
         updatedAt: (new Date()).toISOString(),
       });
       store.setLastUsedAccount(accountId);
-      return router.push("/index");
+      return router.replace("/index");
     } catch (error) {
       alert.showAlert({
         title: t("Alert_Auth_Error"),

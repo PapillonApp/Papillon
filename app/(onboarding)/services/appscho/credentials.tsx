@@ -126,7 +126,7 @@ export default function AppSchoCredentials() {
 
       store.setLastUsedAccount(id);
 
-      return router.push("/index");
+      return router.replace("/index");
     } catch (error) {
       alert.showAlert({
         title: t("Alert_Auth_Error"),

@@ -145,7 +145,7 @@ export default function LannionCredentials() {
       
               router.back();
               router.dismissAll();
-              return router.push("/");
+              return router.replace("/index");
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {

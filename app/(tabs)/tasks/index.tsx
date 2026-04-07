@@ -8,9 +8,11 @@ import WeekPicker from './components/WeekPicker';
 import { useWeekSelection } from './hooks/useWeekSelection';
 
 import { useTheme } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TasksView: React.FC = () => {
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const insets = useSafeAreaInsets();
+  const [headerHeight, setHeaderHeight] = useState(insets.top + 118);
   const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showUndoneOnly, setShowUndoneOnly] = useState(false);

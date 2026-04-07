@@ -10,6 +10,7 @@ import {
   ScrollView,
   View,
   Platform,
+  StatusBar,
 } from "react-native";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { Colors } from "@/utils/subjects/colors";
@@ -270,6 +271,7 @@ function EmojiPicker({
 export default function EditSubject() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const androidTopInset = Platform.OS === "android" ? Math.max(insets.top, StatusBar.currentHeight ?? 0) : 0;
 
   const params = useLocalSearchParams();
 
@@ -293,8 +295,13 @@ export default function EditSubject() {
   return (
     <View
       style={{
-        flex: 1,
-        paddingTop: Platform.OS === "android" ? insets.top : 0,
+        position: "absolute",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        paddingTop: androidTopInset,
+        backgroundColor: colors.background,
       }}
     >
       <Stack

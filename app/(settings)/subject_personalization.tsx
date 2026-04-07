@@ -102,7 +102,7 @@ export default function SubjectPersonalization() {
   return (
     <>
       <NativeHeaderSide side="Right">
-        <NativeHeaderPressable onPress={() => resetAllSubjects()}>
+        <NativeHeaderPressable onPressIn={() => resetAllSubjects()}>
           <Icon>
             <Papicons name="Trash" />
           </Icon>

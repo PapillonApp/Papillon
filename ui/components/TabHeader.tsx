@@ -1,7 +1,7 @@
 
 import { useTheme } from '@react-navigation/native';
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { Platform, View } from 'react-native';
 import Reanimated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -38,10 +38,12 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   const insets = useSafeAreaInsets();
   const [height, setHeight] = React.useState(0);
   const usedInsets = isModal ? 16 : insets.top;
+  const estimatedHeaderHeight = usedInsets + 60 + (bottom ? 52 : 0);
 
-  useEffect(() => {
-    onHeightChanged(height + (Platform.OS === 'android' ? 6 : 0));
-  }, [height]);
+  useLayoutEffect(() => {
+    const measuredOrEstimatedHeight = height > 0 ? height : estimatedHeaderHeight;
+    onHeightChanged(measuredOrEstimatedHeight + (Platform.OS === 'android' ? 6 : 0));
+  }, [estimatedHeaderHeight, height, onHeightChanged]);
 
   return (
     <>

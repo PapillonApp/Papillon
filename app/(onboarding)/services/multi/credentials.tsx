@@ -121,7 +121,7 @@ export default function MultiLoginWithCredentials() {
             
                     router.back();
                     router.dismissAll();
-                    return router.push("/");
+                    return router.replace("/index");
     } catch (error) {
       if (error instanceof Error) {
         alert.showAlert({

@@ -2,9 +2,9 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, StatusBar, View } from "react-native";
+import { FlatList, Platform, StatusBar, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { initialWindowMetrics, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Stack from "@/ui/components/Stack";
 import Button from "@/ui/new/Button";
@@ -64,6 +64,11 @@ export default function AgeSelection() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
+  const initialInsets = initialWindowMetrics?.insets;
+  const topInset = Math.max(insets.top, initialInsets?.top ?? 0);
+  const bottomInset = Math.max(insets.bottom, initialInsets?.bottom ?? 0);
+  const effectiveHeaderHeight = headerHeight > 0 ? headerHeight : topInset + 56;
+  const footerBottomPadding = bottomInset + 20;
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -87,18 +92,16 @@ export default function AgeSelection() {
           padding: 20,
           flexGrow: 1,
           gap: 10,
-          paddingTop: headerHeight + 20
+          paddingTop: effectiveHeaderHeight + 20
         }}
-        initialNumToRender={2}
-        maxToRenderPerBatch={2}
-        windowSize={3}
+        // removeClippedSubviews={false}
         style={{ flex: 1 }}
       />
 
       <View
         style={{
           padding: 20,
-          paddingBottom: insets.bottom + 20,
+          paddingBottom: footerBottomPadding,
           borderTopColor: colors.border,
           borderTopWidth: 1
         }}

@@ -2,7 +2,6 @@ import { Papicons } from "@getpapillon/papicons";
 import { MenuAction, NativeActionEvent } from "@react-native-menu/menu";
 import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker"
-import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -20,8 +19,6 @@ import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Avatar from "@/ui/components/Avatar";
 import Button from "@/ui/components/Button";
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { warn } from "@/utils/logger/logger";
@@ -67,6 +64,12 @@ export default function CustomProfileScreen() {
     setLastName(account.lastName);
     setProfilePictureUrl(getAccountProfilePictureUri(account.customisation?.profilePicture) ?? null);
   }, [account]);
+
+  useEffect(() => {
+    return () => {
+      useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
+    };
+  }, [firstName, lastName, lastUsedAccount]);
 
   const insets = useSafeAreaInsets()
 
@@ -235,19 +238,6 @@ export default function CustomProfileScreen() {
             />
           </View>
         </View>
-        <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
-          <NativeHeaderPressable
-            onPressIn={() => {
-              useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
-              router.back();
-            }}
-          >
-            <Icon papicon size={26}>
-              <Papicons name="ArrowLeft" />
-            </Icon>
-          </NativeHeaderPressable>
-
-        </NativeHeaderSide>
       </ScrollView>
     </View>
   );

@@ -27,27 +27,42 @@ const HomeScreen = () => {
   const focused = useIsFocused();
 
   // Account
-  const store = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
-  const account = accounts.find(a => a.id === store.lastUsedAccount)!;
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const initializeTransport = useAccountStore((state) => state.initializeTransport);
+  const setLastUsedAccount = useAccountStore((state) => state.setLastUsedAccount);
+  const account = React.useMemo(
+    () => accounts.find((a) => a.id === lastUsedAccount) ?? null,
+    [accounts, lastUsedAccount]
+  );
+  const consentCheckedAccountRef = React.useRef<string | null>(null);
   const router = useRouter();
 
   React.useEffect(() => {
-    console.log(accounts)
     if (accounts.length === 0) {
+      consentCheckedAccountRef.current = null;
       router.replace("/(onboarding)/welcome");
+      return;
     }
-    if (accounts.length > 0) {
-      checkConsent().then(consent => {
+
+    if (!account) {
+      setLastUsedAccount(accounts[0].id);
+      return;
+    }
+
+    if (consentCheckedAccountRef.current !== account.id) {
+      consentCheckedAccountRef.current = account.id;
+      checkConsent().then((consent) => {
         if (!consent.given) {
-          router.push("../consent");
+          router.push("/consent");
         }
       });
-      if (account.transport === undefined) {
-        store.initializeTransport(account.schoolName);
-      }
     }
-  }, [accounts.length]);
+
+    if (account.transport === undefined) {
+      void initializeTransport(account.schoolName);
+    }
+  }, [account, accounts, initializeTransport, router, setLastUsedAccount]);
 
   const { isLoading: isHomeLoading } = useHomeData();
   const homeHeaderData = useHomeHeaderData();

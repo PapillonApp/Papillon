@@ -5,6 +5,8 @@ import { getSubjectAverageByProperty } from "@/utils/grades/algorithms/helpers";
 import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
 import { createMissingGradeScore, isMissingGradeScore } from "@/utils/grades/score";
 import { warn } from "@/utils/logger/logger";
+import { SkillChipLevel } from "@/ui/components/SkillChip";
+import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
 
 import { createEDAttachment } from "./attachments";
 import {
@@ -54,6 +56,12 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
         subject
       ])
     )
+    const skillColors = {
+      insufficient: overview.parametrage?.couleurEval1,
+      weak: overview.parametrage?.couleurEval2,
+      almostProficient: overview.parametrage?.couleurEval3,
+      satisfactory: overview.parametrage?.couleurEval4,
+    }
 
     const allMappedGrades: Grade[] = grades.map(g => {
       const subjectId = getEDSubjectId(g.codeMatiere, g.codeSousMatiere, g.libelleMatiere)
@@ -98,6 +106,13 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
         averageScore: display.showGradeClassAverage ? parseGradeValue(g.moyenneClasse, gradeOutOf) : undefined,
         minScore: display.showGradeMinimum ? parseGradeValue(g.minClasse, gradeOutOf) : undefined,
         maxScore: display.showGradeMaximum ? parseGradeValue(g.maxClasse, gradeOutOf) : undefined,
+        skills: (g.elementsProgramme ?? [])
+          .map(skill => ({
+            name: skill.libelleCompetence?.trim() ?? "",
+            description: skill.descriptif?.trim() ?? "",
+            score: parseSkillLevel(parseNumericValue(skill.valeur) ?? 0, skillColors),
+          }))
+          .filter(skill => skill.name || skill.description),
         createdByAccount: accountId
       }
     })
@@ -311,7 +326,7 @@ function getAverageScore(
 
   for (const subject of subjects) {
     const score = subject[key]
-    if (score.disabled || !Number.isFinite(score.value)) {
+    if (!score || score.disabled || !Number.isFinite(score.value)) {
       continue
     }
 
@@ -433,4 +448,108 @@ function getSafeCoefficient(value?: number): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0
     ? value
     : 1
+}
+
+type SkillColorSet = {
+  insufficient?: string | null
+  weak?: string | null
+  almostProficient?: string | null
+  satisfactory?: string | null
+}
+
+type RGBColor = {
+  r: number
+  g: number
+  b: number
+}
+
+function parseSkillLevel(value: number, colors: SkillColorSet): SkillChipLevel | string {
+  switch (value) {
+  case 1:
+    return parseSkillColor(colors.insufficient, SkillChipLevel.Insufficient)
+  case 2:
+    return parseSkillColor(colors.weak, SkillChipLevel.Weak)
+  case 3:
+    return parseSkillColor(colors.almostProficient, SkillChipLevel.AlmostProficient)
+  case 4:
+    return parseSkillColor(colors.satisfactory, SkillChipLevel.Satisfactory)
+  case -1:
+    return SkillChipLevel.Absent
+  case -2:
+    return SkillChipLevel.Exempt
+  default:
+    return SkillChipLevel.NotGraded
+  }
+}
+
+function parseSkillColor(hex?: string | null, fallback: SkillChipLevel = SkillChipLevel.NotGraded): SkillChipLevel | string {
+  const normalized = normalizeHexColor(hex)
+  if (!normalized) {
+    return fallback
+  }
+
+  const color = hexToRgb(normalized)
+  if (!color) {
+    return fallback
+  }
+
+  const palette = SkillsColorsPalette
+    .map(colorHex => hexToRgb(colorHex))
+    .filter((entry): entry is RGBColor => typeof entry !== "undefined")
+
+  if (!palette.length) {
+    return fallback
+  }
+
+  let closestColor = palette[0]
+  let minDistance = Number.MAX_VALUE
+
+  for (const paletteColor of palette) {
+    const distance = Math.sqrt(
+      Math.pow(color.r - paletteColor.r, 2)
+      + Math.pow(color.g - paletteColor.g, 2)
+      + Math.pow(color.b - paletteColor.b, 2)
+    )
+
+    if (distance < minDistance) {
+      minDistance = distance
+      closestColor = paletteColor
+    }
+  }
+
+  return `#${componentToHex(closestColor.r)}${componentToHex(closestColor.g)}${componentToHex(closestColor.b)}`
+}
+
+function normalizeHexColor(hex?: string | null): string | undefined {
+  if (!hex) {
+    return undefined
+  }
+
+  const normalized = hex.trim()
+  if (!normalized) {
+    return undefined
+  }
+
+  return normalized.startsWith("#") ? normalized : `#${normalized}`
+}
+
+function hexToRgb(hex: string): RGBColor | undefined {
+  const normalized = normalizeHexColor(hex)
+  if (!normalized) {
+    return undefined
+  }
+
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(normalized)
+  return result
+    ? {
+      r: Number.parseInt(result[1], 16),
+      g: Number.parseInt(result[2], 16),
+      b: Number.parseInt(result[3], 16),
+    }
+    : undefined
+}
+
+function componentToHex(component: number): string {
+  const hex = component.toString(16)
+  return hex.length === 1 ? `0${hex}` : hex
 }

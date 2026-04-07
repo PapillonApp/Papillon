@@ -8,6 +8,7 @@ import { Text, TouchableOpacity } from 'react-native';
 import { Grade, GradeDisplaySettings, Subject } from '@/services/shared/grade';
 import Stack from '@/ui/components/Stack';
 import LegacyTypography from '@/ui/components/Typography';
+import { SkillChip } from '@/ui/components/SkillChip';
 import adjust from '@/utils/adjustColor';
 import { formatGradeScore, getGradeScoreDenominator, isSameNumericScore } from '@/utils/grades/score';
 import { getSubjectColor } from '@/utils/subjects/colors';
@@ -41,6 +42,8 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, display, onPre
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
   const scoreLabel = formatGradeScore(grade.studentScore);
   const scoreDenominator = getGradeScoreDenominator(grade.studentScore, grade.outOf?.value);
+  const skills = grade.skills ?? [];
+  const hasSkills = skills.length > 0;
 
   return (
     <List.Item onPress={handlePress}>
@@ -53,12 +56,43 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, display, onPre
 
       <List.Trailing>
         <Stack pointerEvents='none' inline noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
-          <LegacyTypography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
-            {scoreLabel}
-          </LegacyTypography>
-          {typeof scoreDenominator === "number" && (
-            <LegacyTypography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
-              /{scoreDenominator}
+          {scoreLabel ? (
+            <>
+              <LegacyTypography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
+                {scoreLabel}
+              </LegacyTypography>
+              {typeof scoreDenominator === "number" && (
+                <LegacyTypography color={trailingForeground + "99"} variant='body2' nowrap style={{ flexShrink: 0 }}>
+                  /{scoreDenominator}
+                </LegacyTypography>
+              )}
+            </>
+          ) : hasSkills ? (
+            <Stack direction='horizontal' hAlign='center'>
+              <Stack direction='horizontal'>
+                {skills.slice(0, 4).map((item, index) => (
+                  <SkillChip
+                    key={index}
+                    level={item.score}
+                    style={{
+                      marginLeft: index > 0 ? -13 : -5,
+                      marginRight:
+                        skills.length <= 4 && index === Math.min(skills.length - 1, 3)
+                          ? -5
+                          : 0,
+                    }}
+                  />
+                ))}
+              </Stack>
+              {skills.length > 4 && (
+                <LegacyTypography color={trailingForeground + "99"} variant='body2'>
+                  {`+${skills.length - 4}`}
+                </LegacyTypography>
+              )}
+            </Stack>
+          ) : (
+            <LegacyTypography color={trailingForeground} variant='navigation' nowrap style={{ flexShrink: 0 }}>
+              {t('Grade_Unavailable')}
             </LegacyTypography>
           )}
 
@@ -165,7 +199,7 @@ export const SubjectItem: React.FC<{ subject: Subject, display?: GradeDisplaySet
         </TouchableOpacity>
       </List.View>
 
-      {subject.grades.map((grade) => (
+      {(subject.grades ?? []).map((grade) => (
         <GradeItem
           key={grade.id}
           grade={grade}

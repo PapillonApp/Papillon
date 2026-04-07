@@ -82,8 +82,10 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
   )
 }
 
-const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score: string, outOf?: number }) => {
+const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: string, outOf?: number }) => {
   const theme = useTheme();
+
+  if (!score) return null;
 
   return (
     <Stack

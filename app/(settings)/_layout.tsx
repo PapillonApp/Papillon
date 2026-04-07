@@ -52,7 +52,7 @@ export default function Layout() {
             headerBackButtonDisplayMode: "minimal",
             headerTransparent: true,
             headerLargeTitle: false,
-            headerBackground: null
+            headerBackground: () => null
           }}
         />
 
@@ -117,7 +117,7 @@ export default function Layout() {
             headerTitle: t("Settings_SubjectEdit_Title"),
             headerBackButtonDisplayMode: "minimal",
             headerShown: false,
-            presentation: "modal",
+            presentation: Platform.OS === "android" ? "card" : "modal",
             contentStyle: {
               borderRadius: Platform.OS === "ios" ? 30 : 0,
             },

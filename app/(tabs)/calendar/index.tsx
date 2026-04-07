@@ -16,13 +16,16 @@ import { useTimetableData } from "./hooks/useTimetableData";
 export default function TabOneScreen() {
   const { colors } = useTheme();
   const calendarRef = useRef<any>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
   const insets = useSafeAreaInsets();
+  const [headerHeight, setHeaderHeight] = useState(insets.top + 66);
   const tabBarHeight = useBottomTabBarHeight();
 
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
-  const account = accounts.find(a => a.id === lastUsedAccount)!;
+  const account = React.useMemo(
+    () => accounts.find((a) => a.id === lastUsedAccount) ?? null,
+    [accounts, lastUsedAccount]
+  );
 
   const {
     date,
@@ -65,6 +68,7 @@ export default function TabOneScreen() {
         insets={insets}
         tabBarHeight={tabBarHeight}
         transportInfo={account.transport ?? undefined}
+        transportInfo={account?.transport ?? undefined}
       />
     );
   }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);

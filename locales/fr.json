@@ -370,6 +370,7 @@
   "Modal_Grades_OptionalGrade": "Note optionnelle",
   "Modal_Grades_BonusGrade": "Note bonus",
 
+  "Grades_Skills_Title": "Compétences",
   "Grades_Details_Title": "Détails",
   "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
   "Grades_NormalizedGrade_Description": "Valeur de la note convertie sur une échelle de 20",

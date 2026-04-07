@@ -58,7 +58,7 @@ export default function AppschoWebView() {
         
         store.setLastUsedAccount(id);
 
-        return router.push("/index");
+        return router.replace("/index");
       } catch (error) {
         Error(`OAuth login error: ${error}`);
         alert.showAlert({

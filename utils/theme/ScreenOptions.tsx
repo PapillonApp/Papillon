@@ -25,6 +25,8 @@ export const screenOptions: any = {
     type: "image",
     source: require("@/assets/icons/back.svg"),
   } : undefined,
-  headerLeft: Platform.OS == 'android' ? () => <AndroidBackButton /> : undefined,
+  headerLeft: Platform.OS == 'android'
+    ? ({ canGoBack }: { canGoBack: boolean }) => (canGoBack ? <AndroidBackButton /> : null)
+    : undefined,
   headerBackVisible: Platform.OS == 'android' ? false : undefined
 };

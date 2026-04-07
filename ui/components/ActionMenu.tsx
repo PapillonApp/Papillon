@@ -170,22 +170,40 @@ export default function ActionMenu({
 
   // Android
   function open() {
+    if (visible || modalVisible) {
+      return;
+    }
     clearTimer(closeTimeoutRef);
     clearTimer(actionCloseTimeoutRef);
     clearTimer(measureTimeoutRef);
+    setMenuSize(null);
     if (menuContentHeight.value <= 0) {
       menuContentHeight.value = estimatedMenuContentHeight;
     }
-    setVisible(true);
     measureTimeoutRef.current = setTimeout(() => {
+      const showMenu = (nextPosition?: LayoutRectangle) => {
+        if (nextPosition) {
+          setPosition(nextPosition);
+        }
+        setVisible(true);
+        setModalVisible(true);
+      };
+
       const trigger = triggerRef.current;
       if (!trigger) {
-        setModalVisible(true);
+        showMenu();
         return;
       }
-      trigger.measure((x, y, width, height, pageX, pageY) => {
-        setPosition({ x: pageX ?? x, y: pageY ?? y, width, height });
-        setModalVisible(true);
+
+      trigger.measureInWindow((x, y, width, height) => {
+        if (width > 0 && height > 0) {
+          showMenu({ x, y, width, height });
+          return;
+        }
+
+        trigger.measure((mx, my, mwidth, mheight, pageX, pageY) => {
+          showMenu({ x: pageX ?? mx, y: pageY ?? my, width: mwidth, height: mheight });
+        });
       });
     }, 0);
   }
@@ -267,7 +285,7 @@ export default function ActionMenu({
 
   const currentSubmenu = submenuStack[submenuStack.length - 1];
   const currentActions = currentSubmenu?.subactions ?? actions;
-  const menuWidth = Math.min(Dimensions.get("window").width * 0.75, 320);
+  const menuWidth = Math.min(Dimensions.get("window").width * 0.75, 250);
   const estimatedMenuContentHeight = (currentActions.length + (currentSubmenu ? 1 : 0)) * 48;
   const estimatedMenuHeight = estimatedMenuContentHeight + (currentSubmenu ? 52 : 0);
   const menuContentHeight = useSharedValue(estimatedMenuContentHeight);
@@ -301,7 +319,7 @@ export default function ActionMenu({
       ref={triggerRef}
       collapsable={false}
       onTouchEnd={(e) => {
-        if (!modalVisible) {
+        if (!visible && !modalVisible) {
           e.stopPropagation();
           open();
         }

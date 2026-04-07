@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { Platform, Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
 import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
@@ -98,7 +98,7 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
   propsRef.current = props;
   childrenRef.current = children;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const headerKey = `header${side}`;
     const renderComponent = () => (
       <View style={[
@@ -152,7 +152,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
   childrenRef.current = children;
   onSearchRef.current = onSearch;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleSearch = (e: any) => {
       if (onSearchRef.current) { onSearchRef.current(e.nativeEvent.text); }
     };
@@ -195,6 +195,10 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
 });
 
 const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: PressableProps) {
+  const triggerPressOnAndroid = Platform.OS === "android"
+    && typeof props.onPress === "function"
+    && typeof props.onPressIn !== "function";
+
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
 
@@ -223,9 +227,14 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
     return (
       <AnimatedPressable
         {...props}
+        onPress={triggerPressOnAndroid ? undefined : props.onPress}
         style={styleFunction}
+        hitSlop={props.hitSlop ?? 8}
         onPressIn={(e) => {
           handlePressIn();
+          if (triggerPressOnAndroid) {
+            props.onPress?.(e);
+          }
           props.onPressIn?.(e);
         }}
         onPressOut={(e) => {
@@ -240,9 +249,14 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
   return (
     <AnimatedPressable
       {...props}
+      onPress={triggerPressOnAndroid ? undefined : props.onPress}
       style={style}
+      hitSlop={props.hitSlop ?? 8}
       onPressIn={(e) => {
         handlePressIn();
+        if (triggerPressOnAndroid) {
+          props.onPress?.(e);
+        }
         props.onPressIn?.(e);
       }}
       onPressOut={(e) => {

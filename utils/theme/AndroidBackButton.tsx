@@ -1,8 +1,9 @@
-import React, { memo } from "react";
-import { Platform, StyleSheet, TouchableNativeFeedback, View } from "react-native";
-import { useRouter } from "expo-router";
+import React, { memo, useCallback } from "react";
+import { Platform, StyleSheet, View } from "react-native";
+import { useNavigation } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import Icon from "@/ui/components/Icon";
+import { NativeHeaderPressable } from "@/ui/components/NativeHeader";
 
 export const AndroidBackButtonStyles = StyleSheet.create({
   container: {
@@ -20,19 +21,21 @@ export const AndroidBackButtonStyles = StyleSheet.create({
 
 const AndroidBackButton = () => {
   if(Platform.OS !== "android") return null;
-  const router = useRouter();
+  const navigation = useNavigation();
+  const handlePress = useCallback(() => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+  }, [navigation]);
 
   return (
-    <TouchableNativeFeedback
-      onPress={router.back}
-      useForeground
-    >
+    <NativeHeaderPressable onPressIn={handlePress}>
       <View style={AndroidBackButtonStyles.container}>
         <Icon size={26}>
           <Papicons name="arrowleft" />
         </Icon>
       </View>
-    </TouchableNativeFeedback>
+    </NativeHeaderPressable>
   );
 };
 

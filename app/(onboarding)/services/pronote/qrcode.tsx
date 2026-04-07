@@ -122,7 +122,7 @@ export default function PronoteLoginWithQR() {
       useAccountStore.getState().setLastUsedAccount(accountID)
       setTimeout(() => {
         setLoadingModalVisible(false);
-        router.push("/index");
+        router.replace("/index");
       }, 1000);
     } catch (error) {
       console.error(error);

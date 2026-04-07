@@ -161,6 +161,7 @@ const SubjectInfo = () => {
               <View style={{ width: "100%", marginTop: 16 }}>
                 <ErrorBoundary>
                   <Averages
+                    key={`subject-averages:${subject.id}:${subject.grades.length}`}
                     grades={subject.grades}
                     realAverage={realAverage}
                     color={subjectColor}

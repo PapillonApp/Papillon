@@ -246,7 +246,7 @@ export default function TurboSelfSelectHost() {
                 })
 
                 store.setLastUsedAccount(accountId)
-                return router.push("/index");
+                return router.replace("/index");
               }}>
                 <Stack
                   hAlign="center"

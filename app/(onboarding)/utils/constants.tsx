@@ -47,7 +47,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       type: ["school"],
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
-        redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
+        redirect({ pathname: './services/ed/credentials', options: { service: Services.ECOLEDIRECTE } });
       },
       variant: 'service' as const,
       color: 'light' as const,

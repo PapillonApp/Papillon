@@ -27,6 +27,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Platform, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);
@@ -51,8 +52,9 @@ export default function QRCodeAndCardsPage() {
   }, [accounts])
 
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(insets.top + 66);
 
   return (
     <>
@@ -82,15 +84,15 @@ export default function QRCodeAndCardsPage() {
         contentInsetAdjustmentBehavior="automatic" style={{ flex: 1, paddingTop: headerHeight - 16 }} contentContainerStyle={{ padding: 20, gap: 16 }}
       >
         {wallets.map((c, i) => {
+          const walletKey = `${c.createdByAccount}:${c.label}:${i}`;
           return (
             <Dynamic
               animated
-              key={c.createdByAccount + c.label}
+              key={walletKey}
               entering={PapillonAppearIn}
               exiting={PapillonAppearOut}
             >
               <Card
-                key={c.createdByAccount + c.label}
                 index={i}
                 wallet={c}
                 service={account?.services.find(service => service.id === c.createdByAccount)?.serviceId ?? Services.TURBOSELF}

@@ -1,3 +1,4 @@
+import { useNews } from "@/database/useNews";
 import { getManager } from "@/services/shared";
 import { News } from "@/services/shared/news";
 import { useAccountStore } from "@/stores/account";
@@ -5,8 +6,8 @@ import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
 import TypographyLegacy from "@/ui/components/Typography";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
-import { useEffect, useState } from "react";
-import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Attachment, News as SkolengoNews } from "skolengojs"
 
 import { VARIANTS } from "@/ui/components/Typography";
@@ -33,34 +34,66 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 
 const NewsModal = () => {
-  const search = useLocalSearchParams();
-  const news = JSON.parse(String(search.news)) as News
+  const search = useLocalSearchParams<{ newsId?: string | string[]; news?: string | string[] }>();
+  const cachedNews = useNews();
+
+  const rawNewsId = search.newsId;
+  const newsId = Array.isArray(rawNewsId) ? rawNewsId[0] : rawNewsId;
+  const fallbackNews = useMemo(() => {
+    const rawNews = Array.isArray(search.news) ? search.news[0] : search.news;
+    if (!rawNews) {
+      return null;
+    }
+
+    try {
+      const parsedNews = JSON.parse(rawNews) as News;
+      return {
+        ...parsedNews,
+        createdAt: new Date(parsedNews.createdAt),
+      };
+    } catch {
+      return null;
+    }
+  }, [search.news]);
+
+  const news = useMemo(() => {
+    if (newsId) {
+      return cachedNews.find(item => item.id === newsId) ?? fallbackNews;
+    }
+    return fallbackNews;
+  }, [cachedNews, fallbackNews, newsId]);
+
   const insets = useSafeAreaInsets();
 
   const navigation = useNavigation()
   const router = useRouter()
+  const acknowledgeAttemptedRef = useRef(false)
 
   useEffect(() => {
+    if (!news || news.acknowledged || acknowledgeAttemptedRef.current) {
+      return;
+    }
+
+    acknowledgeAttemptedRef.current = true;
+
     const acknowledgeNews = async () => {
-      if (!news.acknowledged) {
-        const manager = getManager();
+      const manager = getManager();
 
-        const store = useAccountStore.getState()
-        const account = store.accounts.find(account => account.id === store.lastUsedAccount)
-        const service = account?.services.find(service => service.id === news.createdByAccount)
+      const store = useAccountStore.getState()
+      const account = store.accounts.find(account => account.id === store.lastUsedAccount)
+      const service = account?.services.find(service => service.id === news.createdByAccount)
 
-        if (service?.serviceId === Services.SKOLENGO) {
-          const attachment = new Attachment("", "", "")
-          const ref = new SkolengoNews(news.id, news.createdAt, news.title ?? "", news.content, news.content, { id: "", name: "" }, "", attachment)
-          news.ref = ref
-        }
-
-        await manager.setNewsAsDone(news);
+      if (service?.serviceId === Services.SKOLENGO) {
+        const attachment = new Attachment("", "", "")
+        const ref = new SkolengoNews(news.id, news.createdAt, news.title ?? "", news.content, news.content, { id: "", name: "" }, "", attachment)
+        news.ref = ref
       }
+
+      await manager.setNewsAsDone(news);
     };
 
-    acknowledgeNews();
-  }, [])
+    void acknowledgeNews();
+  }, [news])
 
 
   const { colors } = useTheme();
@@ -87,6 +120,15 @@ const NewsModal = () => {
   });
 
   const [HTMLCleanupEnabled, setHTMLCleanupEnabled] = useState(true)
+
+  if (!news) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
   const cleanedContent = HTMLCleanupEnabled ? cleanHtmlForArticle(news.content) : news.content
 
   return (

@@ -19,6 +19,7 @@ import { fetchEDProfilePicture } from "@/services/ecoledirecte/profile";
 import { getEDModulesAdditionals } from "@/services/ecoledirecte/qrcode";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
+import { checkConsent } from "@/utils/logger/consent";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
 import SheetModal from "@/ui/components/SheetModal";
@@ -271,7 +272,15 @@ export default function EDLoginWithCredentials() {
         store.setLastUsedAccount(device);
 
         queueMicrotask(() => {
-          router.push("/index");
+          void checkConsent()
+            .then((consent) => {
+              router.dismissAll();
+              router.replace(consent.given ? "/index" : "/consent");
+            })
+            .catch(() => {
+              router.dismissAll();
+              router.replace("/index");
+            });
         });
       }
     } catch (e) {

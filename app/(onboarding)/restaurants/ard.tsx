@@ -136,7 +136,7 @@ export default function TurboSelfLoginWithCredentials() {
       
               router.back();
               router.dismissAll();
-              return router.push("/");
+              return router.replace("/index");
     } catch (error) {
         setIsLoggingIn(false);
       Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
