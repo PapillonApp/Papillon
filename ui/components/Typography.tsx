@@ -1,7 +1,6 @@
 import React from "react";
-import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View, StyleProp } from "react-native";
+import { DimensionValue, Platform, StyleSheet, Text, TextProps, TextStyle, View, StyleProp } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { screenOptions } from "@/utils/theme/ScreenOptions";
 import SkeletonView from "@/ui/components/SkeletonView";
 
 const FONT_FAMILIES = {
@@ -39,7 +38,7 @@ export const VARIANTS = StyleSheet.create({
     lineHeight: 22,
   },
   navigation: {
-    fontSize: screenOptions.headerTitleStyle.fontSize || 18,
+    fontSize: Platform.OS === "ios" ? 18 : 20,
     fontFamily: FONT_FAMILIES.semibold,
     lineHeight: 24,
   },
