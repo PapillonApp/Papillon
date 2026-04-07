@@ -14,6 +14,7 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition'
 import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
+import { getDisplayInitials, getDisplayTeacherName, useAnonymousMode } from '@/utils/privacy/anonymize'
 import { Papicons } from '@getpapillon/papicons'
 import { useTheme } from '@react-navigation/native'
 import { router, useRouter } from 'expo-router'
@@ -36,6 +37,7 @@ const NewsView = () => {
   const [isManuallyLoading, setIsManuallyLoading] = useState(false)
 
   const keyboardHeight = useKeyboardHeight()
+  const anonymousMode = useAnonymousMode()
 
   const footerStyle = useAnimatedStyle(() => ({
     height: keyboardHeight.value - bottomTabBarHeight,
@@ -141,8 +143,9 @@ const NewsView = () => {
           }
         >
           {filteredNews.map((item) => {
-            const profileColor = getProfileColorByName(item.author)
-            const profileInitials = getInitials(item.author)
+            const displayAuthor = getDisplayTeacherName(item.author, anonymousMode) ?? ''
+            const profileColor = getProfileColorByName(displayAuthor || item.author)
+            const profileInitials = getDisplayInitials(getInitials(item.author ?? ''), anonymousMode)
             const title = item.title ?? ''
 
             return (
@@ -178,7 +181,7 @@ const NewsView = () => {
                   hAlign='center'
                 >
                   <Typography nowrap weight='medium' style={{ flex: 1 }} variant='caption' color='textSecondary'>
-                    {item.author}
+                    {displayAuthor}
                   </Typography>
 
                   <Typography nowrap weight='medium' variant='caption' color='textSecondary'>

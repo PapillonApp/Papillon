@@ -30,6 +30,7 @@ import { HeaderBackButton } from "@react-navigation/elements";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { IconNames, Papicons } from "@getpapillon/papicons";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
+import { getDisplayInitials, getDisplayTeacherName, useAnonymousMode } from "@/utils/privacy/anonymize";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 
@@ -68,6 +69,7 @@ const NewsModal = () => {
   const navigation = useNavigation()
   const router = useRouter()
   const acknowledgeAttemptedRef = useRef(false)
+  const anonymousMode = useAnonymousMode()
 
   useEffect(() => {
     if (!news || news.acknowledged || acknowledgeAttemptedRef.current) {
@@ -130,6 +132,8 @@ const NewsModal = () => {
   }
 
   const cleanedContent = HTMLCleanupEnabled ? cleanHtmlForArticle(news.content) : news.content
+  const displayAuthor = getDisplayTeacherName(news.author, anonymousMode) ?? ""
+  const displayInitials = getDisplayInitials(getInitials(news.author ?? ""), anonymousMode)
 
   return (
     <ScrollView
@@ -170,9 +174,9 @@ const NewsModal = () => {
 
         <Stack direction="horizontal" hAlign="center">
           <Stack direction="horizontal" gap={8} inline flex hAlign="center">
-            <Avatar initials={getInitials(news.author)} size={28} />
+            <Avatar initials={displayInitials} size={28} />
             <TypographyLegacy nowrap variant="body2">
-              {news.author}
+              {displayAuthor}
             </TypographyLegacy>
           </Stack>
 
