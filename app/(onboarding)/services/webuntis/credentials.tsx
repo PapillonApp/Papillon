@@ -110,8 +110,12 @@ export default function WebUntisLoginCredentials() {
       accountStore.addAccount(account);
       accountStore.setLastUsedAccount(device);
 
-      useSettingsStore.getState().mutateProperty("personalization", {
-        disabledTabs: ["grades", "news"]
+      const settingsStore = useSettingsStore.getState();
+      const disabledTabs = settingsStore.personalization.disabledTabs || [];
+      const newDisabledTabs = Array.from(new Set([...disabledTabs, "news", "grades"]));
+
+      settingsStore.mutateProperty("personalization", {
+        disabledTabs: newDisabledTabs
       });
 
       // TODO: Use new route
