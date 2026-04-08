@@ -263,7 +263,6 @@
   "Grades_Avg_Median_Title": "Médiane des notes",
   "Grades_Avg_Median_Short": "Médiane",
   "Grades_Avg_Median_Description": "Calcule la médiane de toutes les notes",
-
   "Grades_Avg_More": "En savoir plus",
   "Grades_Avg_KnowMore": "En savoir plus",
   "Grades_Avg_KnowMore_Description": "Comprendre les méthodes de calcul de la moyenne générale",
@@ -546,5 +545,9 @@
   "Settings_Features_BottomAccessory_Description": "Affiche les prochains cours au dessus des onglets",
   "Settings_Features_ShowTabBarLabels": "Afficher le nom des onglets",
   "Settings_Features_ShowTabBarLabels_Description": "Indique le nom de l'onglet en dessous de celui-ci",
-  "Settings_Features_TabBar": "Barre d'onglets"
+  "Settings_Features_TabBar": "Barre d'onglets",
+  "Settings_Features_Grades": "Notes",
+  "Settings_Features_GradeScale": "Échelle des notes",
+  "Settings_Features_GradeScale_Description": "Notation par défaut dans l'interface",
+  "Global_Experimental": "Expérimental"
 }

@@ -89,7 +89,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
   )
 }
 
-const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score: string, outOf: number }) => {
+const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score: string, outOf: number | string }) => {
   const theme = useTheme();
 
   return (
@@ -104,7 +104,7 @@ const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score: str
         {score}
       </Typography>
       <Typography variant='h3' weight='semibold' color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
-        /{outOf}
+        {typeof outOf === "string" && outOf.startsWith("%") ? outOf : `/${outOf}`}
       </Typography>
     </Stack>
   )
