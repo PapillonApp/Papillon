@@ -20,6 +20,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/new/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
+import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonGradesAveragesOverTime from "@/utils/grades/algorithms/time";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
@@ -43,6 +44,13 @@ const algorithms = [
     description: t('Grades_Avg_All_Pond_Description'),
     algorithm: PapillonWeightedAvg,
     sfsymbol: "plus.forwardslash.minus"
+  },
+  {
+    key: "median",
+    label: t('Grades_Avg_Median_Title'),
+    description: t('Grades_Avg_Median_Description'),
+    algorithm: PapillonMedian,
+    sfsymbol: "chart.bar.xaxis.ascending"
   }
 ]
 
