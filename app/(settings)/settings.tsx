@@ -86,6 +86,13 @@ export default function SettingsIndex() {
           color: "#000",
           onPress: () => router.navigate("/(settings)/transport"),
         },
+        {
+          title: t("Settings_Features_Title"),
+          description: t("Settings_Features_Description"),
+          papicon: <Papicons name={"Sparkles"} />,
+          color: "#0059DD",
+          onPress: () => router.navigate("/(settings)/features"),
+        },
       ],
     },
     {
