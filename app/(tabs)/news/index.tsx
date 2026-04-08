@@ -113,7 +113,7 @@ const NewsView = () => {
           }
           ListFooterComponent={<Reanimated.View style={footerStyle} />}
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
-          ListHeaderComponent={<View style={{ height: headerHeight - insets.top }} />}
+          ListHeaderComponent={<View style={{ height: headerHeight - (Platform.OS === "ios" ? insets.top : 0) }} />}
           ListEmptyComponent={
             <Dynamic animated key='empty-list:warn' entering={PapillonAppearIn} exiting={PapillonAppearOut}>
               <Stack
