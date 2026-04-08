@@ -132,7 +132,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
             progressViewOffset={Platform.OS === 'android' ? headerHeight : 0}
           />
         }
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id || `${item.type}-${item.from || item.targetTime}`}
         ListEmptyComponent={<EmptyCalendar />}
         renderItem={({ item }: { item: SharedCourse }) => {
           if ((item as any).type === "transit") {
