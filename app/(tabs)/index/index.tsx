@@ -111,11 +111,11 @@ const HomeViewContainer = ({ children }) => {
       maskElement={
         <View style={{ flex: 1, backgroundColor: 'transparent' }}>
           <LinearGradient
-            colors={['#ff000022', 'red']}
+            colors={['#ff000022', 'white']}
             locations={[0.5, 1]}
             style={{ height: insets.top + 68 }}
           />
-          <View style={{ flex: 1, backgroundColor: 'red' }} />
+          <View style={{ flex: 1, backgroundColor: 'white' }} />
         </View>
       }
       style={{ flex: 1 }}
