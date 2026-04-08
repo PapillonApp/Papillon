@@ -128,6 +128,7 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
     for (const subject of reportSubjects) {
       const subjectId = getEDSubjectId(subject.codeMatiere, subject.codeSousMatiere, subject.discipline)
       const grades = gradesBySubject.get(subjectId) ?? []
+      const hasNumericStudentGrade = grades.some(grade => isNumericGradeScore(grade.studentScore))
       const computedAverage = getSubjectAverage(grades)
       const computedClassAverage = getSubjectAverageByProperty(grades, "averageScore")
       const computedMaximum = getSubjectAverageByProperty(grades, "maxScore")
@@ -136,7 +137,9 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
       subjects[subjectId] = {
         id: subjectId,
         name: subject.discipline,
-        studentAverage: getResolvedScore(subject.moyenne, computedAverage, display.scale),
+        studentAverage: hasNumericStudentGrade
+          ? getResolvedScore(subject.moyenne, computedAverage, display.scale)
+          : createMissingGradeScore(),
         classAverage: display.showSubjectClassAverage
           ? getResolvedScore(subject.moyenneClasse, computedClassAverage, display.scale)
           : createMissingGradeScore(),
@@ -163,6 +166,7 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
       }
 
       const firstGrade = subjectGrades[0]
+      const hasNumericStudentGrade = subjectGrades.some(grade => isNumericGradeScore(grade.studentScore))
       const computedAverage = getSubjectAverage(subjectGrades)
       const computedClassAverage = getSubjectAverageByProperty(subjectGrades, "averageScore")
       const computedMaximum = getSubjectAverageByProperty(subjectGrades, "maxScore")
@@ -171,7 +175,9 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
       subjects[subjectId] = {
         id: subjectId,
         name: firstGrade?.subjectName || "Inconnu",
-        studentAverage: getResolvedScore(undefined, computedAverage, display.scale),
+        studentAverage: hasNumericStudentGrade
+          ? getResolvedScore(undefined, computedAverage, display.scale)
+          : createMissingGradeScore(),
         classAverage: display.showSubjectClassAverage
           ? getResolvedScore(undefined, computedClassAverage, display.scale)
           : createMissingGradeScore(),
@@ -322,16 +328,16 @@ function getAverageScore(
   useSubjectCoefficients: boolean = false,
   outOf?: number
 ): GradeScore {
-  if (!directScore.disabled && Number.isFinite(directScore.value)) {
-    return directScore
-  }
+  const hasDirectScore = !directScore.disabled && Number.isFinite(directScore.value)
 
   let weightedTotal = 0
   let totalWeight = 0
+  let hasMissingSubjectScores = false
 
   for (const subject of subjects) {
     const score = subject[key]
     if (!score || score.disabled || !Number.isFinite(score.value)) {
+      hasMissingSubjectScores = true
       continue
     }
 
@@ -344,10 +350,24 @@ function getAverageScore(
   }
 
   if (totalWeight === 0) {
+    if (hasDirectScore) {
+      return directScore
+    }
+
     return createMissingGradeScore()
   }
 
-  return createNumericScore(weightedTotal / totalWeight, outOf)
+  const computedScore = createNumericScore(weightedTotal / totalWeight, outOf)
+
+  if (!hasDirectScore) {
+    return computedScore
+  }
+
+  if (hasMissingSubjectScores) {
+    return computedScore
+  }
+
+  return directScore
 }
 
 function getDisplaySettings(settings?: {
