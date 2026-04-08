@@ -29,6 +29,8 @@ export interface Personalization {
   colorSelected?: Colors;
   theme?: "light" | "dark" | "auto";
   useMaterialYou?: boolean;
+  iOSBottomAccessoryEnabled?: boolean;
+  showTabBarLabels?: boolean;
   magicEnabled?: boolean;
   hideNameOnHomeScreen?: boolean;
   showAlertAtLogin?: boolean;
