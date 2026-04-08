@@ -15,6 +15,8 @@ const defaultPersonalization: Personalization = {
   colorSelected: Colors.PINK,
   theme: "auto",
   useMaterialYou: DEFAULT_MATERIAL_YOU_ENABLED,
+  iOSBottomAccessoryEnabled: true,
+  showTabBarLabels: true,
   magicEnabled: true,
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,

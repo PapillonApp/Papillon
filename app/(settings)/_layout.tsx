@@ -138,6 +138,15 @@ export default function Layout() {
             headerTitle: t("Settings_Transport_Title"),
           }}
         />
+        <Stack.Screen
+          name="features"
+          options={{
+            headerTitle: t("Settings_Features_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
+          }}
+        />
       </Stack>
     </>
   );
