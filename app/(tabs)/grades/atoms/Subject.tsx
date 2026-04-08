@@ -17,6 +17,7 @@ import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
+import { GradeDisplayScale, formatScoreForDisplay } from '@/utils/grades/scale';
 
 const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
   const dateString = useMemo(() => {
@@ -71,7 +72,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
   );
 });
 
-export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }> = React.memo(({ subject, grades, getAvgInfluence, getAvgClassInfluence }) => {
+export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number, displayScale: GradeDisplayScale }> = React.memo(({ subject, grades, getAvgInfluence, getAvgClassInfluence, displayScale }) => {
   const theme = useTheme();
   const navigation = useNavigation()
 
@@ -83,6 +84,9 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
 
   const subjectName = useMemo(() => getSubjectName(subject.name), [subject.name]);
   const subjectEmoji = useMemo(() => getSubjectEmoji(subject.name), [subject.name]);
+  const displayedSubjectAverage = useMemo(() => {
+    return formatScoreForDisplay(subject.studentAverage.value, subject.outOf.value, displayScale);
+  }, [subject.studentAverage.value, subject.outOf.value, displayScale]);
 
   const handlePressSubject = useCallback(() => {
     // @ts-expect-error navigation types
@@ -142,11 +146,11 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
                       : undefined
                   }
                 >
-                  {subject.studentAverage.value.toFixed(2)}
+                  {displayedSubjectAverage.value.toFixed(2)}
                 </LegacyTypography>
               )}
               <LegacyTypography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
-                /{subject.outOf.value}
+                {displayedSubjectAverage.denominator}
               </LegacyTypography>
               {subject.studentAverage.value === subject.maximum.value && !subject.studentAverage.disabled && (
                 <Papicons style={{ alignSelf: 'center', marginLeft: 4 }} name="crown" color={subjectAdjustedColor} size={20} />

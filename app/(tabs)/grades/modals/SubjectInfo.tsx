@@ -17,6 +17,8 @@ import i18n from "@/utils/i18n";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import Icon from "@/ui/components/Icon";
+import { useSettingsStore } from "@/stores/settings";
+import { formatScoreForDisplay, getGradeDisplayScale } from "@/utils/grades/scale";
 
 const SubjectInfo = () => {
   const { params } = useRoute();
@@ -24,18 +26,20 @@ const SubjectInfo = () => {
   const colors = theme.colors;
 
   const subject: Subject = params?.subject;
+  const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
   const subjectColor = getSubjectColor(subject?.name);
   const subjectName = getSubjectName(subject?.name);
   const subjectEmoji = getSubjectEmoji(subject?.name);
 
-  const outOf = subject.outOf.value;
+  const displayedSubjectAverage = formatScoreForDisplay(subject.studentAverage.value, subject.outOf.value, displayScale);
+  const displayedDenominator = formatScoreForDisplay(0, subject.outOf.value, displayScale).denominator;
 
   const averagesData = [
     {
       title: i18n.t("SubjectInfo_ClassAverage_Label"),
       subtitle: i18n.t("SubjectInfo_ClassAverage_Description"),
       disabled: subject.classAverage.disabled,
-      value: subject.classAverage.value.toFixed(2),
+      value: formatScoreForDisplay(subject.classAverage.value, subject.outOf.value, displayScale).value,
       status: subject.classAverage.status,
       icon: "GraduationHat",
     },
@@ -43,7 +47,7 @@ const SubjectInfo = () => {
       title: i18n.t("SubjectInfo_MaxAverage_Label"),
       subtitle: i18n.t("SubjectInfo_MaxAverage_Description"),
       disabled: subject.maximum.disabled,
-      value: subject.maximum.value.toFixed(2),
+      value: formatScoreForDisplay(subject.maximum.value, subject.outOf.value, displayScale).value,
       status: subject.maximum.status,
       icon: "ArrowRightUp",
     },
@@ -51,7 +55,7 @@ const SubjectInfo = () => {
       title: i18n.t("SubjectInfo_MinAverage_Label"),
       subtitle: i18n.t("SubjectInfo_MinAverage_Description"),
       disabled: subject.minimum.disabled,
-      value: subject.minimum.value.toFixed(2),
+      value: formatScoreForDisplay(subject.minimum.value, subject.outOf.value, displayScale).value,
       status: subject.minimum.status,
       icon: "Minus",
     }
@@ -89,8 +93,8 @@ const SubjectInfo = () => {
               overhead={
                 <ModalOverHeadScore
                   color={Platform.OS === 'ios' ? subjectColor : colors.primary}
-                  score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(subject.studentAverage.value.toFixed(2))}
-                  outOf={outOf}
+                  score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(displayedSubjectAverage.value.toFixed(2))}
+                  outOf={displayedDenominator.startsWith("/") ? displayedDenominator.slice(1) : displayedDenominator}
                 />
               }
               style={{
@@ -146,10 +150,10 @@ const SubjectInfo = () => {
               <List.Trailing>
                 <Stack gap={2} direction="horizontal" vAlign="center" hAlign="end">
                   <TypographyLegacy variant="header" weight="semibold" inline>
-                    {average.disabled ? average.status : average.value}
+                    {average.disabled ? average.status : average.value.toFixed(2)}
                   </TypographyLegacy>
                   <TypographyLegacy variant="body2" inline color="secondary">
-                    /{outOf}
+                    {displayedDenominator}
                   </TypographyLegacy>
                 </Stack>
               </List.Trailing>

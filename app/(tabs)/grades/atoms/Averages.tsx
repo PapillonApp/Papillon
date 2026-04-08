@@ -24,6 +24,12 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonGradesAveragesOverTime from "@/utils/grades/algorithms/time";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
+import {
+  GradeDisplayScale,
+  getDisplayDenominator,
+  getDisplayScaleMax,
+  toDisplayScaleFrom20,
+} from "@/utils/grades/scale";
 
 import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
 import ActionMenu from "@/ui/components/ActionMenu";
@@ -54,7 +60,19 @@ const algorithms = [
   }
 ]
 
-const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { grades: Grade[], realAverage?: number, color?: string, scale?: number, inline?: boolean }) => {
+const Averages = ({
+  grades,
+  realAverage,
+  color,
+  displayScale = "20",
+  inline = false,
+}: {
+  grades: Grade[],
+  realAverage?: number,
+  color?: string,
+  displayScale?: GradeDisplayScale,
+  inline?: boolean
+}) => {
   try {
     const theme = useTheme();
     const accent = color || theme.colors.primary;
@@ -74,12 +92,15 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
             date: new Date(),
           });
         }
-        return history;
+        return history.map(entry => ({
+          ...entry,
+          average: toDisplayScaleFrom20(entry.average, displayScale),
+        }));
       } catch (e) {
         console.error("Error calculating average history:", e);
         return [];
       }
-    }, [grades, algorithm, realAverage]);
+    }, [grades, algorithm, realAverage, displayScale]);
 
     const initialAverage = useMemo(() => {
       if (currentAverageHistory.length === 0) {
@@ -91,14 +112,14 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
 
       if (algorithm.canInjectRealAverage && realAverage) {
         return {
-          average: realAverage,
+          average: toDisplayScaleFrom20(realAverage, displayScale),
           date: new Date(),
         };
       }
 
       if (!currentAverageHistory || currentAverageHistory.length === 0) { return null; }
       return currentAverageHistory[currentAverageHistory.length - 1];
-    }, [currentAverageHistory, algorithm, realAverage]);
+    }, [currentAverageHistory, algorithm, realAverage, displayScale]);
 
     const [shownAverage, setShownAverage] = useState(initialAverage ? initialAverage.average : 0);
     const [shownDate, setShownDate] = useState(initialAverage ? initialAverage.date : new Date());
@@ -133,12 +154,20 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
     }, [active]);
 
     const graphAxis = useMemo<GraphPoint[]>(() => {
-      return calculateAmplifiedGraphPoints(currentAverageHistory, scale);
-    }, [currentAverageHistory, scale]);
+      return calculateAmplifiedGraphPoints(currentAverageHistory, getDisplayScaleMax(displayScale));
+    }, [currentAverageHistory, displayScale]);
+
+    const displayedRealAverage = useMemo(() => {
+      if (realAverage === undefined) {
+        return undefined;
+      }
+
+      return toDisplayScaleFrom20(realAverage, displayScale);
+    }, [realAverage, displayScale]);
 
     const isRealAverage = useMemo(() => {
-      return shownAverage === realAverage;
-    }, [shownAverage, realAverage]);
+      return shownAverage === displayedRealAverage;
+    }, [shownAverage, displayedRealAverage]);
 
     const backgroundColor = useMemo(() => {
       return adjust(accent, theme.dark ? -0.89 : 0.8);
@@ -250,7 +279,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
                 </AnimatedNumber>
                 <Dynamic animated>
                   <Typography variant="title" style={{ color: adjustedColor, marginBottom: inline ? 1 : 3, opacity: 0.7 }}>
-                    /{scale}
+                    {getDisplayDenominator(displayScale)}
                   </Typography>
                 </Dynamic>
               </Stack>

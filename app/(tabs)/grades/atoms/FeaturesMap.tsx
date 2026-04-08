@@ -2,13 +2,14 @@ import React from 'react';
 import { View } from 'react-native';
 
 import ScodocUES from '../features/ScodocUES';
+import { GradeDisplayScale } from '@/utils/grades/scale';
 
 const featureComponent = {
   "scodoc-ues": ScodocUES,
 }
 
 
-const FeaturesMap: React.FC<{ features: Record<string, any> }> = ({ features }) => {
+const FeaturesMap: React.FC<{ features: Record<string, any>, displayScale: GradeDisplayScale }> = ({ features, displayScale }) => {
   if (!features) { return null; }
 
   return (
@@ -16,7 +17,7 @@ const FeaturesMap: React.FC<{ features: Record<string, any> }> = ({ features }) 
       {Object.entries(features).map(([key, value]) => {
         const Component = featureComponent[key as keyof typeof featureComponent];
         if (!Component) { return null; }
-        return <Component key={key} data={value} />;
+        return <Component key={key} data={value} displayScale={displayScale} />;
       })}
     </View>
   );
