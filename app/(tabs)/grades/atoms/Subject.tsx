@@ -99,7 +99,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
               </LegacyTypography>
             </>
           ) : (
-            grade(
+            grade.studentScore.value !== undefined && (
               <>
                 <LegacyTypography
                   color={trailingForeground}
