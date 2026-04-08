@@ -8,6 +8,7 @@ import Reanimated, { FadeInDown, FadeOut, FadeOutUp } from 'react-native-reanima
 import Stack from '@/ui/components/Stack';
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
+import NativeSwitch from '@/ui/native/NativeSwitch';
 
 type ConsentItem = {
   title: string;
@@ -51,7 +52,7 @@ const ConsentButton = memo(({
           <Papicons name={item.icon} color={ICON_COLOR} />
           <Typography variant='title' color={ICON_COLOR}>{item.title}</Typography>
         </Stack>
-        <Switch value={item.enabled} onValueChange={() => onToggle(index)} trackColor={TRACK_COLOR} />
+        <NativeSwitch value={item.enabled} onValueChange={() => onToggle(index)} trackColor={TRACK_COLOR} />
       </Stack>
     </LiquidGlassView>
   </Reanimated.View>

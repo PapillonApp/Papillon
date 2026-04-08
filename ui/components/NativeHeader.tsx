@@ -80,7 +80,7 @@ const getBackgroundColor = (color: string) => {
 };
 
 // Default color constant
-const DEFAULT_COLOR = "#29947A";
+const DEFAULT_COLOR = "29947A";
 const DEFAULT_BACKGROUND_COLOR = getBackgroundColor(DEFAULT_COLOR);
 
 interface NativeSideProps extends ViewProps {
@@ -262,19 +262,21 @@ interface NativeHeaderHighlightProps extends ViewProps {
 
 const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   children,
-  color = DEFAULT_COLOR,
+  color,
   light = false,
   variant = "navigation",
   style,
   ...props
 }: NativeHeaderHighlightProps) {
+  const theme = useTheme();
+  if (!color) {
+    color = theme.colors.primary;
+  }
   // Use cached background color
-  const backgroundColor = light ? 'transparent' : color === DEFAULT_COLOR ? DEFAULT_BACKGROUND_COLOR : getBackgroundColor(color);
+  const backgroundColor = light ? 'transparent' : getBackgroundColor(color);
 
   // Pre-compute style array once
   const viewStyle = style ? [styles.highlight, { backgroundColor }, style, light ? { padding: 0 } : {}] : [styles.highlight, { backgroundColor }, { borderRadius: light ? 0 : styles.highlight.borderRadius }, light ? { padding: 0 } : {}];
-
-  const theme = useTheme();
   const adjustedColor = adjust(color, theme.dark ? 0.2 : -0.2);
 
   return (

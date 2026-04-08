@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { Platform } from "react-native";
 
 import { Colors } from "@/utils/colors";
 import { MAGIC_URL } from "@/utils/endpoints";
@@ -7,9 +8,15 @@ import { MAGIC_URL } from "@/utils/endpoints";
 import { createMMKVStorage } from "../global";
 import { Personalization,SettingsState, SettingsStorage } from "./types";
 
+export const DEFAULT_MATERIAL_YOU_ENABLED =
+  Platform.OS === "android" && typeof Platform.Version === "number" && Platform.Version >= 31;
+
 const defaultPersonalization: Personalization = {
   colorSelected: Colors.PINK,
   theme: "auto",
+  useMaterialYou: DEFAULT_MATERIAL_YOU_ENABLED,
+  iOSBottomAccessoryEnabled: true,
+  showTabBarLabels: true,
   magicEnabled: true,
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,

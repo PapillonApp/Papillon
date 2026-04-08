@@ -67,6 +67,7 @@ export async function addNewsToDatabase(news: SharedNews[]) {
             newsModel.author = item.author ?? "";
             newsModel.category = item.category ?? "";
             newsModel.createdByAccount = item.createdByAccount ?? "";
+            newsModel.question = item.question ?? false;
           })
         );
 
@@ -81,6 +82,7 @@ export async function addNewsToDatabase(news: SharedNews[]) {
             newsModel.author = item.author ?? newsModel.author;
             newsModel.category = item.category ?? newsModel.category;
             newsModel.createdByAccount = item.createdByAccount ?? newsModel.createdByAccount;
+            newsModel.question = item.question ?? newsModel.question;
           })
         );
 

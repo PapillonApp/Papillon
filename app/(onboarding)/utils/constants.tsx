@@ -7,13 +7,16 @@ import { useTranslation } from 'react-i18next';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
+import { t } from 'i18next';
 export interface SupportedService {
   name: string;
+  route?: string;
   title: string;
-  type: string;
+  type: string[];
+  hasLimitedSupport?: boolean;
   image?: NodeRequire;
   onPress: () => void;
-  variant: string;
+  variant?: string;
   color?: string;
   icon?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -27,8 +30,9 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
   return [
     {
       name: "pronote",
-      title: "PRONOTE",
-      type: "main",
+      route: "pronote",
+      title: t("ONBOARDING_SERVICE_PRONOTE"),
+      type: ["school", "univ"],
       image: require("@/assets/images/service_pronote.png"),
       onPress: () => {
         redirect({ pathname: './school/method', options: { service: Services.PRONOTE } });
@@ -38,8 +42,9 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "ed",
-      title: "ÉcoleDirecte",
-      type: "main",
+      route: "ed",
+      title: t("ONBOARDING_SERVICE_ED"),
+      type: ["school"],
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
         redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
@@ -49,8 +54,9 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "skolengo",
-      title: "Skolengo",
-      type: "main",
+      route: "skolengo",
+      title: t("ONBOARDING_SERVICE_SKOLENGO"),
+      type: ["school"],
       image: require("@/assets/images/service_skolengo.png"),
       onPress: () => {
         redirect({ pathname: './school/method', options: { service: Services.SKOLENGO } });
@@ -59,36 +65,46 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       color: 'light' as const,
     },
     {
-      name: "separator",
-      title: "separator",
-      type: "separator",
-      image: require("@/assets/images/service_skolengo.png"),
-      onPress: () => { /* empty */ },
-      variant: 'service' as const,
-      color: 'light' as const,
+      name: "lannion",
+      route: "lannion",
+      title: t("ONBOARDING_SERVICE_LANNION"),
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_lannion.png"),
+      type: ["univ"],
+      onPress: () => {
+        redirect({ pathname: './lannion/credentials' });
+      },
     },
     {
-      name: "university",
-      title: t("ONBOARDING_UNIVERSITY"),
-      type: "other",
-      icon: <Papicons name={"Star"} />,
+      name: "univ-lorraine",
+      title: t("ONBOARDING_SERVICE_UNIV_LORRAINE"),
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_lorraine.png"),
+      type: ["univ"],
       onPress: () => {
-        redirect({ pathname: './university/method' });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
       },
-      variant: 'primary' as const,
-      style: { backgroundColor: theme.dark ? colors.border : "black" },
     },
     {
-      name: "university",
-      title: t("ONBOARDING_RESTAURANTS"),
-      type: "other",
-      icon: <Papicons name={"Cutlery"} />,
+      name: "univ-nimes",
+      title: t("ONBOARDING_SERVICE_UNIV_NIMES"),
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_nimes.png"),
+      type: ["univ"],
       onPress: () => {
-        redirect({ pathname: './restaurants/method' });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
       },
-      variant: 'primary' as const,
-      color: 'light' as const
-    }
+    },
+    {
+      name: "univ-uphf",
+      title: t("ONBOARDING_SERVICE_UNIV_UPHF"),
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_uphf.png"),
+      type: ["univ"],
+      onPress: () => {
+        redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
+      },
+    },
   ]
 }
 
@@ -106,8 +122,8 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
 
   return [
     {
-      name: "iut-lannion",
-      title: "IUT de Lannion",
+      name: "lannion",
+      title: t("ONBOARDING_SERVICE_LANNION"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lannion.png"),
       type: "main",
@@ -117,42 +133,34 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
     },
     {
       name: "univ-lorraine",
-      title: "Université de Lorraine",
+      title: t("ONBOARDING_SERVICE_UNIV_LORRAINE"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lorraine.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
       },
     },
     {
       name: "univ-nimes",
-      title: "Université de Nîmes",
+      title: t("ONBOARDING_SERVICE_UNIV_NIMES"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_nimes.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
       },
     },
     {
       name: "univ-uphf",
-      title: "Université Polytechnique Hauts-de-France",
+      title: t("ONBOARDING_SERVICE_UNIV_UPHF"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_uphf.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
       },
     },
-    {
-      name: "appscho",
-      title: "Autres universités",
-      hasLimitedSupport: false,
-      type: "other",
-      onPress: () => { redirect({ pathname: './appscho/list' }) }
-    },
-
     /*{
       name: "limited-functions",
       title: t("Feature_Limited"),
@@ -260,42 +268,42 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
   return [
     {
       name: "turboself",
-      title: "TurboSelf",
+      title: t("ONBOARDING_SERVICE_TURBOSELF"),
       hasLimitedSupport: false,
       image: require("@/assets/images/turboself.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: '../turboself/credentials' });
+        redirect({ pathname: '/(onboarding)/restaurants/turboself' });
       }
-    },
+    },/*
     {
       name: "ard",
-      title: "ARD",
+      title: t("ONBOARDING_SERVICE_ARD"),
       hasLimitedSupport: false,
       image: require("@/assets/images/ard.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: '../ard/credentials' });
+        redirect({ pathname: '/(onboarding)/restaurants/ard' });
       }
-    },
+    },*/
     {
       name: "izly",
-      title: "Izly",
+      title: t("ONBOARDING_SERVICE_IZLY"),
       hasLimitedSupport: false,
       image: require("@/assets/images/izly.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: '../izly/credentials' });
+        redirect({ pathname: '/(onboarding)/restaurants/izly' });
       }
     },
     {
       name: "alise",
-      title: "Alise",
+      title: t("ONBOARDING_SERVICE_ALISE"),
       hasLimitedSupport: false,
       image: require("@/assets/images/alise.jpg"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: '../alise/credentials' });
+        redirect({ pathname: '/(onboarding)/restaurants/alise' });
       }
     }
   ]

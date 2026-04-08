@@ -1,84 +1,88 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
+import { Alert, Platform } from "react-native";
 
-import Icon from "@/ui/components/Icon";
-import Item, { Leading, Trailing } from "@/ui/components/Item";
-import List from "@/ui/components/List";
-import { t } from "i18next";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import { resources } from "@/utils/i18n";
 import { useSettingsStore } from "@/stores/settings";
+import Icon from "@/ui/components/Icon";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
+import { resources } from "@/utils/i18n";
 
 const LanguagePersonalization = () => {
-    const { i18n } = useTranslation();
-    const { colors } = useTheme();
+  const { i18n } = useTranslation();
+  const { colors } = useTheme();
 
-    const settingStore = useSettingsStore(state => state.personalization);
-    const mutateProperty = useSettingsStore(state => state.mutateProperty);
+  const settingStore = useSettingsStore(state => state.personalization);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-    const languages = Object.keys(resources).map((key) => ({
-        id: key,
-        name: resources[key].label,
-        emoji: resources[key].emoji
-    }));
+  const languages = Object.keys(resources).map(key => ({
+    id: key,
+    name: resources[key].label,
+    emoji: resources[key].emoji,
+  }));
 
-    const setLanguage = (lang: string) => {
+  const rtlLanguages = ["ar", "he", "fa", "ur"];
+
+  const setLanguage = (lang: string) => {
+    requestAnimationFrame(() => {
+      if (rtlLanguages.includes(lang)) {
+        Alert.alert(
+          "Inverted layout is not supported yet",
+          "The selected language may not be displayed correctly."
+        );
+      }
+
+      setTimeout(() => {
         i18n.changeLanguage(lang);
         mutateProperty("personalization", { ...settingStore, language: lang });
-    };
+      }, 90);
+    });
+  };
 
-    return (
-        <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={{ padding: 16 }}
+  return (
+    <List
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 16 }}
+      contentInsetAdjustmentBehavior="always"
+    >
+      {languages.map(lang => {
+        const isSelected = i18n.language === lang.id;
 
-        >
-            <List>
-                {languages.map((lang) => {
-                    const isSelected = i18n.language === lang.id;
+        return (
+          <List.Item
+            key={lang.id}
+            onPress={() => {
+              setLanguage(lang.id);
+            }}
+          >
+            <List.Leading>
+              <Typography>{lang.emoji}</Typography>
+            </List.Leading>
 
-                    return (
-                        <Item
-                            key={lang.id}
-                            onPress={() => {
-                                setLanguage(lang.id);
-                            }}
-                        >
-                            <Leading>
-                                <Typography>
-                                    {lang.emoji}
-                                </Typography>
+            <Typography
+              variant="title"
+              weight={isSelected ? "bold" : "medium"}
+              style={{
+                paddingVertical: Platform.OS === "android" ? 4 : 2,
+              }}
+            >
+              {lang.name}
+            </Typography>
 
-                            </Leading>
-
-                            <Typography
-                                variant={"title"}
-                                style={{
-                                    flex: 1,
-                                    fontWeight: isSelected ? "bold" : "normal"
-                                }}
-                            >
-                                {lang.name}
-                            </Typography>
-
-                            {isSelected && (
-                                <Trailing>
-                                    <Icon size={22} papicon>
-                                        <Papicons name={"Check"} color={colors.primary} />
-                                    </Icon>
-                                </Trailing>
-
-                            )}
-                        </Item>
-                    );
-                })}
-            </List>
-        </ScrollView>
-    );
+            {isSelected && (
+              <List.Trailing>
+                <Icon size={22} papicon>
+                  <Papicons name={"Check"} color={colors.primary} />
+                </Icon>
+              </List.Trailing>
+            )}
+          </List.Item>
+        );
+      })}
+    </List>
+  );
 };
 
 export default LanguagePersonalization;

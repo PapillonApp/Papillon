@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, TouchableNativeFeedback, View } from 'react-native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
@@ -13,26 +13,26 @@ interface HomeTopBarButtonProps {
 
 const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) => {
   return (
-    <AnimatedPressable
-      onPressIn={onPress}
+    <TouchableNativeFeedback
+      useForeground
+      onPress={onPress}
     >
-      <Stack
-        card
+      <View
         style={{
           width: 42,
           height: 42,
           borderRadius: 30,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#FFFFFF28',
+          overflow: 'hidden',
         }}
-        hAlign='center'
-        vAlign='center'
-        noShadow
-        backgroundColor='#FFFFFF50'
       >
         <Icon size={26} fill='white'>
           <Papicons name={icon} />
         </Icon>
-      </Stack>
-    </AnimatedPressable>
+      </View>
+    </TouchableNativeFeedback>
   );
 };
 

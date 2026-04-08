@@ -2,7 +2,7 @@ import { getManager } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
-import Button from "@/ui/components/Button";
+import Button from "@/ui/new/Button";
 import ChipButton from "@/ui/components/ChipButton";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { EmptyItem } from "@/ui/components/EmptyItem";
@@ -19,7 +19,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, View } from "react-native";
+import { Image, Platform, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function QRCodeAndCardsPage() {
@@ -51,6 +51,7 @@ export default function QRCodeAndCardsPage() {
   return (
     <>
       <TabHeader
+        showAndroidBackButton
         modal
         onHeightChanged={setHeaderHeight}
         title={
@@ -60,7 +61,7 @@ export default function QRCodeAndCardsPage() {
             subtitle={t("Profile_QRCards_Subtitle", { count: wallets.length })}
           />
         }
-        trailing={
+        trailing={Platform.OS === "ios" && (
           <ChipButton
             single
             icon="cross"
@@ -68,7 +69,7 @@ export default function QRCodeAndCardsPage() {
               router.dismiss();
             }}
           />
-        }
+        )}
       />
 
       <ScrollView
@@ -110,14 +111,12 @@ export default function QRCodeAndCardsPage() {
 
         <Dynamic animated>
           <Button
-            inline
-            title="Ajouter"
-            icon={<Plus />}
+            fullWidth
+            label="Ajouter"
+            leading={<Plus color="#FFF" />}
             onPress={() => {
-              router.dismiss();
-              router.push({
-                pathname: "/(onboarding)/restaurants/method",
-                params: { action: "addService" }
+              router.navigate({
+                pathname: "/(onboarding)/restaurants/method"
               });
             }}
           />

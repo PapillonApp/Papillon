@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import Typography from './Typography';
+import { useTheme } from '@react-navigation/native';
 
 interface ContainedNumberProps {
   children?: React.ReactNode;
@@ -9,10 +10,13 @@ interface ContainedNumberProps {
 }
 
 const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, children, ...rest }) => {
+  const theme = useTheme();
+  const finalColor = color || theme.colors.tint;
+
   return (
     <View
       style={{
-        backgroundColor: color + '26',
+        backgroundColor: finalColor + '26',
         borderRadius: 80,
         borderCurve: 'continuous',
         paddingHorizontal: 10,
@@ -20,19 +24,19 @@ const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, c
         gap: 2,
         flexDirection: 'row',
         alignItems: 'flex-end',
-        borderColor: color + '46',
+        borderColor: finalColor + '46',
         borderWidth: 0,
         minWidth: 50,
         justifyContent: "center"
       }}
     >
       {children && (
-        <Typography variant='h5' color={color}>
+        <Typography variant='h5' color={finalColor}>
           {children}
         </Typography>
       )}
       {denominator && (
-        <Typography variant='body2' color={color + "a6"} style={{ marginBottom: 3 }}>
+        <Typography variant='body2' color={finalColor + "a6"} style={{ marginBottom: 3 }}>
           {denominator}
         </Typography>
       )}

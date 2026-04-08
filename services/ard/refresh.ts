@@ -1,4 +1,4 @@
-import { Authenticator, Client } from "pawrd";
+// import { Authenticator, Client } from "pawrd";
 
 import { Auth } from "@/stores/account/types";
 
@@ -7,6 +7,7 @@ export async function refreshArdAccount(
   credentials: Auth,
   retryCount: number = 0
 ): Promise<{ auth: Auth; session: Client }> {
+  throw new Error("ARD service is currently unavailable");
   try {
     const username = String(credentials.additionals?.["username"] ?? "");
     const password = String(credentials.additionals?.["password"] ?? "");

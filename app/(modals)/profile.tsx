@@ -23,6 +23,7 @@ import Icon from "@/ui/components/Icon";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
+import ActionMenu from "@/ui/components/ActionMenu";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
@@ -82,18 +83,19 @@ export default function CustomProfileScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ height: "100%" }}
       >
-        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 + (Platform.OS === "android" ? height : 0) }}>
+        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
           <Avatar
             size={117}
             initials={getInitials(`${firstName} ${lastName}`)}
             imageUrl={profilePictureUrl || undefined}
           />
 
-          <MenuView
+          <ActionMenu
             actions={[
               {
                 id: 'photo_library',
                 title: t("Button_Change_ProfilePicture_FromLibrary"),
+                papicon: 'gallery',
                 image: Platform.select({
                   ios: 'photo',
                   android: 'ic_menu_gallery',
@@ -103,6 +105,7 @@ export default function CustomProfileScreen() {
               {
                 id: 'from_service',
                 title: t("Button_Change_ProfilePicture_FromService"),
+                papicon: 'crown',
                 image: Platform.select({
                   ios: 'square.and.arrow.down',
                   android: 'ic_menu_save',
@@ -113,6 +116,7 @@ export default function CustomProfileScreen() {
                 id: 'remove_photo',
                 title: t("Button_Change_ProfilePicture_Remove"),
                 attributes: { destructive: true },
+                papicon: 'trash',
                 image: Platform.select({
                   ios: 'trash',
                   android: 'ic_menu_delete',
@@ -140,7 +144,7 @@ export default function CustomProfileScreen() {
               icon={<Papicons name="Camera" />}
               title={t("Button_Change_ProfilePicture")}
             />
-          </MenuView>
+          </ActionMenu>
         </View>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>

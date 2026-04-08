@@ -25,7 +25,7 @@ const HomeTimeTableWidget = React.memo(() => {
         vAlign="center"
         padding={[22, 16]}
         gap={2}
-        style={{ paddingTop: 12 }}
+        style={{ paddingTop: 12, marginBottom: 3 }}
       >
         <Typography align="center" variant="title" color="text">
           {t("Home_Widget_NoCourses")}

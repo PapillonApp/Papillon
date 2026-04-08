@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useCallback, useMemo, useRef } from "react";
-import { Pressable, PressableProps } from "react-native";
+import { Pressable, PressableProps, View } from "react-native";
 import Reanimated, { Easing, LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
@@ -18,17 +18,17 @@ const TRAILING_STYLE = Object.freeze({ layout: LAYOUT_ANIMATION });
 
 function Leading({ children, ...rest }: PressableProps) {
   return (
-    <AnimatedPressable {...rest} layout={LAYOUT_ANIMATION}>
+    <View {...rest} layout={LAYOUT_ANIMATION}>
       {children}
-    </AnimatedPressable>
+    </View>
   );
 }
 
 function Trailing({ children, ...rest }: PressableProps) {
   return (
-    <AnimatedPressable {...rest} layout={LAYOUT_ANIMATION}>
+    <View {...rest} layout={LAYOUT_ANIMATION}>
       {children}
-    </AnimatedPressable>
+    </View>
   );
 }
 

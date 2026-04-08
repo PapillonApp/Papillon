@@ -1,9 +1,9 @@
-import PackageJSON from "./package.json";
+import PackageJSON from "./package.json" with { type: 'json' };
 
 const androidPreVersion = PackageJSON.version.replaceAll(".", "")
 const androidVersionCode = androidPreVersion.length == 3 ? parseInt(androidPreVersion + "00") : androidPreVersion.length == 4 ? parseInt(androidPreVersion + "0") : parseInt(androidPreVersion)
 
-module.exports = {
+export default {
   expo: {
     name: "Papillon",
     slug: "papillon",
@@ -32,8 +32,49 @@ module.exports = {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
           },
         ],
-        CFBundleLocalizations: ["fr", "en", "br", "pt", "de", "es", "tr"],
+        CFBundleLocalizations: [
+          "fr",
+          "en",
+          "br",
+          "pt",
+          "de",
+          "es",
+          "tr",
+          "ja",
+          "ru",
+          "ko",
+          "af",
+          "ar",
+          "el",
+          "hi",
+          "nl",
+          "pl",
+          "ro",
+          "sq",
+          "uk",
+          "vi",
+          "bg",
+          "bn",
+          "cs",
+          "da",
+          "fi",
+          "he",
+          "hu",
+          "id",
+          "no",
+          "sk",
+          "sv",
+          "sw",
+          "th",
+          "it",
+          "fa",
+          "ur",
+          "ms",
+          "hr",
+          "et",
+        ],
         CADisableMinimumFrameDurationOnPhone: true,
+        LSApplicationQueriesSchemes: ["transit", "maps"],
       },
       supportsTablet: true,
       config: {
@@ -55,6 +96,7 @@ module.exports = {
         backgroundColor: "#003A21",
       },
       supportsTablet: true,
+      predictiveBackGestureEnabled: true
     },
     web: {
       bundler: "metro",
@@ -67,11 +109,14 @@ module.exports = {
       "expo-video",
       "expo-audio",
       "expo-localization",
+      "expo-asset",
+      "@react-native-community/datetimepicker",
       [
         "expo-image-picker",
         {
-          "photosPermission": "Papillon utilise ta galerie pour te permettre de personnaliser ta photo de profil"
-        }
+          photosPermission:
+            "Papillon utilise ta galerie pour te permettre de personnaliser ta photo de profil",
+        },
       ],
       "expo-web-browser",
       [
@@ -111,7 +156,6 @@ module.exports = {
             extraPods: [
               { name: "SDWebImage", modular_headers: true },
               { name: "SDWebImageSVGCoder", modular_headers: true },
-
             ],
           },
         },

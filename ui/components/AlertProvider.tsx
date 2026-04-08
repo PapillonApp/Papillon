@@ -12,6 +12,7 @@ import React, {
 } from "react";
 import {
   KeyboardAvoidingView,
+  Platform,
   Pressable,
   StyleSheet,
 } from "react-native";
@@ -27,7 +28,11 @@ import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
-import Typography from "./Typography";
+import Typography from "../new/Typography";
+import { runsIOS26 } from "../utils/IsLiquidGlass";
+import { LiquidGlassView } from "@sbaiahmed1/react-native-blur";
+import { Papicons } from "@getpapillon/papicons";
+import Icon from "./Icon";
 
 // Extend Alert type with unique ID for better performance
 export type Alert = {
@@ -102,7 +107,8 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     bottom: alerts.some(alert => alert.withoutNavbar) ? 22 : 82,
     left: 0,
     right: 0,
-    padding: 14,
+    padding: Platform.OS === "ios" ? 20 : 10,
+    paddingBottom: Platform.OS === "ios" ? 10 : 28,
     zIndex: 1000,
     gap: 10,
   }), [alerts]);
@@ -158,7 +164,15 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
 
       <KeyboardAvoidingView
         behavior={"height"}
-        style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000 }}
+        style={[
+          { position: "absolute", top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000 },
+          runsIOS26 ? { 
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+          } : {}
+        ]}
         pointerEvents={"box-none"}
       >
         {alerts.length > 0 && (
@@ -189,17 +203,17 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
     if (!alert.icon) {
       return null;
     }
-    return LucideIcons[alert.icon as keyof typeof LucideIcons] as ComponentType<any>;
+    return <Papicons name={alert.icon} />;
   }, [alert.icon]);
 
   // Memoized styles for better performance
   const containerStyle = useMemo(() => [
     styles.alertContainer,
     {
-      backgroundColor: colors.card,
+      backgroundColor: colors.item,
       borderColor: colors.text + "30",
     },
-  ], [colors.card, colors.text]);
+  ], [colors.item, colors.text]);
 
   const iconColor = useMemo(() => alert.color ?? colors.text, [alert.color, colors.text]);
 
@@ -208,6 +222,54 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
       onPress();
     }
   }, [onPress]);
+
+  if(runsIOS26) {
+    // For iOS 26, return a simpler alert without animations for better performance
+    return (
+      <Reanimated.View
+        layout={Animation(LinearTransition)}
+        entering={PapillonAppearIn}
+        exiting={PapillonAppearOut}
+      >
+        <LiquidGlassView
+          glassType="clear"
+          isInteractive={true}
+          glassOpacity={0}
+          style={{
+            borderRadius: 30
+          }}
+        >
+          <Pressable
+            onPress={handlePress}
+            style={[containerStyle, {
+              width: "100%",
+              borderWidth: 0,
+              shadowColor: "transparent",
+              backgroundColor: "transparent",
+            }]}
+          >
+            {IconComponent && (
+          <Reanimated.View style={styles.iconContainer}>
+            <Icon size={24} fill={iconColor}>
+              {IconComponent}
+            </Icon>
+          </Reanimated.View>
+        )}
+        <Reanimated.View style={styles.textContainer}>
+          <Typography variant="title"
+            color="text"
+          >{alert.title}</Typography>
+          {alert.message && (
+            <Typography variant="body1"
+              color="textSecondary"
+            >{alert.message}</Typography>
+          )}
+        </Reanimated.View>
+          </Pressable>
+        </LiquidGlassView>
+      </Reanimated.View>
+    );
+  }
 
   return (
     <AnimatedPressable
@@ -219,18 +281,17 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
     >
       {IconComponent && (
         <Reanimated.View style={styles.iconContainer}>
-          <IconComponent size={24}
-            color={iconColor}
-          />
+          <Icon size={24} fill={iconColor}>
+              {IconComponent}
+            </Icon>
         </Reanimated.View>
       )}
       <Reanimated.View style={styles.textContainer}>
         <Typography variant="title"
-          color="text"
         >{alert.title}</Typography>
         {alert.message && (
           <Typography variant="body1"
-            color="secondary"
+            color="textSecondary"
           >{alert.message}</Typography>
         )}
       </Reanimated.View>
@@ -252,7 +313,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 16,
+    borderRadius: Platform.OS === "ios" ? 0 : 14,
     borderCurve: "continuous",
     gap: 16,
     shadowColor: "#000",

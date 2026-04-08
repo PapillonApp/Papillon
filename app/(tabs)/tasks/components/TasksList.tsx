@@ -109,13 +109,15 @@ const TasksList: React.FC<TasksListProps> = ({
     return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
   }, []);
 
+  const bottomTabBarHeight = insets.bottom;
+
   return (
     <AnimatedSectionList
       sections={sections}
       style={styles.list}
       contentContainerStyle={{
         paddingHorizontal: 16,
-        paddingBottom: 100,
+        paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
         paddingTop: headerHeight + (Platform.OS === 'android' ? 10 : 0),
       }}
       keyExtractor={keyExtractor}

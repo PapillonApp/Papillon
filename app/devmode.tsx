@@ -22,6 +22,8 @@ import { MAGIC_URL } from "@/utils/endpoints";
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
 import { scheduleNotificationAtDate } from "@/utils/notification/reminder/helper";
+import { initializeTransport } from "@/utils/transport";
+import NativeSwitch from "@/ui/native/NativeSwitch";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -63,7 +65,7 @@ export default function Devmode() {
       <List>
         <Item>
           <Trailing>
-            <Switch
+            <NativeSwitch
               style={{ marginRight: 10 }}
               value={showLogsStore}
               onValueChange={() => {
@@ -75,7 +77,6 @@ export default function Devmode() {
           </Trailing>
           <Typography variant="title">Logs Store</Typography>
         </Item>
-
 
         {showLogsStore &&
           logsStore.logs
@@ -89,11 +90,11 @@ export default function Devmode() {
                 </Leading>
                 <Typography variant="body2">{logEntry.message}</Typography>
                 <Typography variant="caption">
-                  {new Date(logEntry.date).toLocaleString()} - {logEntry.from ?? "UNKNOW"}
+                  {new Date(logEntry.date).toLocaleString()} -{" "}
+                  {logEntry.from ?? "UNKNOW"}
                 </Typography>
               </Item>
             ))}
-
 
         {showLogsStore && visibleLogsCount < logsStore.logs.length && (
           <Item onPress={loadMoreLogs}>
@@ -103,13 +104,15 @@ export default function Devmode() {
             <Typography variant="title">Charger plus</Typography>
           </Item>
         )}
-        <Item onPress={() => {
-          const accounts = useAccountStore.getState().accounts
-          for (const account of accounts) {
-            useAccountStore.getState().removeAccount(account)
-          }
-          Alert.alert("Success")
-        }}>
+        <Item
+          onPress={() => {
+            const accounts = useAccountStore.getState().accounts;
+            for (const account of accounts) {
+              useAccountStore.getState().removeAccount(account);
+            }
+            Alert.alert("Success");
+          }}
+        >
           <Typography variant="title">Reset Account Store</Typography>
         </Item>
       </List>
@@ -126,12 +129,12 @@ export default function Devmode() {
       <List>
         <Item>
           <Typography>
-            {settingStore.magicEnabled ? "Papillon Magic+ est Activé" : "Papillon Magic+ est Désactivé"}
+            {settingStore.magicEnabled
+              ? "Papillon Magic+ est Activé"
+              : "Papillon Magic+ est Désactivé"}
           </Typography>
         </Item>
-        <Item
-          onPress={() => ModelManager.refresh()}
-        >
+        <Item onPress={() => ModelManager.refresh()}>
           <Typography variant="title">Rafraîchir le modèle</Typography>
         </Item>
         <Item
@@ -139,7 +142,10 @@ export default function Devmode() {
             try {
               const result = await ModelManager.reset();
               if (result.success) {
-                Alert.alert("Succès", "Le modèle a été réinitialisé avec succès. Il sera retéléchargé au prochain démarrage.");
+                Alert.alert(
+                  "Succès",
+                  "Le modèle a été réinitialisé avec succès. Il sera retéléchargé au prochain démarrage."
+                );
               } else {
                 Alert.alert("Erreur", `Échec du reset: ${result.error}`);
               }
@@ -156,10 +162,10 @@ export default function Devmode() {
             Alert.alert(
               "Statut du modèle",
               `Modèle chargé: ${status.hasModel ? "Oui" : "Non"}\n` +
-              `Max Length: ${status.maxLen}\n` +
-              `Nombre de labels: ${status.labelsCount}\n` +
-              `Taille du vocabulaire: ${status.wordIndexSize}\n` +
-              `Index OOV: ${status.oovIndex}`
+                `Max Length: ${status.maxLen}\n` +
+                `Nombre de labels: ${status.labelsCount}\n` +
+                `Taille du vocabulaire: ${status.wordIndexSize}\n` +
+                `Index OOV: ${status.oovIndex}`
             );
           }}
         >
@@ -168,13 +174,19 @@ export default function Devmode() {
         <Item
           onPress={async () => {
             try {
-              const result = await ModelManager.predict("ds analyse de doc", true);
-              if ('error' in result) {
+              const result = await ModelManager.predict(
+                "ds analyse de doc",
+                true
+              );
+              if ("error" in result) {
                 Alert.alert("Erreur de prédiction", result.error);
               } else {
                 Alert.alert(
                   "Test de prédiction réussi",
-                  `Prédiction: ${result.predicted}\nScores: ${result.scores.slice(0, 3).map(s => s.toFixed(3)).join(', ')}...`
+                  `Prédiction: ${result.predicted}\nScores: ${result.scores
+                    .slice(0, 3)
+                    .map(s => s.toFixed(3))
+                    .join(", ")}...`
                 );
               }
             } catch (error) {
@@ -188,9 +200,15 @@ export default function Devmode() {
           onPress={() => {
             try {
               magicStore.clear();
-              Alert.alert("Cache vidé", "Le cache des prédictions Magic a été vidé avec succès !");
+              Alert.alert(
+                "Cache vidé",
+                "Le cache des prédictions Magic a été vidé avec succès !"
+              );
             } catch (error) {
-              Alert.alert("Erreur", `Erreur lors du vidage du cache: ${String(error)}`);
+              Alert.alert(
+                "Erreur",
+                `Erreur lors du vidage du cache: ${String(error)}`
+              );
             }
           }}
         >
@@ -211,26 +229,28 @@ export default function Devmode() {
               [
                 {
                   text: "Annuler",
-                  style: "cancel"
+                  style: "cancel",
                 },
                 {
                   text: "Valider",
                   onPress: (newURL?: string) => {
                     if (newURL && newURL.trim()) {
                       mutateProperty("personalization", {
-                        magicModelURL: newURL.trim()
+                        magicModelURL: newURL.trim(),
                       });
                       Alert.alert("Succès", "URL du modèle Magic mise à jour!");
                     }
-                  }
-                }
+                  },
+                },
               ],
               "plain-text",
               currentURL
             );
           }}
         >
-          <Typography variant="title">Changer l&apos;URL Custom Magic</Typography>
+          <Typography variant="title">
+            Changer l&apos;URL Custom Magic
+          </Typography>
         </Item>
         <Item
           onPress={() => {
@@ -240,35 +260,33 @@ export default function Devmode() {
               [
                 {
                   text: "Annuler",
-                  style: "cancel"
+                  style: "cancel",
                 },
                 {
                   text: "Reset",
                   style: "destructive",
                   onPress: () => {
                     mutateProperty("personalization", {
-                      magicModelURL: MAGIC_URL
+                      magicModelURL: MAGIC_URL,
                     });
-                    Alert.alert("Succès", "URL du modèle Magic remise par défaut!");
-                  }
-                }
+                    Alert.alert(
+                      "Succès",
+                      "URL du modèle Magic remise par défaut!"
+                    );
+                  },
+                },
               ]
             );
           }}
         >
           <Typography variant="title">Reset URL Magic Model</Typography>
         </Item>
-        <Item
-          onPress={() => magicStore.clear()}
-        >
+        <Item onPress={() => magicStore.clear()}>
           <Typography variant="title">Clear Magic Store</Typography>
         </Item>
-        <Item
-          onPress={() => log(JSON.stringify(magicStoreHomework))}
-        >
+        <Item onPress={() => log(JSON.stringify(magicStoreHomework))}>
           <Typography variant="title">ConsoleLog Magic Store</Typography>
         </Item>
-
       </List>
 
       <SectionHeader
@@ -282,38 +300,54 @@ export default function Devmode() {
 
       <List>
         <Item
-          onPress={() => alert.showAlert({
-            title: "Connexion impossible",
-            description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
-            icon: "TriangleAlert",
-            color: "#D60046",
-            customButton: {
-              label: "Me reconnecter",
-              showCancelButton: true,
-              onPress: () => {
-                const lastUsedAccount = useAccountStore.getState().lastUsedAccount
-                const badService = useAccountStore.getState().accounts.find(account => account.id === lastUsedAccount)?.services[0]
+          onPress={() =>
+            alert.showAlert({
+              title: "Connexion impossible",
+              description:
+                "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
+              icon: "AlertTriangle",
+              color: "#D60046",
+              customButton: {
+                label: "Me reconnecter",
+                showCancelButton: true,
+                onPress: () => {
+                  const lastUsedAccount =
+                    useAccountStore.getState().lastUsedAccount;
+                  const badService = useAccountStore
+                    .getState()
+                    .accounts.find(account => account.id === lastUsedAccount)
+                    ?.services[0];
 
-                // Unavailable in ED/SKolengo
-                const authUrl = badService?.auth?.additionals?.["instanceURL"] ?? ""
-                setTimeout(() => {
-                  router.push({ pathname: "/(onboarding)/pronote/webview", params: { url: authUrl, serviceId: badService?.id } })
-                }, 200)
-              }
-            },
-            technical: String(" Error: TokenExpiredError at AuthService.validateToken (file:///app/services/auth.js:45:15) at processTicksAndRejections (node:internal/process/task_queues:96:5) at async file:///app/routes/api/user.js:10:28")
-          })}
+                  // Unavailable in ED/SKolengo
+                  const authUrl =
+                    badService?.auth?.additionals?.["instanceURL"] ?? "";
+                  setTimeout(() => {
+                    router.push({
+                      pathname: "/(onboarding)/pronote/webview",
+                      params: { url: authUrl, serviceId: badService?.id },
+                    });
+                  }, 200);
+                },
+              },
+              technical: String(
+                " Error: TokenExpiredError at AuthService.validateToken (file:///app/services/auth.js:45:15) at processTicksAndRejections (node:internal/process/task_queues:96:5) at async file:///app/routes/api/user.js:10:28"
+              ),
+            })
+          }
         >
           <Typography variant="title">Error Alert</Typography>
         </Item>
         <Item
           onPress={() => {
-            const lastUsedAccount = useAccountStore.getState().lastUsedAccount
-            const badService = useAccountStore.getState().accounts.find(account => account.id === lastUsedAccount)?.services[0]
+            const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
+            const badService = useAccountStore
+              .getState()
+              .accounts.find(account => account.id === lastUsedAccount)
+              ?.services[0];
             useAccountStore.getState().updateServiceAuthData(badService!.id, {
               ...badService?.auth,
-              refreshToken: ""
-            })
+              refreshToken: "",
+            });
           }}
         >
           <Typography variant="title">Clear Auth Data</Typography>
@@ -321,9 +355,11 @@ export default function Devmode() {
         <Item>
           <Typography variant="title">Activer Alert au Login</Typography>
           <Trailing>
-            <Switch
+            <NativeSwitch
               value={settingStore.showAlertAtLogin}
-              onValueChange={value => mutateProperty("personalization", { showAlertAtLogin: value })}
+              onValueChange={value =>
+                mutateProperty("personalization", { showAlertAtLogin: value })
+              }
             />
           </Trailing>
         </Item>
@@ -342,11 +378,44 @@ export default function Devmode() {
         <Item
           onPress={async () => {
             await database.write(async () => {
-              await database.unsafeResetDatabase()
-            })
+              await database.unsafeResetDatabase();
+            });
           }}
         >
-          <Typography variant="title">Réinitialiser la base de données</Typography>
+          <Typography variant="title">
+            Réinitialiser la base de données
+          </Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Transport"
+        leading={
+          <Icon>
+            <Papicons name="Bus" size={18} />
+          </Icon>
+        }
+      />
+      <List>
+        <Item
+          onPress={() => {
+            initializeTransport(undefined).then(transport => {
+              console.log(transport);
+            });
+          }}
+        >
+          <Typography variant="title">Initialiser sans addresse</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            initializeTransport("106 Rue de la Pompe, 75016 Paris").then(
+              transport => {
+                console.log(transport);
+              }
+            );
+          }}
+        >
+          <Typography variant="title">Initialiser avec addresse</Typography>
         </Item>
       </List>
 
@@ -374,17 +443,16 @@ export default function Devmode() {
             const id = await scheduleNotificationAtDate(
               "Papillon",
               "Une notification programmée via Papillon arrive à l'instant!",
-              date,
+              date
             );
 
             Alert.alert("Une notification arrive dans 5 sec", `ID : ${id}`);
           }}
-
         >
           <Typography variant="title">Programmer une notification</Typography>
         </Item>
       </List>
-    </ScrollView >
+    </ScrollView>
   );
 }
 

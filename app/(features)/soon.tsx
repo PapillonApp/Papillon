@@ -20,13 +20,13 @@ export default function Soon() {
         hAlign="center"
       >
         <Icon size={42}>
-          <Papicons name="clock" />
+          <Papicons name="clock" color="#29947A" />
         </Icon>
-        <Typography variant="h3" align="center">
-          Ça arrive bientôt !
+        <Typography variant="h2" align="center">
+          Promis, ça arrive (vraiment) bientôt !
         </Typography>
         <Typography variant="body1" color="secondary" align="center">
-          L'onglet est en cours de développement. Il arrivera prochainement dans une version future de Papillon.
+          L'onglet est toujours en cours de développement. Il arrivera prochainement dans une version future de Papillon.
         </Typography>
         <Typography variant="body1" color="primary" align="center" onPress={() => {
           Linking.openURL("https://www.instagram.com/thepapillonapp/");
