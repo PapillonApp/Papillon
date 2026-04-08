@@ -11,14 +11,16 @@ import i18n from "@/utils/i18n";
 import AnimatedPressable from "./AnimatedPressable";
 import Stack from "./Stack";
 import Typography from "./Typography";
+import { SkillChip } from "@/ui/components/SkillChip";
 
 interface CompactGradeProps {
   emoji: string;
   title: string;
   description: string;
-  score: number;
-  outOf: number;
-  date: Date;
+  score?: number;
+  outOf?: number;
+  skillLevel: number[];
+  date: Date | undefined;
   disabled?: boolean;
   status?: string;
   onPress?: () => void,
@@ -34,6 +36,7 @@ export const CompactGrade = ({
   description,
   score,
   outOf,
+  skillLevel,
   date,
   disabled,
   status,
@@ -59,15 +62,18 @@ export const CompactGrade = ({
         borderRadius: 24,
         borderCurve: "continuous",
         borderColor: adjust(color, theme.dark ? 0.7 : -0.7) + "28",
-        backgroundColor: Platform.OS !== 'android' ? colors.card : adjust(color, theme.dark ? 0.5 : -0.5) + "18",
-        borderWidth: Platform.OS !== 'android' ? 1 : 0,
-        shadowColor: '#000',
+        backgroundColor:
+          Platform.OS !== "android"
+            ? colors.card
+            : adjust(color, theme.dark ? 0.5 : -0.5) + "18",
+        borderWidth: Platform.OS !== "android" ? 1 : 0,
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
-        shadowRadius: 3
+        shadowRadius: 3,
       }}
     >
-      {Platform.OS !== 'android' && (
+      {Platform.OS !== "android" && (
         <LinearGradient
           colors={[color + "10", color + "00"]}
           locations={[0, 1]}
@@ -102,29 +108,57 @@ export const CompactGrade = ({
           ]}
         >
           {skeleton ? (
-            <SkeletonView style={{ width: 25, height: 25, borderRadius: 100 }} />
+            <SkeletonView
+              style={{ width: 25, height: 25, borderRadius: 100 }}
+            />
           ) : (
-            <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={color + "22"}>
-              <Text style={{ fontSize: 15 }}>
-                {emoji}
-              </Text>
+            <Stack
+              width={28}
+              height={28}
+              card
+              hAlign="center"
+              vAlign="center"
+              radius={32}
+              backgroundColor={color + "22"}
+            >
+              <Text style={{ fontSize: 15 }}>{emoji}</Text>
             </Stack>
           )}
-
         </View>
-        {title &&
-          <Typography variant="body1" color={variant === "home" ? colors.text : adjust(color, theme.dark ? 0.2 : -0.4)} style={{ flex: 1 }} nowrap weight="semibold" skeleton={skeleton} skeletonWidth={80}>
+        {title && (
+          <Typography
+            variant="body1"
+            color={
+              variant === "home"
+                ? colors.text
+                : adjust(color, theme.dark ? 0.2 : -0.4)
+            }
+            style={{ flex: 1 }}
+            nowrap
+            weight="semibold"
+            skeleton={skeleton}
+            skeletonWidth={80}
+          >
             {capitalizeWords(title)}
           </Typography>
-        }
-        {date &&
-          <Typography variant="body1" color={variant === "home" ? "secondary" : adjust(color, theme.dark ? 0.2 : -0.4)} nowrap skeleton={skeleton}>
+        )}
+        {date && (
+          <Typography
+            variant="body1"
+            color={
+              variant === "home"
+                ? "secondary"
+                : adjust(color, theme.dark ? 0.2 : -0.4)
+            }
+            nowrap
+            skeleton={skeleton}
+          >
             {date.toLocaleDateString(i18n.language, {
               day: "2-digit",
               month: "short",
             })}
           </Typography>
-        }
+        )}
       </View>
       <View
         style={{
@@ -138,30 +172,86 @@ export const CompactGrade = ({
           alignItems: "flex-start",
         }}
       >
-        <Typography variant="navigation" color="text" style={{ lineHeight: 20 }} numberOfLines={2} skeleton={skeleton} skeletonWidth={150} skeletonLines={2}>
-          {description ? description : t('Grade_NoDescription', { subject: title })}
+        <Typography
+          variant="navigation"
+          color="text"
+          style={{ lineHeight: 20 }}
+          numberOfLines={2}
+          skeleton={skeleton}
+          skeletonWidth={150}
+          skeletonLines={2}
+        >
+          {description
+            ? description
+            : t("Grade_NoDescription", { subject: title })}
         </Typography>
 
-        <Stack noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
+        <Stack
+          noShadow
+          direction="horizontal"
+          gap={2}
+          card
+          hAlign="end"
+          vAlign="end"
+          padding={[9, 3]}
+          radius={32}
+          backgroundColor={trailingBackground}
+        >
           {disabled ? (
             <>
-              <Typography color={trailingForeground} variant='navigation'>
+              <Typography color={trailingForeground} variant="navigation">
                 {status}
               </Typography>
             </>
           ) : (
             <>
-              <Typography color={trailingForeground} variant='navigation'>
-                {score.toFixed(2)}
-              </Typography>
+              {score ? (
+                <>
+                  <Typography color={trailingForeground} variant="navigation">
+                    {score.toFixed(2)}
+                  </Typography>
+                  <Typography color={trailingForeground + "99"} variant="body2">
+                    /{outOf}
+                  </Typography>
+                </>
+              ) : (
+                <Stack direction={"horizontal"} hAlign={"center"}>
+                  <Stack direction={"horizontal"}>
+                    {skillLevel.slice(0, 4).map((item, index) => (
+                      <SkillChip
+                        key={index}
+                        level={item}
+                        style={{
+                          marginLeft: index > 0 ? -13 : -5,
+                          marginRight:
+                            skillLevel.length <= 4 &&
+                            index == Math.min(skillLevel.length - 1, 3)
+                              ? -5
+                              : 0,
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                  {skillLevel.length > 4 && (
+                    <Typography
+                      color={trailingForeground + "99"}
+                      variant="body2"
+                    >
+                      {`+${skillLevel.length - 4}`}
+                    </Typography>
+                  )}
+                </Stack>
+              )}
             </>
           )}
-          <Typography color={trailingForeground + "99"} variant='body2'>
-            /{outOf}
-          </Typography>
 
           {hasMaxScore && (
-            <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
+            <Papicons
+              style={{ marginBottom: 3.5, marginLeft: 2 }}
+              name="crown"
+              color={trailingForeground}
+              size={18}
+            />
           )}
         </Stack>
       </View>

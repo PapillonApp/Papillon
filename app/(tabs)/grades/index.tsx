@@ -1,6 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
-import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
@@ -38,7 +37,6 @@ import FeaturesMap from './atoms/FeaturesMap';
 import { SubjectItem } from './atoms/Subject';
 import { useGradeInfluence } from './hooks/useGradeInfluence';
 import List from '@/ui/new/List';
-import Typography from '@/ui/new/Typography';
 import ActionMenu from '@/ui/components/ActionMenu';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
@@ -231,8 +229,8 @@ const GradesView: React.FC = () => {
 
       case "averages":
         subjectsCopy.sort((a, b) => {
-          const aAvg = a.studentAverage.value;
-          const bAvg = b.studentAverage.value;
+          const aAvg = a.studentAverage?.value ?? 0;
+          const bAvg = b.studentAverage?.value ?? 0;
           return bAvg - aAvg;
         });
         break;
@@ -319,7 +317,7 @@ const GradesView: React.FC = () => {
     <View style={{ marginBottom: 16 }}>
       <ErrorBoundary>
         <Averages
-          grades={grades}
+          grades={grades.filter((v) => v.studentScore !== undefined)}
           color={colors.primary}
           realAverage={serviceAverage || undefined}
         />
@@ -391,13 +389,14 @@ const GradesView: React.FC = () => {
                   emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
                   title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
                   description={grade.description}
+                  skillLevel={grade.skills?.map((v) => v.score) ?? []}
                   score={grade.studentScore?.value || 0}
                   outOf={grade.outOf?.value || 20}
                   disabled={grade.studentScore?.disabled}
                   status={grade.studentScore?.status}
                   color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
                   date={grade.givenAt}
-                  hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
+                  hasMaxScore={(grade?.studentScore?.value ?? 0)=== (grade?.maxScore?.value ?? 1) && !grade?.studentScore?.disabled}
                   onPress={() => {
                     // @ts-expect-error navigation types
                     navigation.navigate('(modals)/grade', {

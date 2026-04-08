@@ -1,5 +1,6 @@
 import { Attachment } from "@/services/shared/attachment";
 import { GenericInterface } from "@/services/shared/types";
+import { SkillChipLevel } from "@/ui/components/SkillChip";
 
 export interface PeriodGrades extends GenericInterface {
   studentOverall: GradeScore;
@@ -15,7 +16,7 @@ export interface PeriodGrades extends GenericInterface {
 export interface Subject {
   id: string;
   name: string;
-  studentAverage: GradeScore;
+  studentAverage?: GradeScore;
   classAverage: GradeScore;
   maximum?: GradeScore;
   minimum?: GradeScore;
@@ -35,13 +36,20 @@ export interface Grade extends GenericInterface {
   correctionFile?: Attachment;
   bonus?: boolean;
   optional?: boolean;
-  outOf: GradeScore;
+  outOf?: GradeScore;
   coefficient: number;
   studentScore?: GradeScore;
   averageScore?: GradeScore;
   minScore?: GradeScore;
   maxScore?: GradeScore;
   rank?: GradeScore;
+  skills?: SkillScore[];
+}
+
+export interface SkillScore {
+  name: string;
+  description: string;
+  score: SkillChipLevel;
 }
 
 export interface GradeScore {
