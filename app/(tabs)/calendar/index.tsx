@@ -63,7 +63,7 @@ export default function TabOneScreen() {
         headerHeight={headerHeight}
         insets={insets}
         tabBarHeight={tabBarHeight}
-        transportInfo={account.transport ?? undefined}
+        transportInfo={account?.transport ?? undefined}
       />
     );
   }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
