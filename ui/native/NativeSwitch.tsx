@@ -1,4 +1,4 @@
-import { Platform, Switch } from "react-native"
+import { Platform, Switch, View } from "react-native"
 import { Host, Switch as AndroidSwitch } from '@expo/ui/jetpack-compose';
 
 type NativeSwitchProps = {
@@ -10,13 +10,14 @@ type NativeSwitchProps = {
 const NativeSwitch: React.FC<NativeSwitchProps> = ({ value, onValueChange, disabled }) => {
   if(Platform.OS === "android") {
     return (
-      <Host matchContents>
-        <AndroidSwitch
-          value={value}
-          onCheckedChange={onValueChange}
-          disabled={disabled}
-        />
-      </Host>
+      <View pointerEvents={disabled ? "none" : "auto"}>
+        <Host matchContents>
+          <AndroidSwitch
+            value={value}
+            onCheckedChange={onValueChange}
+          />
+        </Host>
+      </View>
     )
   }
 

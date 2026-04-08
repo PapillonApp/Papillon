@@ -12,22 +12,22 @@ import * as DateLocale from 'date-fns/locale';
 import { useNavigation } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import React from 'react';
-import { ActivityIndicator, Pressable } from 'react-native';
+import { ActivityIndicator, Platform, Pressable } from 'react-native';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 function NextCourseAccessory({ placement }) {
+  if (Platform.OS !== 'ios') {
+    return null;
+  }
+
   const theme = useTheme();
   const { courses, loading } = useTimetableWidgetData();
   const nextCourse = courses.length > 0 ? courses[0] : null;
 
-  if(!nextCourse) {
-    return null;
-  }
-
   // if (placement === 'inline') {}
 
-  const sbjColor = getSubjectColor(nextCourse.subject);
+  const sbjColor = nextCourse ? getSubjectColor(nextCourse.subject) : theme.colors.primary;
   const navigation = useNavigation<any>();
 
   if(loading) {
