@@ -11,6 +11,7 @@ on:
 jobs:
   release:
     name: Merge & Release
+    if: github.repository == 'PapillonApp/Papillon'
     runs-on: ubuntu-latest
 
     steps:
