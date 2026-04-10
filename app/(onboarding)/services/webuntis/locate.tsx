@@ -14,9 +14,9 @@ import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import { School, SchoolsClient } from "webuntis-client";
+import { School, SearchClient } from "webuntis-client";
 
-const client = new SchoolsClient();
+const client = new SearchClient();
 
 const WebUntisSearchHeader = memo(({ school, setSchool, loading, t }: {
   school: string,
@@ -81,7 +81,7 @@ export default function WebUntisLoginLocate() {
 
       setLoading(true);
 
-      client.search(debouncedSchool)
+      client.getSchools(debouncedSchool)
         .then((results) => {
           if ( canceled ) return;
           setSchools(results.slice(0, 10));
@@ -93,13 +93,13 @@ export default function WebUntisLoginLocate() {
 
       return () => {
         canceled = true;
-      }
+      };
     }
   }, [debouncedSchool]);
 
   const selectSchool = (school: School) => {
     (navigation.navigate as Function)("credentials", { chosenSchool: JSON.stringify(school) });
-  }
+  };
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -118,7 +118,7 @@ export default function WebUntisLoginLocate() {
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,
-          paddingBottom: insets.bottom + 20,
+          paddingBottom: insets.bottom + 20
         }}
         style={{ flex: 1 }}
         animated
@@ -136,7 +136,7 @@ export default function WebUntisLoginLocate() {
 
         {schools.map((school, _) => (
           <List.Item animated={true} key={school.schoolId} id={school.schoolId} onPress={() => {
-            selectSchool(school)
+            selectSchool(school);
           }}>
             <List.Leading>
               <Icon><Papicons name="mappin"/></Icon>
@@ -148,5 +148,5 @@ export default function WebUntisLoginLocate() {
         ))}
       </List>
     </KeyboardAvoidingView>
-  )
+  );
 }
