@@ -6,6 +6,7 @@ on:
 jobs:
   merge:
     name: Merge
+    if: github.repository == 'PapillonApp/Papillon'
     runs-on: ubuntu-latest
 
     steps:
