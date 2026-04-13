@@ -278,7 +278,7 @@ const NewTaskModal = () => {
                     color={adjust(colors.text, 0.5 * (dark ? -1 : 1))}
           />
         </AnimatedPressable>
-        <Typography variant={"title"}>{t("Task_New_Title")}</Typography>
+        <Typography variant={"title"}>{local.action ? t("Task_Edit_Title") : t("Task_New_Title")}</Typography>
         <AnimatedPressable
           disabled={disabled}
           style={{
