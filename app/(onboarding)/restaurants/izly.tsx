@@ -177,7 +177,10 @@ export default function TurboSelfLoginWithCredentials() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={32}>
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+      >
         <LoginView
           color="#00b7cf"
           serviceName="Izly"

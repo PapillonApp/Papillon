@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     name: Build & Upload to Play Store
+    if: github.repository == 'PapillonApp/Papillon'
     runs-on: ubuntu-latest
 
     steps:
