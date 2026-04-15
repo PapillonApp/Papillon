@@ -2,6 +2,7 @@ import { Colors } from "@/utils/colors";
 
 export interface SettingsStorage {
   personalization: Personalization;
+  reset: () => void;
   mutateProperty: <T extends keyof SettingsState>(
     section: T,
     updates: Partial<SettingsState[T]>
