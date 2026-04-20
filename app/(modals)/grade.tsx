@@ -17,6 +17,8 @@ import { colorCheck } from '@/utils/colorCheck';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
+import { useSettingsStore } from '@/stores/settings';
+import { formatAssumed20ForDisplay, getGradeDisplayScale, getDisplayScaleMax } from '@/utils/grades/scale';
 
 interface SubjectInfo {
   name: string;
@@ -64,6 +66,8 @@ export default function GradesModal() {
     return null;
   }
   const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
+  const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
+  const displayScaleMax = getDisplayScaleMax(displayScale);
 
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
@@ -194,7 +198,7 @@ export default function GradesModal() {
             <List.Label>{t("Grades_Details_Title")}</List.Label>
           </List.SectionTitle>
 
-          {grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? (
+          {grade.studentScore && grade.outOf && grade.outOf.value !== displayScaleMax ? (
             <List.Item>
               <List.Leading>
                 <Icon>
@@ -210,9 +214,9 @@ export default function GradesModal() {
               <List.Trailing>
                 <ContainedNumber
                   color={subjectInfo.color}
-                  denominator={"/20"}
+                  denominator={formatAssumed20ForDisplay(0, displayScale).denominator}
                 >
-                  {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
+                  {formatAssumed20ForDisplay((grade.studentScore.value / grade.outOf.value) * 20, displayScale).value.toFixed(2)}
                 </ContainedNumber>
               </List.Trailing>
             </List.Item>

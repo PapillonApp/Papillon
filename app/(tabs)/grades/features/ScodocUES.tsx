@@ -13,6 +13,7 @@ import { useTheme } from '@react-navigation/native';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Dynamic } from '@/ui/components/Dynamic';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import { GradeDisplayScale, formatAssumed20ForDisplay } from '@/utils/grades/scale';
 
 export interface AveragedElement {
   id: number;
@@ -53,11 +54,19 @@ export interface UE {
 
 export type UEMap = Record<string, UE>;
 
-const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
+const ScodocUES: React.FC<{ data: UEMap, displayScale: GradeDisplayScale }> = ({ data, displayScale }) => {
   try {
     const { colors } = useTheme();
     const [openedUE, setOpenedUE] = React.useState<string | null>(null);
     const [displayUEs, setDisplayUEs] = React.useState(false);
+    const scaleDenominator = formatAssumed20ForDisplay(0, displayScale).denominator;
+    const toDisplay = (value: string) => {
+      const parsed = Number.parseFloat(value.replace(",", "."));
+      if (Number.isNaN(parsed)) {
+        return value;
+      }
+      return formatAssumed20ForDisplay(parsed, displayScale).value.toFixed(2);
+    };
 
     return (
       <>
@@ -98,10 +107,10 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
                       <Stack direction='horizontal' gap={8} hAlign='center'>
                         <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0}>
                           <Typography variant='navigation' color='text'>
-                            {value.moyenne.value}
+                            {toDisplay(value.moyenne.value)}
                           </Typography>
                           <Typography variant='body2' color="secondary">
-                            /20
+                            {scaleDenominator}
                           </Typography>
                         </Stack>
 
@@ -171,10 +180,10 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
 
                       <Stack direction='horizontal' vAlign='end' hAlign='end' gap={2}>
                         <Typography variant='h1' weight='semibold' inline color='text'>
-                          {data[openedUE].moyenne.value}
+                          {toDisplay(data[openedUE].moyenne.value)}
                         </Typography>
                         <Typography variant='title' color="secondary">
-                          /20
+                          {scaleDenominator}
                         </Typography>
                       </Stack>
                     </Stack>
@@ -211,10 +220,10 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
                         <Trailing>
                           <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0} padding={[8, 2]} bordered radius={8}>
                             <Typography variant='navigation' color='text'>
-                              {data[openedUE].moyenne.moy}
+                              {toDisplay(data[openedUE].moyenne.moy)}
                             </Typography>
                             <Typography variant='body2' color="secondary">
-                              /20
+                              {scaleDenominator}
                             </Typography>
                           </Stack>
                         </Trailing>
@@ -229,10 +238,10 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
                         <Trailing>
                           <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0} padding={[8, 2]} bordered radius={8}>
                             <Typography variant='navigation' color='text'>
-                              {data[openedUE].moyenne.min}
+                              {toDisplay(data[openedUE].moyenne.min)}
                             </Typography>
                             <Typography variant='body2' color="secondary">
-                              /20
+                              {scaleDenominator}
                             </Typography>
                           </Stack>
                         </Trailing>
@@ -247,10 +256,10 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
                         <Trailing>
                           <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0} padding={[8, 2]} bordered radius={8}>
                             <Typography variant='navigation' color='text'>
-                              {data[openedUE].moyenne.max}
+                              {toDisplay(data[openedUE].moyenne.max)}
                             </Typography>
                             <Typography variant='body2' color="secondary">
-                              /20
+                              {scaleDenominator}
                             </Typography>
                           </Stack>
                         </Trailing>
@@ -267,10 +276,10 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
                             <Stack direction='horizontal' gap={8} hAlign='center'>
                               <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0}>
                                 <Typography variant='navigation' color='text'>
-                                  {value.moyenne}
+                                  {toDisplay(value.moyenne)}
                                 </Typography>
                                 <Typography variant='body2' color="secondary">
-                                  /20
+                                  {scaleDenominator}
                                 </Typography>
                               </Stack>
 
@@ -295,10 +304,10 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
                             <Stack direction='horizontal' gap={8} hAlign='center'>
                               <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0}>
                                 <Typography variant='navigation' color='text'>
-                                  {value.moyenne}
+                                  {toDisplay(value.moyenne)}
                                 </Typography>
                                 <Typography variant='body2' color="secondary">
-                                  /20
+                                  {scaleDenominator}
                                 </Typography>
                               </Stack>
 
