@@ -6,7 +6,6 @@ import { t } from "i18next";
 import React, { useState } from "react";
 
 import ModalOverhead from "@/components/ModalOverhead";
-import Homework from "@/database/models/Homework";
 import { updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
@@ -23,6 +22,7 @@ import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { Homework } from "@/services/shared/homework";
 
 const Task = () => {
   const { params } = useRoute();
@@ -139,30 +139,31 @@ const Task = () => {
             </Typography>
           </List.Item>
         </List.Section>
+        {task.attachments.length > 0 && (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>{t("Modal_Task_Attachments")}</List.Label>
+            </List.SectionTitle>
 
-        <List.Section>
-          <List.SectionTitle>
-            <List.Label>{t("Modal_Task_Attachments")}</List.Label>
-          </List.SectionTitle>
-
-          {task.attachments.map((attachment) => (
-            <List.Item onPress={() => WebBrowser.openBrowserAsync(attachment.url, {
-              presentationStyle: "formSheet"
-            })}>
-              <List.Leading>
-                <Icon>
-                  <Papicons name={getAttachmentIcon(attachment)} />
-                </Icon>
-              </List.Leading>
-              <Typography variant="title" numberOfLines={1}>
-                {attachment.name || attachment.url}
-              </Typography>
-              <Typography variant="body1" color="textSecondary" numberOfLines={1}>
-                {attachment.url}
-              </Typography>
-            </List.Item>
-          ))}
-        </List.Section>
+            {task.attachments.map((attachment) => (
+              <List.Item onPress={() => WebBrowser.openBrowserAsync(attachment.url, {
+                presentationStyle: "formSheet"
+              })}>
+                <List.Leading>
+                  <Icon>
+                    <Papicons name={getAttachmentIcon(attachment)} />
+                  </Icon>
+                </List.Leading>
+                <Typography variant="title" numberOfLines={1}>
+                  {attachment.name || attachment.url}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" numberOfLines={1}>
+                  {attachment.url}
+                </Typography>
+              </List.Item>
+            ))}
+          </List.Section>
+        )}
       </List>
     </>
   );
