@@ -19,6 +19,7 @@
   "dependencies": {
     "@aramir/react-native-barcode": "^1.0.2",
     "@babel/plugin-proposal-decorators": "^7.28.0",
+    "@blockshub/blockscho": "^0.1.0",
     "@blockshub/blocksdirecte": "^0.0.8-alpha",
     "@blockshub/blocksrd": "^0.1.0",
     "@bottom-tabs/react-navigation": "^0.11.2",
@@ -42,7 +43,7 @@
     "@shopify/react-native-skia": "2.4.18",
     "@types/uuid": "^10.0.0",
     "alise-api": "^0.2.5",
-    "appscho": "file:./stubs/appscho",
+    "@blockshub/blockscho": "*",
     "buffer": "^6.0.3",
     "countly-sdk-react-native-bridge": "^25.4.1",
     "date-fns": "^4.1.0",

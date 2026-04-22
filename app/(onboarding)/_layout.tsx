@@ -56,6 +56,10 @@ export default function OnboardingLayout() {
           name="services/multi"
           options={{ headerShown: false, title: "", presentation: "modal" }}
         />
+        <Stack.Screen
+          name="services/appscho"
+          options={{ headerShown: false, title: "" }}
+        />
       </Stack>
     </View>
   );

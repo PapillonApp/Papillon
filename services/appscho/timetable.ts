@@ -1,4 +1,4 @@
-import { User, getPlanning, Lesson } from "appscho";
+import { User, getPlanning, Lesson } from "@blockshub/blockscho";
 import { getDateRangeOfWeek } from "@/database/useHomework";
 import { Course, CourseDay, CourseType } from "../shared/timetable";
 import { parseADEDescription } from "../local/parsers/ade-parser";
