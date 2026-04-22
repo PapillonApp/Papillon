@@ -11,14 +11,13 @@ import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import { formatHTML } from "@/utils/format/html";
 import { generateId } from "@/utils/generateId";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { Platform } from "react-native";
+import { Platform, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
@@ -164,6 +163,20 @@ const Task = () => {
             ))}
           </List.Section>
         )}
+        <List.Section>
+          <List.SectionTitle>
+            <Stack direction="horizontal" hAlign="center" gap={10}>
+              <Image
+                source={require("@/assets/images/knowunity.png")}
+                style={{ width: 30, height: 30 }}
+              />
+              <Stack gap={2}>
+                <Typography>Fiches de révision pour t’aider</Typography>
+                <Typography color="textSecondary">Knowunity</Typography>
+              </Stack>
+            </Stack>
+          </List.SectionTitle>
+        </List.Section>
       </List>
     </>
   );
