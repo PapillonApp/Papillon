@@ -28,7 +28,8 @@ const HOSTS: Record<string, { title: string; icon: string }> = {
   "analytics.papillon.bzh": { title: "Télémétrie", icon: "PapillonIcon" },
   "github.com": { title: "Ressource(s)", icon: "Code" },
   "transitapp.com": { title: "Transport", icon: "Metro" },
-  "geopf.fr": { title: "Localisation", icon: "MapPin" }
+  "geopf.fr": { title: "Localisation", icon: "MapPin" },
+  "raw.githubusercontent.com": { title: "GitHub", icon: "Code" }
 };
 
 export default function DevMode() {
@@ -72,14 +73,12 @@ export default function DevMode() {
           </Stack>
         </List.Leading>
 
-        <Stack>
-          <Typography variant="title" numberOfLines={1}>
-            {classification.title}
-          </Typography>
-          <Typography color="textSecondary" variant="body1" numberOfLines={1}>
-            {item.url.host}
-          </Typography>
-        </Stack>
+        <Typography variant="title" numberOfLines={1}>
+          {classification.title}
+        </Typography>
+        <Typography color="textSecondary" variant="body1" numberOfLines={1}>
+          {item.url.host}
+        </Typography>
 
         <List.Trailing>
           <Stack direction="horizontal" hAlign="center" gap={4}>
@@ -153,10 +152,10 @@ export default function DevMode() {
         <List.Section>
           <List.SectionTitle>
             <Papicons name="Code" color={colors.text + 88} />
-            <Typography color="textSecondary">Liste des journaux</Typography>
+            <List.Label>Liste des journaux</List.Label>
           </List.SectionTitle>
           <List.Item>
-            <Typography>Afficher les journaux</Typography>
+            <Typography variant="action">Afficher les journaux</Typography>
             <List.Trailing>
               <Switch value={logsVisible} onValueChange={setLogsVisible}/>
             </List.Trailing>
@@ -189,21 +188,21 @@ export default function DevMode() {
         <List.Section>
           <List.SectionTitle>
             <Papicons name="Globe" color={colors.text + 88} />
-            <Typography color="textSecondary">Liste des requêtes</Typography>
+            <List.Label>Liste des requêtes</List.Label>
           </List.SectionTitle>
           {entries.map(renderHostRow)}
         </List.Section>
         <List.Section>
           <List.SectionTitle>
             <Papicons name="Bus" color={colors.text + 88} />
-            <Typography color="textSecondary">Transport</Typography>
+            <List.Label>Transport</List.Label>
           </List.SectionTitle>
           <List.Item onPress={() => handlePress(() => {
             initializeTransport(undefined).then(transport => {
               console.log(transport);
             });
           })}>
-            <Typography>Initialiser sans adresse</Typography>
+            <Typography variant="action">Initialiser sans adresse</Typography>
           </List.Item>
           <List.Item onPress={() => handlePress(() => {
             initializeTransport("106 Rue de la Pompe, 75016 Paris").then(
@@ -212,27 +211,27 @@ export default function DevMode() {
               }
             );
           })}>
-            <Typography>Initialiser avec une adresse</Typography>
+            <Typography variant="action">Initialiser avec une adresse</Typography>
           </List.Item>
         </List.Section>
         <List.Section>
           <List.SectionTitle>
             <Papicons name="Sparkles" color={colors.text + 88} />
-            <Typography color="textSecondary">Papillon Magic+</Typography>
+            <List.Label>Papillon Magic+</List.Label>
           </List.SectionTitle>
             <List.Item onPress={() => handlePress(ClearMagicCache)}>
-              <Typography>Supprimer le cache de Magic</Typography>
+              <Typography variant="action">Supprimer le cache de Magic</Typography>
               <List.Trailing>
-                <Typography color="textSecondary">
+                <Typography color="textSecondary" variant="action">
                   {useMagicStore.getState().processHomeworks.length} devoirs
                 </Typography>
               </List.Trailing>
             </List.Item>
             <List.Item onPress={() => ModelManager.refresh}>
-              <Typography>Rafraîchir le modèle</Typography>
+              <Typography variant="action">Rafraîchir le modèle</Typography>
             </List.Item>
             <List.Item onPress={() => handlePress(resetModel)}>
-              <Typography>Réinitialiser le modèle</Typography>
+              <Typography variant="action">Réinitialiser le modèle</Typography>
             </List.Item>
             <List.Item onPress={() => {
               const status = ModelManager.getStatus();
@@ -245,7 +244,7 @@ export default function DevMode() {
                   `Index OOV: ${status.oovIndex}`
               );
             }}>
-              <Typography>Afficher les informations du modèle</Typography>
+              <Typography variant="action">Afficher les informations du modèle</Typography>
             </List.Item>
             <List.Item onPress={async () => {
                 try {
@@ -268,7 +267,7 @@ export default function DevMode() {
                   Alert.alert("Erreur", `Erreur lors du test: ${String(error)}`);
                 }
               }}>
-              <Typography>Tester les prédictions</Typography>
+              <Typography variant="action">Tester les prédictions</Typography>
             </List.Item>
             <List.Item onPress={() => {
               const currentURL = useSettingsStore.getState().personalization.magicModelURL || MAGIC_URL;
@@ -296,32 +295,47 @@ export default function DevMode() {
                 currentURL
               );
             }}>
-              <Typography>Changer la source de Magic</Typography>
+              <Typography variant="action">Changer la source de Magic</Typography>
             </List.Item>
             <List.Item onPress={() => handlePress(() => {
               useSettingsStore.getState().mutateProperty("personalization", {
                 magicModelURL: MAGIC_URL
               })
             })}>
-              <Typography>Réinitialiser la source de Magic</Typography>
+              <Typography variant="action">Réinitialiser la source de Magic</Typography>
             </List.Item>
         </List.Section>
         <List.Section>
           <List.SectionTitle>
             <Papicons name="AlertTriangle" color={colors.text + 88} />
-            <Typography color="textSecondary">Zone de danger</Typography>
+            <List.Label>Zone de danger</List.Label>
           </List.SectionTitle>
           <List.Item onPress={async () => handleDangerousAction(ClearWatermelon)}>
-            <Typography variant="title">Supprimer la base de donnée</Typography>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Trash" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Supprimer la base de données</Typography>
           </List.Item>
           <List.Item onPress={() => handleDangerousAction(ClearSettings)}>
-            <Typography variant="title">Supprimer les paramètres</Typography>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Trash" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Supprimer les paramètres</Typography>
           </List.Item>
           <List.Item onPress={() => handleDangerousAction(ClearAccounts)}>
-            <Typography variant="title">Supprimer les comptes</Typography>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Trash" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Supprimer les comptes</Typography>
           </List.Item>
           <List.Item 
-            style={{ backgroundColor: "#C50017" + "30" }} 
+            style={{ backgroundColor: "#C50017" }} 
             onPress={() => handleDangerousAction(async () => {
               await ClearWatermelon();
               await ClearSettings();
@@ -331,8 +345,13 @@ export default function DevMode() {
               router.reload();
             })}
           >
-            <Typography variant="title">Réinitialiser Papillon</Typography>
-            <Typography variant="subtitle" color="textSecondary">Efface définitivement vos comptes, paramètres et données locales.</Typography>
+            <List.Leading>
+              <Icon fill="#FFFFFF" opacity={1}>
+                <Papicons name="Trash" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title" color="white">Réinitialiser Papillon</Typography>
+            <Typography variant="subtitle" color="white">Efface définitivement vos comptes, paramètres et données locales.</Typography>
           </List.Item>
         </List.Section>
       </List>
