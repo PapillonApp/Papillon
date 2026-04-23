@@ -1,4 +1,4 @@
-import BottomAccessory from '@/components/BottomAccessory';
+import BottomAccessory, { useBottomAccessoryVisible } from '@/components/BottomAccessory';
 import { useSettingsStore } from '@/stores/settings';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { useTheme } from '@react-navigation/native';
@@ -28,7 +28,7 @@ export default function TabLayout() {
   const labelsHidden = Platform.OS === 'ios' ? !showTabBarLabels : false;
 
   const shouldRenderBottomAccessory =
-    Platform.OS !== 'ios' || iOSBottomAccessoryEnabled;
+    Platform.OS !== 'ios' ? false : !runsIOS26 ? false : (iOSBottomAccessoryEnabled && useBottomAccessoryVisible());
 
   return (
     <NativeTabs
@@ -38,7 +38,7 @@ export default function TabLayout() {
       rippleColor={theme.colors.tint + '22'}
       backgroundColor={Platform.OS === 'android' ? theme.colors.background : undefined}
       sidebarAdaptable
-      minimizeBehavior={iOSBottomAccessoryEnabled ? "onScrollDown" : "never"}
+      minimizeBehavior={shouldRenderBottomAccessory ? "onScrollDown" : "never"}
       disableTransparentOnScrollEdge
       titlePositionAdjustment={runsIOS26 ? { vertical: 6, horizontal: 0 } : undefined}
     >
