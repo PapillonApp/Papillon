@@ -242,8 +242,9 @@ const Task = () => {
           <List.Item>
             <Stack gap={16} style={{ marginBottom: 6 }}>
               <CardStack backgroundColor={subjectInfo.color} title={subjectInfo.name} emoji={subjectInfo.emoji} />
-              <Typography variant="body1">Accède a des centaines de fiches pour t’aider en {subjectInfo.name} sur Knowunity</Typography>
+              <Typography variant="body1">Accède à des centaines de fiches pour t’aider en {subjectInfo.name} sur Knowunity</Typography>
               <Button
+                height={44}
                 fullWidth
                 color={subjectInfo.color}
                 label="Découvrir les fiches"
