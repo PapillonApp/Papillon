@@ -12,7 +12,7 @@ export const DEFAULT_MATERIAL_YOU_ENABLED =
   Platform.OS === "android" && typeof Platform.Version === "number" && Platform.Version >= 31;
 
 const defaultPersonalization: Personalization = {
-  colorSelected: Colors.PINK,
+  colorSelected: Colors.GREEN,
   theme: "auto",
   useMaterialYou: DEFAULT_MATERIAL_YOU_ENABLED,
   iOSBottomAccessoryEnabled: true,
