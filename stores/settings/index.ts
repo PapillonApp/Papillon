@@ -29,7 +29,7 @@ export const useSettingsStore = create<SettingsStorage>()(
   persist(
     (set, get) => ({
       personalization: defaultPersonalization,
-
+      reset: () => { set({ personalization: defaultPersonalization }) },
       mutateProperty: <T extends keyof SettingsState>(
         section: T,
         updates: Partial<SettingsState[T]>

@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 import "@/utils/i18n";
 import { t } from 'i18next';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
+import { HeaderBackButton } from '@react-navigation/elements';
 
 export const FONT_CONFIG = {
   light: require('../assets/fonts/SNPro-Light.ttf'),
@@ -32,8 +33,16 @@ export const ALERT_SCREEN_OPTIONS = {
 } as const;
 
 export const DEVMODE_SCREEN_OPTIONS = {
-  headerTitle: "DevMode",
-  headerBackButtonDisplayMode: "minimal" as const,
+  headerTitle: "Mode développeur",
+  headerLargeTitle: false,
+  headerShown: true,
+  backButtonVisible: true
+} as const;
+
+export const DEVMODE_REQUESTS_SCREEN_OPTIONS = {
+  headerLargeTitle: false,
+  headerShown: false,
+  backButtonVisible: true
 } as const;
 
 export const DEMO_SCREEN_OPTIONS = {

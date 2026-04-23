@@ -10,6 +10,7 @@ import { Skolengo } from "skolengojs";
 export interface AccountsStorage {
   lastUsedAccount: string;
   accounts: Account[];
+  reset: () => void;
   removeAccount: (account: Account) => void;
   addAccount: (account: Account) => void;
   setLastUsedAccount: (accountId: string) => void;
@@ -59,9 +60,13 @@ export interface Account {
   updatedAt: string;
 }
 
+export interface CustomisableSubject {
+  id: string; color: string; emoji: string; name: string 
+}
+
 export interface CustomisationStorage {
   profilePicture: string;
-  subjects: Record<string, { color: string; emoji: string; name: string }>;
+  subjects: Record<string, CustomisableSubject>;
 }
 
 export interface TransportAddress {
