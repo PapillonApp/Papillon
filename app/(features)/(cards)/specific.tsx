@@ -181,7 +181,7 @@ export default function QRCodeAndCardsPage() {
         }
         trailing={
           <ChipButton
-            single
+            single large
             icon="cross"
             onPress={() => {
               router.dismiss();

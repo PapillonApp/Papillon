@@ -152,7 +152,7 @@ function EmojiPicker({
             leading={t("Settings_Personalization_Emoji_Picker_Title")}
           />
         }
-        trailing={<ChipButton single icon="cross" onPress={onCancel} />}
+        trailing={<ChipButton single large icon="cross" onPress={onCancel} />}
       />
       <Animated.View
         style={[emojiContainerStyle]}

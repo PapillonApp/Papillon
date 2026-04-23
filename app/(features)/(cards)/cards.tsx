@@ -63,7 +63,7 @@ export default function QRCodeAndCardsPage() {
         }
         trailing={Platform.OS === "ios" && (
           <ChipButton
-            single
+            single large
             icon="cross"
             onPress={() => {
               router.dismiss();

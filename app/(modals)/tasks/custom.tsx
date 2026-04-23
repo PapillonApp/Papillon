@@ -28,6 +28,7 @@ import { CustomisableSubject } from "@/stores/account/types";
 import { Homework } from "@/services/shared/homework";
 import { useHomeworkActionsStore } from "@/app/(tabs)/tasks/hooks/useHomeworkData";
 import { deleteHomeworkFromDatabase } from "@/database/useHomework";
+import { ListTouchable } from "@/ui/new/List";
 
 const SubjectSelector = ({ subjects, selectedSubject, setSelectedSubject }: {
   subjects: CustomisableSubject[];
@@ -167,6 +168,7 @@ const DateSelector = ({ selectedDate, setDate }: {
           padding: 10,
           paddingLeft: 15,
           gap: 10,
+          marginTop: -1,
         }}
       >
         <Papicons name={"Calendar"}
@@ -177,19 +179,22 @@ const DateSelector = ({ selectedDate, setDate }: {
                     nowrap
                     color={"secondary"}
         >{formatDistanceDay(selectedDate)}</Typography>
-        <AnimatedPressable
-          style={{
-            height: 30,
-            backgroundColor: "#C54CB3",
-            borderRadius: 80,
-            paddingHorizontal: 12,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        <ListTouchable
           onPress={togglePicker}
         >
-          <Typography color={"light"}>{t("Task_New_DueDate_Edit")}</Typography>
-        </AnimatedPressable>
+          <View
+            style={{
+              height: 30,
+              backgroundColor: "#C54CB3",
+              borderRadius: 80,
+              paddingHorizontal: 12,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography color={"light"}>{t("Task_New_DueDate_Edit")}</Typography>
+          </View>
+        </ListTouchable>
       </View>
       <Reanimated.View
         style={{
@@ -202,6 +207,8 @@ const DateSelector = ({ selectedDate, setDate }: {
           transformOrigin: "top center",
           transform: [{ scale: calendarScale }],
           opacity: calendarOpacity,
+          alignItems: "center",
+          
         }}
       >
         <DateTimePicker

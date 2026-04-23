@@ -65,50 +65,54 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
         />
       }
       trailing={
-        <Stack direction='horizontal'>
-        <ChipButton
-          onPress={() => {
-            navigation.navigate("(modals)/tasks/custom")
-          }}
-          
-          icon="plus"
-        ></ChipButton>
-        <ChipButton
-          onPressAction={({ nativeEvent }) => {
-            const actionId = nativeEvent.event;
-            if (actionId === 'only-undone') {
-              setShowUndoneOnly(prev => !prev);
-            } else if (actionId.startsWith("sort:")) {
-              setSortMethod(actionId.replace("sort:", "") as SortMethod);
-            }
-          }}
-          actions={[
-            {
-              title: t('Task_Sorting_Title'),
-              papicon: "filter",
-              subactions: sortingOptions.map((method) => ({
-                title: method.label,
-                id: "sort:" + method.value,
-                papicon: method.papicon,
-                state: (sortMethod === method.value ? 'on' : 'off'),
-                image: Platform.select({
-                  ios:
-                    method.value === 'date'
-                      ? "calendar"
-                      : method.value === 'subject'
-                        ? "character"
-                        : "checkmark.circle"
-                }),
-                imageColor: colors.text,
-              })),
-              displayInline: true
-            }
-          ]}
-          icon="filter"
-          chevron
-        >
-          {menuTitle}
-        </ChipButton>
+        <Stack direction='horizontal' gap={8}>
+          <ChipButton
+            onPressAction={({ nativeEvent }) => {
+              const actionId = nativeEvent.event;
+              if (actionId === 'only-undone') {
+                setShowUndoneOnly(prev => !prev);
+              } else if (actionId.startsWith("sort:")) {
+                setSortMethod(actionId.replace("sort:", "") as SortMethod);
+              }
+            }}
+            actions={[
+              {
+                title: t('Task_Sorting_Title'),
+                papicon: "filter",
+                subactions: sortingOptions.map((method) => ({
+                  title: method.label,
+                  id: "sort:" + method.value,
+                  papicon: method.papicon,
+                  state: (sortMethod === method.value ? 'on' : 'off'),
+                  image: Platform.select({
+                    ios:
+                      method.value === 'date'
+                        ? "calendar"
+                        : method.value === 'subject'
+                          ? "character"
+                          : "checkmark.circle"
+                  }),
+                  imageColor: colors.text,
+                })),
+                displayInline: true
+              }
+            ]}
+            icon="filter"
+            chevron
+          >
+            {menuTitle}
+          </ChipButton>
+
+          <ChipButton
+            single
+            tintColor='#C54CB3'
+            glassOpacity={1}
+            onPress={() => {
+              navigation.navigate("(modals)/tasks/custom")
+            }}
+            iconColor='white'
+            icon="add"
+          ></ChipButton>
         </Stack>
       }
       bottom={

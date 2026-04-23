@@ -20,11 +20,16 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import { Platform } from "react-native";
+import { Platform, View } from "react-native";
 import adjust from "@/utils/adjustColor";
 import { router } from "expo-router";
 import { MenuView } from "@react-native-menu/menu";
 import { useHomeworkActionsStore } from "@/app/(tabs)/tasks/hooks/useHomeworkData";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import ChipButton from "@/ui/components/ChipButton";
+import { updateHomeworkIsDone } from "@/database/useHomework";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 
 const Task = () => {
   const { params } = useRoute();
@@ -139,9 +144,11 @@ const Task = () => {
               </AnimatedPressable>
             </List.Leading>
 
-            <Typography variant="title">
-              {isDone ? t("Task_Done") : t("Task_Undone")}
-            </Typography>
+            <Dynamic animated key={"status-text:" + isDone.toString()} entering={PapillonAppearIn} exiting={PapillonAppearOut} style={{ transformOrigin: "top left" }}>
+              <Typography variant="title">
+                {isDone ? t("Task_Done") : t("Task_Undone")}
+              </Typography>
+            </Dynamic>
           </List.Item>
         </List.Section>
 
@@ -151,7 +158,9 @@ const Task = () => {
           </List.SectionTitle>
 
           <List.Item>
-            <Typography>{formatHTML(task.content)}</Typography>
+            <Typography variant="action">
+              {formatHTML(task.content)}
+            </Typography>
           </List.Item>
         </List.Section>
 
@@ -191,75 +200,58 @@ const Task = () => {
         </List.Section>
       </List>
             {task.custom && (
-      <MenuView
-          onPressAction={async ({ nativeEvent }) => {
-            const actionId = nativeEvent.event;
-
-            if (actionId === "homework-delete") {
-              deleteHomework!(task);
-              router.back();
-            } else if (actionId === "homework-edit") {
-              router.push({
-                pathname: "/(modals)/tasks/custom",
-                params: {
-                  action: "edit",
-                  id: generateId(
-                    task.subject +
-                      task.content +
-                      task.createdByAccount +
-                      task.dueDate.toDateString()
-                  ),
-                  subject: task.subject,
-                  done: task.isDone ? 1 : 0,
-                  description: task.content,
-                  date: task.dueDate.getTime()
-                }
-              });
-            }
-          }}
+        <View
           style={{
             position: "absolute",
             right: 20,
             top: 20
-          }}
-          actions={[
-            {
-              id: "homework-edit",
-              title: "Modifier ce devoir",
-            },
-            {
-              id: "homework-delete",
-              title: "Supprimer ce devoir",
-              imageColor: "#FF0000",
-              image: Platform.select({
-                ios: "trash.fill"
-              }),
-              attributes: { destructive: true }
-            }
-          ]}
-        >
-          <AnimatedPressable>
-            <Stack
-              card
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 30
+          }}>
+          <ChipButton single large icon="Gears"
+              onPressAction={async ({ nativeEvent }) => {
+                const actionId = nativeEvent.event;
+
+                if (actionId === "homework-delete") {
+                  deleteHomework!(task);
+                  router.back();
+                } else if (actionId === "homework-edit") {
+                  router.push({
+                    pathname: "/(modals)/tasks/custom",
+                    params: {
+                      action: "edit",
+                      id: generateId(
+                        task.subject +
+                          task.content +
+                          task.createdByAccount +
+                          task.dueDate.toDateString()
+                      ),
+                      subject: task.subject,
+                      done: task.isDone ? 1 : 0,
+                      description: task.content,
+                      date: task.dueDate.getTime()
+                    }
+                  });
+                }
               }}
-              hAlign="center"
-              vAlign="center"
-              noShadow
-              backgroundColor="#FFFFFF50"
-            >
-              <Icon
-                size={26}
-                fill={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}
-              >
-                <Papicons name="Gears" />
-              </Icon>
-            </Stack>
-          </AnimatedPressable>
-        </MenuView>
+              actions={[
+                {
+                  id: "homework-edit",
+                  title: "Modifier ce devoir",
+                  image: Platform.select({
+                    ios: "pencil"
+                  }),
+                },
+                {
+                  id: "homework-delete",
+                  title: "Supprimer ce devoir",
+                  imageColor: "#FF0000",
+                  image: Platform.select({
+                    ios: "trash.fill"
+                  }),
+                  attributes: { destructive: true }
+                }
+              ]}
+          />
+        </View>
         )}
     </>
   );

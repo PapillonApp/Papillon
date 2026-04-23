@@ -19,8 +19,12 @@ const ChipButton: React.FC<React.PropsWithChildren<{
   chevron?: boolean;
   onPressAction?: ({ nativeEvent }: { nativeEvent: { event: string } }) => void;
   single?: boolean;
+  large?: boolean;
   actions?: MenuAction[];
-}>> = ({ onPress, icon, children, chevron, onPressAction, single, actions = [] }) => {
+  tintColor?: string;
+  iconColor?: string;
+  glassOpacity?: number;
+}>> = ({ onPress, icon, children, chevron, onPressAction, single, large, actions = [], tintColor, iconColor, glassOpacity = 0 }) => {
   const { colors } = useTheme()
 
   if (runsIOS26) {
@@ -28,27 +32,30 @@ const ChipButton: React.FC<React.PropsWithChildren<{
       <LiquidGlassView
         glassType="regular"
         isInteractive={true}
-        glassTintColor="transparent"
-        glassOpacity={0}
+        glassTintColor={tintColor || "transparent"}
+        glassOpacity={glassOpacity !== undefined ? glassOpacity : 0}
         style={[
           {
             borderRadius: 300,
             zIndex: 999999,
           },
           single && {
-            width: 46,
-            height: 46,
+            aspectRatio: 1,
             justifyContent: "center",
             alignItems: "center",
+          },
+          large && {
+            width: 42,
+            height: 42,
           }
         ]}
       >
         <Pressable onPress={onPress}>
           <ActionMenu onPressAction={onPressAction} actions={actions}>
-            <Stack animated direction="horizontal" hAlign="center" gap={8} padding={single ? 0 : [12, 6]} radius={200} inline vAlign="center">
+            <Stack animated direction="horizontal" hAlign="center" gap={8} padding={single ? 6 : [12, 6]} radius={200} inline vAlign="center">
               {icon &&
                 <Dynamic animated>
-                  <Icon style={{ marginLeft: single ? 0 : -2 }} size={24}>
+                  <Icon style={{ marginLeft: single ? 0 : -2 }} size={24} fill={iconColor}>
                     <Papicons name={icon} />
                   </Icon>
                 </Dynamic>
