@@ -46,7 +46,7 @@ const RandomSkeleton = ({ count = 14, maxWidth = 80, minWidth = 20 }) => {
   );
 };
 
-const CardStack = ({ count = 3, title, backgroundColor}: {count?: number, title: string, backgroundColor: string}) => {
+const CardStack = ({ count = 3, title, backgroundColor, emoji }: {count?: number, title: string, backgroundColor: string, emoji: string}) => {
   const { colors } = useTheme()
 
   return (
@@ -64,13 +64,19 @@ const CardStack = ({ count = 3, title, backgroundColor}: {count?: number, title:
             { 
               zIndex: index,
               backgroundColor: colors.background,
-              borderColor: colors.border,
+              borderColor: colors.text + 20,
               transform: `rotate(${4*index}deg)`,
-              marginLeft: index === 0 ? 0 : -170 
+              marginLeft: index === 0 ? 0 : -170,
+              opacity: 1 - ((2 - index) * 0.2)
             }
           ]}
         >
-          <Typography variant="caption">{title}</Typography>
+          <Typography variant="h2" align="center">
+            {emoji}
+          </Typography>
+          <Typography variant="body1" weight="semibold" align="center" style={{ marginTop: -6, lineHeight: 18, overflow: "visible" }}>
+            {title}
+          </Typography>
           <RandomSkeleton count={20} maxWidth={60} />
         </View>
       ))}
@@ -220,21 +226,23 @@ const Task = () => {
         )}
         <List.Section>
           <List.SectionTitle>
-            <Stack direction="horizontal" hAlign="center" gap={10}>
+            <Stack direction="horizontal" hAlign="center" gap={12} style={{ marginTop: 6 }}>
               <Image
                 source={require("@/assets/images/knowunity.png")}
                 style={{ width: 30, height: 30 }}
               />
-              <Stack gap={2}>
-                <Typography>Fiches de révision pour t’aider</Typography>
-                <Typography color="textSecondary">Knowunity</Typography>
+              <Stack gap={0}>
+                <Typography variant="body1" weight="bold">Fiches de révision pour t’aider</Typography>
+                <Typography variant="body2" color="textSecondary" style={{ marginTop: -2 }}>
+                  avec Knowunity
+                </Typography>
               </Stack>
             </Stack>
           </List.SectionTitle>
           <List.Item>
-            <Stack gap={16} style={{ marginBottom: 10 }}>
-              <CardStack backgroundColor={subjectInfo.color} title={`${subjectInfo.emoji} Fiche de ${subjectInfo.name}`} />
-              <Typography variant="body2">Accède a des centaines de fiches pour t’aider en {subjectInfo.name} sur Knowunity</Typography>
+            <Stack gap={16} style={{ marginBottom: 6 }}>
+              <CardStack backgroundColor={subjectInfo.color} title={subjectInfo.name} emoji={subjectInfo.emoji} />
+              <Typography variant="body1">Accède a des centaines de fiches pour t’aider en {subjectInfo.name} sur Knowunity</Typography>
               <Button
                 fullWidth
                 color={subjectInfo.color}
