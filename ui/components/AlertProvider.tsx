@@ -232,7 +232,7 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
         exiting={PapillonAppearOut}
       >
         <LiquidGlassView
-          glassType="clear"
+          glassType="regular"
           isInteractive={true}
           glassOpacity={0}
           style={{

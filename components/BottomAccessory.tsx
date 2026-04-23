@@ -152,8 +152,8 @@ function NextCourseAccessory({ placement }) {
 
       <LinearGradient
         colors={[sbjColor, sbjColor + '00']}
-        start={[1, 0]}
-        end={[0, 0]}
+        start={{x: 1, y: 0}}
+        end={{x: 0, y: 0}}
         style={{
           position: 'absolute',
           left: 0,

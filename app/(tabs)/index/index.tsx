@@ -14,6 +14,8 @@ import HomeTopBar from './atoms/HomeTopBar';
 import Wallpaper from './atoms/Wallpaper';
 import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useHomeData } from './hooks/useHomeData';
+import { useTimetableWidgetData } from './hooks/useTimetableWidgetData';
+import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
 import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
 import { useAlert } from '@/ui/components/AlertProvider';
@@ -51,6 +53,8 @@ const HomeScreen = () => {
   }, [accounts.length]);
 
   useHomeData();
+  const { courses } = useTimetableWidgetData();
+  const timetableTitle = useTimetableWidgetTitle(courses);
 
   const [gradesWidgetHidden, setGradesWidgetHidden] = React.useState(true);
 
@@ -63,7 +67,7 @@ const HomeScreen = () => {
   const data: HomeWidgetItem[] = React.useMemo(() => [
     {
       icon: <Papicons name={"Calendar"} />,
-      title: t("Home_Widget_NextCourses"),
+      title: timetableTitle,
       redirect: "(tabs)/calendar",
       render: renderTimeTable
     },
@@ -74,7 +78,7 @@ const HomeScreen = () => {
       hidden: gradesWidgetHidden,
       render: renderGrades
     }
-  ], [renderTimeTable, renderGrades, gradesWidgetHidden]);
+  ], [renderTimeTable, renderGrades, gradesWidgetHidden, timetableTitle]);
 
   const alert = useAlert();
 
