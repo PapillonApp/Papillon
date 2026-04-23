@@ -27,6 +27,7 @@ export interface Wallpaper {
 }
 
 export interface Personalization {
+  fontFamily?: "sn-pro" | "noto-serif";
   gradesDisplayScale?: "20" | "10" | "5" | "percentage";
   colorSelected?: Colors;
   theme?: "light" | "dark" | "auto";

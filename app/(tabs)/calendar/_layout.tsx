@@ -2,11 +2,12 @@ import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import AndroidHeaderBackground from "@/components/AndroidHeaderBackground";
 
 export default function Layout() {
   const { t } = useTranslation();
+  const screenOptions = useScreenOptions();
 
   return (
     <Stack screenOptions={screenOptions}>

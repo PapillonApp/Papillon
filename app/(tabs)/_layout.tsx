@@ -5,18 +5,15 @@ import { useTheme } from '@react-navigation/native';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
+import { useFont } from '@/utils/theme/fonts';
 
 // Static platform detection - computed once at module load
 const IS_IOS_WITH_PADDING = false;
 const IS_ANDROID = Platform.OS === 'android';
 
-const TAB_LABEL_STYLE = {
-  fontFamily: 'medium',
-  fontSize: Platform.OS === 'ios' ? 12 : 13,
-} as const;
-
 export default function TabLayout() {
   const theme = useTheme();
+  const font = useFont();
   const { t } = useTranslation();
 
 
@@ -27,13 +24,18 @@ export default function TabLayout() {
   const showTabBarLabels = settingsStore?.showTabBarLabels ?? true;
   const labelsHidden = Platform.OS === 'ios' ? !showTabBarLabels : false;
 
+  const tabLabelStyle = {
+    fontFamily: font("medium"),
+    fontSize: Platform.OS === 'ios' ? 12 : 13,
+  } as const;
+
   const shouldRenderBottomAccessory =
     Platform.OS !== 'ios' ? false : !runsIOS26 ? false : (iOSBottomAccessoryEnabled && useBottomAccessoryVisible());
 
   return (
     <NativeTabs
       tintColor={theme.colors.tint}
-      labelStyle={TAB_LABEL_STYLE}
+      labelStyle={tabLabelStyle}
       labelVisibilityMode={showTabBarLabels ? "labeled" : "selected"}
       rippleColor={theme.colors.tint + '22'}
       backgroundColor={Platform.OS === 'android' ? theme.colors.background : undefined}

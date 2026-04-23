@@ -12,6 +12,7 @@ export const DEFAULT_MATERIAL_YOU_ENABLED =
   Platform.OS === "android" && typeof Platform.Version === "number" && Platform.Version >= 31;
 
 const defaultPersonalization: Personalization = {
+  fontFamily: "sn-pro",
   colorSelected: Colors.GREEN,
   theme: "auto",
   useMaterialYou: DEFAULT_MATERIAL_YOU_ENABLED,
