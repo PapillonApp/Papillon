@@ -56,6 +56,7 @@
     "expo-battery": "~55.0.11",
     "expo-blur": "~55.0.12",
     "expo-build-properties": "~55.0.11",
+    "expo-brightness": "~55.0.12",
     "expo-camera": "~55.0.13",
     "expo-clipboard": "~55.0.13",
     "expo-crypto": "~55.0.12",
