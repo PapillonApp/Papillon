@@ -3,7 +3,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect, useState } from "react";
-import { Dimensions, Platform, TextInput, TouchableOpacity, View } from "react-native";
+import { Dimensions, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import { Dynamic } from "./Dynamic";
@@ -99,26 +99,66 @@ const Search: React.FC<SearchProps> = ({
           <Papicons name={icon ?? "search"} />
         </Icon>
 
-        <TextInput
-          value={input}
-          onChangeText={setInput}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-          autoCapitalize="none"
-          autoCorrect={false}
-          cursorColor={color}
-          selectionColor={color}
-          selectionHandleColor={color}
-          placeholderTextColor={colors.text + "77"}
+        <View
           style={{
             flex: 1,
+            flexShrink: 1,
+            width: 0,
+            minWidth: 0,
             height: '100%',
-            fontSize: 17,
-            color: colors.text,
-            fontFamily: "semibold",
-            marginTop: Platform.OS === 'android' ? 2 : 0,
           }}
-        />
+        >
+          {input.length === 0 && (
+            <View
+              pointerEvents="none"
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                justifyContent: "center",
+                paddingLeft: Platform.OS === "android" ? 4 : 0,
+              }}
+            >
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={{
+                  fontSize: 17,
+                  color: colors.text + "77",
+                  fontFamily: "semibold",
+                }}
+              >
+                {placeholder}
+              </Text>
+            </View>
+          )}
+
+          <TextInput
+            value={input}
+            onChangeText={setInput}
+            multiline={false}
+            numberOfLines={1}
+            placeholder=""
+            autoFocus={autoFocus}
+            autoCapitalize="none"
+            autoCorrect={false}
+            cursorColor={color}
+            selectionColor={color}
+            selectionHandleColor={color}
+            style={{
+              width: "100%",
+              height: '100%',
+              fontSize: 17,
+              paddingVertical: 0,
+              textAlignVertical: "center",
+              includeFontPadding: false,
+              color: colors.text,
+              fontFamily: "semibold",
+            }}
+          />
+        </View>
 
         {input.length > 0 && (
           <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut}>
