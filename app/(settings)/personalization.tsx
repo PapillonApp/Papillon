@@ -20,7 +20,15 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 import List from "@/ui/new/List";
 import NativeSwitch from "@/ui/native/NativeSwitch";
+import Picker from "@/ui/components/Picker";
 
+const FONT_OPTIONS = [
+  { label: "SN Pro", value: "sn-pro" as const },
+  { label: "Fixel Text", value: "fixel-text" as const },
+  { label: "Oxanium", value: "oxanium" as const },
+  { label: "Courgette", value: "courgette" as const },
+  { label: "IBM Plex Serif", value: "ibm-plex-serif" as const },
+];
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
@@ -30,6 +38,11 @@ const PersonalizationSettings = () => {
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const useMaterialYou = settingsStore.useMaterialYou ?? DEFAULT_MATERIAL_YOU_ENABLED;
+  const selectedFontFamily = settingsStore.fontFamily ?? "sn-pro";
+  const selectedFontIndex = Math.max(
+    FONT_OPTIONS.findIndex(option => option.value === selectedFontFamily),
+    0
+  );
 
   const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
   const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
@@ -175,6 +188,28 @@ const PersonalizationSettings = () => {
                   </Stack>
                 </AnimatedPressable>
               </Stack>
+            </List.Trailing>
+          </List.Item>
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Palette"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">Police</Typography>
+            <Typography variant="body1" color="textSecondary">
+              Modifier la police de caractères
+            </Typography>
+            <List.Trailing>
+              <Picker
+                options={FONT_OPTIONS.map(option => option.label)}
+                selectedIndex={selectedFontIndex}
+                onValueChange={(index) => {
+                  const option = FONT_OPTIONS[index];
+                  if (!option) return;
+                  mutateProperty("personalization", { fontFamily: option.value });
+                }}
+              />
             </List.Trailing>
           </List.Item>
         </List.Section>

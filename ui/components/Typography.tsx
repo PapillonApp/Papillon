@@ -1,8 +1,8 @@
 import React from "react";
 import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View, StyleProp } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { screenOptions } from "@/utils/theme/ScreenOptions";
 import SkeletonView from "@/ui/components/SkeletonView";
+import { useFont } from "@/utils/theme/fonts";
 
 const FONT_FAMILIES = {
   regular: "regular",
@@ -39,7 +39,7 @@ export const VARIANTS = StyleSheet.create({
     lineHeight: 22,
   },
   navigation: {
-    fontSize: screenOptions.headerTitleStyle.fontSize || 18,
+    fontSize: 18,
     fontFamily: FONT_FAMILIES.semibold,
     lineHeight: 24,
   },
@@ -94,10 +94,10 @@ const ALIGNMENT_STYLES = StyleSheet.create({
 });
 
 const WEIGHT_STYLES = StyleSheet.create({
-  regular: { fontFamily: FONT_FAMILIES.regular },
-  medium: { fontFamily: FONT_FAMILIES.medium },
-  semibold: { fontFamily: FONT_FAMILIES.semibold },
-  bold: { fontFamily: FONT_FAMILIES.bold },
+  regular: {},
+  medium: {},
+  semibold: {},
+  bold: {},
 });
 
 const STATIC_COLORS = {
@@ -172,6 +172,7 @@ const Typography = React.memo(({
   ...rest
 }: TypographyProps) => {
   const { colors } = useTheme();
+  const font = useFont();
 
   if (skeleton) {
     const variantStyles = VARIANTS[variant];
@@ -230,6 +231,8 @@ const Typography = React.memo(({
               color;
 
   const secondaryOpacity = color === "secondary" ? { opacity: 0.5 } : undefined;
+  const variantFont = (VARIANTS[variant].fontFamily as string) || FONT_FAMILIES.medium;
+  const resolvedFont = weight ? font(weight) : font(variantFont);
 
   const combinedStyle = [
     VARIANTS[variant],
@@ -237,6 +240,7 @@ const Typography = React.memo(({
     { color: textColor },
     secondaryOpacity,
     weight && WEIGHT_STYLES[weight],
+    { fontFamily: resolvedFont },
     italic && ITALIC_STYLE,
     style
   ];

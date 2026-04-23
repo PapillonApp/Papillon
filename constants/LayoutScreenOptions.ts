@@ -1,22 +1,7 @@
 import { Platform } from 'react-native';
 import "@/utils/i18n";
 import { t } from 'i18next';
-import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
-import { HeaderBackButton } from '@react-navigation/elements';
-
-export const FONT_CONFIG = {
-  light: require('../assets/fonts/SNPro-Light.ttf'),
-  regular: require('../assets/fonts/SNPro-Regular.ttf'),
-  medium: require('../assets/fonts/SNPro-Medium.ttf'),
-  semibold: require('../assets/fonts/SNPro-Semibold.ttf'),
-  bold: require('../assets/fonts/SNPro-Bold.ttf'),
-  black: require('../assets/fonts/SNPro-Black.ttf'),
-  serif_light: require('../assets/fonts/NotoSerif-Light.ttf'),
-  serif_regular: require('../assets/fonts/NotoSerif-Regular.ttf'),
-  serif_medium: require('../assets/fonts/NotoSerif-Medium.ttf'),
-  serif_bold: require('../assets/fonts/NotoSerif-Bold.ttf'),
-  serif_black: require('../assets/fonts/NotoSerif-Black.ttf'),
-} as const;
+export { FONT_CONFIG } from '@/utils/theme/fonts';
 
 export const STACK_SCREEN_OPTIONS = {
   headerBackButtonDisplayMode: "minimal" as const,
