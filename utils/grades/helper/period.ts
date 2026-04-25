@@ -15,6 +15,7 @@ export function getCurrentPeriod(periods: Period[]): Period {
     "EPREUVES PONCTUELLES 2EME SERIE",
     "MI-SEMESTRE 1",
     "MI-SEMESTRE 2",
+    "Évaluation spécifique de DNL",
   ];
 
   periods = periods
@@ -28,7 +29,9 @@ export function getCurrentPeriod(periods: Period[]): Period {
   }
 
   if (periods.length > 0) {
-    warn("Current period not found. Falling back to the first period in the array.");
+    warn(
+      "Current period not found. Falling back to the first period in the array."
+    );
     return periods[0];
   }
 
