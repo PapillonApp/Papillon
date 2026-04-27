@@ -32,6 +32,9 @@ const HomeHeader = () => {
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const currentVersion = packageJson.version;
   const releaseNotesUrl = `https://papillon.bzh/release-notes/${currentVersion}`;
+  const currentAttendancePeriod = attendancesPeriods.length > 0
+    ? getCurrentPeriod(attendancesPeriods)
+    : undefined;
 
   useEffect(() => {
     const installedVersion = settingsStore.installedVersion;
@@ -78,11 +81,15 @@ const HomeHeader = () => {
         (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular"))
         : t("Home_Attendance_Button_Description_None"),
       onPress: () => {
+        if (!currentAttendancePeriod) {
+          return;
+        }
+
         router.push({
           pathname: "/(features)/attendance",
           params: {
             periods: JSON.stringify(attendancesPeriods),
-            currentPeriod: JSON.stringify(getCurrentPeriod(attendancesPeriods)),
+            currentPeriod: JSON.stringify(currentAttendancePeriod),
             attendances: JSON.stringify(attendances),
           },
         });
@@ -99,7 +106,7 @@ const HomeHeader = () => {
         router.push("/(features)/soon");
       }
     }
-  ], [availableCanteenCards, absencesCount, chats, attendancesPeriods, attendances, t]);
+  ], [availableCanteenCards, absencesCount, chats, currentAttendancePeriod, attendancesPeriods, attendances, t]);
 
   return (
     <View style={{ paddingHorizontal: 0, width: "100%", flex: 1 }}>
