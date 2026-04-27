@@ -3,11 +3,12 @@ import { useTheme } from "@react-navigation/native";
 import * as React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Modal } from "react-native";
+import { Image } from "react-native";
 
 import SettingsHeader from "@/components/SettingsHeader";
 import { AvailableTransportServices } from "@/constants/AvailableTransportServices";
 import { useAccountStore } from "@/stores/account";
+import SheetModal from "@/ui/components/SheetModal";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { AddressModal } from "@/app/(modals)/address";
@@ -178,7 +179,7 @@ export default function TransportView() {
         ))}
       </List.Section>
       <List.View>
-        <Modal
+        <SheetModal
           presentationStyle={"pageSheet"}
           visible={showAddressSelect}
           allowSwipeDismissal={true}
@@ -199,7 +200,7 @@ export default function TransportView() {
               setShowAddressSelect(false);
             }}
           />
-        </Modal>
+        </SheetModal>
       </List.View>
     </List>
   );
