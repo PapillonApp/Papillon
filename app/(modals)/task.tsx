@@ -90,6 +90,7 @@ const Task = () => {
   const colors = theme.colors;
 
   const { task } = params as { task: Homework };
+  const formatedTask = formatHTML(task.content)
 
   const subjectInfo = {
     color: getSubjectColor(task.subject),
@@ -195,7 +196,7 @@ const Task = () => {
 
           <List.Item>
             <Typography>
-              {formatHTML(task.content)}
+              {formatedTask}
             </Typography>
           </List.Item>
         </List.Section>
@@ -249,11 +250,11 @@ const Task = () => {
                 color={subjectInfo.color}
                 label="Découvrir les fiches"
                 onPress={async () => {
-                  const URL = "https://knowunity.fr/papillon?text=" + task.content
+                  const URL = "https://knowunity.fr/papillon?text=" + new URLSearchParams(formatedTask)
                   const isValid = await canOpenURL(URL);
 
                   if (isValid) {
-                    await openURL("https://knowunity.fr/papillon?text=" + task.content);
+                    await openURL(URL);
                   }
                 }}
                 />
