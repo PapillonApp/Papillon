@@ -44,10 +44,10 @@ const NewsView = () => {
   const news = useNews()
 
   const sortedNews = useMemo(() => {
-    return news.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    return [...news].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
   }, [news])
 
-  const fetchNews = useCallback(() => {
+  const fetchNews = useCallback(async () => {
     try {
       setIsLoading(true)
       const manager = getManager()
@@ -55,9 +55,9 @@ const NewsView = () => {
         warn('Manager is null, skipping news fetch')
         return
       }
-      manager.getNews()
+      await manager.getNews()
     } catch (error) {
-      console.error('Error fetching news:', error)
+      warn(`Error fetching news: ${String(error)}`)
     } finally {
       setIsLoading(false)
       setIsManuallyLoading(false)
@@ -66,7 +66,7 @@ const NewsView = () => {
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate(() => {
-      fetchNews()
+      void fetchNews()
     })
 
     return () => unsubscribe()
@@ -75,7 +75,7 @@ const NewsView = () => {
   const [searchText, setSearchText] = useState('')
 
   const filteredNews = useMemo(() => {
-    return sortedNews.filter((item) => item.title.toLowerCase().includes(searchText.toLowerCase()))
+    return sortedNews.filter((item) => (item.title ?? '').toLowerCase().includes(searchText.toLowerCase()))
   }, [sortedNews, searchText])
 
   return (
@@ -106,7 +106,7 @@ const NewsView = () => {
               refreshing={isManuallyLoading}
               onRefresh={() => {
                 setIsManuallyLoading(true)
-                fetchNews()
+                void fetchNews()
               }}
               progressViewOffset={headerHeight}
             />
