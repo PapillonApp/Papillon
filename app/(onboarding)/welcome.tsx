@@ -63,50 +63,55 @@ export default function Welcome() {
     <View
       style={{
         flex: 1,
-        backgroundColor: "black"
+        backgroundColor: "black",
       }}
     >
-      {isFocused &&
-      <StatusBar barStyle={"light-content"} animated translucent />
-      }
-      {isFocused &&
-      <Reanimated.View
-        entering={FadeIn.duration(600)}
-        exiting={FadeOut.duration(600)}
-
-        style={{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 0,
-        }}
-      >
-      <VideoView
-        player={player}
-        style={{
-          width: '100%',
-          height: '100%'
-        }}
-        contentFit="cover"
-        nativeControls={false}
-      /></Reanimated.View>
-}
+      {isFocused && (
+        <StatusBar barStyle={"light-content"} animated translucent />
+      )}
+      {isFocused && (
+        <Reanimated.View
+          entering={FadeIn.duration(600)}
+          exiting={FadeOut.duration(600)}
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 0,
+          }}
+        >
+          <VideoView
+            player={player}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+            contentFit="cover"
+            nativeControls={false}
+          />
+        </Reanimated.View>
+      )}
 
       <LinearGradient
-        colors={["rgba(0, 0, 0, 1)", "rgba(0, 0, 0, 0.0)", "rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 1)"]}
+        colors={[
+          "rgba(0, 0, 0, 1)",
+          "rgba(0, 0, 0, 0.0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 1)",
+        ]}
         locations={[0, 0.2, 0.3, 0.7]}
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
           zIndex: 1,
-          opacity: 0.8
+          opacity: 0.8,
         }}
       />
 
@@ -123,12 +128,17 @@ export default function Welcome() {
       >
         <PapillonLogo fill={"#FFFFFF"} />
 
-        <Typography color="#FFFFFF" variant="title" align="center" weight="medium" style={{ marginHorizontal: 10, opacity: 0.8 }}>
+        <Typography
+          color="#FFFFFF"
+          variant="title"
+          align="center"
+          weight="medium"
+          style={{ marginHorizontal: 10, opacity: 0.8 }}
+        >
           {t("ONBOARDING_WELCOME_DESCRIPTION")}
         </Typography>
 
         <Divider height={2} ghost />
-
 
         <Button
           label={t("ONBOARDING_WELCOME_LOGIN_WITH")}
@@ -137,26 +147,63 @@ export default function Welcome() {
             <Stack direction="horizontal" gap={0}>
               <Image
                 source={require("@/assets/images/service_pronote.png")}
-                style={{ width: 32, height: 32, borderRadius: 32, borderWidth: 3, borderColor: colors.primary, zIndex: 3 }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 32,
+                  borderWidth: 3,
+                  borderColor: colors.primary,
+                  zIndex: 4,
+                }}
               />
               <Image
                 source={require("@/assets/images/service_ed.png")}
-                style={{ width: 32, height: 32, borderRadius: 32, borderWidth: 3, borderColor: colors.primary, marginLeft: -16, zIndex: 2 }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 32,
+                  borderWidth: 3,
+                  borderColor: colors.primary,
+                  marginLeft: -16,
+                  zIndex: 3,
+                }}
               />
               <Image
                 source={require("@/assets/images/service_skolengo.png")}
-                style={{ width: 32, height: 32, borderRadius: 32, borderWidth: 3, borderColor: colors.primary, marginLeft: -16, zIndex: 1 }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 32,
+                  borderWidth: 3,
+                  borderColor: colors.primary,
+                  marginLeft: -16,
+                  zIndex: 2,
+                }}
+              />
+              <Image
+                source={require("@/assets/images/service_webuntis.png")}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 32,
+                  borderWidth: 3,
+                  borderColor: colors.primary,
+                  marginLeft: -16,
+                  zIndex: 1,
+                }}
               />
             </Stack>
           }
           onPress={() => {
-            router.push("./ageSelection")
+            router.push("./ageSelection");
           }}
           fullWidth
         />
         <Button
           label={t("ONBOARDING_HELP_BTN")}
-          onPress={() => { openHelpWebPage() }}
+          onPress={() => {
+            openHelpWebPage();
+          }}
           fullWidth
           variant="secondary"
           color="#FFFFFF"
@@ -164,7 +211,18 @@ export default function Welcome() {
 
         <Divider height={2} ghost />
 
-        <Typography color="#FFFFFF88" variant="caption" align="center" style={{ marginHorizontal: 20, opacity: 0.7 }} onPress={() => { openLegalWebPage() }} onLongPress={() => { openDevMenu() }}>
+        <Typography
+          color="#FFFFFF88"
+          variant="caption"
+          align="center"
+          style={{ marginHorizontal: 20, opacity: 0.7 }}
+          onPress={() => {
+            openLegalWebPage();
+          }}
+          onLongPress={() => {
+            openDevMenu();
+          }}
+        >
           {t("ONBOARDING_WELCOME_LEGAL")}
         </Typography>
       </View>

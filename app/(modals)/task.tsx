@@ -123,20 +123,20 @@ const Task = () => {
 
   return (
     <>
-      {Platform.OS !== 'android' && (
+      {Platform.OS !== "android" && (
         <LinearGradient
           colors={[subjectInfo.color, colors.background]}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
-          right: 0,
-          height: 300,
-          width: "100%",
-          zIndex: -9,
-          opacity: 0.4
-        }}
-      />
+            right: 0,
+            height: 300,
+            width: "100%",
+            zIndex: -9,
+            opacity: 0.4
+          }}
+        />
       )}
 
       <List
@@ -145,7 +145,7 @@ const Task = () => {
             emoji={subjectInfo.emoji}
             subject={subjectInfo.name}
             subjectVariant="header"
-            color={Platform.OS === 'ios' ? subjectInfo.color : colors.primary}
+            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
             date={new Date(task.dueDate)}
             style={{
               marginVertical: 24,
@@ -160,34 +160,36 @@ const Task = () => {
           padding: 16
         }}
       >
-        <List.Section>
-          <List.SectionTitle>
-            <List.Label>{t("Modal_Task_Status")}</List.Label>
-          </List.SectionTitle>
+        {task.canComplete ?? (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>{t("Modal_Task_Status")}</List.Label>
+            </List.SectionTitle>
 
-          <List.Item>
-            <List.Leading>
-              <AnimatedPressable onPress={() => setAsDone(!isDone)}>
-                <Stack
-                  backgroundColor={isDone ? (Platform.OS === 'ios' ? subjectInfo.color : theme.colors.primary) : theme.colors.card}
-                  card
-                  radius={100}
-                  width={28}
-                  height={28}
-                  vAlign="center"
-                  hAlign="center"
-                >
-                  {isDone &&
-                    <Papicons name="check" size={22} color="white" />
-                  }
-                </Stack>
-              </AnimatedPressable>
-            </List.Leading>
-            <Typography variant="title">
-              {isDone ? t("Task_Done") : t("Task_Undone")}
-            </Typography>
-          </List.Item>
-        </List.Section>
+            <List.Item>
+              <List.Leading>
+                <AnimatedPressable onPress={() => setAsDone(!isDone)}>
+                  <Stack
+                    backgroundColor={isDone ? (Platform.OS === "ios" ? subjectInfo.color : theme.colors.primary) : theme.colors.card}
+                    card
+                    radius={100}
+                    width={28}
+                    height={28}
+                    vAlign="center"
+                    hAlign="center"
+                  >
+                    {isDone &&
+                        <Papicons name="check" size={22} color="white"/>
+                    }
+                  </Stack>
+                </AnimatedPressable>
+              </List.Leading>
+              <Typography variant="title">
+                {isDone ? t("Task_Done") : t("Task_Undone")}
+              </Typography>
+            </List.Item>
+          </List.Section>
+        )}
 
         <List.Section>
           <List.SectionTitle>
