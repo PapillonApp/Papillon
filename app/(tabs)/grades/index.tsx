@@ -32,6 +32,7 @@ import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/serv
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
+import { getGradeDisplayScale } from "@/utils/grades/scale";
 
 import Averages from './atoms/Averages';
 import FeaturesMap from './atoms/FeaturesMap';
@@ -63,6 +64,7 @@ const GradesView: React.FC = () => {
   // Sortings
   const settings = useSettingsStore(state => state.personalization);
   const mutateSettings = useSettingsStore(state => state.mutateProperty);
+  const displayScale = getGradeDisplayScale(settings.gradesDisplayScale);
 
   const [sortMethod, setSortMethod] = useState<string>(settings.gradesSortMethod || "date");
 
@@ -300,10 +302,16 @@ const GradesView: React.FC = () => {
     return (
       <ErrorBoundary>
         {/* @ts-expect-error navigation types */}
-        <MemoizedSubjectItem subject={subject} grades={grades} getAvgInfluence={getAvgInfluence} getAvgClassInfluence={getAvgClassInfluence} />
+        <MemoizedSubjectItem
+          subject={subject}
+          grades={grades}
+          getAvgInfluence={getAvgInfluence}
+          getAvgClassInfluence={getAvgClassInfluence}
+          displayScale={displayScale}
+        />
       </ErrorBoundary>
     )
-  }, [grades]);
+  }, [grades, displayScale]);
 
   const keyboardHeight = useKeyboardHeight();
 
@@ -322,6 +330,7 @@ const GradesView: React.FC = () => {
           grades={grades}
           color={colors.primary}
           realAverage={serviceAverage || undefined}
+          displayScale={displayScale}
         />
       </ErrorBoundary>
 
@@ -420,7 +429,7 @@ const GradesView: React.FC = () => {
       </Dynamic>
 
       <ErrorBoundary>
-        <FeaturesMap features={features} />
+        <FeaturesMap features={features} displayScale={displayScale} />
       </ErrorBoundary>
 
       <Dynamic animated>
@@ -434,7 +443,20 @@ const GradesView: React.FC = () => {
         </Stack>
       </Dynamic>
     </View>
-  ) : null), [sortedGrades, searchText]);
+  ) : null), [
+    sortedGrades,
+    searchText,
+    grades,
+    colors.primary,
+    serviceAverage,
+    serviceRank,
+    navigation,
+    getSubjectById,
+    getAvgInfluence,
+    getAvgClassInfluence,
+    features,
+    displayScale,
+  ]);
 
   return (
     <View
@@ -576,6 +598,7 @@ const GradesView: React.FC = () => {
             grades={grades}
             getAvgInfluence={getAvgInfluence}
             getAvgClassInfluence={getAvgClassInfluence}
+            displayScale={displayScale}
           />
         ))}
       </List>

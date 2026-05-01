@@ -1,6 +1,6 @@
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import { router, useLocalSearchParams } from "expo-router";
-import { INSTANCES, getCASURL, loginWithOAuth } from "appscho";
+import { INSTANCES, getCASURL, loginWithOAuth } from "@blockshub/blockscho";
 import { useTranslation } from "react-i18next";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { useAccountStore } from "@/stores/account";

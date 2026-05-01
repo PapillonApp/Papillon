@@ -16,3 +16,14 @@ export enum LogType {
     ERROR = "ERROR",
     INFO = "INFO"
 }
+
+export interface NetworkStorage {
+    hosts: Map<string, Host>
+    addRequest: (request: Request, uuid: string) => void;
+    addResponse: (response: Response, uuid: string) => void;
+}
+
+export type Host = {
+    requests: Record<string, Request>[],
+    responses: Record<string, Response>[]
+}

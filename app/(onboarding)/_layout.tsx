@@ -2,11 +2,12 @@ import React from 'react';
 import { Platform, StatusBar, View } from 'react-native';
 import { Stack } from "expo-router";
 
-import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import AndroidHeaderBackground, { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 import { t } from 'i18next';
 
 export default function OnboardingLayout() {
+  const screenOptions = useScreenOptions();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
@@ -14,7 +15,7 @@ export default function OnboardingLayout() {
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
-  }), []);
+  }), [screenOptions]);
 
   return (
     <View
@@ -76,6 +77,10 @@ export default function OnboardingLayout() {
         <Stack.Screen
           name="services/multi"
           options={{ headerShown: false, title: "", presentation: "modal" }}
+        />
+        <Stack.Screen
+          name="services/appscho"
+          options={{ headerShown: false, title: "" }}
         />
       </Stack>
     </View>

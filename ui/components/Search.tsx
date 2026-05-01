@@ -9,6 +9,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import { Dynamic } from "./Dynamic";
 import Icon from "./Icon";
 import Stack from "./Stack";
+import { useFont } from "@/utils/theme/fonts";
 
 interface SearchProps {
   autoFocus?: boolean,
@@ -65,6 +66,7 @@ const Search: React.FC<SearchProps> = ({
   icon,
 }) => {
   const { colors } = useTheme();
+  const font = useFont();
   const [localInput, setLocalInput] = useState("");
 
   const input = value !== undefined && setValue !== undefined ? value : localInput;
@@ -115,7 +117,7 @@ const Search: React.FC<SearchProps> = ({
             height: '100%',
             fontSize: 17,
             color: colors.text,
-            fontFamily: "semibold",
+            fontFamily: font("semibold"),
             marginTop: Platform.OS === 'android' ? 2 : 0,
           }}
         />

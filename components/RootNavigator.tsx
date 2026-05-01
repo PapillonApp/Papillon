@@ -10,6 +10,7 @@ import {
   CHANGELOG_SCREEN_OPTIONS,
   CONSENT_SCREEN_OPTIONS,
   DEMO_SCREEN_OPTIONS,
+  DEVMODE_REQUESTS_SCREEN_OPTIONS,
   DEVMODE_SCREEN_OPTIONS,
   STACK_SCREEN_OPTIONS
 } from '@/constants/LayoutScreenOptions';
@@ -47,6 +48,8 @@ export function RootNavigator() {
         <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
         <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
         <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
+        <Stack.Screen name="(dev)/requests" options={DEVMODE_REQUESTS_SCREEN_OPTIONS} />
+        <Stack.Screen name="(dev)/request" options={DEVMODE_REQUESTS_SCREEN_OPTIONS} />
         <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
         <Stack.Screen

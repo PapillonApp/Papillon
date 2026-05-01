@@ -308,6 +308,7 @@ const Course = React.memo((props: CourseProps) => {
           {/* Nom du cours */}
           <Typography
             variant="h5"
+            weight="bold"
             numberOfLines={compact ? 1 : 2}
             style={[styles.label, { color: textColor, opacity: skeleton ? 0.5 : 1, width: '100%' }]}
             skeleton={skeleton}
@@ -322,7 +323,7 @@ const Course = React.memo((props: CourseProps) => {
                 <Icon papicon size={20} fill={skeleton ? colors.text + "20" : textColor}>
                   <Papicons name="MapPin" />
                 </Icon>
-                <Typography numberOfLines={1} variant="body1" style={[styles.room, { color: textColor }]} skeleton={skeleton}>
+                <Typography numberOfLines={1} variant="body1" weight="semibold" style={[styles.room, { color: textColor }]} skeleton={skeleton}>
                   {room || t("No_Course_Room")}
                 </Typography>
               </View>
@@ -335,6 +336,7 @@ const Course = React.memo((props: CourseProps) => {
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   variant="body1"
+                  weight="semibold"
                   style={[styles.teacher, { color: textColor }]}
                   skeleton={skeleton}
                 >
@@ -428,16 +430,13 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
-    fontFamily: "bold",
     lineHeight: 24,
   },
   room: {
     fontSize: 16,
-    fontFamily: "semibold",
   },
   teacher: {
     fontSize: 15,
-    fontFamily: "semibold",
     flexShrink: 1,
     flexGrow: 1,
     minWidth: 0,

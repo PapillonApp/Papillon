@@ -40,7 +40,10 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           style={{
             backgroundColor: item.color + 30,
             borderRadius: 50,
-            padding: 7
+            aspectRatio: 1,
+            width: 42,
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <Papicons name={item.icon} color={item.color} size={25} />
@@ -65,7 +68,8 @@ const styles = StyleSheet.create({
     borderCurve: "circular",
     borderRadius: 20,
     padding: 10,
-    gap: 8
+    gap: 8,
+    alignItems: "center",
   }
 });
 

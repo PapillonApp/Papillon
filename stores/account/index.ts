@@ -12,6 +12,12 @@ export const useAccountStore = create<AccountsStorage>()(
     (set, get) => ({
       lastUsedAccount: "",
       accounts: [],
+      reset: () => {
+        set({
+          lastUsedAccount: "",
+          accounts: [],
+        });
+      },
       removeAccount: account => {
         const accounts = get().accounts.filter(a => a.id !== account.id);
         const lastUsedAccount = get().lastUsedAccount;

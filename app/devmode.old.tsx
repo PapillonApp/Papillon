@@ -1,0 +1,510 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { router } from "expo-router";
+import { Plus } from "lucide-react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
+
+import DevModeNotice from "@/components/DevModeNotice";
+import LogIcon from "@/components/Log/LogIcon";
+import { database } from "@/database";
+import { useAccountStore } from '@/stores/account';
+import { useLogStore, useNetworkStore } from '@/stores/logs';
+import { useMagicStore } from "@/stores/magic";
+import { useSettingsStore } from "@/stores/settings";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Icon from "@/ui/components/Icon";
+import Item, { Leading, Trailing } from '@/ui/components/Item';
+import List from '@/ui/components/List';
+import SectionHeader from "@/ui/components/SectionHeader";
+import Typography from "@/ui/components/Typography";
+import { MAGIC_URL } from "@/utils/endpoints";
+import { log } from "@/utils/logger/logger";
+import ModelManager from "@/utils/magic/ModelManager";
+import { scheduleNotificationAtDate } from "@/utils/notification/reminder/helper";
+import { initializeTransport } from "@/utils/transport";
+import NativeSwitch from "@/ui/native/NativeSwitch";
+
+export default function Devmode() {
+  const accountStore = useAccountStore();
+  const logsStore = useLogStore();
+  const settingStore = useSettingsStore(state => state.personalization)
+  const mutateProperty = useSettingsStore(state => state.mutateProperty)
+  const magicStore = useMagicStore()
+
+  const magicStoreHomework = useMagicStore(state => state.processHomeworks)
+
+  const { colors } = useTheme();
+  const alert = useAlert();
+
+  const [showAccountStore, setShowAccountStore] = useState(false);
+  const [showLogsStore, setShowLogsStore] = useState(false);
+
+  const [visibleLogsCount, setVisibleLogsCount] = useState(20);
+
+  const loadMoreLogs = () => {
+    setVisibleLogsCount((prev) => prev + 20);
+  };
+
+  useEffect(() => {
+    if (!showLogsStore) {
+      setVisibleLogsCount(20);
+    }
+
+
+  }, [showLogsStore]);
+
+  return (
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={styles.containerContent}
+      style={styles.container}
+    >
+      <DevModeNotice />
+
+      <List>
+        <Item>
+          <Trailing>
+            <NativeSwitch
+              style={{ marginRight: 10 }}
+              value={showLogsStore}
+              onValueChange={() => {
+                requestAnimationFrame(() => {
+                  setShowLogsStore(!showLogsStore);
+                });
+              }}
+            />
+          </Trailing>
+          <Typography variant="title">Logs Store</Typography>
+        </Item>
+
+        {showLogsStore &&
+          logsStore.logs
+            .slice()
+            .reverse()
+            .slice(0, visibleLogsCount)
+            .map((logEntry, index) => (
+              <Item key={index}>
+                <Leading>
+                  <LogIcon type={logEntry.type} />
+                </Leading>
+                <Typography variant="body2">{logEntry.message}</Typography>
+                <Typography variant="caption">
+                  {new Date(logEntry.date).toLocaleString()} -{" "}
+                  {logEntry.from ?? "UNKNOW"}
+                </Typography>
+              </Item>
+            ))}
+
+        {showLogsStore && visibleLogsCount < logsStore.logs.length && (
+          <Item onPress={loadMoreLogs}>
+            <Leading>
+              <Plus color={colors.text} size={24} />
+            </Leading>
+            <Typography variant="title">Charger plus</Typography>
+          </Item>
+        )}
+        <Item
+          onPress={() => {
+            const accounts = useAccountStore.getState().accounts;
+            for (const account of accounts) {
+              useAccountStore.getState().removeAccount(account);
+            }
+            Alert.alert("Success");
+          }}
+        >
+          <Typography variant="title">Reset Account Store</Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Magic+"
+        leading={
+          <Icon>
+            <Papicons name="Sparkles" size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item>
+          <Typography>
+            {settingStore.magicEnabled
+              ? "Papillon Magic+ est Activé"
+              : "Papillon Magic+ est Désactivé"}
+          </Typography>
+        </Item>
+        <Item onPress={() => ModelManager.refresh()}>
+          <Typography variant="title">Rafraîchir le modèle</Typography>
+        </Item>
+        <Item
+          onPress={async () => {
+            try {
+              const result = await ModelManager.reset();
+              if (result.success) {
+                Alert.alert(
+                  "Succès",
+                  "Le modèle a été réinitialisé avec succès. Il sera retéléchargé au prochain démarrage."
+                );
+              } else {
+                Alert.alert("Erreur", `Échec du reset: ${result.error}`);
+              }
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors du reset: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Reset complet du modèle</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            const status = ModelManager.getStatus();
+            Alert.alert(
+              "Statut du modèle",
+              `Modèle chargé: ${status.hasModel ? "Oui" : "Non"}\n` +
+                `Max Length: ${status.maxLen}\n` +
+                `Nombre de labels: ${status.labelsCount}\n` +
+                `Taille du vocabulaire: ${status.wordIndexSize}\n` +
+                `Index OOV: ${status.oovIndex}`
+            );
+          }}
+        >
+          <Typography variant="title">Afficher le statut du modèle</Typography>
+        </Item>
+        <Item
+          onPress={async () => {
+            try {
+              const result = await ModelManager.predict(
+                "ds analyse de doc",
+                true
+              );
+              if ("error" in result) {
+                Alert.alert("Erreur de prédiction", result.error);
+              } else {
+                Alert.alert(
+                  "Test de prédiction réussi",
+                  `Prédiction: ${result.predicted}\nScores: ${result.scores
+                    .slice(0, 3)
+                    .map(s => s.toFixed(3))
+                    .join(", ")}...`
+                );
+              }
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors du test: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Tester une prédiction</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            try {
+              magicStore.clear();
+              Alert.alert(
+                "Cache vidé",
+                "Le cache des prédictions Magic a été vidé avec succès !"
+              );
+            } catch (error) {
+              Alert.alert(
+                "Erreur",
+                `Erreur lors du vidage du cache: ${String(error)}`
+              );
+            }
+          }}
+        >
+          <Typography variant="title">Vider le cache Magic</Typography>
+          <Trailing>
+            <Typography variant="caption">
+              {magicStoreHomework.length} devoirs
+            </Typography>
+          </Trailing>
+        </Item>
+        <Item
+          onPress={() => {
+            const currentURL = settingStore.magicModelURL || MAGIC_URL;
+
+            Alert.prompt(
+              "URL Custom Magic Model",
+              `URL actuelle: ${currentURL}\n\nEntrez une nouvelle URL:`,
+              [
+                {
+                  text: "Annuler",
+                  style: "cancel",
+                },
+                {
+                  text: "Valider",
+                  onPress: (newURL?: string) => {
+                    if (newURL && newURL.trim()) {
+                      mutateProperty("personalization", {
+                        magicModelURL: newURL.trim(),
+                      });
+                      Alert.alert("Succès", "URL du modèle Magic mise à jour!");
+                    }
+                  },
+                },
+              ],
+              "plain-text",
+              currentURL
+            );
+          }}
+        >
+          <Typography variant="title">
+            Changer l&apos;URL Custom Magic
+          </Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            Alert.alert(
+              "Reset URL Magic Model",
+              "Voulez-vous remettre l'URL du modèle Magic par défaut?",
+              [
+                {
+                  text: "Annuler",
+                  style: "cancel",
+                },
+                {
+                  text: "Reset",
+                  style: "destructive",
+                  onPress: () => {
+                    mutateProperty("personalization", {
+                      magicModelURL: MAGIC_URL,
+                    });
+                    Alert.alert(
+                      "Succès",
+                      "URL du modèle Magic remise par défaut!"
+                    );
+                  },
+                },
+              ]
+            );
+          }}
+        >
+          <Typography variant="title">Reset URL Magic Model</Typography>
+        </Item>
+        <Item onPress={() => magicStore.clear()}>
+          <Typography variant="title">Clear Magic Store</Typography>
+        </Item>
+        <Item onPress={() => log(JSON.stringify(magicStoreHomework))}>
+          <Typography variant="title">ConsoleLog Magic Store</Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Alert"
+        leading={
+          <Icon>
+            <Papicons name="Star" size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item
+          onPress={() =>
+            alert.showAlert({
+              title: "Connexion impossible",
+              description:
+                "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
+              icon: "AlertTriangle",
+              color: "#D60046",
+              customButton: {
+                label: "Me reconnecter",
+                showCancelButton: true,
+                onPress: () => {
+                  const lastUsedAccount =
+                    useAccountStore.getState().lastUsedAccount;
+                  const badService = useAccountStore
+                    .getState()
+                    .accounts.find(account => account.id === lastUsedAccount)
+                    ?.services[0];
+
+                  // Unavailable in ED/SKolengo
+                  const authUrl =
+                    badService?.auth?.additionals?.["instanceURL"] ?? "";
+                  setTimeout(() => {
+                    router.push({
+                      pathname: "/(onboarding)/pronote/webview",
+                      params: { url: authUrl, serviceId: badService?.id },
+                    });
+                  }, 200);
+                },
+              },
+              technical: String(
+                " Error: TokenExpiredError at AuthService.validateToken (file:///app/services/auth.js:45:15) at processTicksAndRejections (node:internal/process/task_queues:96:5) at async file:///app/routes/api/user.js:10:28"
+              ),
+            })
+          }
+        >
+          <Typography variant="title">Error Alert</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
+            const badService = useAccountStore
+              .getState()
+              .accounts.find(account => account.id === lastUsedAccount)
+              ?.services[0];
+            useAccountStore.getState().updateServiceAuthData(badService!.id, {
+              ...badService?.auth,
+              refreshToken: "",
+            });
+          }}
+        >
+          <Typography variant="title">Clear Auth Data</Typography>
+        </Item>
+        <Item>
+          <Typography variant="title">Activer Alert au Login</Typography>
+          <Trailing>
+            <NativeSwitch
+              value={settingStore.showAlertAtLogin}
+              onValueChange={value =>
+                mutateProperty("personalization", { showAlertAtLogin: value })
+              }
+            />
+          </Trailing>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Session"
+        leading={
+          <Icon>
+            <Papicons name="Star" size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item
+          onPress={async () => {
+            await database.write(async () => {
+              await database.unsafeResetDatabase();
+            });
+          }}
+        >
+          <Typography variant="title">
+            Réinitialiser la base de données
+          </Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Réseau"
+        leading={
+          <Icon>
+            <Papicons name="Globe" size={18} />
+          </Icon>
+        }
+      />
+      <List>
+        <Item
+          onPress={() => {
+            const originalFetch = window.fetch;
+
+            window.fetch = async (...args) => {
+              const response = await originalFetch(...args);
+
+              const clone = response.clone();
+              const data = await clone.text();
+
+              const rawUrl = args[0];
+
+              const url = rawUrl instanceof URL
+                ? rawUrl
+                : new URL(typeof rawUrl === "string" ? rawUrl : String(rawUrl));
+
+              useNetworkStore().addItem({
+                url,
+                method: args[1]?.method ?? "GET",
+              });
+              
+              return response;
+            };
+          }}
+        >
+          <Typography variant="title">Appliquer le MonkeyPatch</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            fetch("https://exemple.org")
+          }}
+        >
+          <Typography variant="title">Faire une requête (GET)</Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Transport"
+        leading={
+          <Icon>
+            <Papicons name="Bus" size={18} />
+          </Icon>
+        }
+      />
+      <List>
+        <Item
+          onPress={() => {
+            initializeTransport(undefined).then(transport => {
+              console.log(transport);
+            });
+          }}
+        >
+          <Typography variant="title">Initialiser sans addresse</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            initializeTransport("106 Rue de la Pompe, 75016 Paris").then(
+              transport => {
+                console.log(transport);
+              }
+            );
+          }}
+        >
+          <Typography variant="title">Initialiser avec addresse</Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Notifications"
+        leading={
+          <Icon>
+            <Papicons name="Clock" size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item
+          onPress={() => {
+            requestPermissionsAsync();
+          }}
+        >
+          <Typography variant="title">Demander la permission</Typography>
+        </Item>
+        <Item
+          onPress={async () => {
+            const date = new Date(Date.now() + 5000);
+
+            const id = await scheduleNotificationAtDate(
+              "Papillon",
+              "Une notification programmée via Papillon arrive à l'instant!",
+              date
+            );
+
+            Alert.alert("Une notification arrive dans 5 sec", `ID : ${id}`);
+          }}
+        >
+          <Typography variant="title">Programmer une notification</Typography>
+        </Item>
+      </List>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  containerContent: {},
+});

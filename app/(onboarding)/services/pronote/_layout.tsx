@@ -3,11 +3,12 @@ import { Platform, PlatformColor, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 
 import { Stack } from 'expo-router';
-import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import AndroidHeaderBackground, { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
 export default function OnboardingLayout() {
   const { t } = useTranslation();
+  const screenOptions = useScreenOptions();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
@@ -15,7 +16,7 @@ export default function OnboardingLayout() {
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
-  }), []);
+  }), [screenOptions]);
 
   return (
     <View style={{ flex: 1 }}>

@@ -154,7 +154,16 @@ export function GetSupportedServices(redirect: (path: {
         });
       },
     },
-  ];
+    {
+      name: "appscho",
+      route: "appscho",
+      title: t("ONBOARDING_OTHER_UNIVERSITIES"),
+      image: require("@/assets/images/icon.png"),
+      hasLimitedSupport: false,
+      type: ["univ"],
+      onPress: () => { redirect({ pathname: './appscho/list' }) }
+    },
+  ]
 }
 
 export interface SupportedUniversity {
@@ -221,6 +230,13 @@ export function GetSupportedUniversities(redirect: (path: {
           options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" }
         });
       },
+    },
+    {
+      name: "appscho",
+      title: t("ONBOARDING_OTHER_UNIVERSITIES"),
+      hasLimitedSupport: false,
+      type: "other",
+      onPress: () => { redirect({ pathname: './appscho/list' }) }
     },
     /*{
       name: "limited-functions",

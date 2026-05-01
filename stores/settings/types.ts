@@ -1,7 +1,9 @@
 import { Colors } from "@/utils/colors";
+import { AppFontFamily } from "@/utils/theme/fonts";
 
 export interface SettingsStorage {
   personalization: Personalization;
+  reset: () => void;
   mutateProperty: <T extends keyof SettingsState>(
     section: T,
     updates: Partial<SettingsState[T]>
@@ -26,6 +28,8 @@ export interface Wallpaper {
 }
 
 export interface Personalization {
+  fontFamily?: AppFontFamily;
+  gradesDisplayScale?: "20" | "10" | "5" | "percentage";
   colorSelected?: Colors;
   theme?: "light" | "dark" | "auto";
   useMaterialYou?: boolean;

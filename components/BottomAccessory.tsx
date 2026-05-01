@@ -30,46 +30,9 @@ function NextCourseAccessory({ placement }) {
   const sbjColor = nextCourse ? getSubjectColor(nextCourse.subject) : theme.colors.primary;
   const navigation = useNavigation<any>();
 
-  if(loading) {
-    return (
-      <View
-        style={{
-          height: "100%",
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
-        <ActivityIndicator />
-        <Typography variant="body1" weight="semibold" color="textSecondary">
-          Chargement des cours...
-        </Typography>
-      </View>
-    )
-  }
+  if(loading) return null;
 
-  if(!nextCourse) {
-    return (
-      <View
-        style={{
-          height: "100%",
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
-        <Typography variant="body1" weight="semibold" color="textSecondary">
-          Aucun cours à venir prochainement
-        </Typography>
-      </View>
-    )
-  }
+  if(!nextCourse) return null;
 
   return (
     <>
@@ -189,8 +152,8 @@ function NextCourseAccessory({ placement }) {
 
       <LinearGradient
         colors={[sbjColor, sbjColor + '00']}
-        start={[1, 0]}
-        end={[0, 0]}
+        start={{x: 1, y: 0}}
+        end={{x: 0, y: 0}}
         style={{
           position: 'absolute',
           left: 0,
@@ -211,4 +174,18 @@ export default function BottomAccessory() {
   return (
       <NextCourseAccessory placement={placement} />
   );
+}
+
+export function useBottomAccessoryVisible() {
+  const { courses, loading } = useTimetableWidgetData();
+
+  if (Platform.OS !== 'ios') {
+    return false;
+  }
+
+  if (loading) {
+    return false;
+  }
+
+  return courses.length > 0;
 }
