@@ -21,6 +21,7 @@ import TypographyLegacy from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
+import { trackOptionalEvent } from "@/utils/logger/analytics";
 
 import packagejson from "../../package.json"
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
@@ -58,6 +59,7 @@ export default function SettingsIndex() {
   }, [account]);
 
   const logout = useCallback(() => {
+    trackOptionalEvent("logged_out_of_account");
     const accounts = useAccountStore.getState().accounts;
     for (const account of accounts) {
       useAccountStore.getState().removeAccount(account);

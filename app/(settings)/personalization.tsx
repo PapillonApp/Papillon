@@ -21,6 +21,7 @@ import { FadeIn, FadeOut } from "react-native-reanimated";
 import List from "@/ui/new/List";
 import NativeSwitch from "@/ui/native/NativeSwitch";
 import Picker from "@/ui/components/Picker";
+import { trackOptionalEvent } from "@/utils/logger/analytics";
 
 const FONT_OPTIONS = [
   { label: "SN Pro", value: "sn-pro" as const },
@@ -145,7 +146,12 @@ const PersonalizationSettings = () => {
                 hAlign={"center"}
                 vAlign={"center"}
               >
-                <AnimatedPressable onPress={() => setSelectedTheme("light")}
+                <AnimatedPressable onPress={() => {
+                  if (selectedTheme !== "light") {
+                    trackOptionalEvent("color_theme_changed", { theme: "light" });
+                  }
+                  setSelectedTheme("light");
+                }}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
@@ -160,7 +166,12 @@ const PersonalizationSettings = () => {
                     />
                   </Stack>
                 </AnimatedPressable>
-                <AnimatedPressable onPress={() => setSelectedTheme("dark")}
+                <AnimatedPressable onPress={() => {
+                  if (selectedTheme !== "dark") {
+                    trackOptionalEvent("color_theme_changed", { theme: "dark" });
+                  }
+                  setSelectedTheme("dark");
+                }}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
@@ -175,7 +186,12 @@ const PersonalizationSettings = () => {
                     />
                   </Stack>
                 </AnimatedPressable>
-                <AnimatedPressable onPress={() => setSelectedTheme("auto")}
+                <AnimatedPressable onPress={() => {
+                  if (selectedTheme !== "auto") {
+                    trackOptionalEvent("color_theme_changed", { theme: "auto" });
+                  }
+                  setSelectedTheme("auto");
+                }}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}

@@ -23,6 +23,7 @@ import { Platform, View } from 'react-native'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary'
 
 const NewsView = () => {
   const theme = useTheme()
@@ -213,4 +214,10 @@ function truncateString(str: string, maxLength: number): string {
   return str.slice(0, maxLength) + '...'
 }
 
-export default NewsView
+const NewsViewWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <NewsView />
+  </MainTabErrorBoundary>
+)
+
+export default NewsViewWithBoundary

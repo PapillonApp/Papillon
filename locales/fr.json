@@ -541,5 +541,8 @@
   "Settings_Features_Grades": "Notes",
   "Settings_Features_GradeScale": "Échelle des notes",
   "Settings_Features_GradeScale_Description": "Notation par défaut dans l'interface",
+  "Settings_Features_Partners": "Partenaires",
+  "Settings_Features_Knowunity": "Intégration Knowunity",
+  "Settings_Features_Knowunity_Description": "Affiche les fiches de révision Knowunity dans les tâches",
   "Global_Experimental": "Expérimental"
 }

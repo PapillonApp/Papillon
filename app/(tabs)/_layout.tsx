@@ -6,12 +6,13 @@ import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import { useFont } from '@/utils/theme/fonts';
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 // Static platform detection - computed once at module load
 const IS_IOS_WITH_PADDING = false;
 const IS_ANDROID = Platform.OS === 'android';
 
-export default function TabLayout() {
+function TabLayoutContent() {
   const theme = useTheme();
   const font = useFont();
   const { t } = useTranslation();
@@ -71,5 +72,13 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Icon src={IS_IOS_WITH_PADDING ? require('@/assets/icons/newspaper_padding.png') : require('@/assets/icons/newspaper.png')} renderingMode='template' />
       </NativeTabs.Trigger>
     </NativeTabs>
+  );
+}
+
+export default function TabLayout() {
+  return (
+    <MainTabErrorBoundary>
+      <TabLayoutContent />
+    </MainTabErrorBoundary>
   );
 }

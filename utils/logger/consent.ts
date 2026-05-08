@@ -50,7 +50,7 @@ export const setConsent = async (consent: keyof ConsentLevels) => {
     await consentConfig.set("countly-consent-required", true);
     await consentConfig.set("countly-consent-optional", true);
     await consentConfig.set("countly-consent-advanced", true);
-    Countly.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
+    Countly.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback", "views"]);
   }
 
   return;

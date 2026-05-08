@@ -11,8 +11,9 @@ import { CalendarDay } from "./components/CalendarDay";
 import { CalendarHeader } from "./components/CalendarHeader";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
-export default function TabOneScreen() {
+function TabOneScreen() {
   const { colors } = useTheme();
   const calendarRef = useRef<any>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -115,6 +116,14 @@ export default function TabOneScreen() {
     </>
   );
 }
+
+const CalendarScreenWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <TabOneScreen />
+  </MainTabErrorBoundary>
+);
+
+export default CalendarScreenWithBoundary;
 
 const styles = StyleSheet.create({
   container: {

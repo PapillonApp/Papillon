@@ -35,6 +35,7 @@ export interface Personalization {
   useMaterialYou?: boolean;
   iOSBottomAccessoryEnabled?: boolean;
   showTabBarLabels?: boolean;
+  knowunityEnabled?: boolean;
   magicEnabled?: boolean;
   hideNameOnHomeScreen?: boolean;
   showAlertAtLogin?: boolean;
@@ -44,7 +45,7 @@ export interface Personalization {
   wallpaper?: Wallpaper;
   disabledTabs?: string[];
   gradesSortMethod?: string;
-  gradesPeriodId?: string;
+  gradesPeriodName?: string;
   installedVersion?: string;
   releaseNotesSeenForVersion?: string;
 }

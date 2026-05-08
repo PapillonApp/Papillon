@@ -18,6 +18,7 @@ const defaultPersonalization: Personalization = {
   useMaterialYou: DEFAULT_MATERIAL_YOU_ENABLED,
   iOSBottomAccessoryEnabled: true,
   showTabBarLabels: true,
+  knowunityEnabled: true,
   magicEnabled: true,
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,

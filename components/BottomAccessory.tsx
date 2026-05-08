@@ -15,6 +15,8 @@ import React from 'react';
 import { ActivityIndicator, Platform, Pressable } from 'react-native';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
+
 
 function NextCourseAccessory({ placement }) {
   if (Platform.OS !== 'ios') {
@@ -168,13 +170,21 @@ function NextCourseAccessory({ placement }) {
   );
 }
 
-export default function BottomAccessory() {
+function BottomAccessory() {
   const placement = NativeTabs.BottomAccessory.usePlacement();
 
   return (
       <NextCourseAccessory placement={placement} />
   );
 }
+
+const BottomAccessoryWithBoundary = () => (
+  <ErrorBoundary fallback={<></>}>
+    <BottomAccessory />
+  </ErrorBoundary>
+);
+
+export default BottomAccessoryWithBoundary;
 
 export function useBottomAccessoryVisible() {
   const { courses, loading } = useTimetableWidgetData();

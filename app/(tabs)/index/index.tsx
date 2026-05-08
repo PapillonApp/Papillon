@@ -23,6 +23,7 @@ import Button from '@/ui/new/Button';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
 import Typography from '@/ui/new/Typography';
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -129,4 +130,10 @@ const HomeViewContainer = ({ children }) => {
   )
 }
 
-export default HomeScreen;
+const HomeScreenWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <HomeScreen />
+  </MainTabErrorBoundary>
+);
+
+export default HomeScreenWithBoundary;

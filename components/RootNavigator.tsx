@@ -18,8 +18,9 @@ import getCorners from '@/ui/utils/Corners';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import AndroidHeaderBackground from './AndroidHeaderBackground';
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
-export function RootNavigator() {
+function RootNavigatorContent() {
   const theme = useTheme();
   const corners = getCorners();
 
@@ -228,5 +229,13 @@ export function RootNavigator() {
         />
       </Stack>
     </View>
+  );
+}
+
+export function RootNavigator() {
+  return (
+    <MainTabErrorBoundary>
+      <RootNavigatorContent />
+    </MainTabErrorBoundary>
   );
 }

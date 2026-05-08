@@ -33,6 +33,7 @@ import {
 
 import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
 import ActionMenu from "@/ui/components/ActionMenu";
+import { trackAdvancedEvent } from "@/utils/logger/analytics";
 
 
 const algorithms = [
@@ -323,7 +324,13 @@ const Averages = ({
                   }
 
                   if (actionId.startsWith("setAlg:")) {
-                    setAlgorithm(algorithms.find((algo) => algo.key === actionId.slice(7))!);
+                    const nextAlgorithm = algorithms.find((algo) => algo.key === actionId.slice(7));
+                    if (nextAlgorithm) {
+                      setAlgorithm(nextAlgorithm);
+                      trackAdvancedEvent("grades_calculation_method_changed", {
+                        method: nextAlgorithm.key,
+                      });
+                    }
                   }
                 }}
               >

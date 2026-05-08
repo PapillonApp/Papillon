@@ -120,7 +120,7 @@ export function useAppInitialization() {
 
       if (consent.given) {
         if (consent.advanced) {
-          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
+          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback", "views"]);
         }
 
         if (consent.optional) {
