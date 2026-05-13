@@ -44,6 +44,7 @@ export interface Personalization {
   language?: string | null;
   wallpaper?: Wallpaper;
   disabledTabs?: string[];
+  disabledTabsByAccount?: Record<string, string[]>;
   gradesSortMethod?: string;
   gradesPeriodName?: string;
   installedVersion?: string;

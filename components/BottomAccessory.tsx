@@ -7,7 +7,7 @@ import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { differenceInCalendarDays, formatDistanceToNowStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
 import { useNavigation } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -31,6 +31,29 @@ function NextCourseAccessory({ placement }) {
 
   const sbjColor = nextCourse ? getSubjectColor(nextCourse.subject) : theme.colors.primary;
   const navigation = useNavigation<any>();
+  const nextCourseDay = nextCourse ? startOfDay(nextCourse.from) : null;
+  const daysUntilNextCourse = nextCourseDay
+    ? differenceInCalendarDays(nextCourseDay, startOfDay(new Date()))
+    : 0;
+
+  const getNextCourseDistance = (addSuffix: boolean) => {
+    if (!nextCourse) {
+      return '';
+    }
+
+    if (daysUntilNextCourse >= 1) {
+      return formatDistanceToNowStrict(nextCourseDay as Date, {
+        locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
+        addSuffix,
+        unit: 'day',
+      });
+    }
+
+    return formatDistanceToNowStrict(nextCourse.from, {
+      locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
+      addSuffix,
+    });
+  };
 
   if(loading) return null;
 
@@ -96,10 +119,7 @@ function NextCourseAccessory({ placement }) {
                 <Papicons name="Clock" />
               </Icon>
               <Typography variant="body2" weight="semibold" color={sbjColor} numberOfLines={1}>
-                {formatDistanceToNowStrict(nextCourse.from, {
-                    locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
-                    addSuffix: true
-                  })}
+                {getNextCourseDistance(true)}
               </Typography>
             </View>
           ) : (
@@ -143,10 +163,7 @@ function NextCourseAccessory({ placement }) {
               <Papicons name="Clock" />
             </Icon>
             <Typography variant="body1" weight="semibold" color={sbjColor}>
-              {formatDistanceToNowStrict(nextCourse.from, {
-                  locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
-                  addSuffix: false
-                })}
+              {getNextCourseDistance(false)}
             </Typography>
           </View>
         )}

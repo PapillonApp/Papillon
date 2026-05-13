@@ -360,11 +360,13 @@ const GradesView: React.FC = () => {
       </ErrorBoundary>
 
       {serviceRank && (
-        <LegacyList style={{ marginTop: 8 }}>
-          <Item>
-            <Icon opacity={0.5}>
-              <Papicons name='crown' />
-            </Icon>
+        <List style={{ marginTop: 8 }}>
+          <List.Item>
+            <List.Leading>
+              <Icon opacity={0.5}>
+                <Papicons name='crown' />
+              </Icon>
+            </List.Leading>
 
             <LegacyTypography variant='title'>
               {t('Grades_Tab_Rank')}
@@ -373,7 +375,7 @@ const GradesView: React.FC = () => {
               {t('Grades_Tab_Rank_Description')}
             </LegacyTypography>
 
-            <Trailing>
+            <List.Trailing>
               <Stack
                 direction='horizontal'
                 gap={4}
@@ -387,9 +389,9 @@ const GradesView: React.FC = () => {
                   /{serviceRank.outOf}
                 </LegacyTypography>
               </Stack>
-            </Trailing>
-          </Item>
-        </LegacyList>
+            </List.Trailing>
+          </List.Item>
+        </List>
       )}
 
       <View style={{ height: 16 }} />

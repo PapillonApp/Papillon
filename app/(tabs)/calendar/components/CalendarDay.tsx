@@ -25,6 +25,28 @@ interface CalendarDayProps {
   transportInfo?: TransportStorage;
 }
 
+function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+
+  for (let i = 0; i < a.length; i++) {
+    const left = a[i];
+    const right = b[i];
+    if (
+      left.id !== right.id ||
+      left.from?.getTime?.() !== right.from?.getTime?.() ||
+      left.to?.getTime?.() !== right.to?.getTime?.() ||
+      left.status !== right.status ||
+      left.customStatus !== right.customStatus
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, headerHeight, insets, tabBarHeight, transportInfo }: CalendarDayProps) => {
   const navigation = useNavigation<any>();
 
@@ -211,7 +233,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.onRefresh === nextProps.onRefresh &&
     prevProps.headerHeight === nextProps.headerHeight &&
-    JSON.stringify(prevProps.courses) === JSON.stringify(nextProps.courses)
+    areCoursesEquivalent(prevProps.courses, nextProps.courses)
   );
 });
 

@@ -45,7 +45,8 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
       {overtitle && (
         <Typography
           variant="body1"
-          color='secondary'
+            color='secondary'
+            align="center"
         >
           {overtitle}
         </Typography>
@@ -62,6 +63,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
       {title && (
         <Typography
           variant="body1"
+          align="center"
         >
           {title}
         </Typography>
@@ -70,6 +72,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
         <Typography
           variant="body1"
           color='secondary'
+          align="center"
         >
           {new Date(date).toLocaleDateString(undefined, dateFormat ? dateFormat : {
             day: "numeric",

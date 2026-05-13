@@ -81,14 +81,16 @@ export const useTimetableWidgetData = () => {
   }, []);
 
   useEffect(() => {
+    setCourses([]);
+
     if (!cacheKey) {
-      setCourses([]);
       setLoading(false);
       return;
     }
 
     const cachedRaw = widgetCacheStorage.getString(cacheKey);
     if (!cachedRaw) {
+      setCourses([]);
       setLoading(false);
       return;
     }
@@ -110,6 +112,7 @@ export const useTimetableWidgetData = () => {
   useEffect(() => {
     setLoading(true);
     if (weeklyTimetable.length === 0) {
+      setCourses([]);
       setLoading(false);
       return;
     }

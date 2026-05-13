@@ -8,7 +8,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { Papicons } from "@getpapillon/papicons";
 import { useRoute, useTheme } from "@react-navigation/native";
-import React from "react";
+import React, { useMemo } from "react";
 import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { colorCheck } from '@/utils/colorCheck';
@@ -19,6 +19,8 @@ import Typography from "@/ui/new/Typography";
 import Icon from "@/ui/components/Icon";
 import { useSettingsStore } from "@/stores/settings";
 import { formatScoreForDisplay, getGradeDisplayScale } from "@/utils/grades/scale";
+import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
+import { Grade } from "@/services/shared/grade";
 
 const SubjectInfo = () => {
   const { params } = useRoute();
@@ -31,8 +33,33 @@ const SubjectInfo = () => {
   const subjectName = getSubjectName(subject?.name);
   const subjectEmoji = getSubjectEmoji(subject?.name);
 
-  const displayedSubjectAverage = formatScoreForDisplay(subject.studentAverage.value, subject.outOf.value, displayScale);
-  const displayedDenominator = formatScoreForDisplay(0, subject.outOf.value, displayScale).denominator;
+  const displayedSubjectAverage = useMemo(() => {
+    return formatScoreForDisplay(subject.studentAverage.value, subject.outOf.value, displayScale);
+  }, [subject.studentAverage.value, subject.outOf.value, displayScale]);
+  const displayedDenominator = useMemo(() => {
+    return formatScoreForDisplay(0, subject.outOf.value, displayScale).denominator;
+  }, [subject.outOf.value, displayScale]);
+  const computedSubjectAverage = useMemo(() => {
+    const computedSubjectAverageValue = getSubjectAverage(subject.grades as unknown as Grade[]);
+    if (computedSubjectAverageValue === -1) {
+      return null;
+    }
+    return formatScoreForDisplay(computedSubjectAverageValue, subject.outOf.value, displayScale);
+  }, [subject.grades, subject.outOf.value, displayScale]);
+  const isUnknownSubjectAverage = useMemo(() => {
+    return subject.studentAverage.disabled
+      && String(subject.studentAverage.status ?? "").trim().toLowerCase() === "unknown";
+  }, [subject.studentAverage.disabled, subject.studentAverage.status]);
+  const fallbackDisplayedDenominator = useMemo(() => {
+    return isUnknownSubjectAverage && computedSubjectAverage
+      ? computedSubjectAverage.denominator
+      : displayedDenominator;
+  }, [isUnknownSubjectAverage, computedSubjectAverage, displayedDenominator]);
+  const fallbackOutOf = useMemo(() => {
+    return fallbackDisplayedDenominator.startsWith("/")
+      ? fallbackDisplayedDenominator.slice(1)
+      : fallbackDisplayedDenominator;
+  }, [fallbackDisplayedDenominator]);
 
   const averagesData = [
     {
@@ -93,8 +120,12 @@ const SubjectInfo = () => {
               overhead={
                 <ModalOverHeadScore
                   color={Platform.OS === 'ios' ? subjectColor : colors.primary}
-                  score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(displayedSubjectAverage.value.toFixed(2))}
-                  outOf={displayedDenominator.startsWith("/") ? displayedDenominator.slice(1) : displayedDenominator}
+                  score={subject.studentAverage.disabled
+                    ? (isUnknownSubjectAverage && computedSubjectAverage
+                      ? String(computedSubjectAverage.value.toFixed(2))
+                      : String(subject.studentAverage.status))
+                    : String(displayedSubjectAverage.value.toFixed(2))}
+                  outOf={fallbackOutOf}
                 />
               }
               style={{

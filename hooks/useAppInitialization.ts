@@ -39,16 +39,17 @@ export function useAppInitialization() {
   const selectedTheme = useSettingsStore(state => state.personalization.theme);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-  // Initialize Theme if not set
-  if (!selectedTheme) {
-    mutateProperty('personalization', {
-      theme: "auto"
-    });
-  }
+  useEffect(() => {
+    if (!selectedTheme) {
+      mutateProperty('personalization', {
+        theme: "auto"
+      });
+    }
+  }, [mutateProperty, selectedTheme]);
 
   // Language Initialization
   useEffect(() => {
-    if (customLanguage) {
+    if (customLanguage && i18n.language !== customLanguage) {
       i18n.changeLanguage(customLanguage).catch((error) => {
         console.error("Error changing language:", error);
       });
@@ -72,14 +73,14 @@ export function useAppInitialization() {
 
   // AppState Monitoring
   const appState = useRef<AppStateStatus>(AppState.currentState);
-  const [lastBackground, setLastBackground] = useState<Date | null>(null);
+  const lastBackgroundRef = useRef<number | null>(null);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (appState.current.match(/inactive|background/) && nextAppState === "active") {
-        if (lastBackground) {
-          const now = new Date();
-          const durationMs = now.getTime() - lastBackground.getTime();
+        if (lastBackgroundRef.current) {
+          const now = Date.now();
+          const durationMs = now - lastBackgroundRef.current;
 
           if (durationMs > 5 * 60 * 1000) {
             initializeAccountManager();
@@ -88,7 +89,7 @@ export function useAppInitialization() {
       }
 
       if (nextAppState === "background") {
-        setLastBackground(new Date());
+        lastBackgroundRef.current = Date.now();
       }
 
       appState.current = nextAppState;
@@ -97,7 +98,7 @@ export function useAppInitialization() {
     return () => {
       subscription.remove();
     };
-  }, [lastBackground]);
+  }, []);
 
   // Magic/ModelManager Initialization
   useEffect(() => {
@@ -146,18 +147,6 @@ export function useAppInitialization() {
   }, [fontsError]);
 
   useEffect(handleError, [handleError]);
-
-  // Splash Screen Handling
-  const hideSplashScreen = useCallback(async () => {
-    if (fontsLoaded && isDatabaseReady) {
-      // We don't hide it here anymore, FakeSplash handles the visual transition
-      // But we could signal readiness
-    }
-  }, [fontsLoaded, isDatabaseReady]);
-
-  useEffect(() => {
-    hideSplashScreen();
-  }, [hideSplashScreen]);
 
   return {
     isAppReady: isDatabaseReady && fontsLoaded,

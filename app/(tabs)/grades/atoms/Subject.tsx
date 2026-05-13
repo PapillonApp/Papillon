@@ -18,6 +18,8 @@ import { getSubjectName } from '@/utils/subjects/name';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
 import { GradeDisplayScale, formatScoreForDisplay } from '@/utils/grades/scale';
+import { getSubjectAverage } from '@/utils/grades/algorithms/subject';
+import { Grade as ServiceGrade } from '@/services/shared/grade';
 
 const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
   const dateString = useMemo(() => {
@@ -87,6 +89,23 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
   const displayedSubjectAverage = useMemo(() => {
     return formatScoreForDisplay(subject.studentAverage.value, subject.outOf.value, displayScale);
   }, [subject.studentAverage.value, subject.outOf.value, displayScale]);
+  const displayedMaximumAverage = useMemo(() => {
+    return formatScoreForDisplay(subject.maximum.value, subject.outOf.value, displayScale).value;
+  }, [subject.maximum.value, subject.outOf.value, displayScale]);
+  const computedSubjectAverage = useMemo(() => {
+    const calculatedAverage = getSubjectAverage(subject.grades as unknown as ServiceGrade[]);
+    if (calculatedAverage === -1) {
+      return null;
+    }
+    return formatScoreForDisplay(calculatedAverage, subject.outOf.value, displayScale);
+  }, [subject.grades, subject.outOf.value, displayScale]);
+  const isUnknownSubjectAverage = useMemo(() => {
+    if (!subject.studentAverage.disabled) {
+      return false;
+    }
+    const status = String(subject.studentAverage.status ?? "").trim().toLowerCase();
+    return status === "unknown";
+  }, [subject.studentAverage.disabled, subject.studentAverage.status]);
 
   const handlePressSubject = useCallback(() => {
     // @ts-expect-error navigation types
@@ -132,9 +151,24 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
 
             <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
               {subject.studentAverage.disabled ? (
-                <LegacyTypography variant='h5' inline style={{ marginTop: 0 }}>
-                  {subject.studentAverage.status}
-                </LegacyTypography>
+                isUnknownSubjectAverage && computedSubjectAverage ? (
+                  <LegacyTypography
+                    variant='h5'
+                    inline
+                    style={{ marginTop: 0, fontSize: 19 }}
+                    color={
+                      computedSubjectAverage.value === displayedMaximumAverage
+                        ? subjectAdjustedColor
+                        : undefined
+                    }
+                  >
+                    {computedSubjectAverage.value.toFixed(2)}
+                  </LegacyTypography>
+                ) : (
+                  <LegacyTypography variant='h5' inline style={{ marginTop: 0 }}>
+                    {subject.studentAverage.status}
+                  </LegacyTypography>
+                )
               ) : (
                 <LegacyTypography
                   variant='h5'
@@ -150,7 +184,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
                 </LegacyTypography>
               )}
               <LegacyTypography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
-                {displayedSubjectAverage.denominator}
+                {isUnknownSubjectAverage && computedSubjectAverage ? computedSubjectAverage.denominator : displayedSubjectAverage.denominator}
               </LegacyTypography>
               {subject.studentAverage.value === subject.maximum.value && !subject.studentAverage.disabled && (
                 <Papicons style={{ alignSelf: 'center', marginLeft: 4 }} name="crown" color={subjectAdjustedColor} size={20} />
