@@ -20,10 +20,15 @@ export function getCurrentPeriod(periods: Period[]): Period {
 
   periods = periods
     .filter(period => !excludedNames.includes(period.name))
+    .map(period => ({
+      ...period,
+      start: new Date(period.start),
+      end: new Date(period.end),
+    }))
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  for (const period of periods) {
-    if (period.start.getTime() < now && period.end.getTime() > now) {
+  for ( const period of periods ) {
+    if ( period.start.getTime() < now && period.end.getTime() > now ) {
       return period;
     }
   }

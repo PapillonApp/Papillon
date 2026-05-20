@@ -123,6 +123,7 @@ export enum Services {
   PRONOTE,
   SKOLENGO,
   ECOLEDIRECTE,
+  WEBUNTIS,
   TURBOSELF,
   ARD,
   IZLY,
