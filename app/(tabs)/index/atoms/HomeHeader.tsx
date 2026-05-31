@@ -128,17 +128,17 @@ const HomeHeader = () => {
       </LiquidGlassContainer>
 
       {showReleaseNotesBanner && (
-
-        <Stack card style={{ marginTop: 12, elevation: 2, backgroundColor: (!theme.dark && Platform.OS === 'android') ? '#FFF' : theme.colors.item, overflow: Platform.OS === 'android' ? 'hidden' : 'visible' }} padding={0}>
-          <ListTouchable
-            onPress={() =>
-              WebBrowser.openBrowserAsync(releaseNotesUrl, {
-                presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
-              })
-            }>
+        <ListTouchable
+          onPress={() =>
+            WebBrowser.openBrowserAsync(releaseNotesUrl, {
+              presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+            })
+          }
+        >
+          <Stack card style={{ marginTop: 12, elevation: 2, backgroundColor: (!theme.dark && Platform.OS === 'android') ? '#FFF' : theme.colors.item, overflow: Platform.OS === 'android' ? 'hidden' : 'visible' }} padding={0}>
             <Stack padding={[12, 10]} gap={8} direction='horizontal'>
               <Papicons name="sparkles" size={24} color={colors.tint} />
-
+              
               <Stack inline flex style={{ marginRight: 32 }}>
                 <Typography variant='title'>
                   {t("Home_Release_Notes_Banner", { version: currentVersion })}
@@ -147,7 +147,7 @@ const HomeHeader = () => {
                   {t("Home_Release_Notes_Banner_Description")}
                 </Typography>
               </Stack>
-
+              
               <ListTouchable
                 hitSlop={10}
                 onPress={(event) => {
@@ -156,15 +156,16 @@ const HomeHeader = () => {
                 }}
               >
                 <View 
-                style={{ width: 24, height: 24, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: colors.text + '11', position: "absolute", top: 10, right: 12 }}>
-                <Icon size={16}>
-                <Papicons name="Cross" />
-                </Icon>
+                  style={{ width: 24, height: 24, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: colors.text + '11', position: "absolute", right: 0 }}
+                >
+                  <Icon size={16}>
+                    < Papicons name="Cross" />
+                  </Icon>
                 </View>
               </ListTouchable>
             </Stack>
-          </ListTouchable>
-        </Stack>
+          </Stack>
+        </ListTouchable>
       )}
 
       {__DEV__ && 1 === 2 && (
