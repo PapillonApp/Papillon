@@ -109,6 +109,7 @@ export default function AttendanceView() {
 
                     if (!selectedPeriod) {
                       error(t("Attendance_InvalidPeriod"))
+                      return;
                     }
 
                     const manager = getManager()

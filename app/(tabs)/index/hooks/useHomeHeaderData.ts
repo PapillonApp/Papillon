@@ -52,10 +52,16 @@ export const useHomeHeaderData = () => {
 
     const updateAttendance = async (manager: AccountManager) => {
       const periods = await manager.getAttendancePeriods();
+      attendancesPeriodsRef.current = periods;
+
       const currentPeriod = getCurrentPeriod(periods);
+      if (!currentPeriod) {
+        setAttendances([]);
+        return;
+      }
+
       const fetchedAttendances = await manager.getAttendanceForPeriod(currentPeriod.name);
 
-      attendancesPeriodsRef.current = periods;
       setAttendances(fetchedAttendances);
     };
 
