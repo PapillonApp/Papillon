@@ -19,10 +19,8 @@ import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
 import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
 import { useAlert } from '@/ui/components/AlertProvider';
-import Button from '@/ui/new/Button';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
-import Typography from '@/ui/new/Typography';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 const HomeScreen = () => {
@@ -42,16 +40,18 @@ const HomeScreen = () => {
       return;
     }
 
+    if (account && account.transport === undefined) {
+      store.initializeTransport(account.schoolName);
+    }
+  }, [account, accounts.length, router, store]);
+
+  React.useEffect(() => {
     checkConsent().then(consent => {
       if (!consent.given) {
         router.push("../consent");
       }
     });
-
-    if (account && account.transport === undefined) {
-      store.initializeTransport(account.schoolName);
-    }
-  }, [account, accounts.length, router, store]);
+  }, []);
 
   useHomeData();
   const { courses } = useTimetableWidgetData();
