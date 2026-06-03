@@ -19,6 +19,7 @@ export const getSubjectAverage = (
       grade[key].value === null ||
       grade[key].value < 0 ||
       grade.coefficient === 0 ||
+      grade.studentScore === undefined ||
       typeof grade[key].value !== "number" ||
       !grade.outOf?.value
     ) {

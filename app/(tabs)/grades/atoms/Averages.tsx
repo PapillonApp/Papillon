@@ -1,9 +1,7 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuView } from "@react-native-menu/menu";
 import { useTheme } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -35,31 +33,30 @@ import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
 import ActionMenu from "@/ui/components/ActionMenu";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
 
-
 const algorithms = [
   {
     key: "subjects",
-    label: t('Grades_Avg_Subject_Title'),
-    description: t('Grades_Avg_Subject_Description'),
+    label: t("Grades_Avg_Subject_Title"),
+    description: t("Grades_Avg_Subject_Description"),
     algorithm: PapillonSubjectAvg,
     canInjectRealAverage: true,
-    sfsymbol: "square.stack.3d.up.fill"
+    sfsymbol: "square.stack.3d.up.fill",
   },
   {
     key: "weighted",
-    label: t('Grades_Avg_All_Pond'),
-    description: t('Grades_Avg_All_Pond_Description'),
+    label: t("Grades_Avg_All_Pond"),
+    description: t("Grades_Avg_All_Pond_Description"),
     algorithm: PapillonWeightedAvg,
-    sfsymbol: "plus.forwardslash.minus"
+    sfsymbol: "plus.forwardslash.minus",
   },
   {
     key: "median",
-    label: t('Grades_Avg_Median_Title'),
-    description: t('Grades_Avg_Median_Description'),
+    label: t("Grades_Avg_Median_Title"),
+    description: t("Grades_Avg_Median_Description"),
     algorithm: PapillonMedian,
-    sfsymbol: "chart.bar.xaxis.ascending"
-  }
-]
+    sfsymbol: "chart.bar.xaxis.ascending",
+  },
+];
 
 const Averages = ({
   grades,
@@ -68,11 +65,11 @@ const Averages = ({
   displayScale = "20",
   inline = false,
 }: {
-  grades: Grade[],
-  realAverage?: number,
-  color?: string,
-  displayScale?: GradeDisplayScale,
-  inline?: boolean
+  grades: Grade[];
+  realAverage?: number;
+  color?: string;
+  displayScale?: GradeDisplayScale;
+  inline?: boolean;
 }) => {
   try {
     const theme = useTheme();
@@ -81,12 +78,16 @@ const Averages = ({
 
     const [algorithm, setAlgorithm] = useState(algorithms[0]);
 
-    const router = useRouter();
-
     const currentAverageHistory = useMemo(() => {
-      if (!grades || grades.length === 0) { return []; }
+      if (!grades || grades.length === 0) {
+        return [];
+      }
       try {
-        const history = PapillonGradesAveragesOverTime(algorithm.algorithm, grades, "studentScore");
+        const history = PapillonGradesAveragesOverTime(
+          algorithm.algorithm,
+          grades,
+          "studentScore"
+        );
         if (algorithm.canInjectRealAverage && realAverage) {
           history.push({
             average: realAverage,
@@ -118,12 +119,18 @@ const Averages = ({
         };
       }
 
-      if (!currentAverageHistory || currentAverageHistory.length === 0) { return null; }
+      if (!currentAverageHistory || currentAverageHistory.length === 0) {
+        return null;
+      }
       return currentAverageHistory[currentAverageHistory.length - 1];
     }, [currentAverageHistory, algorithm, realAverage, displayScale]);
 
-    const [shownAverage, setShownAverage] = useState(initialAverage ? initialAverage.average : 0);
-    const [shownDate, setShownDate] = useState(initialAverage ? initialAverage.date : new Date());
+    const [shownAverage, setShownAverage] = useState(
+      initialAverage ? initialAverage.average : 0
+    );
+    const [shownDate, setShownDate] = useState(
+      initialAverage ? initialAverage.date : new Date()
+    );
 
     // Update state when initialAverage changes (e.g. when algorithm changes)
     React.useEffect(() => {
@@ -138,11 +145,19 @@ const Averages = ({
 
     const [active, setActive] = useState(false);
 
-    const handleGestureUpdate = useCallback((p: { value: number, date: Date, originalValue?: number, originalDate?: Date }) => {
-      setActive(true);
-      setShownAverage(p.originalValue ?? p.value);
-      setShownDate(p.originalDate ?? p.date);
-    }, []);
+    const handleGestureUpdate = useCallback(
+      (p: {
+        value: number;
+        date: Date;
+        originalValue?: number;
+        originalDate?: Date;
+      }) => {
+        setActive(true);
+        setShownAverage(p.originalValue ?? p.value);
+        setShownDate(p.originalDate ?? p.date);
+      },
+      []
+    );
 
     const handleGestureEnd = useCallback(() => {
       setActive(false);
@@ -155,7 +170,10 @@ const Averages = ({
     }, [active]);
 
     const graphAxis = useMemo<GraphPoint[]>(() => {
-      return calculateAmplifiedGraphPoints(currentAverageHistory, getDisplayScaleMax(displayScale));
+      return calculateAmplifiedGraphPoints(
+        currentAverageHistory,
+        getDisplayScaleMax(displayScale)
+      );
     }, [currentAverageHistory, displayScale]);
 
     const displayedRealAverage = useMemo(() => {
@@ -178,17 +196,25 @@ const Averages = ({
       // You might want to return null or a placeholder here if there are absolutely no grades
       // But if realAverage exists, we might still want to show something?
       // For now, if there's no history and no real average, we can return null or render empty state.
-      if (!realAverage) { return null; }
+      if (!realAverage) {
+        return null;
+      }
     }
 
     graphAxis.forEach(item => {
-      item.value = Math.round(item.value * 100) / 100
-    })
+      item.value = Math.round(item.value * 100) / 100;
+    });
+
+    const hasOnlySkills = grades.some(
+      grade => grade.studentScore?.disabled ?? grade.skills?.length ?? 0 > 0
+    );
+
+    if (hasOnlySkills) return null;
 
     return (
       <Reanimated.View
         style={{
-          width: "100%"
+          width: "100%",
         }}
         entering={!inline ? PapillonAppearIn : undefined}
         exiting={!inline ? PapillonAppearOut : undefined}
@@ -201,21 +227,25 @@ const Averages = ({
             direction={inline ? "horizontal" : "vertical"}
             gap={0}
             style={[
-              Platform.OS === 'android' ? {
-                borderWidth: 0,
-                backgroundColor: theme.colors.card,
-                elevation: 0
-              } : {},
-              inline ? {
-                overflow: "hidden",
-                backgroundColor: "transparent",
-                marginTop: -8,
-              } : {
-                height: 180,
-              }
+              Platform.OS === "android"
+                ? {
+                    borderWidth: 0,
+                    backgroundColor: theme.colors.card,
+                    elevation: 0,
+                  }
+                : {},
+              inline
+                ? {
+                    overflow: "hidden",
+                    backgroundColor: "transparent",
+                    marginTop: -8,
+                  }
+                : {
+                    height: 180,
+                  },
             ]}
           >
-            {Platform.OS === 'ios' && (
+            {Platform.OS === "ios" && (
               <LinearGradient
                 colors={[backgroundColor + "90", backgroundColor + "00"]}
                 start={inline ? [0, 1] : [0, 0]}
@@ -237,7 +267,7 @@ const Averages = ({
                 flex: 1,
                 marginLeft: inline ? -2 : 0,
                 height: 100,
-                overflow: "hidden"
+                overflow: "hidden",
               }}
             >
               <View
@@ -248,7 +278,6 @@ const Averages = ({
                   marginTop: -15,
                 }}
               >
-
                 {graphAxis.length > 0 ? (
                   <LineGraph
                     points={graphAxis}
@@ -273,13 +302,40 @@ const Averages = ({
               </View>
             </View>
 
-            <Stack inline flex hAlign={inline ? "start" : "center"} vAlign="center" gap={0} style={{ marginTop: inline ? 0 : -10, marginLeft: inline ? -24 : 0, marginRight: inline ? 20 : 0 }}>
-              <Stack animated direction="horizontal" hAlign="end" vAlign="end" gap={2}>
-                <AnimatedNumber variant={inline ? "h2" : "h1"} color={adjustedColor}>
+            <Stack
+              inline
+              flex
+              hAlign={inline ? "start" : "center"}
+              vAlign="center"
+              gap={0}
+              style={{
+                marginTop: inline ? 0 : -10,
+                marginLeft: inline ? -24 : 0,
+                marginRight: inline ? 20 : 0,
+              }}
+            >
+              <Stack
+                animated
+                direction="horizontal"
+                hAlign="end"
+                vAlign="end"
+                gap={2}
+              >
+                <AnimatedNumber
+                  variant={inline ? "h2" : "h1"}
+                  color={adjustedColor}
+                >
                   {shownAverage ? shownAverage.toFixed(2) : "0.00"}
                 </AnimatedNumber>
                 <Dynamic animated>
-                  <Typography variant="title" style={{ color: adjustedColor, marginBottom: inline ? 1 : 3, opacity: 0.7 }}>
+                  <Typography
+                    variant="title"
+                    style={{
+                      color: adjustedColor,
+                      marginBottom: inline ? 1 : 3,
+                      opacity: 0.7,
+                    }}
+                  >
                     {getDisplayDenominator(displayScale)}
                   </Typography>
                 </Dynamic>
@@ -288,43 +344,48 @@ const Averages = ({
               <ActionMenu
                 actions={[
                   {
-                    title: t('Grades_Avg_Methods'),
-                    subactions: algorithms.map((algo) => ({
+                    title: t("Grades_Avg_Methods"),
+                    subactions: algorithms.map(algo => ({
                       id: "setAlg:" + algo.key,
                       title: algo.label,
                       subtitle: algo.description,
                       state: algorithm.key === algo.key ? "on" : "off",
                       image: Platform.select({
-                        ios: algo.sfsymbol
+                        ios: algo.sfsymbol,
                       }),
-                      imageColor: theme.colors.text
+                      imageColor: theme.colors.text,
                     })),
-                    displayInline: true
+                    displayInline: true,
                   },
                   {
-                    id: 'open:more',
+                    id: "open:more",
                     papicon: "info",
-                    title: t('Grades_Avg_KnowMore'),
-                    subtitle: t('Grades_Avg_KnowMore_Description'),
+                    title: t("Grades_Avg_KnowMore"),
+                    subtitle: t("Grades_Avg_KnowMore_Description"),
                     image: Platform.select({
-                      ios: "info.circle"
+                      ios: "info.circle",
                     }),
-                    imageColor: theme.colors.text
-                  }
+                    imageColor: theme.colors.text,
+                  },
                 ]}
                 onPressAction={({ nativeEvent }) => {
                   const actionId = nativeEvent.event;
 
                   if (actionId.startsWith("open:")) {
                     if (actionId === "open:more") {
-                      WebBrowser.openBrowserAsync("https://docs.papillon.bzh/support/kb/averages", {
-                        presentationStyle: "pageSheet"
-                      });
+                      WebBrowser.openBrowserAsync(
+                        "https://docs.papillon.bzh/support/kb/averages",
+                        {
+                          presentationStyle: "pageSheet",
+                        }
+                      );
                     }
                   }
 
                   if (actionId.startsWith("setAlg:")) {
-                    const nextAlgorithm = algorithms.find((algo) => algo.key === actionId.slice(7));
+                    const nextAlgorithm = algorithms.find(
+                      algo => algo.key === actionId.slice(7)
+                    );
                     if (nextAlgorithm) {
                       setAlgorithm(nextAlgorithm);
                       trackAdvancedEvent("grades_calculation_method_changed", {
@@ -335,8 +396,17 @@ const Averages = ({
                 }}
               >
                 <TouchableOpacity style={{ width: "100%", overflow: "hidden" }}>
-                  <Stack hAlign="center" vAlign={inline ? "start" : "center"} direction="horizontal" style={{ marginTop: -2 }}>
-                    <Typography variant={inline ? "body1" : "title"} weight="bold" align="center">
+                  <Stack
+                    hAlign="center"
+                    vAlign={inline ? "start" : "center"}
+                    direction="horizontal"
+                    style={{ marginTop: -2 }}
+                  >
+                    <Typography
+                      variant={inline ? "body1" : "title"}
+                      weight="bold"
+                      align="center"
+                    >
                       {algorithm.label}
                     </Typography>
                     <Icon size={20} opacity={0.5}>
@@ -346,25 +416,37 @@ const Averages = ({
                 </TouchableOpacity>
               </ActionMenu>
 
-              <Dynamic animated key={"dateSource:" + (isRealAverage ? "real" : "estimated")}>
-                <Typography variant={inline ? "body2" : "body1"} color="textSecondary" style={{ marginTop: inline ? 0 : 1, flex: 1 }} numberOfLines={1} ellipsizeMode="tail" align={inline ? "left" : "center"}>
-                  {isRealAverage ? "par l'établissement" :
-                    "estimée au " + (shownDate instanceof Date && !isNaN(shownDate.getTime()) ? shownDate.toLocaleDateString(undefined, {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric"
-                    }) : "Unknown Date")}
+              <Dynamic
+                animated
+                key={"dateSource:" + (isRealAverage ? "real" : "estimated")}
+              >
+                <Typography
+                  variant={inline ? "body2" : "body1"}
+                  color="textSecondary"
+                  style={{ marginTop: inline ? 0 : 1, flex: 1 }}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  align={inline ? "left" : "center"}
+                >
+                  {isRealAverage
+                    ? "par l'établissement"
+                    : "estimée au " +
+                      (shownDate instanceof Date && !isNaN(shownDate.getTime())
+                        ? shownDate.toLocaleDateString(undefined, {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : "Unknown Date")}
                 </Typography>
               </Dynamic>
               {!inline && <View style={{ height: 14 }} />}
             </Stack>
-
           </Stack>
         </LayoutAnimationConfig>
       </Reanimated.View>
     );
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e);
     return null;
   }
