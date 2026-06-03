@@ -124,6 +124,7 @@
   "ONBOARDING_SERVICE_ARD": "ARD",
   "ONBOARDING_SERVICE_IZLY": "Izly",
   "ONBOARDING_SERVICE_ALISE": "Alise",
+  "ONBOARDING_SERVICE_USE_EXTERNAL_SERVICES": "I will use an external service",
   "WAITING": "Waiting",
   "IZLY_SMS_SEND": "You just received a login link, click on it and follow the steps.",
   "STEP": "Step",
