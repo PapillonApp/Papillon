@@ -1,7 +1,9 @@
 import { useNavigation } from "expo-router";
+import { differenceInCalendarDays, formatDistanceToNowStrict, startOfDay } from "date-fns";
 import { t } from "i18next";
 import React from 'react';
 import { FlatList } from "react-native";
+import * as DateLocale from 'date-fns/locale';
 
 import { CourseStatus } from "@/services/shared/timetable";
 import Course from "@/ui/components/Course";
@@ -10,8 +12,29 @@ import Typography from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
+import i18n from "@/utils/i18n";
 import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 import { getStatusText } from '../../calendar/components/CalendarDay';
+
+function getRelativeDayStatus(date: Date): string | null {
+  const days = differenceInCalendarDays(startOfDay(date), startOfDay(new Date()));
+
+  if (days <= 0) {
+    return null;
+  }
+
+  if (days === 1) {
+    return t("Tomorrow");
+  }
+
+  const distance = formatDistanceToNowStrict(startOfDay(date), {
+    addSuffix: true,
+    unit: "day",
+    locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
+  });
+
+  return distance.charAt(0).toUpperCase() + distance.slice(1);
+}
 
 const HomeTimeTableWidget = React.memo(() => {
   const navigation = useNavigation();
@@ -50,7 +73,7 @@ const HomeTimeTableWidget = React.memo(() => {
           teacher={item.teacher}
           room={item.room}
           color={getSubjectColor(item.subject)}
-          status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
+          status={{ label: getRelativeDayStatus(item.from) ?? (item.customStatus ? item.customStatus : getStatusText(item.status)), canceled: (item.status === CourseStatus.CANCELED) }}
           variant="primary"
           start={Math.floor(item.from.getTime() / 1000)}
           end={Math.floor(item.to.getTime() / 1000)}
@@ -74,4 +97,3 @@ const HomeTimeTableWidget = React.memo(() => {
 });
 
 export default HomeTimeTableWidget;
-

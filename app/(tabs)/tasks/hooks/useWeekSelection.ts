@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { getWeekNumberFromDate } from "@/database/useHomework";
+import { trackAdvancedEvent } from '@/utils/logger/analytics';
 
 export const useWeekSelection = () => {
   const currentDate = new Date();
@@ -13,6 +14,7 @@ export const useWeekSelection = () => {
 
   const onSelectWeek = useCallback((week: number) => {
     setSelectedWeek(week);
+    trackAdvancedEvent("tasks_week_changed");
   }, []);
 
   return {

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Dimensions, FlatList } from 'react-native';
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
+import { trackAdvancedEvent } from "@/utils/logger/analytics";
 
 const INITIAL_INDEX = 10000;
 
@@ -9,6 +10,7 @@ export function useCalendarState() {
   const [date, setDate] = useState(new Date());
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
   const [currentIndex, setCurrentIndex] = useState(INITIAL_INDEX);
+  const lastTrackedDateKey = useRef<string>("");
   const flatListRef = useRef<FlatList<any>>(null);
   const referenceDate = useRef(new Date());
   const windowWidth = Dimensions.get("window").width;
@@ -16,6 +18,15 @@ export function useCalendarState() {
   useEffect(() => {
     referenceDate.current.setHours(0, 0, 0, 0);
   }, []);
+
+  useEffect(() => {
+    const dateKey = new Date(date).toDateString();
+    if (lastTrackedDateKey.current === dateKey) {
+      return;
+    }
+    lastTrackedDateKey.current = dateKey;
+    trackAdvancedEvent("calendar_day_changed");
+  }, [date]);
 
   const getDateFromIndex = useCallback((index: number) => {
     const d = new Date(referenceDate.current);

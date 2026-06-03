@@ -5,7 +5,7 @@ import { ViewStyle } from "react-native";
 import Ripple from "./RippleEffect";
 import Typography from "./Typography";
 
-export default function Button({ label, onPress, disabled = false, variant = "primary", fullWidth = false, leading, trailing, gap = 10, height = 50, color }: { label: string; onPress: () => void; disabled?: boolean; variant?: "primary" | "secondary" | "outlined" | "ghost" | "text"; fullWidth?: boolean; leading?: React.ReactNode; trailing?: React.ReactNode, gap?: number, height?: number, color?: string }) {
+export default function Button({ label, onPress, disabled = false, variant = "primary", fullWidth = false, leading, trailing, gap = 10, height = 50, color, style }: { label: string; onPress: () => void; disabled?: boolean; variant?: "primary" | "secondary" | "outlined" | "ghost" | "text"; fullWidth?: boolean; leading?: React.ReactNode; trailing?: React.ReactNode, gap?: number, height?: number, color?: string, style?: ViewStyle }) {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -84,7 +84,8 @@ export default function Button({ label, onPress, disabled = false, variant = "pr
           width: fullWidth ? "100%" : "auto",
           flexDirection: "row",
           gap: gap,
-          pointerEvents: disabled ? "none" : "auto"
+          pointerEvents: disabled ? "none" : "auto",
+          ...style
         },
       ]}
       rippleColor={RippleVariants[variant].rippleColor}

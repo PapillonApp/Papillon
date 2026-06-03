@@ -1,4 +1,4 @@
-import { getNewsFeed, User, NewsFeed, INSTANCES } from "appscho";
+import { getNewsFeed, User, NewsFeed, INSTANCES } from "@blockshub/blockscho";
 import { News } from "@/services/shared/news";
 import { AttachmentType } from "@/services/shared/attachment";
 

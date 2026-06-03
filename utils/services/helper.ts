@@ -14,8 +14,6 @@ export function getServiceName(service: Services): string {
     return "Alise";
   case Services.ECOLEDIRECTE:
     return "ÉcoleDirecte";
-  case Services.LANNION:
-    return "IUT de Lannion";
   default:
     return "Pronote";
   }
@@ -27,8 +25,6 @@ export function getServiceLogo(service: Services): ImageSourcePropType {
     return require("@/assets/images/service_pronote.png")
   case Services.SKOLENGO:
     return require("@/assets/images/service_skolengo.png")
-  case Services.LANNION:
-    return require("@/assets/images/univ_lannion.png")
   case Services.TURBOSELF:
     return require("@/assets/images/turboself.png")
   case Services.ARD:

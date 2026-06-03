@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
 import { FlatList, Platform, StatusBar, View } from 'react-native';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
@@ -15,6 +14,8 @@ import HomeTopBar from './atoms/HomeTopBar';
 import Wallpaper from './atoms/Wallpaper';
 import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useHomeData } from './hooks/useHomeData';
+import { useTimetableWidgetData } from './hooks/useTimetableWidgetData';
+import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
 import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
 import { useAlert } from '@/ui/components/AlertProvider';
@@ -22,36 +23,39 @@ import Button from '@/ui/new/Button';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
 import Typography from '@/ui/new/Typography';
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const bottomTabBarHeight = useBottomTabBarHeight();
+  const bottomTabBarHeight = insets.bottom + 16;
   const focused = useIsFocused();
 
   // Account
   const store = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
-  const account = accounts.find(a => a.id === store.lastUsedAccount)!;
+  const account = accounts.find(a => a.id === store.lastUsedAccount);
   const router = useRouter();
 
   React.useEffect(() => {
-    console.log(accounts)
     if (accounts.length === 0) {
       router.replace("/(onboarding)/welcome");
+      return;
     }
-    if (accounts.length > 0) {
-      checkConsent().then(consent => {
-        if (!consent.given) {
-          router.push("../consent");
-        }
-      });
-      if (account.transport === undefined) {
-        store.initializeTransport(account.schoolName);
+
+    checkConsent().then(consent => {
+      if (!consent.given) {
+        router.push("../consent");
       }
+    });
+
+    if (account && account.transport === undefined) {
+      store.initializeTransport(account.schoolName);
     }
-  }, [accounts.length]);
+  }, [account, accounts.length, router, store]);
 
   useHomeData();
+  const { courses } = useTimetableWidgetData();
+  const timetableTitle = useTimetableWidgetTitle(courses);
 
   const [gradesWidgetHidden, setGradesWidgetHidden] = React.useState(true);
 
@@ -64,7 +68,7 @@ const HomeScreen = () => {
   const data: HomeWidgetItem[] = React.useMemo(() => [
     {
       icon: <Papicons name={"Calendar"} />,
-      title: t("Home_Widget_NextCourses"),
+      title: timetableTitle,
       redirect: "(tabs)/calendar",
       render: renderTimeTable
     },
@@ -75,7 +79,7 @@ const HomeScreen = () => {
       hidden: gradesWidgetHidden,
       render: renderGrades
     }
-  ], [renderTimeTable, renderGrades, gradesWidgetHidden]);
+  ], [renderTimeTable, renderGrades, gradesWidgetHidden, timetableTitle]);
 
   const alert = useAlert();
 
@@ -84,23 +88,7 @@ const HomeScreen = () => {
       <Wallpaper />
       <HomeTopBar />
       {focused && <StatusBar translucent animated barStyle={'light-content'} />}
-      <MaskedView
-        maskElement={
-          Platform.OS === 'android' ? (
-          <View style={{ flex: 1, backgroundColor: 'transparent' }}>
-            <LinearGradient
-              colors={['#ff000022', 'red']}
-              locations={[0.5, 1]}
-              style={{ height: insets.top + 72 }}
-            />
-            <View style={{ flex: 1, backgroundColor: 'red' }} />
-          </View>
-          ) : (
-            <View style={{ flex: 1, backgroundColor: 'transparent' }} />
-          )
-        }
-        style={{ flex: 1 }}
-      >
+      <HomeViewContainer>
         <FlatList
           renderItem={({ item }) => <HomeWidget item={item} />}
           keyExtractor={(item) => item.title}
@@ -115,10 +103,37 @@ const HomeScreen = () => {
           }}
           data={data}
         />
-        
-      </MaskedView>
+      </HomeViewContainer>
     </>
   );
 };
 
-export default HomeScreen;
+const HomeViewContainer = ({ children }) => {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <MaskedView
+      maskElement={
+        <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+          <LinearGradient
+            colors={['#ff000022', 'white']}
+            locations={[0.5, 1]}
+            style={{ height: insets.top + 68 }}
+          />
+          <View style={{ flex: 1, backgroundColor: 'white' }} />
+        </View>
+      }
+      style={{ flex: 1 }}
+    >
+      {children}
+    </MaskedView>
+  )
+}
+
+const HomeScreenWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <HomeScreen />
+  </MainTabErrorBoundary>
+);
+
+export default HomeScreenWithBoundary;

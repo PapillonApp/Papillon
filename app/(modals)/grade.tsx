@@ -1,21 +1,23 @@
-import { Papicons } from "@getpapillon/papicons";
+import { Papicons } from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React from "react";
 import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-import ModalOverhead, { ModalOverHeadScore } from "@/components/ModalOverhead";
+import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
 import { Grade as SharedGrade } from "@/services/shared/grade";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import TypographyLegacy from "@/ui/components/Typography";
-import adjust from "@/utils/adjustColor";
-import { colorCheck } from "@/utils/colorCheck";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import List from "@/ui/new/List";
-import Typography from "@/ui/new/Typography";
+import adjust from '@/utils/adjustColor';
+import { colorCheck } from '@/utils/colorCheck';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import List from '@/ui/new/List';
+import Typography from '@/ui/new/Typography';
+import { useSettingsStore } from '@/stores/settings';
+import { formatAssumed20ForDisplay, getGradeDisplayScale, getDisplayScaleMax } from '@/utils/grades/scale';
 import { SkillChip } from "@/ui/components/SkillChip";
 
 interface SubjectInfo {
@@ -92,6 +94,8 @@ export default function GradesModal() {
     avgInfluence = 0,
     avgClass = 0,
   } = params as GradesModalProps;
+  const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
+  const displayScaleMax = getDisplayScaleMax(displayScale);
 
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
@@ -273,7 +277,7 @@ export default function GradesModal() {
               <List.Label>{t("Grades_Details_Title")}</List.Label>
             </List.SectionTitle>
 
-            {grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? (
+            {grade.studentScore && grade.outOf && grade.outOf.value !== displayScaleMax ? (
               <List.Item>
                 <List.Leading>
                   <Icon>
@@ -289,12 +293,9 @@ export default function GradesModal() {
                 <List.Trailing>
                   <ContainedNumber
                     color={subjectInfo.color}
-                    denominator={"/20"}
+                    denominator={formatAssumed20ForDisplay(0, displayScale).denominator}
                   >
-                    {(
-                      (grade.studentScore.value / grade.outOf.value) *
-                      20
-                    ).toFixed(2)}
+                    {formatAssumed20ForDisplay((grade.studentScore.value / grade.outOf.value) * 20, displayScale).value.toFixed(2)}
                   </ContainedNumber>
                 </List.Trailing>
               </List.Item>

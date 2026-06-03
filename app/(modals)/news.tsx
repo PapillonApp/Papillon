@@ -31,6 +31,7 @@ import { IconNames, Papicons } from "@getpapillon/papicons";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { useFont } from "@/utils/theme/fonts";
 
 const NewsModal = () => {
   const search = useLocalSearchParams();
@@ -64,15 +65,18 @@ const NewsModal = () => {
 
 
   const { colors } = useTheme();
+  const font = useFont();
 
   const stylesheet = StyleSheet.create({
     ...VARIANTS,
     p: {
       ...VARIANTS.body1,
+      fontFamily: font("medium"),
       color: colors.text,
     },
     div: {
       ...VARIANTS.body1,
+      fontFamily: font("medium"),
       color: colors.text,
     },
     a: {
@@ -81,6 +85,7 @@ const NewsModal = () => {
     },
     ul: {
       ...VARIANTS.body1,
+      fontFamily: font("medium"),
       paddingHorizontal: 4,
       color: colors.text,
     },

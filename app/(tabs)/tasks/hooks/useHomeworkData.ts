@@ -5,6 +5,7 @@ import { Homework } from "@/services/shared/homework";
 import { useHomeworkForWeek, updateHomeworkIsDone } from "@/database/useHomework";
 import { generateId } from "@/utils/generateId";
 import { error } from '@/utils/logger/logger';
+import { trackAdvancedEvent } from '@/utils/logger/analytics';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
 
 export const useHomeworkData = (selectedWeek: number, alert: any) => {
@@ -83,6 +84,7 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
         if (done) {
           notificationAsync(NotificationFeedbackType.Success);
         }
+        trackAdvancedEvent(done ? "task_ticked" : "task_unticked");
       }
       catch (err) {
         alert.showAlert({

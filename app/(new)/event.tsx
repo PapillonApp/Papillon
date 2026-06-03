@@ -14,10 +14,12 @@ import List from "@/ui/components/List";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { useFont } from "@/utils/theme/fonts";
 
 export default function NewEventScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const font = useFont();
   const { t } = useTranslation();
   const database = useDatabase();
 
@@ -137,7 +139,7 @@ export default function NewEventScreen() {
               placeholder={t("Form_Title")}
               value={inputTitle}
               onChangeText={setInputTitle}
-              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium" }}
+              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: font("medium") }}
             />
           </Item>
           <Item>
@@ -148,7 +150,7 @@ export default function NewEventScreen() {
               placeholder={t("Form_Location")}
               value={inputLocation}
               onChangeText={setInputLocation}
-              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium" }}
+              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: font("medium") }}
             />
           </Item>
         </List>
@@ -166,7 +168,7 @@ export default function NewEventScreen() {
               onChangeText={text => {
                 setInputOrganizer(text);
               }}
-              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium" }}
+              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: font("medium") }}
             />
           </Item>
         </List>

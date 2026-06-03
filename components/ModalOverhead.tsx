@@ -42,7 +42,8 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
       {overtitle && (
         <Typography
           variant="body1"
-          color='secondary'
+            color='secondary'
+            align="center"
         >
           {overtitle}
         </Typography>
@@ -59,6 +60,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
       {title && (
         <Typography
           variant="body1"
+          align="center"
         >
           {title}
         </Typography>
@@ -67,6 +69,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
         <Typography
           variant="body1"
           color='secondary'
+          align="center"
         >
           {new Date(date).toLocaleDateString(undefined, dateFormat ? dateFormat : {
             day: "numeric",
@@ -79,7 +82,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
   )
 }
 
-const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: string, outOf?: number }) => {
+const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: string, outOf?: number | string }) => {
   const theme = useTheme();
 
   if (!score) return null;
@@ -101,13 +104,8 @@ const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: st
         {score}
       </Typography>
       {outOf && (
-        <Typography
-          variant="h3"
-          weight="semibold"
-          color={adjust(color, theme.dark ? 0.3 : -0.3)}
-          style={{ marginBottom: 7, opacity: 0.5 }}
-        >
-          /{outOf}
+        <Typography variant='h3' weight='semibold' color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
+          {typeof outOf === "string" && outOf.startsWith("%") ? outOf : `/${outOf}`}
         </Typography>
       )}
     </Stack>

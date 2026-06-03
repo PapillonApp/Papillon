@@ -516,6 +516,7 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
 
   return (
     <ListComponent
+      showsVerticalScrollIndicator={Platform.OS === "ios" ? rest.showsVerticalScrollIndicator ?? true : false}
       itemLayoutAnimation={animated ? Animation(LinearTransition, "list") : undefined}
       data={data}
       keyExtractor={keyExtractor}

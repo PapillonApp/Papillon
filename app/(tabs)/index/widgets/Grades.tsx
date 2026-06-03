@@ -6,6 +6,8 @@ import { Period, Subject as SharedSubject } from "@/services/shared/grade";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { error } from "@/utils/logger/logger";
 import Averages from "../../grades/atoms/Averages";
+import { useSettingsStore } from "@/stores/settings";
+import { getGradeDisplayScale } from "@/utils/grades/scale";
 
 const PERIODS_TTL_MS = 5 * 60 * 1000;
 const GRADES_TTL_MS = 5 * 60 * 1000;
@@ -47,6 +49,7 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
     const [subjects, setSubjects] = useState<SharedSubject[]>([]);
     const [currentPeriod, setCurrentPeriod] = useState<Period | undefined>(period);
     const [serviceAverage, setServiceAverage] = useState<number | undefined>(undefined);
+    const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
 
     const grades = useMemo(
       () =>
@@ -202,7 +205,7 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
 
     return (
       <View style={{ width: "100%" }}>
-        <Averages grades={grades} realAverage={serviceAverage} inline />
+        <Averages grades={grades} realAverage={serviceAverage} inline displayScale={displayScale} />
       </View>
     );
   } catch (err) {

@@ -144,7 +144,10 @@ export default function MultiLoginWithCredentials() {
 
   return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-        <ScrollView contentContainerStyle={{ paddingTop: finalHeaderHeight, paddingBottom: insets.bottom }}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingTop: finalHeaderHeight, paddingBottom: insets.bottom }}
+        >
           <LoginView
             color={color ?? theme.colors.primary}
             serviceName={String(param.university)}

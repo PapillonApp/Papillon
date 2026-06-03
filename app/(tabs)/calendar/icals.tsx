@@ -15,6 +15,8 @@ import Typography from "@/ui/components/Typography";
 import { useTheme } from "@react-navigation/native";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import NativeSwitch from "@/ui/native/NativeSwitch";
+import { useFont } from "@/utils/theme/fonts";
 
 export default function TabOneScreen() {
   const [icalUrl, setIcalUrl] = useState("");
@@ -57,6 +59,7 @@ export default function TabOneScreen() {
 
 
   const theme = useTheme();
+  const font = useFont();
   const { colors } = theme;
 
   return (
@@ -77,7 +80,7 @@ export default function TabOneScreen() {
               placeholderTextColor={colors.text + '80'}
               value={icalTitle}
               onChangeText={setIcalTitle}
-              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium", color: colors.text }}
+              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: font("medium"), color: colors.text }}
             />
           </Item>
         }
@@ -90,7 +93,7 @@ export default function TabOneScreen() {
             placeholderTextColor={colors.text + '80'}
             value={icalUrl}
             onChangeText={setIcalUrl}
-            style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium", color: colors.text }}
+            style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: font("medium"), color: colors.text }}
           />
           {icalUrl.length > 0 && (
             <Trailing>
@@ -146,7 +149,7 @@ export default function TabOneScreen() {
                   </Icon>
                   <Typography variant="title">Parsing intelligent (Beta)</Typography>
                   <Trailing>
-                    <Switch
+                    <NativeSwitch
                       value={(ical as any).intelligentParsing || false}
                       onValueChange={async (value) => {
                         await updateIcalParsing(ical.id, value);

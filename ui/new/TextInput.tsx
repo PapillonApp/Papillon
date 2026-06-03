@@ -1,9 +1,11 @@
 import { useTheme } from '@react-navigation/native';
 import React from 'react';
 import { TextInput,View } from 'react-native';
+import { useFont } from '@/utils/theme/fonts';
 
 const PapillonTextInput = ({ height = 54, color, ...props }) => {
   const { colors } = useTheme();
+  const font = useFont();
 
   return (
     <View
@@ -23,7 +25,7 @@ const PapillonTextInput = ({ height = 54, color, ...props }) => {
           flex: 1,
           paddingHorizontal: 16,
           color: colors.text,
-          fontFamily: 'medium',
+          fontFamily: font("medium"),
           fontSize: 17,
         }}
         placeholderTextColor={colors.text + "80"}

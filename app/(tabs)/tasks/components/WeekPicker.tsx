@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import { useFont } from '@/utils/theme/fonts';
 
 interface WeekPickerProps {
   selectedWeek: number;
@@ -17,6 +18,7 @@ interface WeekPickerProps {
 
 const WeekPicker: React.FC<WeekPickerProps> = ({ selectedWeek, onSelectWeek, onClose }) => {
   const { colors } = useTheme();
+  const font = useFont();
   const insets = useSafeAreaInsets();
   const WeekPickerRef = useRef<FlatList>(null);
 
@@ -144,7 +146,7 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedWeek, onSelectWeek, onC
                 style={{
                   color: item === selectedWeek ? "#FFF" : colors.text,
                   fontSize: 16,
-                  fontFamily: item === selectedWeek ? "bold" : "medium",
+                  fontFamily: item === selectedWeek ? font("bold") : font("medium"),
                 }}
               >
                 {getWeekNumberFromDate(getDateRangeOfWeek(item, new Date().getFullYear()).start)}

@@ -10,6 +10,7 @@ import { useWeekSelection } from './hooks/useWeekSelection';
 
 import { useAlert } from "@/ui/components/AlertProvider";
 import { useTheme } from '@react-navigation/native';
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 const TasksView: React.FC = () => {
   const alert = useAlert();
@@ -92,4 +93,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TasksView;
+const TasksViewWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <TasksView />
+  </MainTabErrorBoundary>
+);
+
+export default TasksViewWithBoundary;

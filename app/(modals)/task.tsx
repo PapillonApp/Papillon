@@ -5,14 +5,13 @@ import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useState } from "react";
 
+import Knowunity from "@/components/Knowunity";
 import ModalOverhead from "@/components/ModalOverhead";
-import Homework from "@/database/models/Homework";
 import { updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import { formatHTML } from "@/utils/format/html";
 import { generateId } from "@/utils/generateId";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
@@ -23,6 +22,7 @@ import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { Homework } from "@/services/shared/homework";
 
 const Task = () => {
   const { params } = useRoute();
@@ -30,6 +30,7 @@ const Task = () => {
   const colors = theme.colors;
 
   const { task } = params as { task: Homework };
+  const formatedTask = formatHTML(task.content)
 
   const subjectInfo = {
     color: getSubjectColor(task.subject),
@@ -135,37 +136,43 @@ const Task = () => {
 
           <List.Item>
             <Typography>
-              {formatHTML(task.content)}
+              {formatedTask}
             </Typography>
           </List.Item>
         </List.Section>
+        {task.attachments.length > 0 && (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>{t("Modal_Task_Attachments")}</List.Label>
+            </List.SectionTitle>
 
-        <List.Section>
-          <List.SectionTitle>
-            <List.Label>{t("Modal_Task_Attachments")}</List.Label>
-          </List.SectionTitle>
-
-          {task.attachments.map((attachment) => (
-            <List.Item onPress={() => WebBrowser.openBrowserAsync(attachment.url, {
-              presentationStyle: "formSheet"
-            })}>
-              <List.Leading>
-                <Icon>
-                  <Papicons name={getAttachmentIcon(attachment)} />
-                </Icon>
-              </List.Leading>
-              <Typography variant="title" numberOfLines={1}>
-                {attachment.name || attachment.url}
-              </Typography>
-              <Typography variant="body1" color="textSecondary" numberOfLines={1}>
-                {attachment.url}
-              </Typography>
-            </List.Item>
-          ))}
-        </List.Section>
+            {task.attachments.map((attachment) => (
+              <List.Item onPress={() => WebBrowser.openBrowserAsync(attachment.url, {
+                presentationStyle: "formSheet"
+              })}>
+                <List.Leading>
+                  <Icon>
+                    <Papicons name={getAttachmentIcon(attachment)} />
+                  </Icon>
+                </List.Leading>
+                <Typography variant="title" numberOfLines={1}>
+                  {attachment.name || attachment.url}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" numberOfLines={1}>
+                  {attachment.url}
+                </Typography>
+              </List.Item>
+            ))}
+          </List.Section>
+        )}
+        <Knowunity
+          subjectColor={subjectInfo.color}
+          subjectName={subjectInfo.name}
+          subjectEmoji={subjectInfo.emoji}
+          formattedTask={formatedTask}
+        />
       </List>
     </>
   );
 };
-
 export default Task;

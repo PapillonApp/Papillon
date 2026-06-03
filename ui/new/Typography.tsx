@@ -1,6 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { Platform, Text } from "react-native";
+import { useFont } from "@/utils/theme/fonts";
 
 const WEIGHTS = ["light", "regular", "medium", "semibold", "bold"];
 
@@ -76,6 +77,7 @@ const ALIGNMENTS: Record<string, string> = {
 
 export default function Typography({ variant = "body1", color = "textPrimary", align = "left", weight, ...rest }: any) {
   const theme = useTheme();
+  const font = useFont();
   const { colors } = theme;
 
   const COLORS: Record<string, string> = {
@@ -91,7 +93,7 @@ export default function Typography({ variant = "body1", color = "textPrimary", a
 
   const style = [
     variantStyle,
-    { color: textColor, textAlign, fontFamily: textWeight },
+    { color: textColor, textAlign, fontFamily: font(String(textWeight)) },
     fixLineHeight(rest?.style)
   ]
 

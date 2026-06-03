@@ -2,7 +2,6 @@ import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { useCallback, useRef, useState } from "react";
 import { FlatList, Platform, StyleSheet,View } from "react-native";
-import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CourseStatus } from "@/services/shared/timetable";
@@ -12,13 +11,14 @@ import { CalendarDay } from "./components/CalendarDay";
 import { CalendarHeader } from "./components/CalendarHeader";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
-export default function TabOneScreen() {
+function TabOneScreen() {
   const { colors } = useTheme();
   const calendarRef = useRef<any>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const insets = useSafeAreaInsets();
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarHeight = insets.bottom;
 
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
@@ -64,7 +64,7 @@ export default function TabOneScreen() {
         headerHeight={headerHeight}
         insets={insets}
         tabBarHeight={tabBarHeight}
-        transportInfo={account.transport ?? undefined}
+        transportInfo={account?.transport ?? undefined}
       />
     );
   }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
@@ -108,6 +108,14 @@ export default function TabOneScreen() {
     </>
   );
 }
+
+const CalendarScreenWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <TabOneScreen />
+  </MainTabErrorBoundary>
+);
+
+export default CalendarScreenWithBoundary;
 
 const styles = StyleSheet.create({
   container: {

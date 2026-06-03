@@ -14,7 +14,6 @@ import DateHeader from '../atoms/DateHeader';
 import EmptyState from '../atoms/EmptyState';
 import TasksSummary from '../atoms/TasksSummary';
 import TaskItem from './TaskItem';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 
 const AnimatedSectionList = createAnimatedComponent(SectionList<Homework, HomeworkSection>);
 
@@ -110,7 +109,7 @@ const TasksList: React.FC<TasksListProps> = ({
     return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
   }, []);
 
-  const bottomTabBarHeight = useBottomTabBarHeight();
+  const bottomTabBarHeight = insets.bottom;
 
   return (
     <AnimatedSectionList

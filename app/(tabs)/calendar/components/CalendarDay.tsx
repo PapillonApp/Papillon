@@ -3,7 +3,6 @@ import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
 import { Dimensions,FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
 
-import { Transit } from "@/components/Transit";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { TransportStorage } from "@/stores/account/types";
 import Course from "@/ui/components/Course";
@@ -23,6 +22,28 @@ interface CalendarDayProps {
   insets: any;
   tabBarHeight: number;
   transportInfo?: TransportStorage;
+}
+
+function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+
+  for (let i = 0; i < a.length; i++) {
+    const left = a[i];
+    const right = b[i];
+    if (
+      left.id !== right.id ||
+      left.from?.getTime?.() !== right.from?.getTime?.() ||
+      left.to?.getTime?.() !== right.to?.getTime?.() ||
+      left.status !== right.status ||
+      left.customStatus !== right.customStatus
+    ) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, headerHeight, insets, tabBarHeight, transportInfo }: CalendarDayProps) => {
@@ -65,15 +86,6 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     if (!dayEvents || dayEvents.length === 0) {return dayEvents;}
     const result: any[] = [];
 
-    // Add transport departure
-    if (transportInfo?.enabled ?? false) {
-      result.push({
-        type: "transit",
-        isDeparture: true,
-        targetTime: dayEvents[0].from.getTime() / 1000,
-      });
-    }
-
     // Add separator between events
     for (let i = 0; i < dayEvents.length; i++) {
       result.push(dayEvents[i]);
@@ -95,15 +107,6 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
       }
     }
 
-    // Add transport arrival
-    if (transportInfo?.enabled ?? false) {
-      result.push({
-        type: "transit",
-        isDeparture: false,
-        targetTime: result[result.length - 1].to.getTime() / 1000,
-      });
-    }
-
     return result;
   }, [dayEvents]);
 
@@ -119,7 +122,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
           paddingHorizontal: 12,
           paddingVertical: 12,
           gap: 4,
-          paddingTop: headerHeight + 6,
+          paddingTop: headerHeight - 8,
           paddingBottom: tabBarHeight + 6,
           ...(isEmpty ? { alignItems: "center" } : {}),
         }}
@@ -132,21 +135,9 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
             progressViewOffset={Platform.OS === 'android' ? headerHeight : 0}
           />
         }
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id || `${item.type}-${item.from || item.targetTime}`}
         ListEmptyComponent={<EmptyCalendar />}
         renderItem={({ item }: { item: SharedCourse }) => {
-          if ((item as any).type === "transit") {
-            return (
-              <Transit
-                isDeparture={item.isDeparture}
-                homeAddress={transportInfo?.homeAddress}
-                schoolAddress={transportInfo?.schoolAddress}
-                targetTime={item.targetTime}
-                service={transportInfo?.defaultApp ?? 'transit'}
-              />
-            );
-          }
-
           if ((item as any).type === "separator") {
             return (
               <Course
@@ -211,7 +202,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.onRefresh === nextProps.onRefresh &&
     prevProps.headerHeight === nextProps.headerHeight &&
-    JSON.stringify(prevProps.courses) === JSON.stringify(nextProps.courses)
+    areCoursesEquivalent(prevProps.courses, nextProps.courses)
   );
 });
 

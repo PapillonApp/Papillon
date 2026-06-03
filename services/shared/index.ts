@@ -641,12 +641,6 @@ export class AccountManager {
       return new module.Appscho(service.id);
     }
 
-    if (service.serviceId === Services.LANNION) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const module = require("@/services/lannion/index");
-      return new module.Lannion(service.id);
-    }
-
     error(
       "We're not able to find a plugin for service: " +
         service.serviceId +

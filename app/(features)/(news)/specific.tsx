@@ -24,6 +24,7 @@ import Item from "@/ui/components/Item";
 import ActionMenu from "@/ui/components/ActionMenu";
 import Typography from "@/ui/new/Typography";
 import List from "@/ui/new/List";
+import { useFont } from "@/utils/theme/fonts";
 
 export default function NewsPage() {
   const search = useLocalSearchParams();
@@ -55,6 +56,7 @@ export default function NewsPage() {
 
 
   const { colors } = useTheme();
+  const font = useFont();
 
   const styles = {
     "papillon": {
@@ -64,9 +66,11 @@ export default function NewsPage() {
         ...VARIANTS,
         p: {
           ...VARIANTS.body1,
+          fontFamily: font("medium"),
         },
         div: {
           ...VARIANTS.body1,
+          fontFamily: font("medium"),
         },
         a: {
           color: colors.primary,
@@ -80,18 +84,18 @@ export default function NewsPage() {
       html: StyleSheet.create({
         ...VARIANTS,
         p: {
-          fontFamily: "serif_medium"
+          fontFamily: font("medium")
         },
         div: {
-          fontFamily: "serif_medium"
+          fontFamily: font("medium")
         },
         h1: {
-          fontFamily: "serif_bold"
+          fontFamily: font("bold")
         },
         a: {
           color: "#a26900ff",
           textDecorationLine: 'underline',
-          fontFamily: "serif_medium"
+          fontFamily: font("medium")
         },
       })
     }

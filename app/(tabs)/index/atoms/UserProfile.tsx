@@ -9,6 +9,7 @@ import { Pressable } from 'react-native';
 
 import { initializeAccountManager } from '@/services/shared';
 import { useAccountStore } from '@/stores/account';
+import { useSettingsStore } from '@/stores/settings';
 import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
@@ -73,6 +74,18 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
               }
 
               const store = useAccountStore.getState();
+              const settingsStore = useSettingsStore.getState();
+              const currentAccountId = store.lastUsedAccount;
+              const currentDisabledTabs = settingsStore.personalization.disabledTabs ?? [];
+              const nextDisabledTabsByAccount = {
+                ...(settingsStore.personalization.disabledTabsByAccount ?? {}),
+                ...(currentAccountId ? { [currentAccountId]: currentDisabledTabs } : {}),
+              };
+              const disabledTabsForAccount = nextDisabledTabsByAccount[nativeEvent.event] ?? [];
+              settingsStore.mutateProperty("personalization", {
+                disabledTabsByAccount: nextDisabledTabsByAccount,
+                disabledTabs: disabledTabsForAccount,
+              });
               store.setLastUsedAccount(nativeEvent.event);
               await initializeAccountManager();
             }}

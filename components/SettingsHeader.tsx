@@ -4,6 +4,7 @@ import { Image, ImageSourcePropType, View, Switch } from "react-native"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
 import Icon from "@/ui/components/Icon"
+import NativeSwitch from "@/ui/native/NativeSwitch"
 
 interface SettingsHeaderProps {
   color: string
@@ -70,10 +71,11 @@ export default function SettingsHeader({
         hAlign="center"
         vAlign="center"
         style={{
-          backgroundColor: colors.card,
+          backgroundColor: colors.item,
           gap: 10,
           padding: 18,
-          borderRadius: 15
+          borderRadius: 15,
+          elevation: 2,
         }}
       >
         {iconName && (
@@ -95,7 +97,7 @@ export default function SettingsHeader({
                 {switchLabel}
               </Typography>
             )}
-            <Switch
+            <NativeSwitch
               value={switchValue}
               onValueChange={onSwitchChange}
               trackColor={{ false: colors.border, true: switchColor }}

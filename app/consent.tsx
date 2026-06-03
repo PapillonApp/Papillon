@@ -15,6 +15,7 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import { checkConsent, setConsent } from "@/utils/logger/consent";
+import { ListTouchable } from "@/ui/new/List";
 
 export default function ConsentScreen() {
   const insets = useSafeAreaInsets();
@@ -122,7 +123,7 @@ export default function ConsentScreen() {
           }}
         >
           {consents.map((consent) => (
-            <AnimatedPressable
+            <ListTouchable
               style={{
                 width: "100%",
               }}
@@ -159,7 +160,7 @@ export default function ConsentScreen() {
                   </Typography>
                 </View>
               </View>
-            </AnimatedPressable>
+            </ListTouchable>
           ))}
         </View>
 

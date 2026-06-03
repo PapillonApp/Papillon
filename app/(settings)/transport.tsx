@@ -166,7 +166,7 @@ export default function TransportView() {
                 }}
               />
             </List.Leading>
-            {(transport?.defaultApp ?? "transit") === service.id && (
+            {(transport?.defaultApp ?? "google_maps") === service.id && (
               <List.Trailing>
                 <Papicons name={"Check"} fill={"#E8901C"} />
               </List.Trailing>

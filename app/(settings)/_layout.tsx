@@ -3,11 +3,12 @@ import React from "react";
 import { Platform, StatusBar } from "react-native";
 
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { t } from "i18next";
 import AndroidHeaderBackground from "@/components/AndroidHeaderBackground";
 
 export default function Layout() {
+  const screenOptions = useScreenOptions();
 
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
@@ -16,7 +17,7 @@ export default function Layout() {
     headerTransparent: runsIOS26,
     headerShadowVisible: false,
     headerBackground: AndroidHeaderBackground
-  }), []);
+  }), [screenOptions]);
 
   return (
     <>
@@ -136,6 +137,15 @@ export default function Layout() {
           name="transport"
           options={{
             headerTitle: t("Settings_Transport_Title"),
+          }}
+        />
+        <Stack.Screen
+          name="features"
+          options={{
+            headerTitle: t("Settings_Features_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
           }}
         />
       </Stack>

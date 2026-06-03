@@ -16,9 +16,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Transit from "@/services/transit";
-import { PlaceSuggestion } from "@/services/transit/models/PlaceSuggestion";
-import { Stop } from "@/services/transit/models/Stop";
 import { TransportAddress } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
@@ -91,27 +88,23 @@ export const AddressModal = ({
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const transit = new Transit();
 
   const [status, requestPermission] = Location.useForegroundPermissions();
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchPlaceResults, setSearchPlaceResults] = useState<
-    PlaceSuggestion[]
-  >([]);
-  const [searchStopResults, setSearchStopResults] = useState<Stop[]>([]);
+  const [searchResults, setSearchResults] = useState<TransportAddress[]>([]);
 
-  let timeout: number | null = null;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
 
   const search = async () => {
-    const location = await Location.getCurrentPositionAsync();
-    const res = await transit.suggestions(
-      location.coords.latitude,
-      location.coords.longitude,
-      searchTerm
-    );
-
-    setSearchPlaceResults(res.suggestions.places);
-    setSearchStopResults(res.suggestions.stops);
+    const geocodes = await Location.geocodeAsync(searchTerm);
+    const results = geocodes.slice(0, 5).map((item) => ({
+      firstTitle: searchTerm,
+      secondTitle: `${item.latitude.toFixed(5)}, ${item.longitude.toFixed(5)}`,
+      address: searchTerm,
+      latitude: item.latitude,
+      longitude: item.longitude,
+    }));
+    setSearchResults(results);
   };
 
   const currentLocationToTransportAddress =
@@ -127,41 +120,12 @@ export const AddressModal = ({
       });
     };
 
-  const placeToTransportAddress = async (
-    place: PlaceSuggestion
-  ): Promise<TransportAddress> => {
-    const details = await transit.locationDetails(place.place_id);
-
-    return {
-      firstTitle: place.structured_formatting.main_text,
-      secondTitle: place.structured_formatting.secondary_text,
-      address: details.placeDetails.result.formatted_address,
-      latitude: details.placeDetails.result.geometry.location.lat,
-      longitude: details.placeDetails.result.geometry.location.lng,
-    };
-  };
-
-  const stopToTransportAddress = async (
-    stop: Stop
-  ): Promise<TransportAddress> => {
-    return new Promise(resolve => {
-      resolve({
-        firstTitle: stop.stop_name,
-        secondTitle: stop.city_name,
-        address: `${stop.stop_name}, ${stop.city_name}`,
-        latitude: stop.stop_lat,
-        longitude: stop.stop_lon,
-      });
-    });
-  };
-
   useEffect(() => {
     if (timeout !== null) {
       clearTimeout(timeout);
     }
     if (searchTerm.length === 0) {
-      setSearchPlaceResults([]);
-      setSearchStopResults([]);
+      setSearchResults([]);
       return;
     }
     timeout = setTimeout(() => search(), 200);
@@ -251,39 +215,19 @@ export const AddressModal = ({
               </List>
             )}
 
-            {searchPlaceResults.length > 0 && (
+            {searchResults.length > 0 && (
               <>
                 <Typography variant={"h6"} color={"secondary"}>
                   {t("Settings_Transport_Place")}
                 </Typography>
                 <List>
-                  {searchPlaceResults.map((item: PlaceSuggestion) => (
+                  {searchResults.map((item: TransportAddress, index: number) => (
                     <AddressItem
-                      key={item.place_id}
+                      key={`${item.latitude}-${item.longitude}-${index}`}
                       icon={"MapPin"}
-                      firstLine={item.structured_formatting.main_text}
-                      secondLine={item.structured_formatting.secondary_text}
-                      convertFunction={() => placeToTransportAddress(item)}
-                      save={onConfirm}
-                    />
-                  ))}
-                </List>
-              </>
-            )}
-
-            {searchStopResults.length > 0 && (
-              <>
-                <Typography variant={"h6"} color={"secondary"}>
-                  {t("Settings_Transport_Stops")}
-                </Typography>
-                <List>
-                  {searchStopResults.map((item: Stop) => (
-                    <AddressItem
-                      key={item.raw_stop_id}
-                      icon={"Bus"}
-                      firstLine={item.stop_name}
-                      secondLine={item.city_name}
-                      convertFunction={() => stopToTransportAddress(item)}
+                      firstLine={item.firstTitle}
+                      secondLine={item.secondTitle}
+                      convertFunction={() => Promise.resolve(item)}
                       save={onConfirm}
                     />
                   ))}
