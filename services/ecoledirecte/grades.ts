@@ -7,6 +7,8 @@ import { warn } from "@/utils/logger/logger";
 import { Grade, GradeScore, Period, PeriodGrades, Subject, } from "../shared/grade";
 import { SkillChipLevel } from "@/ui/components/SkillChip";
 import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
+import is from "@sindresorhus/is";
+import undefined = is.undefined;
 
 export async function fetchEDGradePeriods(
   session: Client,
@@ -167,6 +169,7 @@ function parseGradeValue(value?: string | number | null): GradeScore {
   if (typeof score === "number" && Number.isFinite(score)) {
     return { value: score };
   }
+
 
   return { value: 0, disabled: true, status: formatGradeStatus(value) };
 }

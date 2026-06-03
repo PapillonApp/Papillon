@@ -135,8 +135,14 @@ export default function GradesModal() {
             <ModalOverhead
               color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
               emoji={subjectInfo.emoji}
-              subject={subjectInfo.name}
-              title={grade.description}
+              subject={
+                (grade.skills?.length ?? 0 > 0)
+                  ? grade.description
+                  : subjectInfo.name
+              }
+              title={
+                (grade.skills?.length ?? 0 > 0) ? undefined : grade.description
+              }
               date={new Date(grade.givenAt)}
               overhead={
                 <ModalOverHeadScore
@@ -145,7 +151,9 @@ export default function GradesModal() {
                   }
                   score={
                     grade.studentScore?.disabled
-                      ? String(grade.studentScore?.status)
+                      ? (grade.skills?.length ?? 0 > 0)
+                        ? subjectInfo.name
+                        : String(grade.studentScore?.status)
                       : grade.studentScore
                         ? String(grade.studentScore?.value.toFixed(2))
                         : undefined
@@ -186,7 +194,7 @@ export default function GradesModal() {
                 is_outlined={true}
               />
             )}
-            {grade.studentScore && (
+            {grade.studentScore && !grade.studentScore.disabled && (
               <Stack
                 card
                 direction="horizontal"
@@ -271,13 +279,15 @@ export default function GradesModal() {
           </List.Section>
         )}
 
-        {grade.studentScore && (
+        {grade.studentScore && !grade.studentScore?.disabled && (
           <List.Section>
             <List.SectionTitle>
               <List.Label>{t("Grades_Details_Title")}</List.Label>
             </List.SectionTitle>
 
-            {grade.studentScore && grade.outOf && grade.outOf.value !== displayScaleMax ? (
+            {grade.studentScore &&
+            grade.outOf &&
+            grade.outOf.value !== displayScaleMax ? (
               <List.Item>
                 <List.Leading>
                   <Icon>
@@ -293,9 +303,14 @@ export default function GradesModal() {
                 <List.Trailing>
                   <ContainedNumber
                     color={subjectInfo.color}
-                    denominator={formatAssumed20ForDisplay(0, displayScale).denominator}
+                    denominator={
+                      formatAssumed20ForDisplay(0, displayScale).denominator
+                    }
                   >
-                    {formatAssumed20ForDisplay((grade.studentScore.value / grade.outOf.value) * 20, displayScale).value.toFixed(2)}
+                    {formatAssumed20ForDisplay(
+                      (grade.studentScore.value / grade.outOf.value) * 20,
+                      displayScale
+                    ).value.toFixed(2)}
                   </ContainedNumber>
                 </List.Trailing>
               </List.Item>
@@ -354,64 +369,66 @@ export default function GradesModal() {
             </List.Item>
           </List.Section>
         )}
-        {grade.studentScore && (
+        {grade.studentScore && !grade.studentScore?.disabled && (
           <List.Section>
-          <List.SectionTitle>
-            <List.Label>{t("Grades_Influence_Title")}</List.Label>
-          </List.SectionTitle>
+            <List.SectionTitle>
+              <List.Label>{t("Grades_Influence_Title")}</List.Label>
+            </List.SectionTitle>
 
-          <List.Item>
-            <List.Leading>
-              <Icon>
-                <Papicons name={"Grades"} />
-              </Icon>
-            </List.Leading>
-            <Typography variant="title">{t("Grades_Avg_All_Title")}</Typography>
-            <List.Trailing>
-              <ContainedNumber
-                color={
-                  avgInfluence === 0
-                    ? "#757575"
-                    : avgInfluence >= 0
-                      ? "#2e8900"
-                      : "#990000"
-                }
-                denominator="pts"
-              >
-                {avgInfluence >= 0
-                  ? `+${avgInfluence.toFixed(2)}`
-                  : avgInfluence.toFixed(2)}
-              </ContainedNumber>
-            </List.Trailing>
-          </List.Item>
+            <List.Item>
+              <List.Leading>
+                <Icon>
+                  <Papicons name={"Grades"} />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">
+                {t("Grades_Avg_All_Title")}
+              </Typography>
+              <List.Trailing>
+                <ContainedNumber
+                  color={
+                    avgInfluence === 0
+                      ? "#757575"
+                      : avgInfluence >= 0
+                        ? "#2e8900"
+                        : "#990000"
+                  }
+                  denominator="pts"
+                >
+                  {avgInfluence >= 0
+                    ? `+${avgInfluence.toFixed(2)}`
+                    : avgInfluence.toFixed(2)}
+                </ContainedNumber>
+              </List.Trailing>
+            </List.Item>
 
-          <List.Item>
-            <List.Leading>
-              <Icon>
-                <Papicons name={"Apple"} />
-              </Icon>
-            </List.Leading>
-            <Typography variant="title">
-              {t("Grades_Avg_Group_Title")}
-            </Typography>
-            <List.Trailing>
-              <ContainedNumber
-                color={
-                  avgClass === 0
-                    ? "#757575"
-                    : avgClass >= 0
-                      ? "#2e8900"
-                      : "#990000"
-                }
-                denominator="pts"
-              >
-                {avgClass >= 0
-                  ? `+${avgClass.toFixed(2)}`
-                  : avgClass.toFixed(2)}
-              </ContainedNumber>
-            </List.Trailing>
-          </List.Item>
-        </List.Section>
+            <List.Item>
+              <List.Leading>
+                <Icon>
+                  <Papicons name={"Apple"} />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">
+                {t("Grades_Avg_Group_Title")}
+              </Typography>
+              <List.Trailing>
+                <ContainedNumber
+                  color={
+                    avgClass === 0
+                      ? "#757575"
+                      : avgClass >= 0
+                        ? "#2e8900"
+                        : "#990000"
+                  }
+                  denominator="pts"
+                >
+                  {avgClass >= 0
+                    ? `+${avgClass.toFixed(2)}`
+                    : avgClass.toFixed(2)}
+                </ContainedNumber>
+              </List.Trailing>
+            </List.Item>
+          </List.Section>
         )}
       </List>
     </>

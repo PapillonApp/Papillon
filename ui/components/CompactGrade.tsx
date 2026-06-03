@@ -8,7 +8,6 @@ import SkeletonView from "@/ui/components/SkeletonView";
 import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
 
-import AnimatedPressable from "./AnimatedPressable";
 import Stack from "./Stack";
 import Typography from "./Typography";
 import { SkillChip } from "@/ui/components/SkillChip";
@@ -62,8 +61,8 @@ export const CompactGrade = ({
         borderRadius: 24,
         borderCurve: "continuous",
         borderColor: adjust(color, theme.dark ? 0.7 : -0.7) + "28",
-        borderWidth: Platform.OS !== 'android' ? 1 : 0,
-        shadowColor: '#000',
+        borderWidth: Platform.OS !== "android" ? 1 : 0,
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
         shadowRadius: 3,
@@ -79,14 +78,17 @@ export const CompactGrade = ({
       >
         <View
           style={{
-            overflow: Platform.OS === 'android' ? 'hidden' : 'visible',
+            overflow: Platform.OS === "android" ? "hidden" : "visible",
             flex: 1,
             height: "100%",
             borderRadius: 24,
-            backgroundColor: Platform.OS !== 'android' ? colors.card : adjust(color, theme.dark ? 0.5 : -0.5) + "18",
+            backgroundColor:
+              Platform.OS !== "android"
+                ? colors.card
+                : adjust(color, theme.dark ? 0.5 : -0.5) + "18",
           }}
         >
-          {Platform.OS !== 'android' && (
+          {Platform.OS !== "android" && (
             <LinearGradient
               colors={[color + "10", color + "00"]}
               locations={[0, 1]}
@@ -105,7 +107,8 @@ export const CompactGrade = ({
             style={{
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: variant === "home" ? "space-between" : "flex-start",
+              justifyContent:
+                variant === "home" ? "space-between" : "flex-start",
               gap: 8,
               paddingHorizontal: 12,
               paddingVertical: 10,
@@ -129,8 +132,8 @@ export const CompactGrade = ({
                   width={28}
                   height={28}
                   card
-                  hAlign='center'
-                  vAlign='center'
+                  hAlign="center"
+                  vAlign="center"
                   radius={32}
                   backgroundColor={color + "22"}
                 >
@@ -138,7 +141,7 @@ export const CompactGrade = ({
                 </Stack>
               )}
             </View>
-            {title &&
+            {title && (
               <Typography
                 variant="body1"
                 color={
@@ -154,8 +157,8 @@ export const CompactGrade = ({
               >
                 {capitalizeWords(title)}
               </Typography>
-            }
-            {date &&
+            )}
+            {date && (
               <Typography
                 variant="body1"
                 color={
@@ -171,7 +174,7 @@ export const CompactGrade = ({
                   month: "short",
                 })}
               </Typography>
-            }
+            )}
           </View>
           <View
             style={{
@@ -196,39 +199,23 @@ export const CompactGrade = ({
             >
               {description
                 ? description
-                : t('Grade_NoDescription', { subject: title })
-              }
+                : t("Grade_NoDescription", { subject: title })}
             </Typography>
 
             <Stack
               noShadow
-              direction='horizontal'
+              direction="horizontal"
               gap={2}
               card
-              hAlign='end'
-              vAlign='end'
+              hAlign="end"
+              vAlign="end"
               padding={[9, 3]}
               radius={32}
               backgroundColor={trailingBackground}
             >
               {disabled ? (
                 <>
-                  <Typography color={trailingForeground} variant='navigation'>
-                    {status}
-                  </Typography>
-                </>
-              ) : (
-                <>
-                  {score ? (
-                    <>
-                      <Typography color={trailingForeground} variant='navigation'>
-                        {score.toFixed(2)}
-                      </Typography>
-                      <Typography color={trailingForeground + "99"} variant='body2'>
-                        /{outOf}
-                      </Typography>
-                    </>
-                  ) : (
+                  {skillLevel.length > 0 ? (
                     <Stack direction={"horizontal"} hAlign={"center"}>
                       <Stack direction={"horizontal"}>
                         {skillLevel.slice(0, 4).map((item, index) => (
@@ -255,6 +242,33 @@ export const CompactGrade = ({
                         </Typography>
                       )}
                     </Stack>
+                  ) : (
+                    <Typography color={trailingForeground} variant="navigation">
+                      {status}
+                    </Typography>
+                  )}
+                </>
+              ) : (
+                <>
+                  {score ? (
+                    <>
+                      <Typography
+                        color={trailingForeground}
+                        variant="navigation"
+                      >
+                        {score.toFixed(2)}
+                      </Typography>
+                      <Typography
+                        color={trailingForeground + "99"}
+                        variant="body2"
+                      >
+                        /{outOf}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography color={trailingForeground} variant="navigation">
+                      {t("Grade_Unavailable")}
+                    </Typography>
                   )}
                 </>
               )}

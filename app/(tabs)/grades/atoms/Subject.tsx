@@ -61,6 +61,10 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
           backgroundColor={trailingBackground}
         >
           {grade.studentScore === undefined ? (
+            <LegacyTypography color={trailingForeground} variant="navigation">
+              {t("Grade_Unavailable")}
+            </LegacyTypography>
+          ) : grade.studentScore.disabled ? (
             <>
               {grade.skills.length > 0 ? (
                 <Stack direction={"horizontal"} hAlign={"center"}>
@@ -71,8 +75,11 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
                         level={item.score}
                         style={{
                           marginLeft: index > 0 ? -13 : -5,
-                          marginRight: grade.skills.length <= 4 &&
-                            index == Math.min(grade.skills.length - 1, 3) ? -5 : 0,
+                          marginRight:
+                            grade.skills.length <= 4 &&
+                            index == Math.min(grade.skills.length - 1, 3)
+                              ? -5
+                              : 0,
                         }}
                       />
                     ))}
@@ -91,15 +98,9 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
                   color={trailingForeground}
                   variant="navigation"
                 >
-                  {t("Grade_Unavailable")}
+                  {grade.studentScore.status}
                 </LegacyTypography>
               )}
-            </>
-          ) : grade.studentScore.disabled ? (
-            <>
-              <LegacyTypography color={trailingForeground} variant="navigation">
-                {grade.studentScore.status}
-              </LegacyTypography>
             </>
           ) : (
             grade.studentScore.value !== undefined && (
@@ -199,7 +200,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
           style={{ width: "100%", paddingVertical: 8 }}
           activeOpacity={0.5}
           onPress={handlePressSubject}
-          disabled={subject.studentAverage === undefined}
+          disabled={subject.studentAverage.disabled}
         >
           <Stack
             direction="horizontal"
@@ -231,46 +232,64 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
             </Stack>
 
             {subject.studentAverage && (
-              <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
+              <Stack
+                inline
+                direction="horizontal"
+                gap={1}
+                hAlign="end"
+                vAlign="end"
+              >
                 {subject.studentAverage.disabled ? (
-                  isUnknownSubjectAverage && computedSubjectAverage ? (
-                  <LegacyTypography
-                    variant="h5"
-                    inline
-                    style={{ marginTop: 0, fontSize: 19 }}
-                    color={
-                      computedSubjectAverage.value === displayedMaximumAverage
-                        ? subjectAdjustedColor
-                        : undefined
-                    }
-                  >
-                    {computedSubjectAverage.value.toFixed(2)}
-                  </LegacyTypography>
-                  ) : (
-                    <LegacyTypography variant='h5' inline style={{ marginTop: 0 }}>
-                      {subject.studentAverage.status}
+                  isUnknownSubjectAverage &&
+                  computedSubjectAverage && (
+                    <LegacyTypography
+                      variant="h5"
+                      inline
+                      style={{ marginTop: 0, fontSize: 19 }}
+                      color={
+                        computedSubjectAverage.value === displayedMaximumAverage
+                          ? subjectAdjustedColor
+                          : undefined
+                      }
+                    >
+                      {computedSubjectAverage.value.toFixed(2)}
                     </LegacyTypography>
                   )
                 ) : (
-                  <LegacyTypography
-                    variant='h5'
-                    inline
-                    style={{ marginTop: 0, fontSize: 19 }}
-                    color={
-                      subject.studentAverage.value === subject.maximum.value
-                        ? subjectAdjustedColor
-                        : undefined
-                    }
-                  >
-                    {displayedSubjectAverage.value.toFixed(2)}
-                  </LegacyTypography>
+                  <>
+                    <LegacyTypography
+                      variant="h5"
+                      inline
+                      style={{ marginTop: 0, fontSize: 19 }}
+                      color={
+                        subject.studentAverage.value === subject.maximum.value
+                          ? subjectAdjustedColor
+                          : undefined
+                      }
+                    >
+                      {displayedSubjectAverage.value.toFixed(2)}
+                    </LegacyTypography>
+                    <LegacyTypography
+                      inline
+                      variant="body2"
+                      color={theme.colors.text + "99"}
+                      style={{ marginBottom: 4 }}
+                    >
+                      {isUnknownSubjectAverage && computedSubjectAverage
+                        ? computedSubjectAverage.denominator
+                        : displayedSubjectAverage.denominator}
+                    </LegacyTypography>
+                  </>
                 )}
-                <LegacyTypography inline variant="body2" color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
-                  {isUnknownSubjectAverage && computedSubjectAverage ? computedSubjectAverage.denominator : displayedSubjectAverage.denominator}
-                </LegacyTypography>
-                {subject.studentAverage.value === subject.maximum.value && !subject.studentAverage.disabled && (
-                  <Papicons style={{ alignSelf: 'center', marginLeft: 4 }} name="crown" color={subjectAdjustedColor} size={20} />
-                )}
+                {subject.studentAverage.value === subject.maximum.value &&
+                  !subject.studentAverage.disabled && (
+                    <Papicons
+                      style={{ alignSelf: "center", marginLeft: 4 }}
+                      name="crown"
+                      color={subjectAdjustedColor}
+                      size={20}
+                    />
+                  )}
               </Stack>
             )}
           </Stack>
