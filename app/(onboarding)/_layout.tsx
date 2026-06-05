@@ -57,6 +57,10 @@ export default function OnboardingLayout() {
           name="services/appscho"
           options={{ headerShown: false, title: "" }}
         />
+        <Stack.Screen
+          name="services/wigor"
+          options={{ headerShown: false, title: "" }}
+        />
       </Stack>
     </View>
   );
