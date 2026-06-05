@@ -95,6 +95,15 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       },
     },
     {
+      name: "wigor",
+      route: "wigor",
+      title: t("ONBOARDING_SERVICE_WIGOR"),
+      image: require("@/assets/images/icon.png"),
+      hasLimitedSupport: false,
+      type: ["univ"],
+      onPress: () => { redirect({ pathname: './services/wigor/list' }) }
+    },
+    {
       name: "appscho",
       route: "appscho",
       title: t("ONBOARDING_OTHER_UNIVERSITIES"),
@@ -148,6 +157,14 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       onPress: () => {
         redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
       },
+    },
+    {
+      name: "wigor",
+      title: t("ONBOARDING_SERVICE_WIGOR"),
+      hasLimitedSupport: false,
+      type: "main",
+      image: require("@/assets/images/icon.png"),
+      onPress: () => { redirect({ pathname: './services/wigor/list' }) }
     },
     {
       name: "appscho",
