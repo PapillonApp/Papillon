@@ -14,6 +14,8 @@ export function getServiceName(service: Services): string {
     return "Alise";
   case Services.ECOLEDIRECTE:
     return "ÉcoleDirecte";
+  case Services.WIGOR:
+    return "Wigor";
   default:
     return "Pronote";
   }
