@@ -41,6 +41,7 @@
     "@sbaiahmed1/react-native-blur": "^4.2.1",
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.4.18",
+    "@studentsphere/linkgor": "^1.0.3",
     "@types/uuid": "^10.0.0",
     "alise-api": "^0.2.5",
     "buffer": "^6.0.3",
