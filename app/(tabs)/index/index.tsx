@@ -35,7 +35,7 @@ const HomeScreen = () => {
 
   // Account
   const store = useAccountStore();
-  const accounts = useAccountStore(state => state.accounts);
+  const accounts = useAccountStore((state) => state.accounts);
   const account = accounts.find(a => a.id === store.lastUsedAccount);
   const router = useRouter();
 
@@ -60,12 +60,6 @@ const HomeScreen = () => {
       return;
     }
 
-    checkConsent().then(consent => {
-      if (!consent.given) {
-        router.push("../consent");
-      }
-    });
-
     if (account) {
       if (account.transport === undefined)
         store.initializeTransport(account.schoolName);
@@ -74,6 +68,14 @@ const HomeScreen = () => {
       );
     }
   }, [account, accounts.length, router, store]);
+
+  React.useEffect(() => {
+    checkConsent().then(consent => {
+      if (!consent.given) {
+        router.push("../consent");
+      }
+    });
+  }, []);
 
   useHomeData();
   const { courses } = useTimetableWidgetData();

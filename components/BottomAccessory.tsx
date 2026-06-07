@@ -46,6 +46,7 @@ function NextCourseAccessory({ placement }) {
         locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
         addSuffix,
         unit: 'day',
+        roundingMethod: "ceil"
       });
     }
 

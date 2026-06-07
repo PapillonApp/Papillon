@@ -1,7 +1,6 @@
 import ModalOverhead, { ModalOverHeadScore } from "@/components/ModalOverhead";
 import Subject from "@/database/models/Subject";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import TypographyLegacy from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
@@ -90,7 +89,7 @@ const SubjectInfo = () => {
 
   return (
     <>
-      {Platform.OS !== 'android' && (
+      {Platform.OS !== "android" && (
         <LinearGradient
           colors={[subjectColor, colors.background]}
           style={{
@@ -101,66 +100,93 @@ const SubjectInfo = () => {
             height: 300,
             width: "100%",
             zIndex: -9,
-            opacity: 0.4
+            opacity: 0.4,
           }}
         />
       )}
 
       <List
         contentInsetAdjustmentBehavior="automatic"
-        engine='FlashList'
-
+        engine="FlashList"
         ListHeaderComponent={
-          <View style={{ marginBottom: 24, alignItems: 'center' }}>
+          <View style={{ marginBottom: 24, alignItems: "center" }}>
             <ModalOverhead
               subject={subjectName}
-              color={Platform.OS === 'ios' ? subjectColor : colors.primary}
+              color={Platform.OS === "ios" ? subjectColor : colors.primary}
               emoji={subjectEmoji}
-              overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: subject.grades.length })}
+              overtitle={i18n.t("Grades_SubjectInfo_NbGrades", {
+                number: subject.grades.length,
+              })}
               overhead={
                 <ModalOverHeadScore
-                  color={Platform.OS === 'ios' ? subjectColor : colors.primary}
-                  score={subject.studentAverage.disabled
-                    ? (isUnknownSubjectAverage && computedSubjectAverage
-                      ? String(computedSubjectAverage.value.toFixed(2))
-                      : String(subject.studentAverage.status))
-                    : String(displayedSubjectAverage.value.toFixed(2))}
+                  color={Platform.OS === "ios" ? subjectColor : colors.primary}
+                  score={
+                    subject.studentAverage.disabled
+                      ? isUnknownSubjectAverage && computedSubjectAverage
+                        ? String(computedSubjectAverage.value.toFixed(2))
+                        : String(subject.studentAverage.status)
+                      : String(displayedSubjectAverage.value.toFixed(2))
+                  }
                   outOf={fallbackOutOf}
                 />
               }
               style={{
-                marginBottom: (!subject.studentAverage.disabled && subject.studentAverage.value === subject.maximum.value) ? 12 : 0
+                marginBottom:
+                  !subject.studentAverage.disabled &&
+                  subject.studentAverage.value === subject.maximum.value
+                    ? 12
+                    : 0,
               }}
             />
 
-            {(!subject.studentAverage.disabled && subject.studentAverage.value === subject.maximum.value) && (
-              <Stack
-                direction="horizontal"
-                gap={8}
-                backgroundColor={adjust(subjectColor, theme.dark ? 0.3 : -0.3)}
-                padding={[12, 6]}
-                radius={32}
-                hAlign="center"
-                vAlign="center"
-              >
-                <Papicons size={20} name="crown" color={colorCheck("#FFFFFF", [adjust(subjectColor, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
-                <TypographyLegacy color={colorCheck("#FFFFFF", [adjust(subjectColor, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
-                  {i18n.t("SubjectInfo_MaxAverage_Description")}
-                </TypographyLegacy>
-              </Stack>
-            )}
+            {!subject.studentAverage.disabled &&
+              subject.studentAverage.value === subject.maximum.value && (
+                <Stack
+                  direction="horizontal"
+                  gap={8}
+                  backgroundColor={adjust(
+                    subjectColor,
+                    theme.dark ? 0.3 : -0.3
+                  )}
+                  padding={[12, 6]}
+                  radius={32}
+                  hAlign="center"
+                  vAlign="center"
+                >
+                  <Papicons
+                    size={20}
+                    name="crown"
+                    color={
+                      colorCheck("#FFFFFF", [
+                        adjust(subjectColor, theme.dark ? 0.3 : -0.3),
+                      ])
+                        ? "#FFFFFF"
+                        : "#000000"
+                    }
+                  />
+                  <TypographyLegacy
+                    color={
+                      colorCheck("#FFFFFF", [
+                        adjust(subjectColor, theme.dark ? 0.3 : -0.3),
+                      ])
+                        ? "#FFFFFF"
+                        : "#000000"
+                    }
+                    variant="body2"
+                  >
+                    {i18n.t("SubjectInfo_MaxAverage_Description")}
+                  </TypographyLegacy>
+                </Stack>
+              )}
           </View>
         }
-
         contentContainerStyle={{
           padding: 16,
         }}
       >
         <List.Section>
           <List.SectionTitle>
-            <List.Label>
-              {i18n.t("SubjectInfo_Stats_Header")}
-            </List.Label>
+            <List.Label>{i18n.t("SubjectInfo_Stats_Header")}</List.Label>
           </List.SectionTitle>
 
           {averagesData.map((average, index) => (
@@ -171,17 +197,22 @@ const SubjectInfo = () => {
                 </Icon>
               </List.Leading>
 
-              <Typography variant="title">
-                {average.title}
-              </Typography>
+              <Typography variant="title">{average.title}</Typography>
               <Typography variant="body1" color="textSecondary">
                 {average.subtitle}
               </Typography>
 
               <List.Trailing>
-                <Stack gap={2} direction="horizontal" vAlign="center" hAlign="end">
+                <Stack
+                  gap={2}
+                  direction="horizontal"
+                  vAlign="center"
+                  hAlign="end"
+                >
                   <TypographyLegacy variant="header" weight="semibold" inline>
-                    {average.disabled ? average.status : average.value.toFixed(2)}
+                    {average.disabled
+                      ? average.status
+                      : average.value.toFixed(2)}
                   </TypographyLegacy>
                   <TypographyLegacy variant="body2" inline color="secondary">
                     {displayedDenominator}

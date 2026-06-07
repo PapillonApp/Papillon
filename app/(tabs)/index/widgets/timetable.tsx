@@ -73,7 +73,7 @@ const HomeTimeTableWidget = React.memo(() => {
           teacher={item.teacher}
           room={item.room}
           color={getSubjectColor(item.subject)}
-          status={{ label: getRelativeDayStatus(item.from) ?? (item.customStatus ? item.customStatus : getStatusText(item.status)), canceled: (item.status === CourseStatus.CANCELED) }}
+          status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
           variant="primary"
           start={Math.floor(item.from.getTime() / 1000)}
           end={Math.floor(item.to.getTime() / 1000)}
