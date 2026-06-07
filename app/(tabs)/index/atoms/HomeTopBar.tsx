@@ -1,17 +1,27 @@
-import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { Platform, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ProgressiveBlurView } from "@sbaiahmed1/react-native-blur";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Stack from '@/ui/components/Stack';
+import Stack from "@/ui/components/Stack";
 
-import HomeTopBarButton from '../components/HomeTopBarButton';
-import UserProfile from './UserProfile';
-import Animated, { createAnimatedComponent, SharedValue, useAnimatedStyle } from "react-native-reanimated";
+import HomeTopBarButton from "../components/HomeTopBarButton";
+import UserProfile from "./UserProfile";
+import {
+  createAnimatedComponent,
+  SharedValue,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 
-const HomeTopBar = ({ height = 56, scroll }: { height?: number, scroll: SharedValue<number> }) => {
+const HomeTopBar = ({
+  height = 56,
+  scroll,
+}: {
+  height?: number;
+  scroll: SharedValue<number>;
+}) => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -28,17 +38,17 @@ const HomeTopBar = ({ height = 56, scroll }: { height?: number, scroll: SharedVa
 
   return (
     <>
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: height + insets.top,
-            zIndex: 10,
-          }}
-        >
-          {Platform.OS === "ios" && (
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: height + insets.top,
+          zIndex: 10,
+        }}
+      >
+        {Platform.OS === "ios" && (
           <ProgressiveBlurView
             blurAmount={10}
             blurType="systemMaterial"
@@ -47,13 +57,12 @@ const HomeTopBar = ({ height = 56, scroll }: { height?: number, scroll: SharedVa
             reducedTransparencyFallbackColor="#00000000"
             style={{ width: "100%", height: "101%" }}
           />
-            )}
-          <Animated.View></Animated.View>
-          <AnimatedLinearGradient
-            colors={["#000C", "#0000"]}
-            style={linearAnimatedStyle}
-          />
-        </View>
+        )}
+        <AnimatedLinearGradient
+          colors={["#0008", "#0000"]}
+          style={linearAnimatedStyle}
+        />
+      </View>
 
       <View
         style={{

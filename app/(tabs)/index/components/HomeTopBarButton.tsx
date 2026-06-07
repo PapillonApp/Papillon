@@ -1,10 +1,7 @@
 import React from 'react';
-import { Pressable, TouchableNativeFeedback, View } from 'react-native';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { TouchableNativeFeedback, View } from 'react-native';
 import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Stack from '@/ui/components/Stack';
 
 interface HomeTopBarButtonProps {
   icon: string;
@@ -24,7 +21,7 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) =>
           borderRadius: 30,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#FFFFFF28',
+          backgroundColor: '#00000038',
           overflow: 'hidden',
         }}
       >

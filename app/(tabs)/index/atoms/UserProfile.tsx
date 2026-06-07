@@ -1,10 +1,9 @@
 import { Papicons } from '@getpapillon/papicons';
-import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from '@react-navigation/native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Dimensions, Platform, StyleSheet } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import { Pressable } from 'react-native';
 
 import { initializeAccountManager } from '@/services/shared';
@@ -22,7 +21,7 @@ import ActionMenu from '@/ui/components/ActionMenu';
 
 const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
   const router = useRouter();
-  const { firstName, lastName, initials, profilePicture, level, establishment } = useUserProfileData() ?? {};
+  const { firstName, lastName, initials, profilePicture } = useUserProfileData() ?? {};
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const theme = useTheme();
@@ -42,16 +41,7 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
         gap={10}
       >
         <Pressable onPress={() => router.push('/(modals)/profile')}>
-          <UserProfileItemContainer
-            glassType="clear"
-            isInteractive={true}
-            glassTintColor="transparent"
-            glassOpacity={0}
-            style={{
-              borderRadius: 300,
-              zIndex: 999999,
-            }}
-          >
+          <UserProfileItemContainer>
             <Avatar
               size={40}
               initials={initials}
@@ -138,8 +128,8 @@ const UserProfileItemContainer = ({ children }: { children: React.ReactNode }) =
       <LiquidGlassView
         glassType="clear"
         isInteractive={true}
-        glassTintColor="transparent"
-        glassOpacity={0}
+        glassTintColor="#000"
+        glassOpacity={0.3}
         style={{
           borderRadius: 300,
           zIndex: 999999,
@@ -158,17 +148,5 @@ const UserProfileItemContainer = ({ children }: { children: React.ReactNode }) =
   )
 
 }
-
-const styles = StyleSheet.create({
-  container: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-  }
-});
 
 export default UserProfile;

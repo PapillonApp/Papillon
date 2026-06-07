@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable } from 'react-native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
@@ -14,7 +14,7 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) =>
     <LiquidGlassView
       glassType="clear"
       isInteractive={true}
-      glassOpacity={0}
+      glassOpacity={0.3}
       style={{
         width: 42,
         height: 42,
