@@ -125,7 +125,9 @@ const HomeScreen = () => {
           ref={flatListRef}
           renderItem={({ item }) => <HomeWidget item={item} />}
           keyExtractor={item => item.title}
-          ListHeaderComponent={<HomeHeader />}
+          ListHeaderComponent={
+            <HomeHeader isRestaurationServices={isRestaurationServices} />
+          }
           style={{ flex: 1 }}
           contentContainerStyle={{
             paddingBottom: Platform.OS === "ios" ? bottomTabBarHeight : 16,
