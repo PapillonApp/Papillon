@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import { useFont } from '@/utils/theme/fonts';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import { RestaurationServices } from "@/stores/account/types";
 
 // Static platform detection - computed once at module load
 const IS_IOS_WITH_PADDING = false;
@@ -20,10 +21,13 @@ function TabLayoutContent() {
 
 
   const settingsStore = useSettingsStore(state => state.personalization);
-  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
-  const disabledTabs = (lastUsedAccount
-    ? settingsStore?.disabledTabsByAccount?.[lastUsedAccount]
-    : settingsStore?.disabledTabs) || [];
+  const store = useAccountStore();
+  const accounts = useAccountStore(state => state.accounts);
+  const account = accounts.find(a => a.id === store.lastUsedAccount);
+  const disabledTabs =
+    (store.lastUsedAccount
+      ? settingsStore?.disabledTabsByAccount?.[store.lastUsedAccount]
+      : settingsStore?.disabledTabs) || [];
 
   const iOSBottomAccessoryEnabled = settingsStore?.iOSBottomAccessoryEnabled ?? true;
   const showTabBarLabels = settingsStore?.showTabBarLabels ?? true;
@@ -49,6 +53,7 @@ function TabLayoutContent() {
       minimizeBehavior={shouldRenderBottomAccessory ? "onScrollDown" : "never"}
       disableTransparentOnScrollEdge
       titlePositionAdjustment={runsIOS26 ? { vertical: 6, horizontal: 0 } : undefined}
+      hidden={RestaurationServices.includes(account?.services[0].serviceId ?? 0)}
     >
       {shouldRenderBottomAccessory && (
         <NativeTabs.BottomAccessory>

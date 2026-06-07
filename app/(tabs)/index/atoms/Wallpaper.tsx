@@ -6,7 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import { useSettingsStore } from '@/stores/settings';
 
-const Wallpaper = ({ height = 400, dim = true }) => {
+const Wallpaper = ({ height = 400, dim = true, blur = false }) => {
   try {
     const settingsStore = useSettingsStore(state => state.personalization);
     const currentWallpaper = settingsStore.wallpaper;
@@ -41,6 +41,7 @@ const Wallpaper = ({ height = 400, dim = true }) => {
         <Image
           source={image ? { uri: image } : require('@/assets/images/wallpapers/clouds.jpg')}
           style={[styles.image, { height }]}
+          blurRadius={blur ? 20 : undefined}
         />
 
         {dim &&
