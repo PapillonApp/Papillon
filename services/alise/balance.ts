@@ -24,7 +24,8 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
           label: event.label,
           currency: "€",
           amount: event.amount * 100,
-          createdByAccount: accountId
+          createdByAccount: accountId,
+          updatedAt: Date.now()
         }));
         
         const detectedPrice = detectMealPrice(mappedHistory);
@@ -41,14 +42,17 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
       console.warn("Error while detecting meal prices:", error);
     }
     
-    return [{
-      amount: account.balance * 100,
-      currency: "€",
-      lunchRemaining: lunchRemaining,
-      lunchPrice: mealPrice,
-      label: "Solde",
-      createdByAccount: accountId
-    }];
+    return [
+      {
+        amount: account.balance * 100,
+        currency: "€",
+        lunchRemaining: lunchRemaining,
+        lunchPrice: mealPrice,
+        label: "Solde",
+        createdByAccount: accountId,
+        updatedAt: Date.now(),
+      },
+    ];
   } catch (error) {
     console.error("Error retrieving Alise balance:", error);
     return [];

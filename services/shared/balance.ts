@@ -5,5 +5,6 @@ export interface Balance extends GenericInterface {
 	currency: string;
 	lunchRemaining: number;
 	lunchPrice: number;
-	label: string
+	label: string;
+  updatedAt?: number;
 }

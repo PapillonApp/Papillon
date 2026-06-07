@@ -11,6 +11,7 @@ export async function fetchTurboSelfBalance(session: Client, accountId: string):
     lunchRemaining: lunchPrice > 0 ? Math.floor(balance.estimatedAmount / lunchPrice) : 0,
     lunchPrice,
     label: balance.label,
-    createdByAccount: accountId
+    createdByAccount: accountId,
+    updatedAt: Date.now()
   }))
 }

@@ -21,6 +21,9 @@ import { useHomeHeaderData } from "../hooks/useHomeHeaderData";
 import WrappedBanner from "./WrappedBanner";
 import { useTheme } from "@react-navigation/native";
 import { ListTouchable } from "@/ui/new/List";
+import { formatDistanceToNowStrict } from "date-fns";
+import * as DateLocale from "date-fns/locale";
+import i18n from "@/utils/i18n";
 
 const HomeHeader = ({
   isRestaurationServices,
@@ -37,6 +40,7 @@ const HomeHeader = ({
     attendances,
     absencesCount,
     chats,
+    balances
   } = useHomeHeaderData();
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
@@ -186,10 +190,23 @@ const HomeHeader = ({
               }}
               nowrap
             >
-              18.50€
+              {balances.length < 1
+                ? "0.00€"
+                : `${((balances[0].amount ?? 0) / 100).toFixed(2)}${balances[0].currency ?? "€"}`}
             </Typography>
             <Typography color={"#FFFFFFB2"} variant={"body2"} nowrap>
-              Dernière actualisation il y a 20s
+              {t("HOME_BALANCE_LAST_REFRESH_AT", {
+                at: balances[0]?.updatedAt ?? 0 >= Date.now() ? t("HOME_BALANCE_LAST_REFRESH_NOW") : formatDistanceToNowStrict(
+                  balances[0]?.updatedAt ?? 0,
+                  {
+                    addSuffix: true,
+                    unit: "hour",
+                    locale:
+                      DateLocale[i18n.language as keyof typeof DateLocale] ||
+                      DateLocale.enUS,
+                  }
+                ),
+              })}
             </Typography>
           </Stack>
         )}

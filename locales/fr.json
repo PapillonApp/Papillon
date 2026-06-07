@@ -539,5 +539,7 @@
   "Settings_Features_Partners": "Partenaires",
   "Settings_Features_Knowunity": "Intégration Knowunity",
   "Settings_Features_Knowunity_Description": "Affiche les fiches de révision Knowunity dans les tâches",
-  "Global_Experimental": "Expérimental"
+  "Global_Experimental": "Expérimental",
+  "HOME_BALANCE_LAST_REFRESH_AT": "Dernière actualisation {{at}}",
+  "HOME_BALANCE_LAST_REFRESH_NOW": "à l'instant"
 }

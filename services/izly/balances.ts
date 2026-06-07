@@ -17,17 +17,20 @@ export async function fetchIzlyBalances(accountId: string, session: Identificati
       lunchRemaining: remainingMeal,
       lunchPrice: mealPrice,
       label: "Self",
-      createdByAccount: accountId
+      createdByAccount: accountId,
+      updatedAt: Date.now(),
     },
     ...(fetchedBalance.cashValue > 0
-      ? [{
-          amount: fetchedBalance.cashValue * 100,
-          currency: "€",
-          lunchRemaining: remainingMeal,
-          lunchPrice: mealPrice,
-          label: "Cash",
-          createdByAccount: accountId
-        }]
-      : [])
+      ? [
+          {
+            amount: fetchedBalance.cashValue * 100,
+            currency: "€",
+            lunchRemaining: remainingMeal,
+            lunchPrice: mealPrice,
+            label: "Cash",
+            createdByAccount: accountId,
+          },
+        ]
+      : []),
   ];
 }
