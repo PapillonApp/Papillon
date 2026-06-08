@@ -75,14 +75,7 @@ const HomeHeader = ({
             title: t("Home_Refill_Button_Title"),
             icon: "card",
             color: "#EE9F00",
-            description:
-              availableCanteenCards.length > 0
-                ? availableCanteenCards.length > 1
-                  ? t("Home_Refill_Button_Description_Number", {
-                    number: availableCanteenCards.length,
-                  })
-                  : t("Home_Refill_Button_Description_Singular")
-                : t("Home_Refill_Button_Description_None"),
+            description: "TODO",
             onPress: () => {
               router.push("/(features)/(cards)/cards");
             },
@@ -154,6 +147,7 @@ const HomeHeader = ({
         }
     ],
     [
+      isRestaurationServices,
       availableCanteenCards,
       absencesCount,
       chats,
@@ -165,43 +159,51 @@ const HomeHeader = ({
   );
 
   return (
-    <View style={{ paddingHorizontal: 0, width: "100%", flex: 1 }}>
+    <View
+      style={{
+        paddingHorizontal: 0,
+        width: "100%",
+        height: "auto",
+        marginBottom: isRestaurationServices ? 12 : undefined,
+      }}
+    >
       <View style={{ height: insets.top + 56 }} />
-      <LiquidGlassContainer>
-        {isRestaurationServices && (
-          <Stack height={200} vAlign={"center"} hAlign={"center"}>
-            <Typography color={"#FFFFFFB2"} variant={"body2"} nowrap>
-              Mon solde
-            </Typography>
-            <Typography
-              color={"light"}
-              variant={"h0"}
-              style={{
-                fontSize: 54,
-              }}
-              nowrap
-            >
-              {balances.length < 1
-                ? "0.00€"
-                : `${((balances[0].amount ?? 0) / 100).toFixed(2)}${balances[0].currency ?? "€"}`}
-            </Typography>
-            <Typography color={"#FFFFFFB2"} variant={"body2"} nowrap>
-              {t("HOME_BALANCE_LAST_REFRESH_AT", {
-                at: balances[0]?.updatedAt ?? 0 >= Date.now() ? t("HOME_BALANCE_LAST_REFRESH_NOW") : formatDistanceToNowStrict(
-                  balances[0]?.updatedAt ?? 0,
-                  {
-                    addSuffix: true,
-                    unit: "hour",
-                    locale:
-                      DateLocale[i18n.language as keyof typeof DateLocale] ||
-                      DateLocale.enUS,
-                  }
-                ),
-              })}
-            </Typography>
-          </Stack>
-        )}
-
+      {isRestaurationServices && (
+        <Stack height={200} vAlign={"center"} hAlign={"center"}>
+          <Typography color={"#FFFFFFB2"} variant={"body2"} nowrap>
+            Mon solde
+          </Typography>
+          <Typography
+            color={"light"}
+            variant={"h0"}
+            style={{
+              fontSize: 54,
+            }}
+            nowrap
+          >
+            {balances.length < 1
+              ? "0.00€"
+              : `${((balances[0].amount ?? 0) / 100).toFixed(2)}${balances[0].currency ?? "€"}`}
+          </Typography>
+          <Typography color={"#FFFFFFB2"} variant={"body2"} nowrap>
+            {t("HOME_BALANCE_LAST_REFRESH_AT", {
+              at:
+                (balances[0]?.updatedAt ?? 0 >= Date.now())
+                  ? t("HOME_BALANCE_LAST_REFRESH_NOW")
+                  : formatDistanceToNowStrict(balances[0]?.updatedAt ?? 0, {
+                      addSuffix: true,
+                      unit: "hour",
+                      locale:
+                        DateLocale[i18n.language as keyof typeof DateLocale] ||
+                        DateLocale.enUS,
+                    }),
+            })}
+          </Typography>
+        </Stack>
+      )}
+      <LiquidGlassContainer
+        style={{ height: isRestaurationServices ? 61 : undefined }}
+      >
         <Stack inline flex width={"100%"}>
           <View style={{ width: "100%", gap: 6 }}>
             {Array.from({
@@ -227,12 +229,25 @@ const HomeHeader = ({
         <ListTouchable
           onPress={() =>
             WebBrowser.openBrowserAsync(releaseNotesUrl, {
-              presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+              presentationStyle:
+                WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
             })
           }
         >
-          <Stack card style={{ marginTop: 12, elevation: 2, backgroundColor: (!theme.dark && Platform.OS === 'android') ? '#FFF' : theme.colors.item, overflow: Platform.OS === 'android' ? 'hidden' : 'visible' }} padding={0}>
-            <Stack padding={[12, 10]} gap={8} direction='horizontal'>
+          <Stack
+            card
+            style={{
+              marginTop: 12,
+              elevation: 2,
+              backgroundColor:
+                !theme.dark && Platform.OS === "android"
+                  ? "#FFF"
+                  : theme.colors.item,
+              overflow: Platform.OS === "android" ? "hidden" : "visible",
+            }}
+            padding={0}
+          >
+            <Stack padding={[12, 10]} gap={8} direction="horizontal">
               <Papicons name="sparkles" size={24} color={colors.tint} />
 
               <Stack inline flex style={{ marginRight: 32 }}>
@@ -253,11 +268,20 @@ const HomeHeader = ({
                   });
                 }}
               >
-                <View 
-                  style={{ width: 24, height: 24, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: colors.text + '11', position: "absolute", right: 0 }}
+                <View
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: colors.text + "11",
+                    position: "absolute",
+                    right: 0,
+                  }}
                 >
                   <Icon size={16}>
-                    < Papicons name="Cross" />
+                    <Papicons name="Cross" />
                   </Icon>
                 </View>
               </ListTouchable>
@@ -267,6 +291,28 @@ const HomeHeader = ({
       )}
 
       {__DEV__ && 1 === 2 && <WrappedBanner />}
+
+      {isRestaurationServices && (
+        <Stack
+          direction="horizontal"
+          vAlign="center"
+          hAlign="center"
+          gap={10}
+          style={{ marginTop: 25 }}
+        >
+          <Icon papicon opacity={0.5} style={{ marginLeft: 4 }}>
+            <Papicons name={"Clock"} />
+          </Icon>
+          <Typography
+            nowrap
+            style={{ flex: 1, opacity: 0.5 }}
+            variant="title"
+            color="text"
+          >
+            {t("Profile_Cards_History")}
+          </Typography>
+        </Stack>
+      )}
     </View>
   );
 };

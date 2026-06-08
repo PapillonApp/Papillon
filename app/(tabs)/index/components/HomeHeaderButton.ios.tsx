@@ -32,9 +32,14 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
         flex: 1,
         borderRadius: 22,
         opacity: item.disabled ? 0.5 : 1,
+        minHeight: 61,
       }}
     >
-      <Pressable style={styles.headerBtn} onPress={item.onPress} disabled={item.disabled}>
+      <Pressable
+        style={styles.headerBtn}
+        onPress={item.onPress}
+        disabled={item.disabled}
+      >
         <View
           style={{
             backgroundColor: item.color + 30,

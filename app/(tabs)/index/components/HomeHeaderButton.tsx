@@ -25,6 +25,7 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
     <View
       style={{
         flex: 1,
+        minHeight: 61,
       }}
     >
       <TouchableNativeFeedback
