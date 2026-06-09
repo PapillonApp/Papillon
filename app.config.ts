@@ -13,11 +13,6 @@ export default {
     scheme: ["papillon", "izly", "skoapp-prod"],
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
-    splash: {
-      image: "./assets/images/splash.png",
-      resizeMode: "cover",
-      backgroundColor: "#003A21",
-    },
     ios: {
       appStoreUrl:
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
@@ -93,11 +88,6 @@ export default {
         monochromeImage: "./assets/images/monochrome-icon.png",
       },
       edgeToEdgeEnabled: true,
-      splash: {
-        image: "./assets/images/splash_android.png",
-        resizeMode: "cover",
-        backgroundColor: "#003A21",
-      },
       supportsTablet: true,
       predictiveBackGestureEnabled: true
     },
@@ -108,7 +98,6 @@ export default {
     },
     plugins: [
       "expo-router",
-      "expo-splash-screen",
       "expo-status-bar",
       "expo-font",
       "expo-video",
@@ -116,6 +105,14 @@ export default {
       "expo-localization",
       "expo-asset",
       "@react-native-community/datetimepicker",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#29947A",
+          "image": "./assets/images/logotype.png",
+          "imageWidth": 240
+        }
+      ],
       [
         "expo-image-picker",
         {
