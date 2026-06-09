@@ -205,8 +205,8 @@ const Averages = ({
       item.value = Math.round(item.value * 100) / 100;
     });
 
-    const hasOnlySkills = grades.some(
-      grade => grade.studentScore?.disabled ?? grade.skills?.length ?? 0 > 0
+    const hasOnlySkills = grades.every(
+      grade => grade.studentScore?.disabled === true || (grade.skills?.length ?? 0) > 0
     );
 
     if (hasOnlySkills) return null;
