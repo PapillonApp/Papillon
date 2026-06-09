@@ -5,7 +5,7 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { useTheme } from "expo-router/react-navigation";
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
+import { Platform, DynamicColorIOS } from 'react-native';
 import { useFont } from '@/utils/theme/fonts';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
@@ -33,6 +33,10 @@ function TabLayoutContent() {
   const tabLabelStyle = {
     fontFamily: font("medium"),
     fontSize: Platform.OS === 'ios' ? 12 : 13,
+    color: Platform.OS === 'ios' ? DynamicColorIOS({
+      dark: "#FFFFFF",
+      light: "#000000"
+    }) : undefined,
   } as const;
 
   const shouldRenderBottomAccessory =
@@ -48,7 +52,7 @@ function TabLayoutContent() {
       sidebarAdaptable
       minimizeBehavior={shouldRenderBottomAccessory ? "onScrollDown" : "never"}
       disableTransparentOnScrollEdge
-      titlePositionAdjustment={runsIOS26 ? { vertical: 6, horizontal: 0 } : undefined}
+      titlePositionAdjustment={runsIOS26 ? { vertical: 0, horizontal: 0 } : undefined}
     >
       {shouldRenderBottomAccessory && (
         <NativeTabs.BottomAccessory>
