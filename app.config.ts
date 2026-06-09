@@ -13,7 +13,6 @@ export default {
     scheme: ["papillon", "izly", "skoapp-prod"],
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
-    newArchEnabled: true,
     splash: {
       image: "./assets/images/splash.png",
       resizeMode: "cover",
@@ -109,6 +108,8 @@ export default {
     },
     plugins: [
       "expo-router",
+      "expo-splash-screen",
+      "expo-status-bar",
       "expo-font",
       "expo-video",
       "expo-audio",
