@@ -13,7 +13,7 @@ import { VARIANTS } from "@/ui/components/Typography";
 
 import HTMLView from 'react-native-htmlview';
 import * as WebBrowser from 'expo-web-browser';
-import { useTheme } from "@react-navigation/native";
+import { useTheme, HeaderBackButton } from "expo-router/react-navigation";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { MenuView } from "@react-native-menu/menu";
 import Icon from "@/ui/components/Icon";
@@ -25,7 +25,6 @@ import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
 import { news } from "pawnote";
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
-import { HeaderBackButton } from "@react-navigation/elements";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { IconNames, Papicons } from "@getpapillon/papicons";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";

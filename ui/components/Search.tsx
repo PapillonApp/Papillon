@@ -1,6 +1,6 @@
 import { isLiquidGlassSupported } from "@callstack/liquid-glass";
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect, useState } from "react";
 import { Dimensions, Platform, TextInput, TouchableOpacity, View } from "react-native";

@@ -11,7 +11,7 @@ import {
   LayoutRectangle,
   Dimensions,
 } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Stack from "@/ui/components/Stack";
 import { Papicons } from "@getpapillon/papicons";

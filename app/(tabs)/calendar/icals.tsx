@@ -12,7 +12,7 @@ import Icon from "@/ui/components/Icon";
 import Item, { Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import NativeSwitch from "@/ui/native/NativeSwitch";

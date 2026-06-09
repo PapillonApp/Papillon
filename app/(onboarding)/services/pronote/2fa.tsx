@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import * as Device from "expo-device"
 import { router } from "expo-router";
 import { finishLoginManually, SecurityError, securitySave, securitySource, SessionHandle } from "pawnote";

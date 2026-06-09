@@ -9,7 +9,7 @@ import { useTaskFilters } from './hooks/useTaskFilters';
 import { useWeekSelection } from './hooks/useWeekSelection';
 
 import { useAlert } from "@/ui/components/AlertProvider";
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 const TasksView: React.FC = () => {

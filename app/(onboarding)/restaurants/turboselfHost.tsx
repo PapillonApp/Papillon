@@ -22,7 +22,7 @@ import Button from '@/ui/components/Button';
 import uuid from '@/utils/uuid/uuid';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { useTranslation } from 'react-i18next';

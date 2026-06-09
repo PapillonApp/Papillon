@@ -6,7 +6,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { Papicons } from "@getpapillon/papicons";
-import { useRoute, useTheme } from "@react-navigation/native";
+import { useRoute, useTheme } from "expo-router/react-navigation";
 import React, { useMemo } from "react";
 import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";

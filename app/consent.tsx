@@ -6,7 +6,7 @@ import Typography from "@/ui/components/Typography";
 import i18n from "@/utils/i18n";
 const t = i18n.t.bind(i18n);
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

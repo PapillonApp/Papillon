@@ -1,7 +1,7 @@
 import Stack from "@/ui/components/Stack";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import Typography from "@/ui/components/Typography";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import {

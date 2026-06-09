@@ -2,7 +2,7 @@ import BottomAccessory, { useBottomAccessoryVisible } from '@/components/BottomA
 import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';

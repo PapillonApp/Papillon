@@ -4,7 +4,7 @@ import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
-import { useTheme } from "@react-navigation/native"
+import { useTheme } from "expo-router/react-navigation"
 import React, { useEffect, useState } from "react"
 import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
 import { File, Directory, Paths } from 'expo-file-system';

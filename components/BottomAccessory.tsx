@@ -6,7 +6,7 @@ import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { differenceInCalendarDays, formatDistanceToNowStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
 import { useNavigation } from 'expo-router';

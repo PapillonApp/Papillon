@@ -1,7 +1,7 @@
 import Stack from "@/ui/components/Stack";
 import Typography, { Variant } from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Platform, Text, View, ViewStyle } from "react-native";
 

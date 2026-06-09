@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import * as Linking from "expo-linking";
 import * as Location from "expo-location";
 import * as React from "react";
@@ -22,7 +22,6 @@ import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Search from "@/ui/components/Search";
 import Typography from "@/ui/components/Typography";
-import { useHeaderHeight } from "@react-navigation/elements";
 import AndroidBackButton, { AndroidBackButtonStyles } from "@/utils/theme/AndroidBackButton";
 import Icon from "@/ui/components/Icon";
 

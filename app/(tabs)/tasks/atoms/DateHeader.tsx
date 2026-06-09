@@ -5,7 +5,7 @@ import Reanimated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { Papicons } from '@getpapillon/papicons';
 
 import { Dynamic } from '@/ui/components/Dynamic';

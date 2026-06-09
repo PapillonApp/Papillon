@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { t } from 'i18next';
 import React, { useMemo } from 'react';
 import { Platform } from 'react-native';

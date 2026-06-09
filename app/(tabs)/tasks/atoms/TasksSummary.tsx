@@ -1,6 +1,6 @@
 import React from 'react';
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 
 import { CircularProgress } from '@/ui/components/CircularProgress';
 import Stack from '@/ui/components/Stack';

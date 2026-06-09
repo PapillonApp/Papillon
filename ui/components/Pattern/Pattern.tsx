@@ -2,7 +2,7 @@ import { DimensionValue, Platform, ViewProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from "@react-native-masked-view/masked-view";
 import CrossPattern from "@/ui/components/Pattern/CrossPattern";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 enum AvailablePatterns {
   CROSS = "cross",
