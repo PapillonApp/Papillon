@@ -1,4 +1,3 @@
-$EnableCoreMLDelegate=true
 # Set by expo-router. This enables Fabric-only features from react-native-screens
 ENV['RNS_GAMMA_ENABLED'] ||= '1'
 ENV['EXPO_UNSTABLE_LOG_BOX'] ||= '1'
@@ -18,10 +17,11 @@ def ccache_enabled?(podfile_properties)
 end
 
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
-ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
-ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
+ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
 
 prepare_react_native_project!
 
@@ -61,26 +61,6 @@ target 'Papillon' do
   )
 
   post_install do |installer|
-    # Workaround for Xcode 26: newer Apple Clang breaks consteval in fmt 11.0.2.
-    # Patch base.h to disable consteval since the header doesn't check for pre-defined FMT_USE_CONSTEVAL.
-    # TODO : Remove when expo have been updated
-
-    fmt_base = File.join(installer.sandbox.root, 'fmt', 'include', 'fmt', 'base.h')
-
-    if File.exist?(fmt_base)
-     content = File.read(fmt_base)
-      unless content.include?('Xcode 26 workaround')
-        patched = content.gsub(
-          /^(#elif defined\(__cpp_consteval\)\n#  define FMT_USE_CONSTEVAL) 1/,
-          "// Xcode 26 workaround: disable consteval\n\\1 0"
-        )
-        if patched != content
-          File.chmod(0644, fmt_base)
-          File.write(fmt_base, patched)
-        end
-      end
-    end
-
     react_native_post_install(
       installer,
       config[:reactNativePath],
