@@ -155,12 +155,13 @@ const WallpaperModal = () => {
       <FlatList
         ref={flatListRef}
         data={collections}
+        contentInsetAdjustmentBehavior="automatic"
         style={{
           flex: 1,
         }}
         contentContainerStyle={{
           gap: 16,
-          paddingTop: Platform.OS === 'android' ? 20 : 72
+          paddingTop: Platform.OS === 'android' ? 20 : 0
         }}
         renderItem={({ item, index }) => (
           <View>
