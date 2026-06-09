@@ -66,7 +66,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
             </LegacyTypography>
           ) : grade.studentScore.disabled ? (
             <>
-              {grade.skills.length > 0 ? (
+              {(grade.skills?.length ?? 0) > 0 ? (
                 <Stack direction={"horizontal"} hAlign={"center"}>
                   <Stack direction={"horizontal"}>
                     {grade.skills.slice(0, 4).map((item, index) => (
