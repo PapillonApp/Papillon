@@ -31,19 +31,19 @@ const WallpaperModal = () => {
   const { colors } = useTheme()
 
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCollections = async () => {
+  const fetchCollections = async (isRefresh = false) => {
     try {
-      setLoading(true);
+      if (isRefresh) setRefreshing(true);
       const response = await fetch(COLLECTIONS_SOURCE);
       const data = await response.json();
       setCollections(data);
     } catch (error) {
       setError(error as string);
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   }
 
@@ -206,8 +206,8 @@ const WallpaperModal = () => {
         )}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
-            onRefresh={fetchCollections}
+            refreshing={refreshing}
+            onRefresh={() => fetchCollections(true)}
             progressViewOffset={72}
           />
         }
