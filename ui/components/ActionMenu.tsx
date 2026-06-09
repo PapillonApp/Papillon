@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import type { ComponentType } from "react";
 import type { MenuAction as NativeMenuAction, MenuComponentProps as NativeMenuComponentProps } from "@react-native-menu/menu";
 import {
   Modal,
@@ -16,21 +15,83 @@ import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Stack from "@/ui/components/Stack";
 import { Papicons } from "@getpapillon/papicons";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { warn } from "@/utils/logger/logger";
 import Typography from "../new/Typography";
 import Reanimated, { FadeIn, FadeInRight, FadeOut, FadeOutLeft, LayoutAnimationConfig, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming, ZoomOut, ZoomOutEasyUp } from "react-native-reanimated";
 import { PapillonAndroidMenuIn, PapillonAppearIn, PapillonAppearOut, PapillonSpringIn, PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 import { ListTouchable } from "../new/List";
+import { Host, Menu as ExpoMenu, Button as ExpoButton, Toggle as ExpoToggle, RNHostView, Section as ExpoSection, Image as ExpoImage, Text as ExpoText, VStack as ExpoVStack, HStack as ExpoHStack, RNHostView as ExpoRNHostView, HStack } from "@expo/ui/swift-ui";
+import { disabled as disabledModifier, tint, foregroundStyle, font } from "@expo/ui/swift-ui/modifiers";
+import type { SFSymbol } from "sf-symbols-typescript";
 
-let NativeMenuView: ComponentType<Record<string, unknown>> | null = null;
-if (Platform.OS === "ios") {
-  try {
-    const mod = require("@react-native-menu/menu");
-    NativeMenuView = mod?.MenuView ?? null;
-  } catch (err: unknown) {
-    warn(`ActionMenu: impossible de charger @react-native-menu/menu MenuView: ${String(err)}`);
-  }
+function renderExpoActions(
+  actions: NativeMenuAction[],
+  onPress: (id: string) => void
+): React.ReactNode {
+  return actions.map((action, index) => {
+    const id = action.id ?? `action-${index}`;
+    if (action.attributes?.hidden) return null;
+
+    const destructive = Boolean(action.attributes?.destructive || (action as any).destructive);
+    const isDisabled = Boolean(action.attributes?.disabled || (action as any).disabled);
+    const imageColor = action.imageColor != null ? String(action.imageColor) : undefined;
+    const sfSymbol = action.image as SFSymbol | undefined;
+
+    if (action.subactions && action.subactions.length > 0) {
+      if (action.displayInline) {
+        return (
+          <ExpoSection key={id}>
+            {renderExpoActions(action.subactions, onPress)}
+          </ExpoSection>
+        );
+      }
+      return (
+        <ExpoMenu key={id} label="">
+          {renderExpoActions(action.subactions, onPress)}
+        </ExpoMenu>
+      );
+    }
+
+    const mods = [
+      ...(isDisabled ? [disabledModifier(true)] : []),
+    ];
+
+    if (action.state === "on" || action.state === "off") {
+      if (action.subtitle) {
+        return (
+          <ExpoToggle
+            key={id}
+            isOn={action.state === "on"}
+            onIsOnChange={() => onPress(id)}
+            modifiers={imageColor ? [...mods, tint(imageColor)] : mods}
+          >
+            <ExpoText>{action.title}</ExpoText>
+            <ExpoText>{action.subtitle}</ExpoText>
+          </ExpoToggle>
+        );
+      }
+      return (
+        <ExpoToggle
+          key={id}
+          label={action.title}
+          systemImage={sfSymbol}
+          isOn={action.state === "on"}
+          onIsOnChange={() => onPress(id)}
+          modifiers={imageColor ? [...mods, tint(imageColor)] : mods}
+        />
+      );
+    }
+
+    return (
+      <ExpoButton
+        key={id}
+        label={action.title}
+        systemImage={sfSymbol}
+        role={destructive ? "destructive" : "default"}
+        onPress={() => onPress(id)}
+        modifiers={imageColor ? [...mods, tint(imageColor)] : mods}
+      />
+    );
+  });
 }
 
 function MenuItem({
@@ -110,7 +171,6 @@ export default function ActionMenu({
   actions = [],
   children,
   onPressAction,
-  title,
   placement = "auto",
 }: NativeMenuComponentProps & { placement?: "auto" | "below" }) {
   const handleActionPress = onPressAction ?? (() => { });
@@ -155,16 +215,22 @@ export default function ActionMenu({
     };
   }, []);
 
-  // iOS
-  if (Platform.OS === "ios" && NativeMenuView) {
+  // iOS — native SwiftUI Menu via @expo/ui
+  if (Platform.OS === "ios") {
     return (
-      <NativeMenuView
-        onPressAction={handleActionPress}
-        actions={actions}
-        title={title}
-      >
-        {children}
-      </NativeMenuView>
+      <Host matchContents>
+        <ExpoMenu
+          label={
+            <RNHostView matchContents>
+              {children as React.ReactElement}
+            </RNHostView>
+          }
+        >
+          {renderExpoActions(actions, (id) => {
+            handleActionPress({ nativeEvent: { event: id } });
+          })}
+        </ExpoMenu>
+      </Host>
     );
   }
 

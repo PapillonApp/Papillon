@@ -101,14 +101,12 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 title: t('Home_Edit_Profile'),
                 image: 'person.crop.circle',
                 papicon: 'user',
-                imageColor: "#FFFFFF",
               },
               {
                 id: 'add',
                 title: t('Home_Add_Profile'),
                 image: 'plus',
                 papicon: 'add',
-                imageColor: "#FFFFFF",
               },
             ]}
           >
