@@ -61,6 +61,26 @@ target 'Papillon' do
   )
 
   post_install do |installer|
+    # Xcode 27 fix
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+        if current && current.to_f < 15.0
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+        end
+      end
+    end
+
+    # Suppress Swift warnings-as-errors for ExpoModulesJSI on Xcode 27
+    installer.pods_project.targets.each do |target|
+      if target.name == 'ExpoModulesJSI'
+        target.build_configurations.each do |config|
+          config.build_settings['SWIFT_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+          config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+        end
+      end
+    end
+
     react_native_post_install(
       installer,
       config[:reactNativePath],
