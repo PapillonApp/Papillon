@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -80,25 +80,23 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
               await initializeAccountManager();
             }}
             actions={[
-              ...Platform.OS === "ios" ? [{
+              ...(Platform.OS === "ios" ? [{
                 id: 'workspaces',
                 title: '',
                 displayInline: true,
                 subactions: AccountsMenuItems,
-              }] : AccountsMenuItems,
+              }] : AccountsMenuItems),
               {
                 id: 'edit',
                 title: t('Home_Edit_Profile'),
                 image: 'person.crop.circle',
                 papicon: 'user',
-                imageColor: "#FFFFFF",
               },
               {
                 id: 'add',
                 title: t('Home_Add_Profile'),
                 image: 'plus',
                 papicon: 'add',
-                imageColor: "#FFFFFF",
               },
             ]}
           >

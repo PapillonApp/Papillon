@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useMemo } from 'react';
@@ -66,7 +66,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
             </LegacyTypography>
           ) : grade.studentScore.disabled ? (
             <>
-              {grade.skills.length > 0 ? (
+              {(grade.skills?.length ?? 0) > 0 ? (
                 <Stack direction={"horizontal"} hAlign={"center"}>
                   <Stack direction={"horizontal"}>
                     {grade.skills.slice(0, 4).map((item, index) => (

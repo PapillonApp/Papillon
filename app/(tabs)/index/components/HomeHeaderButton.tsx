@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Papicons } from '@getpapillon/papicons';
 import Typography from '@/ui/new/Typography';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { TouchableNativeFeedback } from 'react-native';
 
 export interface HomeHeaderButtonItem {

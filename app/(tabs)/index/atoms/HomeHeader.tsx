@@ -19,7 +19,7 @@ import HomeHeaderButton, {
 } from "../components/HomeHeaderButton";
 import { useHomeHeaderData } from "../hooks/useHomeHeaderData";
 import WrappedBanner from "./WrappedBanner";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { ListTouchable } from "@/ui/new/List";
 import { formatDistanceToNowStrict } from "date-fns";
 import * as DateLocale from "date-fns/locale";

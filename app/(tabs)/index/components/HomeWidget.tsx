@@ -6,7 +6,7 @@ import Typography from '@/ui/components/Typography';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Papicons } from '@getpapillon/papicons';
 import { useRouter } from 'expo-router';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { Platform } from 'react-native';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 import { ListTouchable } from '@/ui/new/List';

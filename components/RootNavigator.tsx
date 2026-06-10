@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { Stack } from 'expo-router';
 import { t } from 'i18next';
 import React, { useMemo } from 'react';
@@ -69,8 +69,11 @@ function RootNavigatorContent() {
         <Stack.Screen
           name="(modals)/wallpaper"
           options={{
-            presentation: "modal",
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.5, 1],
             headerLargeTitle: false,
+            headerTransparent: Platform.OS === 'ios',
             headerTitle: t("Modal_Wallpaper_Title"),
             contentStyle: {
               backgroundColor: theme.colors.card

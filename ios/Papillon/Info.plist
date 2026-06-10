@@ -118,6 +118,8 @@
     <string>Papillon utilise ton emplacement pour trouver les établissements autour de toi.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+    <key>NSMotionUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to detect your current motion activity</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Papillon utilise ta galerie pour te permettre de personnaliser ta photo de profil</string>
     <key>NSUserActivityTypes</key>

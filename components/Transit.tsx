@@ -1,5 +1,5 @@
 import { Cross, Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import * as Linking from "expo-linking";
 import * as Location from "expo-location";
 import * as React from "react";

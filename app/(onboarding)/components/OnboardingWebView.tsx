@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import React from "react";
 import { Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,7 +7,6 @@ import WebView from "react-native-webview";
 
 import { Dynamic } from "@/ui/components/Dynamic";
 import Typography from "@/ui/new/Typography";
-import { useHeaderHeight } from "@react-navigation/elements";
 import AndroidBackButton from "@/utils/theme/AndroidBackButton";
 
 export default function OnboardingWebView({ webViewRef, ...props }: React.ComponentProps<typeof WebView>) {

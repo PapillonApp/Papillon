@@ -1,6 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
 import { instance } from "pawnote";

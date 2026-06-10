@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Hamburger } from "lucide-react-native";
 import React, { ScrollView, StyleSheet, View } from "react-native";
 

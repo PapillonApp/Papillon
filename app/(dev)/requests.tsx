@@ -10,7 +10,7 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import adjust from "@/utils/adjustColor";
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { router, useLocalSearchParams } from "expo-router"
 import { useState } from "react";
 import { View } from "react-native";

@@ -3,7 +3,7 @@ import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeH
 import { router, useLocalSearchParams } from "expo-router";
 import { Platform, ScrollView, View } from "react-native";
 import { Papicons } from "@getpapillon/papicons"
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
@@ -11,7 +11,6 @@ import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/serv
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
-import { useHeaderHeight } from "@react-navigation/elements";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import adjust from "@/utils/adjustColor";
 import { error } from "@/utils/logger/logger";

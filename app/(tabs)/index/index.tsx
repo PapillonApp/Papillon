@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused } from "expo-router/react-navigation";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
 import React, { useState } from "react";

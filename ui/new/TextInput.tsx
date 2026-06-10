@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import React from 'react';
 import { TextInput,View } from 'react-native';
 import { useFont } from '@/utils/theme/fonts';

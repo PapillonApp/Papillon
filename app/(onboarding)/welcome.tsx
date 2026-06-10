@@ -1,4 +1,4 @@
-import { useFocusEffect, useIsFocused, useTheme } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused, useTheme } from "expo-router/react-navigation";
 import { useRouter } from "expo-router";
 import * as WebBrowser from 'expo-web-browser';
 import React from "react";
