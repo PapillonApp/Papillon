@@ -1,5 +1,5 @@
 import { Dimensions, Image, View, ViewProps } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import adjust from "@/utils/adjustColor";
 import Typography from "@/ui/components/Typography";
 import Reanimated, {

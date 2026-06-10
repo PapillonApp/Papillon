@@ -17,7 +17,7 @@ import { Papicons } from '@getpapillon/papicons';
 import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
 import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
 import WrappedBanner from './WrappedBanner';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { ListTouchable } from '@/ui/new/List';

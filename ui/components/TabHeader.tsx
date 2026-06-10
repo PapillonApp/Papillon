@@ -1,5 +1,5 @@
 
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect } from 'react';
 import { Platform, View } from 'react-native';

@@ -15,7 +15,7 @@ import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 import { Papicons } from '@getpapillon/papicons'
-import { useTheme } from '@react-navigation/native'
+import { useTheme } from "expo-router/react-navigation"
 import { router, useRouter } from 'expo-router'
 import { t } from 'i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -204,7 +204,7 @@ const NewsView = () => {
 function cleanContent(html: string): string {
   html = html.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'")
   html = html.replace(/\n/g, ' ')
-  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function truncateString(str: string, maxLength: number): string {

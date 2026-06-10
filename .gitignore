@@ -54,3 +54,6 @@ yarn.lock
 secrets.json
 .vscode/
 .idea/
+
+.claude/
+.codex/

@@ -1,5 +1,5 @@
 import { Image, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useMemo, useState } from "react";
 import Reanimated, {
   FadeInDown

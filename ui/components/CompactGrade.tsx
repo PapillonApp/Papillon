@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { t } from "i18next";
 import { Platform, Text, View } from "react-native";

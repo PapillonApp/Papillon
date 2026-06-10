@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
 import React, { useCallback, useRef, useState } from "react";
 import { FlatList, Platform, StyleSheet,View } from "react-native";

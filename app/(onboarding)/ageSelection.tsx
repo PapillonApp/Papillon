@@ -1,5 +1,4 @@
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, StatusBar, View } from "react-native";

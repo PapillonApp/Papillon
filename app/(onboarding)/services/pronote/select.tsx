@@ -1,5 +1,4 @@
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useRoute, useTheme } from "@react-navigation/native";
+import { useHeaderHeight, useRoute, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import { geolocation } from "pawnote";
 import React, { memo, useEffect, useState } from "react";

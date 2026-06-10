@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import TabHeader from '@/ui/components/TabHeader';

@@ -1,4 +1,4 @@
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router/react-navigation";
 import { useEvent } from "expo";
 import { useNavigation } from 'expo-router';
 import { useVideoPlayer, VideoSource, VideoView } from 'expo-video';

@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -28,7 +28,6 @@ import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import List, { ListTouchable } from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useHeaderHeight } from '@react-navigation/elements';
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -364,4 +363,4 @@ export default function SettingsIndex() {
       </List>
     </>
   );
-};
+}

@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useMemo } from 'react';

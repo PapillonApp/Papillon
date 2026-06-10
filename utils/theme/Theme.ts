@@ -1,7 +1,7 @@
 import {
   DarkTheme as NativeDarkTheme,
   DefaultTheme as NativeDefaultTheme,
-} from "@react-navigation/native";
+} from "expo-router/react-navigation";
 import { Platform } from "react-native";
 import { getDynamicColorScheme } from "react-native-dynamic-theme";
 

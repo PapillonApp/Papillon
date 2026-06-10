@@ -4,7 +4,7 @@ import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
-import { useTheme } from "@react-navigation/native"
+import { useTheme } from "expo-router/react-navigation"
 import React, { useEffect, useState } from "react"
 import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
 import { File, Directory, Paths } from 'expo-file-system';
@@ -155,13 +155,12 @@ const WallpaperModal = () => {
       <FlatList
         ref={flatListRef}
         data={collections}
-        contentInsetAdjustmentBehavior="automatic"
         style={{
           flex: 1,
         }}
         contentContainerStyle={{
           gap: 16,
-          paddingTop: Platform.OS === 'android' ? 20 : 0
+          paddingTop: Platform.OS === 'android' ? 20 : 72
         }}
         renderItem={({ item, index }) => (
           <View>
@@ -208,7 +207,7 @@ const WallpaperModal = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={() => fetchCollections(true)}
-            progressViewOffset={72}
+            progressViewOffset={128}
           />
         }
       />

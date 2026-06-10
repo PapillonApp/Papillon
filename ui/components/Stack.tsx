@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { FlexAlignType, Platform, StyleProp, StyleSheet, ViewProps, ViewStyle } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";

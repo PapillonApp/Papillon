@@ -15,7 +15,7 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import { t } from "i18next";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Alise } from "@/services/alise";
 import { authenticateWithCredentials } from "alise-api";
 import { initializeAccountManager } from "@/services/shared";
