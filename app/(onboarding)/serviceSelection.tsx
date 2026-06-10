@@ -16,7 +16,10 @@ import Typography from "@/ui/new/Typography";
 import { PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 
-import { GetSupportedServices } from './utils/constants';
+import {
+  GetSupportedRestaurants,
+  GetSupportedServices,
+} from "./utils/constants";
 
 export default function ServiceSelection() {
   const headerHeight = useHeaderHeight();
@@ -31,36 +34,57 @@ export default function ServiceSelection() {
 
   const [selectedService, setSelectedService] = useState(null);
 
-  const services = GetSupportedServices((path: { pathname: string, options?: UnknownInputParams }) => {
-    router.push({
-      pathname: path.pathname as unknown as RelativePathString,
-      params: path.options ?? {} as unknown as UnknownInputParams
-    });
-  });
+  const services = GetSupportedServices(
+    (path: { pathname: string; options?: UnknownInputParams }) => {
+      router.push({
+        pathname: path.pathname as unknown as RelativePathString,
+        params: path.options ?? ({} as unknown as UnknownInputParams),
+      });
+    }
+  );
+
+  const restaurantServices = GetSupportedRestaurants(
+    (path: { pathname: string; options?: UnknownInputParams }) => {
+      router.push({
+        pathname: path.pathname as unknown as RelativePathString,
+        params: path.options ?? ({} as unknown as UnknownInputParams),
+      });
+    }
+  );
 
   const filteredServices = useMemo(() => {
-    return services.filter((service) => service.type.includes(type));
+    return services.filter(service => service.type.includes(type));
   }, [services, type]);
 
   const titleString = useMemo(() => {
     switch (type) {
-    case "univ":
-      return t("ONBOARDING_SERVICE_SELECTION_TITLE_UNIV");
-    default:
-      return t("ONBOARDING_SERVICE_SELECTION_TITLE_SCHOOL");
+      case "univ":
+        return t("ONBOARDING_SERVICE_SELECTION_TITLE_UNIV");
+      default:
+        return t("ONBOARDING_SERVICE_SELECTION_TITLE_SCHOOL");
     }
   }, [type, t]);
 
-
-  const hasServiceRoute = services.find(service => service.name === selectedService)?.route || services.find(service => service.name === selectedService)?.onPress;
+  const hasServiceRoute =
+    services.find(service => service.name === selectedService)?.route ||
+    services.find(service => service.name === selectedService)?.onPress ||
+    restaurantServices.find(service => service.name === selectedService)?.onPress;
 
   const loginToService = (serviceName: string) => {
-    const serviceRoute = services.find(service => service.name === serviceName)?.route;
-    if(!serviceRoute) {
+    const service = services.find(service => service.name === serviceName);
+
+    if (!service) {
+      const restaurantService = restaurantServices.find(service => service.name === serviceName);
+
+      restaurantService?.onPress();
+      return;
+    }
+
+    if (!service?.route) {
       services.find(service => service.name === serviceName)?.onPress();
       return;
     }
-    const newRoute = './services/' + serviceRoute;
+    const newRoute = "./services/" + service?.route;
     router.push(newRoute);
   };
 
@@ -72,21 +96,21 @@ export default function ServiceSelection() {
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 32,
-          paddingBottom: insets.bottom + 20
+          paddingBottom: insets.bottom + 20,
         }}
       >
-        <Stack
-          vAlign="center"
-          hAlign="center"
-          gap={8}
-        >
+        <Stack vAlign="center" hAlign="center" gap={8}>
           <Image
             source={require("@/assets/images/icon.png")}
             style={{ width: 86, height: 86, borderRadius: 24 }}
           />
           <Divider height={8} ghost />
-          <Typography variant="h3" align="center">{t("ONBOARDING_UNSUPPORTED_TITLE")}</Typography>
-          <Typography align="center" variant="body1" color="textSecondary">{t("ONBOARDING_UNSUPPORTED_DESCRIPTION")}</Typography>
+          <Typography variant="h3" align="center">
+            {t("ONBOARDING_UNSUPPORTED_TITLE")}
+          </Typography>
+          <Typography align="center" variant="body1" color="textSecondary">
+            {t("ONBOARDING_UNSUPPORTED_DESCRIPTION")}
+          </Typography>
           <Divider height={16} ghost />
           <Button
             label={t("Global_Back")}
@@ -98,7 +122,7 @@ export default function ServiceSelection() {
           />
         </Stack>
       </ScrollView>
-    )
+    );
   }
 
   return (
@@ -107,7 +131,9 @@ export default function ServiceSelection() {
         ListHeaderComponent={() => (
           <Stack padding={[4, 0]}>
             <Typography variant="h2">{titleString}</Typography>
-            <Typography variant="action" color="textSecondary">{t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}</Typography>
+            <Typography variant="action" color="textSecondary">
+              {t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}
+            </Typography>
             <Divider height={18} ghost />
           </Stack>
         )}
@@ -115,25 +141,104 @@ export default function ServiceSelection() {
           padding: 16,
           flexGrow: 1,
           gap: 10,
-          paddingTop: headerHeight + 20
+          paddingTop: headerHeight + 20,
         }}
         style={{ flex: 1 }}
       >
-        {filteredServices.map((app) => (
-          <List.Item key={app.name} onPress={() => setSelectedService(app.name)} style={{
-            backgroundColor: selectedService === app.name ? adjust(colors.tint, theme.dark ? -0.8 : 0.9) : colors.item,
-            minHeight: 62
-          }}>
+        {filteredServices.map(app => (
+          <List.Item
+            key={app.name}
+            onPress={() => setSelectedService(app.name)}
+            style={{
+              backgroundColor:
+                selectedService === app.name
+                  ? adjust(colors.tint, theme.dark ? -0.8 : 0.9)
+                  : colors.item,
+              minHeight: 62,
+            }}
+          >
             <List.Leading>
               <Stack animated direction="horizontal" hAlign="center" gap={12}>
-                {selectedService === app.name && <Dynamic animated entering={PapillonZoomIn} exiting={PapillonZoomOut}><Icon fill={colors.primary}><Papicons name="check" /></Icon></Dynamic>}
+                {selectedService === app.name && (
+                  <Dynamic
+                    animated
+                    entering={PapillonZoomIn}
+                    exiting={PapillonZoomOut}
+                  >
+                    <Icon fill={colors.primary}>
+                      <Papicons name="check" />
+                    </Icon>
+                  </Dynamic>
+                )}
 
                 <Dynamic animated>
-                  <Image source={app.image} style={{ width: 32, height: 32, borderRadius: 10 }} />
+                  <Image
+                    source={app.image}
+                    style={{ width: 32, height: 32, borderRadius: 10 }}
+                  />
                 </Dynamic>
               </Stack>
             </List.Leading>
-            <Dynamic animated><Typography variant="action">{app.title}</Typography></Dynamic>
+            <Dynamic animated>
+              <Typography variant="action">{app.title}</Typography>
+            </Dynamic>
+          </List.Item>
+        ))}
+        <Stack
+          direction={"horizontal"}
+          gap={8}
+          style={{ marginTop: 12 }}
+          hAlign={"center"}
+        >
+          <Typography color={"textSecondary"}>
+            {t("ONBOARDING_SERVICE_USE_EXTERNAL_SERVICES")}
+          </Typography>
+          <View
+            style={{
+              flex: 1,
+              height: 1,
+              borderRadius: 10,
+              backgroundColor: colors.border,
+            }}
+          />
+        </Stack>
+        {restaurantServices.map(app => (
+          <List.Item
+            key={app.name}
+            onPress={() => setSelectedService(app.name)}
+            style={{
+              backgroundColor:
+                selectedService === app.name
+                  ? adjust(colors.tint, theme.dark ? -0.8 : 0.9)
+                  : colors.item,
+              minHeight: 62,
+            }}
+          >
+            <List.Leading>
+              <Stack animated direction="horizontal" hAlign="center" gap={12}>
+                {selectedService === app.name && (
+                  <Dynamic
+                    animated
+                    entering={PapillonZoomIn}
+                    exiting={PapillonZoomOut}
+                  >
+                    <Icon fill={colors.primary}>
+                      <Papicons name="check" />
+                    </Icon>
+                  </Dynamic>
+                )}
+
+                <Dynamic animated>
+                  <Image
+                    source={app.image}
+                    style={{ width: 32, height: 32, borderRadius: 10 }}
+                  />
+                </Dynamic>
+              </Stack>
+            </List.Leading>
+            <Dynamic animated>
+              <Typography variant="action">{app.title}</Typography>
+            </Dynamic>
           </List.Item>
         ))}
       </List>
@@ -144,12 +249,14 @@ export default function ServiceSelection() {
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          backgroundColor: colors.background
+          backgroundColor: colors.background,
         }}
       >
         <Button
           label={t("ONBOARDING_CONTINUE")}
-          onPress={() => { loginToService(selectedService) }}
+          onPress={() => {
+            loginToService(selectedService);
+          }}
           disabled={!selectedService || !hasServiceRoute}
         />
       </View>

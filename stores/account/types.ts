@@ -130,3 +130,10 @@ export enum Services {
   ALISE,
   APPSCHO,
 }
+
+export const RestaurationServices: Services[] = [
+  Services.TURBOSELF,
+  Services.ARD,
+  Services.IZLY,
+  Services.ALISE,
+]

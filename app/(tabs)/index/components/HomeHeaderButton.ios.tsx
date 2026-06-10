@@ -12,6 +12,7 @@ export interface HomeHeaderButtonItem {
   color: string;
   description: string;
   onPress?: () => void;
+  disabled?: boolean;
 }
 
 interface HomeHeaderButtonProps {
@@ -25,16 +26,19 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
     <LiquidGlassView
       glassOpacity={0.9}
       glassTintColor={colors.card}
-      glassType='regular'
-      isInteractive={true}
+      glassType="regular"
+      isInteractive={!item.disabled}
       style={{
         flex: 1,
-        borderRadius: 22
+        borderRadius: 22,
+        opacity: item.disabled ? 0.5 : 1,
+        minHeight: 61,
       }}
     >
       <Pressable
         style={styles.headerBtn}
         onPress={item.onPress}
+        disabled={item.disabled}
       >
         <View
           style={{
@@ -42,21 +46,37 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
             borderRadius: 50,
             aspectRatio: 1,
             width: 42,
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <Papicons name={item.icon} color={item.color} size={25} />
         </View>
-        <View style={{
-          flex: 1,
-          overflow: 'hidden'
-        }}>
-          <Typography nowrap variant="h6" color={colors.text + 95} style={{ lineHeight: 0 }}>{item.title}</Typography>
-          <Typography nowrap variant="title" color={colors.text + 60} style={{ lineHeight: 0 }}>{item.description}</Typography>
+        <View
+          style={{
+            flex: 1,
+            overflow: "hidden",
+          }}
+        >
+          <Typography
+            nowrap
+            variant="h6"
+            color={colors.text + 95}
+            style={{ lineHeight: 0 }}
+          >
+            {item.title}
+          </Typography>
+          <Typography
+            nowrap
+            variant="title"
+            color={colors.text + 60}
+            style={{ lineHeight: 0 }}
+          >
+            {item.description}
+          </Typography>
         </View>
       </Pressable>
-    </LiquidGlassView >
+    </LiquidGlassView>
   );
 };
 

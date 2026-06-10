@@ -17,5 +17,6 @@ export async function fetchArdBalance(
     lunchPrice,
     label: wallet.walletName ?? "Solde",
     createdByAccount: accountId,
+    updatedAt: Date.now(),
   }));
 }

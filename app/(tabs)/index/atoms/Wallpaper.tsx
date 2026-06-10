@@ -1,12 +1,12 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { File, Paths } from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, View } from "react-native";
 import LinearGradient from 'react-native-linear-gradient';
 
 import { useSettingsStore } from '@/stores/settings';
 
-const Wallpaper = ({ height = 400, dim = true }) => {
+const Wallpaper = ({ height = 400, dim = true, blur = false }) => {
   try {
     const settingsStore = useSettingsStore(state => state.personalization);
     const currentWallpaper = settingsStore.wallpaper;
@@ -32,24 +32,31 @@ const Wallpaper = ({ height = 400, dim = true }) => {
         style={[styles.container, { height }]}
         maskElement={
           <LinearGradient
-            colors={['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 0)']}
+            colors={["rgba(0, 0, 0, 1)", "rgba(0, 0, 0, 0)"]}
             locations={[0.5, 1]}
-            style={{ width: '100%', height }}
+            style={{ width: "100%", height }}
           />
         }
       >
         <Image
-          source={image ? { uri: image } : require('@/assets/images/wallpapers/clouds.jpg')}
+          source={
+            image
+              ? { uri: image }
+              : require("@/assets/images/wallpapers/clouds.jpg")
+          }
           style={[styles.image, { height }]}
+          blurRadius={blur ? 20 : undefined}
         />
 
-        {dim &&
+        {blur && <View style={{ flex: 1, backgroundColor: "#0003" }} />}
+
+        {dim && (
           <LinearGradient
-            colors={['rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0)']}
+            colors={["rgba(0, 0, 0, 0.7)", "rgba(0, 0, 0, 0)"]}
             locations={[0, 1]}
             style={[styles.dimGradient, { height: height / 2 }]}
           />
-        }
+        )}
       </MaskedView>
     );
   } catch (error) {

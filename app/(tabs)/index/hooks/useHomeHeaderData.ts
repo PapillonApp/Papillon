@@ -7,6 +7,8 @@ import { Period } from '@/services/shared/grade';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
+import { getBalancesFromCache } from "@/database/useBalance";
+import { Balance } from "@/services/shared/balance";
 
 export const useHomeHeaderData = () => {
   const accounts = useAccountStore((state) => state.accounts);
@@ -30,6 +32,7 @@ export const useHomeHeaderData = () => {
   const attendancesPeriodsRef = useRef<Period[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [chats, setChats] = useState<Chat[]>([]);
+  const [balances, setBalances] = useState<Balance[]>([]);
 
   const absencesCount = useMemo(() => {
     if (!attendances) return 0;
@@ -42,10 +45,14 @@ export const useHomeHeaderData = () => {
     return count;
   }, [attendances]);
 
+
+
   useEffect(() => {
     const init = async () => {
       const cachedChats = await getChatsFromCache();
+      const cachedBalances = await getBalancesFromCache();
       setChats(cachedChats);
+      setBalances(cachedBalances);
     };
 
     init();
@@ -70,10 +77,16 @@ export const useHomeHeaderData = () => {
       setChats(fetchedChats);
     };
 
+    const updateBalances = async (manager: AccountManager) => {
+      const balances = await manager.getCanteenBalances();
+      setBalances(balances);
+    }
+
     const unsubscribe = subscribeManagerUpdate((_) => {
       const manager = getManager();
       updateAttendance(manager);
       updateDiscussions(manager);
+      updateBalances(manager);
     });
 
     return () => unsubscribe();
@@ -84,6 +97,7 @@ export const useHomeHeaderData = () => {
     attendancesPeriods: attendancesPeriodsRef.current,
     attendances,
     absencesCount,
-    chats
+    chats,
+    balances,
   };
 };

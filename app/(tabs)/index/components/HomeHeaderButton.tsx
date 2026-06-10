@@ -1,11 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { StyleSheet, View } from 'react-native';
 import { Papicons } from '@getpapillon/papicons';
 import Typography from '@/ui/new/Typography';
 import { useTheme } from "expo-router/react-navigation";
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Stack from '@/ui/components/Stack';
 import { TouchableNativeFeedback } from 'react-native';
 
 export interface HomeHeaderButtonItem {
@@ -14,6 +11,7 @@ export interface HomeHeaderButtonItem {
   color: string;
   description: string;
   onPress?: () => void;
+  disabled?: boolean;
 }
 
 interface HomeHeaderButtonProps {
@@ -27,45 +25,54 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
     <View
       style={{
         flex: 1,
+        minHeight: 61,
       }}
     >
-    <TouchableNativeFeedback
-      useForeground
-      style={styles.headerBtn}
-      onPress={item.onPress}
-    >
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 12,
-          paddingHorizontal: 10,
-          paddingVertical: 13,
-          borderRadius: 22,
-          backgroundColor: colors.item,
-          elevation: 4,
-          overflow: 'hidden',
-        }}
+      <TouchableNativeFeedback
+        useForeground
+        style={styles.headerBtn}
+        onPress={item.onPress}
+        disabled={item.disabled}
       >
         <View
           style={{
-            borderRadius: 50,
-            padding: 0,
-            paddingLeft: 4,
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 12,
+            paddingHorizontal: 10,
+            paddingVertical: 13,
+            borderRadius: 22,
+            backgroundColor: colors.item,
+            elevation: item.disabled ? 0 : 4,
+            overflow: "hidden",
+            opacity: item.disabled ? 0.5 : 1,
           }}
         >
-          <Papicons name={item.icon} color={item.color} size={32} />
+          <View
+            style={{
+              borderRadius: 50,
+              padding: 0,
+              paddingLeft: 4,
+            }}
+          >
+            <Papicons name={item.icon} color={item.color} size={32} />
+          </View>
+          <View
+            style={{
+              flex: 1,
+              overflow: "hidden",
+            }}
+          >
+            <Typography nowrap inline variant="title">
+              {item.title}
+            </Typography>
+            <Typography nowrap inline variant="body1" color="textSecondary">
+              {item.description}
+            </Typography>
+          </View>
         </View>
-        <View style={{
-          flex: 1,
-          overflow: 'hidden'
-        }}>
-          <Typography nowrap inline variant="title">{item.title}</Typography>
-          <Typography nowrap inline variant="body1" color='textSecondary'>{item.description}</Typography>
-        </View>
-      </View>
-    </TouchableNativeFeedback>
+      </TouchableNativeFeedback>
     </View>
   );
 };

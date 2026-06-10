@@ -43,7 +43,8 @@ export async function addBalancesToDatabase(balances: SharedBalance[]) {
             amount: balance.amount,
             lunchRemaining: balance.lunchRemaining,
             lunchPrice: balance.lunchPrice,
-            label: balance.label
+            label: balance.label,
+            updatedAt: balance.updatedAt,
           })
         })
       }, 10000, 'addBalancesToDatabase')
