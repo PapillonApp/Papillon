@@ -55,15 +55,15 @@ const WelcomeModal: React.FC = () => {
 
   const ignoreSetup = () => {
     Alert.alert(
-      "Ignorer la configuration",
-      "Es-tu sûr de vouloir ignorer la configuration ? Tu pourras personnaliser ton profil et l'apparence de l'application plus tard dans les paramètres.",
+      t("Welcome_Setup_Skip_Title"),
+      t("Welcome_Setup_Skip_Description"),
       [
         {
-          text: "Annuler",
+          text: t("CANCEL_BTN"),
           style: "cancel"
         },
         {
-          text: "Ignorer",
+          text: t("Welcome_Setup_Skip_Action"),
           style: "destructive",
           onPress: () => {
       router.dismissAll();
@@ -123,9 +123,11 @@ const WelcomeModal: React.FC = () => {
             style={{ width: 92, height: 92, borderRadius: 64, marginBottom: 24, borderWidth: 1, borderColor: theme.colors.border }}
           />
 
-          <Typography variant="title" align="center" weight="medium" color="textSecondary">Bonjour, {account?.firstName || "utilisateur"} !</Typography>
+          <Typography variant="title" align="center" weight="medium" color="textSecondary">
+            {t("Welcome_Greeting", { name: account?.firstName || t("ONBOARDING_DEFAULT_USER_FIRSTNAME") })}
+          </Typography>
           <Typography variant="h3" align="center">
-            Bienvenue sur Papillon !
+            {t("Welcome_Title")}
           </Typography>
 
           <Divider ghost height={16} />
@@ -135,11 +137,11 @@ const WelcomeModal: React.FC = () => {
           {step === "photo" && (
             <Stack entering={FadeInRight.springify()} exiting={FadeOutLeft.springify()} animated hAlign="center" gap={12}>
               <Typography variant="body" align="center" color="textSecondary">
-                Pour améliorer ton expérience, commence par ajouter une photo de profil.
+                {t("Welcome_ProfilePicture_Description")}
               </Typography>
 
               <Button
-                label="Ajouter une photo de profil"
+                label={t("Welcome_ProfilePicture_Action")}
                 variant="outlined"
                 height={42}
                 leading={
@@ -161,7 +163,7 @@ const WelcomeModal: React.FC = () => {
           {step === "color" && (
             <Stack entering={FadeInRight.springify()} exiting={FadeOutLeft.springify()} animated hAlign="center" gap={12}>
               <Typography variant="body" align="center" color="textSecondary">
-                Super ! Et maintenant, choisis ta couleur favorite.
+                {t("Welcome_Color_Description")}
               </Typography>
 
               <Stack direction="horizontal" hAlign="center" gap={3}>
@@ -206,12 +208,12 @@ const WelcomeModal: React.FC = () => {
 
       <View style={{ justifyContent: "center", alignItems: "center", padding: 16, paddingBottom: insets.bottom + 16, gap: 12 }}>
         <Dynamic animated>
-          <Button disabled={!hasAPhotoBeenAdded} label="Continuer" variant="primary" fullWidth onPress={goNextStep} />
+          <Button disabled={!hasAPhotoBeenAdded} label={t("ONBOARDING_CONTINUE")} variant="primary" fullWidth onPress={goNextStep} />
         </Dynamic>
 
         {(step === "photo" || Platform.OS !== "ios") && (
           <Dynamic animated>
-            <Button label="Ignorer la configuration" variant="secondary" fullWidth onPress={ignoreSetup} />
+            <Button label={t("Welcome_Setup_Skip_Title")} variant="secondary" fullWidth onPress={ignoreSetup} />
           </Dynamic>
         )}
       </View>
