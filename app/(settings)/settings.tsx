@@ -250,7 +250,7 @@ export default function SettingsIndex() {
 
               return (
                 <View
-                  style={{ flex: 1, borderRadius: 22, elevation: 2, overflow: "hidden" }}
+                  style={{ flex: 1, borderRadius: 22, elevation: 2, overflow: Platform.OS === 'ios' ? "visible" : "hidden" }}
                   key={button.title}
                 >
                 <ListTouchable
@@ -262,9 +262,9 @@ export default function SettingsIndex() {
                     direction="vertical"
                     gap={8}
                     padding={[14, 14]}
-                    radius={22}
+                    radius={23}
                     style={[
-                      Platform.OS === 'ios' ? { borderColor: adjust(button.color, theme.dark ? 0.3 : -0.3) + "45" } : { backgroundColor: adjust(button.color, theme.dark ? -0.8 : 0.8), borderWidth: 0 },
+                      Platform.OS === 'ios' ? { borderColor: adjust(button.color, theme.dark ? 0.3 : -0.3) + "45" } : { backgroundColor: adjust(button.color, theme.dark ? -0.8 : 0.8), shadowOpacity: 0 },
                     ]}
                   >
                     {Platform.OS === 'ios' && (
@@ -336,7 +336,7 @@ export default function SettingsIndex() {
             />
           </View>
         )}
-        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16, paddingTop: finalHeaderHeight + 16 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom, paddingTop: finalHeaderHeight }}
       >
         {MoreSettingsList.map(section => (
           <List.Section key={section.title}>
