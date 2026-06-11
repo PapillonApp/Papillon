@@ -29,7 +29,7 @@
     "@expo/ngrok": "^4.1.3",
     "@expo/ui": "~56.0.16",
     "@expo/vector-icons": "^15.0.2",
-    "@getpapillon/papicons": "^0.2.1",
+    "@getpapillon/papicons": "^0.2.3",
     "@legendapp/list": "^2.0.15",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-community/datetimepicker": "9.1.0",
