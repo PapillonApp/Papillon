@@ -192,6 +192,20 @@ export default function DevMode() {
         </List.Section>
         <List.Section>
           <List.SectionTitle>
+            <Papicons name="phone" color={colors.text + 88} />
+            <List.Label>Écrans</List.Label>
+          </List.SectionTitle>
+          <List.Item onPress={() => router.push("/(modals)/welcome")}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Sparkles" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Ouvrir le modal de bienvenue</Typography>
+          </List.Item>
+        </List.Section>
+        <List.Section>
+          <List.SectionTitle>
             <Papicons name="Bus" color={colors.text + 88} />
             <List.Label>Transport</List.Label>
           </List.SectionTitle>

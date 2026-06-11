@@ -154,6 +154,17 @@ function RootNavigatorContent() {
             }
           }}
         />
+        <Stack.Screen
+          name="(modals)/welcome"
+          options={{
+            headerShown: false,
+            headerTitle: "",
+            headerLargeTitle: false,
+            presentation: "modal",
+            gestureEnabled: false,
+            headerBackground: AndroidHeaderBackground
+          }}
+        />
 
         <Stack.Screen
           name="(features)/(news)/news"
