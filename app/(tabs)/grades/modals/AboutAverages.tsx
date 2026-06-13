@@ -35,7 +35,7 @@ export default function AboutAverages() {
         </Typography>
 
         <Typography variant="body1" color="secondary">
-          Papillon regroupe automatiquement vos notes en fonction de leur matière présumée et en calcule la moyenne en tenant compte des coefficients et autres paramètres. Ensuite, il peut ou non calculer la moyennes des matières entre-elles.
+          Papillon regroupe automatiquement tes notes en fonction de leur matière présumée et en calcule la moyenne en tenant compte des coefficients et autres paramètres. Ensuite, il peut ou non calculer la moyennes des matières entre-elles.
         </Typography>
 
         <Typography variant="h4" style={{ marginTop: 20 }}>
@@ -51,7 +51,7 @@ export default function AboutAverages() {
         </Typography>
 
         <Typography variant="body1" color="secondary">
-          Lorsque Papillon affiche qu'une moyenne est fournie par l'établissement, c'est qu'il n'y a aucune différence entre votre moyenne réelle et celle affichée. Cependant, si la mention "estimée" ou une date apparaît, il peut exister une différence de l'ordre de quelques demi-points.
+          Lorsque Papillon affiche qu'une moyenne est fournie par l'établissement, c'est qu'il n'y a aucune différence entre ta moyenne réelle et celle affichée. Cependant, si la mention "estimée" ou une date apparaît, il peut exister une différence de l'ordre de quelques demi-points.
         </Typography>
       </Stack>
     </ScrollView>
