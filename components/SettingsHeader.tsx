@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons"
-import { useTheme } from "@react-navigation/native"
+import { useTheme } from "expo-router/react-navigation"
 import { Image, ImageSourcePropType, View, Switch } from "react-native"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"

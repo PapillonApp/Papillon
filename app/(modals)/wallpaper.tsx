@@ -4,7 +4,7 @@ import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
-import { useTheme } from "@react-navigation/native"
+import { useTheme } from "expo-router/react-navigation"
 import React, { useEffect, useState } from "react"
 import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
 import { File, Directory, Paths } from 'expo-file-system';
@@ -31,19 +31,19 @@ const WallpaperModal = () => {
   const { colors } = useTheme()
 
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCollections = async () => {
+  const fetchCollections = async (isRefresh = false) => {
     try {
-      setLoading(true);
+      if (isRefresh) setRefreshing(true);
       const response = await fetch(COLLECTIONS_SOURCE);
       const data = await response.json();
       setCollections(data);
     } catch (error) {
       setError(error as string);
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   }
 
@@ -205,9 +205,9 @@ const WallpaperModal = () => {
         )}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
-            onRefresh={fetchCollections}
-            progressViewOffset={72}
+            refreshing={refreshing}
+            onRefresh={() => fetchCollections(true)}
+            progressViewOffset={128}
           />
         }
       />

@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Platform, PlatformColor, View } from "react-native";
 
 export default function AndroidHeaderBackground() {

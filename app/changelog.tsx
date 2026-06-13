@@ -2,7 +2,7 @@ import Typography from "@/ui/components/Typography";
 import React from "react";
 import { View, ScrollView, Image } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 export default function ChangelogScreen() {
   const theme = useTheme();

@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import MaskedView from "@react-native-masked-view/masked-view";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Haptics from "expo-haptics";
 import { router, useGlobalSearchParams } from "expo-router";

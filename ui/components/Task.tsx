@@ -2,7 +2,7 @@ import React from 'react';
 import Stack from './Stack';
 import Typography from './Typography';
 import { formatHTML } from '@/utils/format/html';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import adjust from '@/utils/adjustColor';
 import { Text } from 'react-native';
 

@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as LucideIcons from "lucide-react-native";
 import { type ComponentType, useEffect, useMemo, useState } from "react";

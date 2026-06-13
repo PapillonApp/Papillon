@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
@@ -7,6 +7,7 @@ import { FlatList, Platform, StatusBar, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
+import { useSettingsStore } from '@/stores/settings';
 import { checkConsent } from '@/utils/logger/consent';
 
 import HomeHeader from './atoms/HomeHeader';
@@ -18,7 +19,6 @@ import { useTimetableWidgetData } from './hooks/useTimetableWidgetData';
 import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
 import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
-import { useAlert } from '@/ui/components/AlertProvider';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
@@ -33,6 +33,8 @@ const HomeScreen = () => {
   const accounts = useAccountStore((state) => state.accounts);
   const account = accounts.find(a => a.id === store.lastUsedAccount);
   const router = useRouter();
+  const welcomeModalSeen = useSettingsStore(state => state.personalization.welcomeModalSeen);
+  const mutateSettings = useSettingsStore(state => state.mutateProperty);
 
   React.useEffect(() => {
     if (accounts.length === 0) {
@@ -81,7 +83,14 @@ const HomeScreen = () => {
     }
   ], [renderTimeTable, renderGrades, gradesWidgetHidden, timetableTitle]);
 
-  const alert = useAlert();
+  React.useEffect(() => {
+    if (!account || welcomeModalSeen) {
+      return;
+    }
+
+    mutateSettings("personalization", { welcomeModalSeen: true });
+    router.navigate("/(modals)/welcome");
+  }, [account, mutateSettings, router, welcomeModalSeen]);
 
   return (
     <>

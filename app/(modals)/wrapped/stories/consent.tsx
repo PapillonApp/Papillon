@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React, { memo, useCallback, useState } from 'react';
 import { Dimensions, FlatList, StyleSheet, Switch, View } from 'react-native';

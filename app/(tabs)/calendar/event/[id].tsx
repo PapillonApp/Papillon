@@ -1,5 +1,5 @@
 import { MenuView } from '@react-native-menu/menu';
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { t } from 'i18next';
 import { MoreVertical } from "lucide-react-native";

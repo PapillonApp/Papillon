@@ -49,4 +49,5 @@ export interface Personalization {
   gradesPeriodName?: string;
   installedVersion?: string;
   releaseNotesSeenForVersion?: string;
+  welcomeModalSeen?: boolean;
 }

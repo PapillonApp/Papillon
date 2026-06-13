@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Alert, Switch, View } from "react-native";
 import { router } from "expo-router";
-import { useHeaderHeight } from "@react-navigation/elements";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { Papicons } from "@getpapillon/papicons";
 
 import { useLogStore, useNetworkStore } from "@/stores/logs";
@@ -10,7 +10,6 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/new/Typography";
 import Icon from "@/ui/components/Icon";
 import SectionHeader from "@/ui/components/SectionHeader";
-import { useTheme } from "@react-navigation/native";
 import Button from "@/ui/new/Button";
 import { database } from "@/database";
 import { useAccountStore } from "@/stores/account";
@@ -190,6 +189,20 @@ export default function DevMode() {
             <List.Label>Liste des requêtes</List.Label>
           </List.SectionTitle>
           {entries.map(renderHostRow)}
+        </List.Section>
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="phone" color={colors.text + 88} />
+            <List.Label>Écrans</List.Label>
+          </List.SectionTitle>
+          <List.Item onPress={() => router.push("/(modals)/welcome")}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Sparkles" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Ouvrir le modal de bienvenue</Typography>
+          </List.Item>
         </List.Section>
         <List.Section>
           <List.SectionTitle>

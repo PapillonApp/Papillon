@@ -8,7 +8,7 @@ import Typography from '@/ui/new/Typography';
 import adjust from '@/utils/adjustColor';
 import { Modal, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Dynamic } from '@/ui/components/Dynamic';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';

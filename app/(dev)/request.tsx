@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import * as Clipboard from "expo-clipboard";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 import { useNetworkStore } from "@/stores/logs";
 import Button from "@/ui/components/Button";

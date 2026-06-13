@@ -1,5 +1,5 @@
 
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { authWithCredentials } from 'esup-multi.js';
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
@@ -27,7 +27,6 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
 import LoginView from "../../components/LoginView";
-import { useHeaderHeight } from "@react-navigation/elements";
 
 const ANIMATION_DURATION = 170;
 

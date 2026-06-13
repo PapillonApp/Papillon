@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useRoute, useTheme } from "@react-navigation/native";
+import { useRoute, useTheme } from "expo-router/react-navigation";
 import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
 import * as DateLocale from 'date-fns/locale';
 import i18n, { t } from "i18next";

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { t } from "i18next";
 import LottieView from "lottie-react-native";

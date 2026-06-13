@@ -24,7 +24,7 @@ import { Animation } from "../utils/Animation";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useRouter } from "expo-router";
 
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";

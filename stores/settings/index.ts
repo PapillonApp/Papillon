@@ -25,6 +25,7 @@ const defaultPersonalization: Personalization = {
   showDevMode: false,
   magicModelURL: MAGIC_URL,
   gradesDisplayScale: "20",
+  welcomeModalSeen: false,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(

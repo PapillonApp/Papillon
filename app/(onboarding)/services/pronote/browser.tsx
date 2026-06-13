@@ -1,10 +1,11 @@
-import { useRoute, useTheme } from "@react-navigation/native";
+import { useRoute, useTheme } from "expo-router/react-navigation";
 import { router, useNavigation } from "expo-router";
 import { AccountKind, createSessionHandle, loginToken, SecurityError, SessionHandle } from "pawnote";
 import React, { createRef, RefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, KeyboardAvoidingView, Modal } from "react-native";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import WebView from "react-native-webview";
 import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 
@@ -340,7 +341,7 @@ export default function PronoteENTLogin() {
           <Stack vAlign="center" hAlign="center" width={"100%"} gap={3} padding={20}>
             <ActivityIndicator />
             <Divider height={12} ghost />
-            <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? school.name : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
+            <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? formatSchoolName(school.name) : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
             <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
 
             {hasLoadingBeenTooLong && (

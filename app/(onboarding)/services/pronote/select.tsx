@@ -1,11 +1,11 @@
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useRoute, useTheme } from "@react-navigation/native";
+import { useHeaderHeight, useRoute, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import { geolocation } from "pawnote";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -108,7 +108,7 @@ export default function PronoteLoginSelectEtab() {
               />
             </List.Leading>
             <Typography variant="title" numberOfLines={2}>
-              {school.name}
+              {formatSchoolName(school.name)}
             </Typography>
             <Typography variant="body" color="textSecondary" numberOfLines={1}>
               {school.url}

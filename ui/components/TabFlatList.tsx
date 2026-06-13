@@ -1,5 +1,5 @@
 import { LegendList } from "@legendapp/list";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { FlashList } from "@shopify/flash-list";
 import React, { memo } from "react";
 import { Dimensions, FlatList, FlatListProps, Platform, View } from "react-native";

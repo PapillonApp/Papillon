@@ -1,6 +1,6 @@
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { ScrollView, Text, View, Image } from "react-native";
 

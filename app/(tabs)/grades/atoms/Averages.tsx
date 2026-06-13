@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
@@ -205,8 +205,8 @@ const Averages = ({
       item.value = Math.round(item.value * 100) / 100;
     });
 
-    const hasOnlySkills = grades.some(
-      grade => grade.studentScore?.disabled ?? grade.skills?.length ?? 0 > 0
+    const hasOnlySkills = grades.every(
+      grade => grade.studentScore?.disabled === true || (grade.skills?.length ?? 0) > 0
     );
 
     if (hasOnlySkills) return null;
