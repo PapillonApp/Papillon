@@ -103,7 +103,7 @@
   "ONBOARDING_LOGIN_DISCLAIMER": "Papillon n’est pas affilié à {{service}}. Ton mot de passe n’est pas lu ou conservé par Papillon.",
   "ONBOARDING_LOGIN_HELP_ACTION": "Problèmes de connexion ?",
   "ONBOARDING_LOGIN_HELP_TITLE": "Aide à la connexion",
-  "ONBOARDING_LOGIN_HELP_DESCRIPTION": "Si tu rencontres des problèmes pour te connecter, contacte le support de votre service ou vérifier tes identifiants.",
+  "ONBOARDING_LOGIN_HELP_DESCRIPTION": "Si tu rencontres des problèmes pour te connecter, contacte le support de ton service ou vérifier tes identifiants.",
   "ONBOARDING_ERROR": "Erreur",
   "ONBOARDING_REQUIRED_FIELDS": "Champs requis",
   "ONBOARDING_FILL_ALL_FIELDS": "Veuillez remplir tous les champs",
