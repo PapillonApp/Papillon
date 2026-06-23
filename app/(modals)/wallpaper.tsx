@@ -6,7 +6,7 @@ import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
 import { useTheme } from "expo-router/react-navigation"
 import React, { useEffect, useState } from "react"
-import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
+import { FlatList, Image, Platform, Pressable, RefreshControl, View } from "react-native"
 import { File, Directory, Paths } from 'expo-file-system';
 import ActivityIndicator from "@/components/ActivityIndicator"
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader"
@@ -17,6 +17,7 @@ import { t } from "i18next";
 
 import * as ImagePicker from 'expo-image-picker';
 import ActionMenu from "@/ui/components/ActionMenu"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
 
@@ -29,6 +30,7 @@ interface Collection {
 
 const WallpaperModal = () => {
   const { colors } = useTheme()
+  const insets = useSafeAreaInsets();
 
   const [collections, setCollections] = useState<Collection[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -70,7 +72,7 @@ const WallpaperModal = () => {
       if (collectionIndex !== -1) {
         setTimeout(() => {
           flatListRef.current?.scrollToIndex({ index: collectionIndex, animated: true });
-        }, 500);
+        }, 10);
       }
     }
   }, [collections, currentWallpaper]);
@@ -160,7 +162,8 @@ const WallpaperModal = () => {
         }}
         contentContainerStyle={{
           gap: 16,
-          paddingTop: Platform.OS === 'android' ? 20 : 72
+          paddingTop: Platform.OS === 'android' ? 20 : 0,
+          paddingBottom: insets.bottom
         }}
         renderItem={({ item, index }) => (
           <View>
@@ -203,13 +206,7 @@ const WallpaperModal = () => {
             />
           </View>
         )}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => fetchCollections(true)}
-            progressViewOffset={128}
-          />
-        }
+        contentInsetAdjustmentBehavior="automatic"
       />
 
       <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + (hasCustomWallpaper ? "true" : "false")}>
@@ -305,7 +302,7 @@ const WallpaperImage = ({ item, onPress, selectedId, isDownloading }: { item: Wa
 
   return (
 
-    <AnimatedPressable
+    <Pressable
       onPress={onPress}
     >
       <View
@@ -346,7 +343,7 @@ const WallpaperImage = ({ item, onPress, selectedId, isDownloading }: { item: Wa
           onLoad={() => setImageLoaded(true)}
         />
       </View>
-    </AnimatedPressable>
+    </Pressable>
   );
 };
 
