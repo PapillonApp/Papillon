@@ -97,6 +97,7 @@ export default {
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
+      "expo-ios-scene-lifecycle-plugin",
       "expo-router",
       "expo-status-bar",
       "expo-font",
@@ -159,6 +160,7 @@ export default {
               { name: "SDWebImage", modular_headers: true },
               { name: "SDWebImageSVGCoder", modular_headers: true },
             ],
+            buildReactNativeFromSource: false
           },
         },
       ],
