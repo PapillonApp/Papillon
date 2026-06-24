@@ -10,6 +10,8 @@ import { Dynamic } from "./Dynamic";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import { useFont } from "@/utils/theme/fonts";
+import useResizable from "../utils/Resizable";
+import { VARIANTS } from "./Typography";
 
 interface SearchProps {
   autoFocus?: boolean,
@@ -24,6 +26,7 @@ interface SearchProps {
 
 const SearchContainer = ({ children, style }: { children: React.ReactNode, style?: StyleProp<ViewStyle> }) => {
   const { colors } = useTheme();
+  const { isLarge } = useResizable();
 
   if (!isLiquidGlassSupported) {
     return (
@@ -87,7 +90,7 @@ const Search: React.FC<SearchProps> = ({
   return (
     <SearchContainer style={style}>
       <Stack
-        height={42}
+        height={isLarge ? 36 : 42}
         style={{
           borderWidth: 0,
           overflow: 'hidden',
@@ -117,10 +120,10 @@ const Search: React.FC<SearchProps> = ({
           style={{
             flex: 1,
             height: '100%',
-            fontSize: 17,
+            ...VARIANTS.body1,
             color: colors.text,
             fontFamily: font("semibold"),
-            marginTop: Platform.OS === 'android' ? 2 : 0,
+            marginTop: Platform.OS === 'android' ? 2 : -1,
           }}
         />
 

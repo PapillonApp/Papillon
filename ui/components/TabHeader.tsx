@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { runsIOS26 } from '../utils/IsLiquidGlass';
 import { TabHeaderTitleProps } from './TabHeaderTitle';
 import AndroidBackButton from '@/utils/theme/AndroidBackButton';
+import useResizable from "../utils/Resizable";
 
 
 interface TabHeaderProps {
@@ -38,8 +39,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   const insets = useSafeAreaInsets();
   const [height, setHeight] = React.useState(0);
   const usedInsets = isModal ? 16 : insets.top;
-  const dimensions = useWindowDimensions();
-  const isLarge = dimensions.width >= 768;
+  const { isLarge } = useResizable();
 
   useEffect(() => {
     onHeightChanged(height + (Platform.OS === 'android' ? 6 : 0));
@@ -134,7 +134,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             {isLarge && (
               <View
                 style={{
-                  maxWidth: 300,
+                  maxWidth: 320,
                   flex: 1,
                   flexDirection: 'row',
                   gap: 8,
