@@ -2,7 +2,7 @@ import { useWindowDimensions } from "react-native";
 
 const useResizable = () => {
   const dimensions = useWindowDimensions();
-  const isLarge = dimensions.width >= 768;
+  const isLarge = dimensions.width >= 600;
 
   return {
     isLarge

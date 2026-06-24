@@ -49,7 +49,7 @@ const SearchContainer = ({ children, style }: { children: React.ReactNode, style
       glassTintColor="transparent"
       glassOpacity={0}
       style={[{
-        flex: 1,
+        width: "100%",
         borderRadius: 300,
       }, style]}
     >
@@ -92,6 +92,7 @@ const Search: React.FC<SearchProps> = ({
       <Stack
         height={isLarge ? 36 : 42}
         style={{
+          width: "100%",
           borderWidth: 0,
           overflow: 'hidden',
         }}

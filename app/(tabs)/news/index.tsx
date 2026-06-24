@@ -101,6 +101,7 @@ const NewsView = () => {
             paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
             paddingHorizontal: 16,
             gap: 9,
+            paddingLeft: insets.left + 16,
           }}
           refreshControl={
             <RefreshControl

@@ -39,7 +39,7 @@ const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
       card
       radius={25}
       gap={0}
-      style={{ elevation: 2, display: item.hidden ? 'none' : 'flex', width: "100%" }}
+      style={{ elevation: 2, display: item.hidden ? 'none' : 'flex' }}
       backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.dark ? theme.colors.card : '#fff'}
     >
       <Stack direction="horizontal" vAlign="center" hAlign="center" padding={[10, 10]} gap={10} style={{ marginTop: -1 }}>
