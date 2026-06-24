@@ -7,8 +7,10 @@ import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import { LineGraph } from "react-native-graph";
-import { LayoutAnimationConfig } from "react-native-reanimated";
+import { LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 import Reanimated from "react-native-reanimated";
+import { Host, HStack, Text } from '@expo/ui/swift-ui';
+import { useFont } from "@/utils/theme/fonts";
 
 import { Grade } from "@/services/shared/grade";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
@@ -32,6 +34,9 @@ import {
 import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
 import ActionMenu from "@/ui/components/ActionMenu";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
+import { Animation, animation, contentTransition, font, foregroundStyle, padding } from "@expo/ui/swift-ui/modifiers";
+import { align } from "@expo/ui/jetpack-compose/modifiers";
+import hexToRgb from "@/utils/theme/RGB";
 
 const algorithms = [
   {
@@ -75,6 +80,7 @@ const Averages = ({
     const theme = useTheme();
     const accent = color || theme.colors.primary;
     const adjustedColor = adjust(accent, theme.dark ? 0.2 : -0.2);
+    const papillonFont = useFont();
 
     const [algorithm, setAlgorithm] = useState(algorithms[0]);
 
@@ -314,6 +320,18 @@ const Averages = ({
                 marginRight: inline ? 20 : 0,
               }}
             >
+              {Platform.OS === "ios" ? (
+              <Host matchContents>
+                <HStack alignment="firstTextBaseline" spacing={1} modifiers={[animation(Animation.default, shownAverage)]}>
+                  <Text modifiers={[font({ family: papillonFont("bold"), size: 30 }), contentTransition("numericText"), animation(Animation.default, shownAverage), foregroundStyle(adjustedColor)]}>
+                    {shownAverage ? shownAverage.toFixed(2) : "0.00"}
+                  </Text>
+                  <Text modifiers={[font({ family: papillonFont("bold"), size: 20 }), padding({ top: 1 }), animation(Animation.default, shownAverage), foregroundStyle(adjustedColor)]}>
+                    {getDisplayDenominator(displayScale)}
+                  </Text>
+                </HStack>
+              </Host>
+              ) : (
               <Stack
                 animated
                 direction="horizontal"
@@ -327,6 +345,7 @@ const Averages = ({
                 >
                   {shownAverage ? shownAverage.toFixed(2) : "0.00"}
                 </AnimatedNumber>
+
                 <Dynamic animated>
                   <Typography
                     variant="title"
@@ -340,6 +359,7 @@ const Averages = ({
                   </Typography>
                 </Dynamic>
               </Stack>
+              )}
 
               <ActionMenu
                 actions={[
@@ -400,7 +420,7 @@ const Averages = ({
                     hAlign="center"
                     vAlign={inline ? "start" : "center"}
                     direction="horizontal"
-                    style={{ marginTop: -2 }}
+                    style={{ marginTop: 0 }}
                   >
                     <Typography
                       variant={inline ? "body1" : "title"}
