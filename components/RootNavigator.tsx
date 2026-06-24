@@ -71,8 +71,9 @@ function RootNavigatorContent() {
           options={{
             presentation: "formSheet",
             sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.5, 1],
+            sheetAllowedDetents: [0.5, 0.75],
             headerLargeTitle: false,
+            sheetLargestUndimmedDetentIndex: 'none',
             headerTransparent: Platform.OS === 'ios',
             headerTitle: t("Modal_Wallpaper_Title"),
             contentStyle: {
