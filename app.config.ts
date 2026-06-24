@@ -130,6 +130,7 @@ export default {
         },
       ],
       "react-native-bottom-tabs",
+      "papillon-intents",
       "expo-secure-store",
       [
         "expo-location",
