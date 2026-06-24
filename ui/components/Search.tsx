@@ -3,7 +3,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect, useState } from "react";
-import { Dimensions, Platform, TextInput, TouchableOpacity, View } from "react-native";
+import { Dimensions, Platform, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native";
 
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import { Dynamic } from "./Dynamic";
@@ -46,7 +46,7 @@ const SearchContainer = ({ children, style }: { children: React.ReactNode, style
       glassTintColor="transparent"
       glassOpacity={0}
       style={[{
-        width: Dimensions.get("window").width - 32,
+        flex: 1,
         borderRadius: 300,
       }, style]}
     >
@@ -68,6 +68,8 @@ const Search: React.FC<SearchProps> = ({
   const { colors } = useTheme();
   const font = useFont();
   const [localInput, setLocalInput] = useState("");
+    const dimensions = useWindowDimensions();
+    const isLarge = dimensions.width >= 768;
 
   const input = value !== undefined && setValue !== undefined ? value : localInput;
   const setInput = (text: string) => {

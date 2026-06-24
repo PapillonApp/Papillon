@@ -2,7 +2,7 @@
 import { useTheme } from "expo-router/react-navigation";
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, useWindowDimensions, View } from 'react-native';
 import Reanimated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -38,6 +38,8 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   const insets = useSafeAreaInsets();
   const [height, setHeight] = React.useState(0);
   const usedInsets = isModal ? 16 : insets.top;
+  const dimensions = useWindowDimensions();
+  const isLarge = dimensions.width >= 768;
 
   useEffect(() => {
     onHeightChanged(height + (Platform.OS === 'android' ? 6 : 0));
@@ -123,15 +125,39 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           <View
             style={{
               flex: 1,
-              alignItems: 'flex-end',
-              justifyContent: 'center',
+              flexDirection: 'row',
+              gap: 8,
+              alignItems: 'center',
+              justifyContent: 'flex-end'
             }}
           >
+            {isLarge && (
+              <View
+                style={{
+                  maxWidth: 300,
+                  flex: 1,
+                  flexDirection: 'row',
+                  gap: 8,
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                {bottom}
+              </View>
+            )}
+
             {trailing}
           </View>
         </View>
 
-        {bottom}
+        <View
+          style={{
+            width: '100%',
+          paddingHorizontal: 16,
+          }}
+        >
+          {!isLarge && bottom}
+        </View>
       </View>
     </>
   )
