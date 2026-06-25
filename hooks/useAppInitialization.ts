@@ -83,7 +83,7 @@ export function useAppInitialization() {
           const durationMs = now - lastBackgroundRef.current;
 
           if (durationMs > 5 * 60 * 1000) {
-            initializeAccountManager();
+            initializeAccountManager().catch(e => warn(`Background account refresh failed: ${e}`));
           }
         }
       }

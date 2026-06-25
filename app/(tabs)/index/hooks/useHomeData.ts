@@ -5,6 +5,7 @@ import { useCallback, useEffect } from 'react';
 
 import { getWeekNumberFromDate } from '@/database/useHomework';
 import { AuthenticationError } from '@/services/errors/AuthenticationError';
+import { ServiceUnavailableError } from '@/services/errors/ServiceUnavailableError';
 import { getManager, initializeAccountManager } from "@/services/shared";
 import { Services } from '@/stores/account/types';
 import { useSettingsStore } from '@/stores/settings';
@@ -130,6 +131,13 @@ export const useHomeData = () => {
             label: "Me reconnecter",
             showCancelButton: error.service.serviceId === Services.PRONOTE,
             onPress: async () => {
+              const ownerAccount = accounts.find(acc =>
+                acc.services.some(s => s.id === error.service.id)
+              );
+              if (ownerAccount) {
+                removeAccount(ownerAccount);
+              }
+
               const authUrl = instanceURL;
               const instanceInfo = await instance(authUrl as string);
 
@@ -149,6 +157,14 @@ export const useHomeData = () => {
           } : undefined,
           technical: error.message
         })
+      } else if (error instanceof ServiceUnavailableError) {
+        alert.showAlert({
+          title: t("home.unavailable.title", "Pronote temporairement indisponible"),
+          description: t("home.unavailable.description", "Impossible de contacter Pronote pour le moment. Les données affichées correspondent à la dernière synchronisation."),
+          icon: "WifiOff",
+          color: "#FF8C00",
+          withoutNavbar: true,
+        });
       }
     }
     })();

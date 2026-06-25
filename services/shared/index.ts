@@ -60,7 +60,25 @@ import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 
+import {
+  AccessDeniedError,
+  AccountDisabledError,
+  AuthenticateError,
+  BadCredentialsError,
+  SecurityError,
+  SessionExpiredError,
+} from "pawnote";
+
 import { AuthenticationError } from "../errors/AuthenticationError";
+import { ServiceUnavailableError } from "../errors/ServiceUnavailableError";
+
+const isPermanentAuthError = (e: unknown): boolean =>
+  e instanceof BadCredentialsError ||
+  e instanceof AuthenticateError ||
+  e instanceof SessionExpiredError ||
+  e instanceof AccessDeniedError ||
+  e instanceof AccountDisabledError ||
+  e instanceof SecurityError;
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -102,7 +120,10 @@ export class AccountManager {
           );
         }
       } catch (e) {
-        throw new AuthenticationError(String(e), service)
+        if (isPermanentAuthError(e)) {
+          throw new AuthenticationError(String(e), service);
+        }
+        throw new ServiceUnavailableError(String(e), service);
       }
     }
 

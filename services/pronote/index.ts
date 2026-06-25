@@ -30,19 +30,25 @@ export class Pronote implements SchoolServicePlugin {
   service = Services.PRONOTE;
   capabilities: Capabilities[] = [Capabilities.REFRESH];
   session : SessionHandle | undefined = undefined;
-  tokenExpiration = new Date().getTime() + (5 * 60 * 1000);
+  tokenExpiration = 0;
   authData: Auth = {};
+  private refreshInFlight: Promise<void> | null = null;
 
   constructor(public accountId: string) {}
 
-  private async checkTokenValidty(): Promise<boolean> {
-    const time = new Date().getTime();
-    if (time > this.tokenExpiration) {
-      this.tokenExpiration = new Date().getTime() + (5 * 60 * 1000);
-      await this.refreshAccount(this.authData);
-      return new Date().getTime() <= this.tokenExpiration;
+  private async checkTokenValidty(): Promise<void> {
+    if (this.refreshInFlight) {
+      await this.refreshInFlight;
+      return;
     }
-    return true;
+    if (Date.now() <= this.tokenExpiration) return;
+
+    this.refreshInFlight = (async () => {
+      await this.refreshAccount(this.authData);
+      this.tokenExpiration = Date.now() + (5 * 60 * 1000);
+    })().finally(() => { this.refreshInFlight = null; });
+
+    await this.refreshInFlight;
   }
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
@@ -60,7 +66,7 @@ export class Pronote implements SchoolServicePlugin {
       [TabLocation.Timetable]: Capabilities.TIMETABLE,
     };
 
-    for (const tab of this.session.user.authorizations.tabs) {
+    for (const tab of this.session.user?.authorizations?.tabs ?? []) {
       const capability = tabCapabilities[tab];
       if (capability) {
         this.capabilities.push(...(Array.isArray(capability) ? capability : [capability]));
