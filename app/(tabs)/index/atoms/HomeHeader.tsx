@@ -109,11 +109,11 @@ const HomeHeader = () => {
   ], [availableCanteenCards, absencesCount, chats, currentAttendancePeriod, attendancesPeriods, attendances, t]);
 
   return (
-    <View style={{ paddingHorizontal: 0, width: "100%", flex: 1 }}>
+    <View style={{ paddingHorizontal: 0, width: "100%", flex: 1, overflow: "visible" }}>
       <View style={{ height: insets.top + 56 }} />
-      <LiquidGlassContainer>
-        <Stack inline flex width={"100%"}>
-          <View style={{ width: '100%', gap: 6 }}>
+      <LiquidGlassContainer spacing={8} style={{ overflow: "visible" }}>
+        <Stack inline flex width={"100%"} style={{ overflow: "visible" }}>
+          <View style={{ width: '100%', gap: 6, overflow: "visible" }}>
             {Array.from({ length: Math.ceil(HomeHeaderButtons.length / 2) }).map((_, i) => (
 
               <View key={i} style={{ flexDirection: 'row', gap: 6, width: '100%' }}>

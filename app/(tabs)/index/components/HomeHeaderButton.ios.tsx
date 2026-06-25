@@ -23,8 +23,8 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
 
   return (
     <LiquidGlassView
-      glassOpacity={0.9}
-      glassTintColor={colors.card}
+      glassOpacity={0}
+      glassTintColor={colors.card ?? '#ffffff'}
       glassType='regular'
       isInteractive={true}
       style={{
@@ -52,8 +52,8 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           flex: 1,
           overflow: 'hidden'
         }}>
-          <Typography nowrap variant="h6" color={colors.text + 95} style={{ lineHeight: 0 }}>{item.title}</Typography>
-          <Typography nowrap variant="title" color={colors.text + 60} style={{ lineHeight: 0 }}>{item.description}</Typography>
+          <Typography nowrap variant="h6" color={colors.text + "e5"} style={{ lineHeight: 0 }}>{item.title}</Typography>
+          <Typography nowrap variant="title" color={colors.text + "75"} style={{ lineHeight: 0 }}>{item.description}</Typography>
         </View>
       </Pressable>
     </LiquidGlassView >
