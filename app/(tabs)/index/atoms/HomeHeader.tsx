@@ -62,7 +62,8 @@ const HomeHeader = () => {
           t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None"),
       onPress: () => {
         router.push("/(features)/(cards)/cards");
-      }
+      },
+      route: "/(features)/(cards)/cards"
     },
     {
       title: t("Home_Menu_Button_Title"),
@@ -71,7 +72,8 @@ const HomeHeader = () => {
       description: t("Home_Menu_Button_Description"),
       onPress: () => {
         router.push("/(features)/soon");
-      }
+      },
+      route: "/(features)/soon"
     },
     {
       title: t("Home_Attendance_Title"),
@@ -93,7 +95,13 @@ const HomeHeader = () => {
             attendances: JSON.stringify(attendances),
           },
         });
-      }
+      },
+      route: "/(features)/attendance",
+      params: {
+        periods: JSON.stringify(attendancesPeriods),
+        currentPeriod: JSON.stringify(currentAttendancePeriod),
+        attendances: JSON.stringify(attendances),
+      },
     },
     {
       title: t("Home_Chats_Button_Title"),
@@ -104,7 +112,8 @@ const HomeHeader = () => {
         : t("Home_Chats_Button_Description_None"),
       onPress: () => {
         router.push("/(features)/soon");
-      }
+      },
+      route: "/(features)/soon"
     }
   ], [availableCanteenCards, absencesCount, chats, currentAttendancePeriod, attendancesPeriods, attendances, t]);
 

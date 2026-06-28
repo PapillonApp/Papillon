@@ -55,8 +55,8 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
         <UserProfile />
 
         <Stack direction="horizontal" hAlign="center" vAlign="end" gap={7} inline>
-          <HomeTopBarButton icon="palette" onPress={() => router.push("/(modals)/wallpaper")} />
-          <HomeTopBarButton icon="gears" onPress={() => router.push("/(settings)/settings")} />
+          <HomeTopBarButton icon="palette" route="/(modals)/wallpaper" onPress={() => router.push("/(modals)/wallpaper")} />
+          <HomeTopBarButton icon="gears" route="/(settings)/settings" onPress={() => router.push("/(settings)/settings")} />
         </Stack>
       </View>
     </>

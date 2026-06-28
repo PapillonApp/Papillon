@@ -14,6 +14,8 @@ export interface HomeHeaderButtonItem {
   color: string;
   description: string;
   onPress?: () => void;
+  route?: string;
+  params?: Record<string, string>;
 }
 
 interface HomeHeaderButtonProps {

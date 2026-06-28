@@ -5,6 +5,7 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import Typography from '@/ui/components/Typography';
+import { Link } from 'expo-router';
 
 export interface HomeHeaderButtonItem {
   title: string;
@@ -32,9 +33,10 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
         borderRadius: 22
       }}
     >
+    <Link asChild href={item.route ?? "/(features)/soon"}>
+    <Link.AppleZoom>
       <Pressable
         style={styles.headerBtn}
-        onPress={item.onPress}
       >
         <View
           style={{
@@ -56,6 +58,8 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           <Typography nowrap variant="title" color={colors.text + "75"} style={{ lineHeight: 0 }}>{item.description}</Typography>
         </View>
       </Pressable>
+      </Link.AppleZoom>
+    </Link>
     </LiquidGlassView >
   );
 };
