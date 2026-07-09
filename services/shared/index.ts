@@ -641,6 +641,12 @@ export class AccountManager {
       return new module.Appscho(service.id);
     }
 
+    if (service.serviceId === Services.WIGOR) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/wigor/index");
+      return new module.Wigor(service.id);
+    }
+
     error(
       "We're not able to find a plugin for service: " +
         service.serviceId +

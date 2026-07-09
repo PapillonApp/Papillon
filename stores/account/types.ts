@@ -129,4 +129,5 @@ export enum Services {
   MULTI,
   ALISE,
   APPSCHO,
+  WIGOR = 999 // TODO: supprimer le "= 999" une fois qu'une solution a été trouvée pour éviter le conflit avec l'ID 9 (LANNION) qui provoque une déconnexion automatique dans useHomeData.ts
 }

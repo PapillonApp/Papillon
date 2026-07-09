@@ -14,6 +14,8 @@ export function getServiceName(service: Services): string {
     return "Alise";
   case Services.ECOLEDIRECTE:
     return "ÉcoleDirecte";
+  case Services.WIGOR:
+    return "Wigor";
   default:
     return "Pronote";
   }
@@ -35,6 +37,8 @@ export function getServiceLogo(service: Services): ImageSourcePropType {
     return require("@/assets/images/ecoledirecte.png")
   case Services.ALISE:
     return require("@/assets/images/alise.jpg")
+  case Services.WIGOR:
+    return require("@/assets/images/icon.png")
   default: 
     return require("@/assets/images/turboself.png")
   }
@@ -68,6 +72,8 @@ export function getServiceColor(service: Services): string {
     return "#108ED1"
   case Services.ALISE:
     return "#108ED1"
+  case Services.WIGOR:
+    return "#1E3035"
   default:
     return "#E70026"
   }
