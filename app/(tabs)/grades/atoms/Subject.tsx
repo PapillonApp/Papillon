@@ -151,8 +151,8 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
     return formatScoreForDisplay(subject.studentAverage.value, subject.outOf.value, displayScale);
   }, [subject.studentAverage.value, subject.outOf.value, displayScale]);
   const displayedMaximumAverage = useMemo(() => {
-    return formatScoreForDisplay(subject.maximum.value, subject.outOf.value, displayScale).value;
-  }, [subject.maximum.value, subject.outOf.value, displayScale]);
+    return formatScoreForDisplay(subject.maximum?.value, subject.outOf.value, displayScale).value;
+  }, [subject.maximum?.value, subject.outOf.value, displayScale]);
   const computedSubjectAverage = useMemo(() => {
     const calculatedAverage = getSubjectAverage(subject.grades as unknown as ServiceGrade[]);
     if (calculatedAverage === -1) {
@@ -262,7 +262,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
                       inline
                       style={{ marginTop: 0, fontSize: 19 }}
                       color={
-                        subject.studentAverage.value === subject.maximum.value
+                        subject.studentAverage.value === subject.maximum?.value
                           ? subjectAdjustedColor
                           : undefined
                       }
@@ -281,7 +281,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
                     </LegacyTypography>
                   </>
                 )}
-                {subject.studentAverage.value === subject.maximum.value &&
+                {subject.studentAverage.value === subject.maximum?.value &&
                   !subject.studentAverage.disabled && (
                     <Papicons
                       style={{ alignSelf: "center", marginLeft: 4 }}
@@ -313,3 +313,4 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
 
 GradeItem.displayName = "GradeItem"
 SubjectItem.displayName = "SubjectItem"
+  
