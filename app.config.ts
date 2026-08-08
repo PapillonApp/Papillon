@@ -8,7 +8,7 @@ export default {
     name: "Papillon",
     slug: "papillon",
     version: PackageJSON.version,
-    orientation: "portrait",
+    orientation: "both",
     icon: "./assets/images/icon.png",
     scheme: ["papillon", "izly", "skoapp-prod"],
     platforms: ["ios", "android"],
@@ -130,6 +130,7 @@ export default {
         },
       ],
       "react-native-bottom-tabs",
+      "papillon-intents",
       "expo-secure-store",
       [
         "expo-location",

@@ -119,6 +119,7 @@ const TasksList: React.FC<TasksListProps> = ({
         paddingHorizontal: 16,
         paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
         paddingTop: headerHeight + (Platform.OS === 'android' ? 10 : 0),
+        paddingLeft: insets.left + 16,
       }}
       keyExtractor={keyExtractor}
       renderItem={renderItem}

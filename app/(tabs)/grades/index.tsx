@@ -488,6 +488,7 @@ const GradesView: React.FC = () => {
     <View
       style={{
         flex: 1,
+        paddingLeft: insets.left,
         /* @ts-expect-error colors
         backgroundColor: colors.overground */
       }}

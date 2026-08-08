@@ -5,7 +5,7 @@ import { t } from 'i18next';
 import Typography from '@/ui/components/Typography';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Papicons } from '@getpapillon/papicons';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useTheme } from "expo-router/react-navigation";
 import { Platform } from 'react-native';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
@@ -51,9 +51,9 @@ const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
         </Typography>
         {(item.redirect || item.onPress) && (
           <Stack bordered={Platform.OS === 'ios'} backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.colors.text + "11"} radius={20} style={{overflow: Platform.OS === 'android' ? 'hidden' : 'visible'}}>
-            <ListTouchable 
-              onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect as any)}
-            >
+            <Link asChild href={item.redirect ?? "/(features)/soon"}>
+            <Link.AppleZoom>
+            <ListTouchable>
               <Stack direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
                 <Typography variant="body2" color="secondary" inline>
                   {t('Home_Display_More',)}
@@ -63,6 +63,8 @@ const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
                 </Icon>
               </Stack>
             </ListTouchable>
+            </Link.AppleZoom>
+            </Link>
           </Stack>
         )}
       </Stack>

@@ -1,6 +1,6 @@
 {
   "name": "papillon",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "version": "8.4.3",
   "scripts": {
     "start": "expo start",
@@ -84,6 +84,7 @@
     "ical.js": "^2.2.1",
     "lottie-react-native": "^7.3.4",
     "lucide-react-native": "^0.511.0",
+    "papillon-intents": "./papillon-intents-0.1.0.tgz",
     "patch-package": "^8.0.1",
     "pawnote": "^1.6.2",
     "react": "19.2.3",

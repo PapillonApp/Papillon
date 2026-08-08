@@ -62,7 +62,8 @@ const HomeHeader = () => {
           t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None"),
       onPress: () => {
         router.push("/(features)/(cards)/cards");
-      }
+      },
+      route: "/(features)/(cards)/cards"
     },
     {
       title: t("Home_Menu_Button_Title"),
@@ -71,7 +72,8 @@ const HomeHeader = () => {
       description: t("Home_Menu_Button_Description"),
       onPress: () => {
         router.push("/(features)/soon");
-      }
+      },
+      route: "/(features)/soon"
     },
     {
       title: t("Home_Attendance_Title"),
@@ -93,7 +95,13 @@ const HomeHeader = () => {
             attendances: JSON.stringify(attendances),
           },
         });
-      }
+      },
+      route: "/(features)/attendance",
+      params: {
+        periods: JSON.stringify(attendancesPeriods),
+        currentPeriod: JSON.stringify(currentAttendancePeriod),
+        attendances: JSON.stringify(attendances),
+      },
     },
     {
       title: t("Home_Chats_Button_Title"),
@@ -104,16 +112,17 @@ const HomeHeader = () => {
         : t("Home_Chats_Button_Description_None"),
       onPress: () => {
         router.push("/(features)/soon");
-      }
+      },
+      route: "/(features)/soon"
     }
   ], [availableCanteenCards, absencesCount, chats, currentAttendancePeriod, attendancesPeriods, attendances, t]);
 
   return (
-    <View style={{ paddingHorizontal: 0, width: "100%", flex: 1 }}>
+    <View style={{ paddingHorizontal: 0, width: "100%", flex: 1, overflow: "visible" }}>
       <View style={{ height: insets.top + 56 }} />
-      <LiquidGlassContainer>
-        <Stack inline flex width={"100%"}>
-          <View style={{ width: '100%', gap: 6 }}>
+      <LiquidGlassContainer spacing={8} style={{ overflow: "visible" }}>
+        <Stack inline flex width={"100%"} style={{ overflow: "visible" }}>
+          <View style={{ width: '100%', gap: 6, overflow: "visible" }}>
             {Array.from({ length: Math.ceil(HomeHeaderButtons.length / 2) }).map((_, i) => (
 
               <View key={i} style={{ flexDirection: 'row', gap: 6, width: '100%' }}>

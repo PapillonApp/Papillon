@@ -2,7 +2,7 @@ import { Papicons } from '@getpapillon/papicons';
 import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import React from 'react';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { Pressable } from 'react-native';
@@ -41,24 +41,28 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
         hAlign="center"
         gap={10}
       >
-        <Pressable onPress={() => router.push('/(modals)/profile')}>
-          <UserProfileItemContainer
-            glassType="clear"
-            isInteractive={true}
-            glassTintColor="transparent"
+            <UserProfileItemContainer
+              glassType="clear"
+              isInteractive={true}
+              glassTintColor="transparent"
             glassOpacity={0}
             style={{
               borderRadius: 300,
               zIndex: 999999,
             }}
           >
+        <Link asChild href="/(modals)/profile">
+        <Link.AppleZoom>
+          <Pressable>
             <Avatar
               size={40}
               initials={initials}
               imageUrl={profilePicture}
             />
-          </UserProfileItemContainer>
         </Pressable>
+        </Link.AppleZoom>
+        </Link>
+          </UserProfileItemContainer>
 
         <UserProfileItemContainer>
           <ActionMenu

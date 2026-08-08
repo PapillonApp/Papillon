@@ -116,7 +116,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
       <FlatList
         data={enrichedEvents}
-        style={styles.container}
+        style={[styles.container, insets.left > 0 ? { marginLeft: insets.left } : null]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: 12,
@@ -202,6 +202,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.onRefresh === nextProps.onRefresh &&
     prevProps.headerHeight === nextProps.headerHeight &&
+    prevProps.insets.left === nextProps.insets.left &&
     areCoursesEquivalent(prevProps.courses, nextProps.courses)
   );
 });
