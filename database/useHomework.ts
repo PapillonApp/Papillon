@@ -72,6 +72,9 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
     .fetch();
 
   const homeworkIds: string[] = [];
+  const refreshedServiceIds = new Set(
+    homeworks.map(homework => homework.createdByAccount)
+  );
   for (const hw of homeworks) {
     const oldId = generateId(hw.subject + hw.content + hw.createdByAccount);
     const id = generateId(
@@ -82,7 +85,9 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   }
 
   const homeworksToDelete = dbHomeworks.filter(
-    dbHomeworks => !homeworkIds.includes(dbHomeworks.homeworkId)
+    dbHomework =>
+      refreshedServiceIds.has(dbHomework.createdByAccount) &&
+      !homeworkIds.includes(dbHomework.homeworkId)
   );
 
   for (const homework of homeworksToDelete) {

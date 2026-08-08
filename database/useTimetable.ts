@@ -65,9 +65,14 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
             return [oldId, newId];
           }).flat()
         );
+        const refreshedServiceIds = new Set(
+          day.courses.map(course => course.createdByAccount)
+        );
 
         const coursesToDelete = dbCourses.filter(
-          dbCourse => !dayCourseIds.has(dbCourse.courseId)
+          dbCourse =>
+            refreshedServiceIds.has(dbCourse.createdByAccount) &&
+            !dayCourseIds.has(dbCourse.courseId)
         );
 
         for (const course of coursesToDelete) {

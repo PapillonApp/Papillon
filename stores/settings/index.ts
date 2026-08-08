@@ -23,6 +23,7 @@ const defaultPersonalization: Personalization = {
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,
   showDevMode: false,
+  mockDataEnabled: false,
   magicModelURL: MAGIC_URL,
   gradesDisplayScale: "20",
   welcomeModalSeen: false,

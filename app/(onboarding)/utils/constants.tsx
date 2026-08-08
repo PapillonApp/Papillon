@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
+import { useSettingsStore } from '@/stores/settings';
+import { openMockDataAccountChooser } from '@/services/mock/account';
 import { t } from 'i18next';
 export interface SupportedService {
   name: string;
@@ -26,8 +28,18 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
   const theme = useTheme();
   const { colors } = theme;
   const { t } = useTranslation()
+  const mockDataEnabled = useSettingsStore(state => state.personalization.mockDataEnabled ?? false);
 
   return [
+    ...(mockDataEnabled ? [{
+      name: "mock-data",
+      title: "Mock Data",
+      type: ["school", "univ"],
+      image: require("@/assets/images/icon.png"),
+      onPress: openMockDataAccountChooser,
+      variant: 'service' as const,
+      color: 'light' as const,
+    }] : []),
     {
       name: "pronote",
       route: "pronote",

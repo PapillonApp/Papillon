@@ -40,6 +40,7 @@ export interface Personalization {
   hideNameOnHomeScreen?: boolean;
   showAlertAtLogin?: boolean;
   showDevMode?: boolean;
+  mockDataEnabled?: boolean;
   magicModelURL?: string;
   language?: string | null;
   wallpaper?: Wallpaper;
