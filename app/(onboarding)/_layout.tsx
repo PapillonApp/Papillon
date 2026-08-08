@@ -38,7 +38,7 @@ export default function OnboardingLayout() {
                     onPress={() => router.push("/(onboarding)/offlineAccount")}
                     style={{ paddingHorizontal: 8 }}
                   >
-                    <Typography variant="action" color="primary">
+                    <Typography variant="action">
                       {t("ONBOARDING_SKIP")}
                     </Typography>
                   </Pressable>
