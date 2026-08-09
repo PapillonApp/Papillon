@@ -2,6 +2,7 @@ import BottomAccessory, { useBottomAccessoryVisible } from '@/components/BottomA
 import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
+import useResizable from "@/ui/utils/Resizable";
 import { useTheme } from "expo-router/react-navigation";
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +18,7 @@ function TabLayoutContent() {
   const theme = useTheme();
   const font = useFont();
   const { t } = useTranslation();
-
+  const { isLarge } = useResizable();
 
   const settingsStore = useSettingsStore(state => state.personalization);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
@@ -32,7 +33,7 @@ function TabLayoutContent() {
 
   const tabLabelStyle = {
     fontFamily: font("medium"),
-    fontSize: Platform.OS === 'ios' ? 12 : 13,
+    fontSize: Platform.OS === 'ios' ? isLarge ? 15 :12 : 13,
     color: Platform.OS === 'ios' ? DynamicColorIOS({
       dark: "#FFFFFF",
       light: "#000000"
