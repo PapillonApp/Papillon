@@ -4,7 +4,7 @@ import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
 import * as DateLocale from 'date-fns/locale';
 import i18n, { t } from "i18next";
 import React from "react";
-import { Platform } from 'react-native';
+import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead from "@/components/ModalOverhead";
@@ -50,8 +50,8 @@ export default function CourseModal() {
   });
 
   return (
-    <>
-      {Platform.OS !== 'android' && (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      {Platform.OS !== "android" && (
         <LinearGradient
           colors={[subjectInfo.color, colors.background]}
           style={{
@@ -61,8 +61,8 @@ export default function CourseModal() {
             right: 0,
             height: 500,
             width: "100%",
-            zIndex: -9,
-            opacity: 0.6
+            zIndex: 1,
+            opacity: 0.6,
           }}
         />
       )}
@@ -72,7 +72,7 @@ export default function CourseModal() {
           <ModalOverhead
             subject={getSubjectName(item.subject)}
             title={item.customStatus || getStatusText(item.status)}
-            color={Platform.OS === 'ios' ? subjectInfo.color : colors.primary}
+            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
             emoji={subjectInfo.emoji}
             subjectVariant="h3"
             date={new Date(startTime * 1000)}
@@ -81,16 +81,16 @@ export default function CourseModal() {
               month: "long",
               year: "numeric",
               hour: "numeric",
-              minute: "numeric"
+              minute: "numeric",
             }}
             style={{
               marginBottom: 24,
               marginTop: 24,
-              paddingTop: finalHeaderHeight
+              paddingTop: finalHeaderHeight,
             }}
           />
         }
-        style={{ backgroundColor: "transparent" }}
+        style={{ backgroundColor: "transparent", zIndex: 2 }}
         contentContainerStyle={{ padding: 16 }}
       >
         {getStatusText(course.status) ? (
@@ -119,20 +119,20 @@ export default function CourseModal() {
                 <Papicons name="Logout" />
               </Icon>
             </List.Leading>
-            <Typography variant="title">
-              {t("Modal_Course_Start")}
-            </Typography>
+            <Typography variant="title">{t("Modal_Course_Start")}</Typography>
             <Typography variant="body1" color="textSecondary">
               {formatDistanceToNow(startTime * 1000, {
-                locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
-                addSuffix: true
+                locale:
+                  DateLocale[i18n.language as keyof typeof DateLocale] ||
+                  DateLocale.enUS,
+                addSuffix: true,
               })}
             </Typography>
             <List.Trailing>
               <Typography variant="title">
                 {new Date(startTime * 1000).toLocaleString(undefined, {
                   hour: "numeric",
-                  minute: "numeric"
+                  minute: "numeric",
                 })}
               </Typography>
             </List.Trailing>
@@ -144,14 +144,12 @@ export default function CourseModal() {
                 <Papicons name="Login" />
               </Icon>
             </List.Leading>
-            <Typography variant="title">
-              {t("Modal_Course_End")}
-            </Typography>
+            <Typography variant="title">{t("Modal_Course_End")}</Typography>
             <List.Trailing>
               <Typography variant="title">
                 {new Date(endTime * 1000).toLocaleString(undefined, {
                   hour: "numeric",
-                  minute: "numeric"
+                  minute: "numeric",
                 })}
               </Typography>
             </List.Trailing>
@@ -169,9 +167,7 @@ export default function CourseModal() {
                 <Papicons name="User" />
               </Icon>
             </List.Leading>
-            <Typography variant="title">
-              {t("Modal_Course_Teacher")}
-            </Typography>
+            <Typography variant="title">{t("Modal_Course_Teacher")}</Typography>
             <Typography variant="body1" color="textSecondary">
               {item.teacher}
             </Typography>
@@ -183,9 +179,7 @@ export default function CourseModal() {
                 <Papicons name="MapPin" />
               </Icon>
             </List.Leading>
-            <Typography variant="title">
-              {t("Modal_Course_Room")}
-            </Typography>
+            <Typography variant="title">{t("Modal_Course_Room")}</Typography>
             <Typography variant="body1" color="textSecondary">
               {item.room || t("No_Course_Room")}
             </Typography>
@@ -202,12 +196,14 @@ export default function CourseModal() {
             </Typography>
             <Typography variant="body1" color="textSecondary">
               {formatDistanceStrict(startTime * 1000, endTime * 1000, {
-                locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS
+                locale:
+                  DateLocale[i18n.language as keyof typeof DateLocale] ||
+                  DateLocale.enUS,
               })}
             </Typography>
           </List.Item>
         </List.Section>
       </List>
-    </>
-  )
+    </View>
+  );
 }

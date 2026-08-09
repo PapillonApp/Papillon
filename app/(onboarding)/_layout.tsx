@@ -61,19 +61,19 @@ export default function OnboardingLayout() {
 
         <Stack.Screen
           name="services/pronote"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
           name="services/ed"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
           name="services/skolengo"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
           name="services/multi"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
           name="services/appscho"

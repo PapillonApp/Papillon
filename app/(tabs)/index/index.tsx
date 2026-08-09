@@ -3,9 +3,8 @@ import { useIsFocused } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
-import { Dimensions, FlatList, Platform, StatusBar, View } from 'react-native';
+import { FlatList, Platform, StatusBar, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useResizable from '@/ui/utils/Resizable';
 
 import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
@@ -93,20 +92,17 @@ const HomeScreen = () => {
     router.navigate("/(modals)/welcome");
   }, [account, mutateSettings, router, welcomeModalSeen]);
 
-  const { isLarge } = useResizable();
-
   return (
     <>
       <Wallpaper />
       <HomeTopBar />
       {focused && <StatusBar translucent animated barStyle={'light-content'} />}
-      <HomeViewContainer key={isLarge ? "home-large" : "home-small"}>
+      <HomeViewContainer key={"home"}>
         <FlatList
           renderItem={({ item }) => <HomeWidget item={item} />}
           keyExtractor={(item) => item.title}
           ListHeaderComponent={<HomeHeader />}
           style={{ flex: 1 }}
-          numColumns={isLarge ? 2 : 1}
           contentContainerStyle={{
             paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 16,
             paddingHorizontal: 16,
@@ -114,6 +110,9 @@ const HomeScreen = () => {
             gap: 12,
             marginTop: 6,
             paddingLeft: insets.left + 16,
+            width: '100%',
+            maxWidth: 670,
+            marginHorizontal: 'auto',
           }}
           data={data}
         />

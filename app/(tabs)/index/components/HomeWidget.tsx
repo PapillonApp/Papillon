@@ -3,9 +3,8 @@ import Stack from '@/ui/components/Stack';
 import Icon from '@/ui/components/Icon';
 import { t } from 'i18next';
 import Typography from '@/ui/components/Typography';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Papicons } from '@getpapillon/papicons';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import { useTheme } from "expo-router/react-navigation";
 import { Platform } from 'react-native';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
@@ -27,7 +26,6 @@ interface HomeWidgetProps {
 }
 
 const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
-  const router = useRouter();
   const theme = useTheme();
 
   if (!item || (item.dev && !__DEV__)) {
@@ -39,7 +37,7 @@ const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
       card
       radius={25}
       gap={0}
-      style={{ elevation: 2, display: item.hidden ? 'none' : 'flex' }}
+      style={{ elevation: 2, display: item.hidden ? 'none' : 'flex', flex: 1 }}
       backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.dark ? theme.colors.card : '#fff'}
     >
       <Stack direction="horizontal" vAlign="center" hAlign="center" padding={[10, 10]} gap={10} style={{ marginTop: -1 }}>

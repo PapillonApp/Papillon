@@ -105,7 +105,7 @@ export default function ServiceSelection() {
     <View style={{ flex: 1 }}>
       <List
         ListHeaderComponent={() => (
-          <Stack padding={[4, 0]}>
+          <Stack padding={[4, 0]} style={{ maxWidth: 500 }}>
             <Typography variant="h2">{titleString}</Typography>
             <Typography variant="action" color="textSecondary">{t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}</Typography>
             <Divider height={18} ghost />
@@ -115,7 +115,10 @@ export default function ServiceSelection() {
           padding: 16,
           flexGrow: 1,
           gap: 10,
-          paddingTop: headerHeight + 20
+          paddingTop: headerHeight + 20,
+          width: '100%',
+          maxWidth: 500,
+          marginHorizontal: 'auto'
         }}
         style={{ flex: 1 }}
       >
@@ -144,13 +147,16 @@ export default function ServiceSelection() {
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          backgroundColor: colors.background
+          backgroundColor: colors.background,
+          alignItems: 'center'
         }}
       >
         <Button
           label={t("ONBOARDING_CONTINUE")}
           onPress={() => { loginToService(selectedService) }}
           disabled={!selectedService || !hasServiceRoute}
+          maxWidth={500}
+          fullWidth
         />
       </View>
     </View>

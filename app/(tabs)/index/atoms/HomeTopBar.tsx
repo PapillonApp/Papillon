@@ -15,16 +15,16 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
 
   return (
     <>
-      {Platform.OS === 'ios' && (
+      {Platform.OS === "ios" && (
         <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             height: height + insets.top,
             zIndex: 10,
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
           <ProgressiveBlurView
@@ -41,23 +41,46 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
       <View
         style={{
           height: height,
-          position: 'absolute',
+          position: "absolute",
           top: insets.top,
           left: insets.left,
           right: insets.right,
           paddingHorizontal: 16,
           zIndex: 11,
+          justifyContent: "center",
           alignItems: 'center',
-          flexDirection: 'row',
-          gap: 16,
         }}
       >
-        <UserProfile />
+        <View
+          style={{
+            width: "100%",
+            maxWidth: 670,
+            alignItems: "center",
+            flexDirection: "row",
+            gap: 16,
+          }}
+        >
+          <UserProfile />
 
-        <Stack direction="horizontal" hAlign="center" vAlign="end" gap={7} inline>
-          <HomeTopBarButton icon="palette" route="/(modals)/wallpaper" onPress={() => router.push("/(modals)/wallpaper")} />
-          <HomeTopBarButton icon="gears" route="/(settings)/settings" onPress={() => router.push("/(settings)/settings")} />
-        </Stack>
+          <Stack
+            direction="horizontal"
+            hAlign="center"
+            vAlign="end"
+            gap={7}
+            inline
+          >
+            <HomeTopBarButton
+              icon="palette"
+              route="/(modals)/wallpaper"
+              onPress={() => router.push("/(modals)/wallpaper")}
+            />
+            <HomeTopBarButton
+              icon="gears"
+              route="/(settings)/settings"
+              onPress={() => router.push("/(settings)/settings")}
+            />
+          </Stack>
+        </View>
       </View>
     </>
   );
