@@ -1,2 +1,2 @@
-import "./intents/intents";
+import "./intents/index";
 import "expo-router/entry";
