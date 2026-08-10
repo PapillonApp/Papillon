@@ -1,6 +1,6 @@
 import type { PapillonIntentsConfig } from "papillon-intents";
-import { entities } from "@/intents/entities";
-import { intents } from "@/intents/intents";
+import { entities } from "./intents/entities";
+import { intents } from "./intents/intents";
 
 const config: PapillonIntentsConfig = {
   settings: {
