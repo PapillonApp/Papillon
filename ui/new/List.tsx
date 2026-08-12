@@ -271,13 +271,21 @@ const RawRuntimeRenderer: React.FC<{
 
 const MemoizedRawRuntimeRenderer = React.memo(RawRuntimeRenderer);
 
-const List = ({ children, animated = false, gap = 12, ...rest }) => {
+const List = ({
+  children,
+  animated = false,
+  gap = 12,
+  numColumns = 1,
+  ...rest
+}) => {
   const theme = useTheme();
   const { colors } = theme;
 
   const data = useMemo(() => {
     const parseItem = (item, index) => {
-      const { leading, trailing, main } = splitItemChildren(item.props.children);
+      const { leading, trailing, main } = splitItemChildren(
+        item.props.children
+      );
 
       return {
         kind: "item",
@@ -301,7 +309,7 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
       let label = null;
       const main = [];
 
-      React.Children.forEach(sectionTitle.props.children, (child) => {
+      React.Children.forEach(sectionTitle.props.children, child => {
         if (!child) {
           return;
         }
@@ -368,34 +376,54 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
       if (isType(child, Section, "List.Section")) {
         flushImplicit();
         const sectionId = child.props?.id || `section-${index}`;
-        const sectionChildren = React.Children.toArray(child.props.children).filter(Boolean);
+        const sectionChildren = React.Children.toArray(
+          child.props.children
+        ).filter(Boolean);
         const sectionEntries = [];
         let sectionItemCursor = 0;
 
         sectionChildren.forEach((sectionChild, sectionChildIndex) => {
           if (isType(sectionChild, SectionTitle, "List.SectionTitle")) {
-            sectionEntries.push(parseSectionTitle(sectionChild, `${index}-title-${sectionChildIndex}`, sectionId));
+            sectionEntries.push(
+              parseSectionTitle(
+                sectionChild,
+                `${index}-title-${sectionChildIndex}`,
+                sectionId
+              )
+            );
             return;
           }
 
           if (isType(sectionChild, ViewItem, "List.View")) {
-            sectionEntries.push(parseViewItem(sectionChild, `${index}-view-${sectionChildIndex}`, sectionId));
+            sectionEntries.push(
+              parseViewItem(
+                sectionChild,
+                `${index}-view-${sectionChildIndex}`,
+                sectionId
+              )
+            );
             return;
           }
 
           if (isType(sectionChild, Item, "List.Item")) {
-            sectionEntries.push(parseItem(sectionChild, `${index}-${sectionItemCursor}`));
+            sectionEntries.push(
+              parseItem(sectionChild, `${index}-${sectionItemCursor}`)
+            );
             sectionItemCursor += 1;
             return;
           }
 
-          sectionEntries.push(parseRawItem(sectionChild, `${index}-raw-${sectionChildIndex}`));
+          sectionEntries.push(
+            parseRawItem(sectionChild, `${index}-raw-${sectionChildIndex}`)
+          );
         });
 
-        const sectionItems = sectionEntries.filter((entry) => entry.kind === "item" || entry.kind === "raw");
+        const sectionItems = sectionEntries.filter(
+          entry => entry.kind === "item" || entry.kind === "raw"
+        );
         const sectionItemsWithFlags = withSectionFlags(sectionItems, sectionId);
         let sectionItemIndex = 0;
-        const normalizedSectionEntries = sectionEntries.map((entry) => {
+        const normalizedSectionEntries = sectionEntries.map(entry => {
           if (entry.kind !== "item" && entry.kind !== "raw") {
             return entry;
           }
@@ -418,7 +446,9 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
         if (!implicitSectionId) {
           implicitSectionId = `section-implicit-${index}`;
         }
-        implicitItems.push(parseItem(child, `${index}-${implicitItems.length}`));
+        implicitItems.push(
+          parseItem(child, `${index}-${implicitItems.length}`)
+        );
         return;
       }
 
@@ -462,51 +492,70 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
     });
   }, [children, gap]);
 
-  const ListComponent = Reanimated.FlatList;
+  const ListComponent = FlashList;
 
-  const keyExtractor = useCallback((item) => item.id, []);
+  const keyExtractor = useCallback(item => item.id, []);
 
-  const renderItem = useCallback(({ item }) => {
-    if (item.kind === "sectionTitle") {
-      return (
-        <View style={[styles.sectionTitleContainer, { marginTop: item.gapBefore }]}>
-          {item.main}
-          {item.label && (
-            <Typography variant="body1" weight="semibold" color="textSecondary">
-              {item.label}
-            </Typography>
-          )}
-        </View>
-      );
-    }
+  const renderItem = useCallback(
+    ({ item }) => {
+      if (item.kind === "sectionTitle") {
+        return (
+          <View
+            style={[
+              styles.sectionTitleContainer,
+              { marginTop: item.gapBefore },
+            ]}
+          >
+            {item.main}
+            {item.label && (
+              <Typography
+                variant="body1"
+                weight="semibold"
+                color="textSecondary"
+              >
+                {item.label}
+              </Typography>
+            )}
+          </View>
+        );
+      }
 
-    if (item.kind === "view") {
-      return <View style={item.viewProps.style}>{item.main}</View>;
-    }
+      if (item.kind === "view") {
+        return <View style={item.viewProps.style}>{item.main}</View>;
+      }
 
-    if (item.kind === "raw") {
-      return <MemoizedRawRuntimeRenderer item={item} animated={animated} colors={colors} />;
-    }
+      if (item.kind === "raw") {
+        return (
+          <MemoizedRawRuntimeRenderer
+            item={item}
+            animated={animated}
+            colors={colors}
+          />
+        );
+      }
 
-    return renderListRow({
-      itemProps: item.itemProps,
-      leading: item.leading,
-      trailing: item.trailing,
-      main: item.main,
-      isFirst: item.isFirstInSection,
-      isLast: item.isLastInSection,
-      gapBefore: item.gapBefore,
-      listAnimated: animated,
-      colors,
-    });
-  }, [animated, colors]);
+      return renderListRow({
+        itemProps: item.itemProps,
+        leading: item.leading,
+        trailing: item.trailing,
+        main: item.main,
+        isFirst: item.isFirstInSection,
+        isLast: item.isLastInSection,
+        gapBefore: item.gapBefore,
+        listAnimated: animated,
+        colors,
+      });
+    },
+    [animated, colors]
+  );
 
   const contentContainerStyle = useMemo(
     () => [rest.contentContainerStyle, styles.listContentContainer],
-    [rest.contentContainerStyle],
+    [rest.contentContainerStyle]
   );
   const listStyle = useMemo(() => [rest.style, styles.list], [rest.style]);
-  const removeClippedSubviews = rest.removeClippedSubviews ?? Platform.OS === "android";
+  const removeClippedSubviews =
+    rest.removeClippedSubviews ?? Platform.OS === "android";
   const initialNumToRender = rest.initialNumToRender ?? 10;
   const maxToRenderPerBatch = rest.maxToRenderPerBatch ?? 10;
   const updateCellsBatchingPeriod = rest.updateCellsBatchingPeriod ?? 16;
@@ -516,11 +565,28 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
 
   return (
     <ListComponent
-      showsVerticalScrollIndicator={Platform.OS === "ios" ? rest.showsVerticalScrollIndicator ?? true : false}
-      itemLayoutAnimation={animated ? Animation(LinearTransition, "list") : undefined}
+      showsVerticalScrollIndicator={
+        Platform.OS === "ios"
+          ? (rest.showsVerticalScrollIndicator ?? true)
+          : false
+      }
+      itemLayoutAnimation={
+        animated ? Animation(LinearTransition, "list") : undefined
+      }
       data={data}
       keyExtractor={keyExtractor}
-      renderItem={renderItem}
+      renderItem={item => (
+        <View
+          style={[
+            numColumns > 1 && {
+              paddingLeft: item.index > 0 ? gap / 2 : 0,
+              paddingRight: item.index % numColumns < numColumns - 1 ? gap / 2 : 0,
+            },
+          ]}
+        >
+          {renderItem(item)}
+        </View>
+      )}
       {...rest}
       removeClippedSubviews={removeClippedSubviews}
       initialNumToRender={initialNumToRender}
@@ -529,6 +595,8 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
       windowSize={windowSize}
       {...nonAnimatedListPerfProps}
       contentContainerStyle={contentContainerStyle}
+      numColumns={numColumns}
+      masonry={numColumns > 1}
       style={listStyle}
     />
   );
