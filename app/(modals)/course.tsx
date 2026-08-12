@@ -61,7 +61,7 @@ export default function CourseModal() {
             right: 0,
             height: 500,
             width: "100%",
-            zIndex: 1,
+            zIndex: 0,
             opacity: 0.6,
           }}
         />
