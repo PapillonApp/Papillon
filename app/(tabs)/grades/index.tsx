@@ -51,7 +51,7 @@ const GradesView: React.FC = () => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const resize = useResizable();
-  const bottomTabBarHeight = 0;
+  const bottomTabBarHeight = insets.bottom;
   const navigation = useNavigation();
 
   // Chargement
