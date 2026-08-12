@@ -7,7 +7,7 @@ import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import { LineGraph } from "react-native-graph";
-import { LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
+import { LayoutAnimationConfig } from "react-native-reanimated";
 import Reanimated from "react-native-reanimated";
 import { Host, HStack, Text } from '@expo/ui/swift-ui';
 import { useFont } from "@/utils/theme/fonts";
@@ -35,8 +35,6 @@ import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
 import ActionMenu from "@/ui/components/ActionMenu";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
 import { Animation, animation, contentTransition, font, foregroundStyle, padding } from "@expo/ui/swift-ui/modifiers";
-import { align } from "@expo/ui/jetpack-compose/modifiers";
-import hexToRgb from "@/utils/theme/RGB";
 
 const algorithms = [
   {
@@ -69,12 +67,14 @@ const Averages = ({
   color,
   displayScale = "20",
   inline = false,
+  paddingTop = 0,
 }: {
   grades: Grade[];
   realAverage?: number;
   color?: string;
   displayScale?: GradeDisplayScale;
   inline?: boolean;
+  paddingTop?: number;
 }) => {
   try {
     const theme = useTheme();
@@ -221,25 +221,26 @@ const Averages = ({
       <Reanimated.View
         style={{
           width: "100%",
+          paddingTop: inline ? 0 : 220 + paddingTop + 20,
+          marginBottom: inline ? 0 : -30,
+          borderRadius: inline ? 25 : 0,
+          overflow: inline ? "hidden":"visible",
         }}
         entering={!inline ? PapillonAppearIn : undefined}
         exiting={!inline ? PapillonAppearOut : undefined}
       >
         <LayoutAnimationConfig skipEntering={true} skipExiting={true}>
           <Stack
-            card={!inline}
             hAlign="center"
             vAlign="center"
-            direction={inline ? "horizontal" : "vertical"}
+            direction={"vertical"}
             gap={0}
             style={[
-              Platform.OS === "android"
-                ? {
-                    borderWidth: 0,
-                    backgroundColor: theme.colors.card,
-                    elevation: 0,
-                  }
-                : {},
+              Platform.OS === "android" && {
+                borderWidth: 0,
+                backgroundColor: theme.colors.card,
+                elevation: 0,
+              },
               inline
                 ? {
                     overflow: "hidden",
@@ -247,18 +248,21 @@ const Averages = ({
                     marginTop: -8,
                   }
                 : {
-                    height: 180,
+                    position: "absolute",
+                    top: paddingTop,
+                    left: -16,
+                    right: -16,
                   },
             ]}
           >
             {Platform.OS === "ios" && (
               <LinearGradient
                 colors={[backgroundColor + "90", backgroundColor + "00"]}
-                start={inline ? [0, 1] : [0, 0]}
+                start={inline ? [0, 1] : [0, 0.8]}
                 end={inline ? [0, 0] : [0, 1]}
                 style={{
                   position: "absolute",
-                  top: 0,
+                  top: inline ? 0 : -500,
                   left: 0,
                   right: 0,
                   bottom: 0,
@@ -269,19 +273,18 @@ const Averages = ({
 
             <View
               style={{
+                height: 120,
                 width: "100%",
-                flex: 1,
                 marginLeft: inline ? -2 : 0,
-                height: 100,
-                overflow: "hidden",
+                marginTop: -10,
+                justifyContent: "center",
               }}
             >
               <View
                 style={{
-                  width: "105%",
-                  height: 115,
+                  width: "100%",
+                  height: 125,
                   marginLeft: -30,
-                  marginTop: -15,
                 }}
               >
                 {graphAxis.length > 0 ? (
@@ -297,7 +300,7 @@ const Averages = ({
                     lineThickness={inline ? 4.5 : 5}
                     panGestureDelay={0}
                     enableIndicator={true}
-                    enableFadeInMask={true}
+                    enableFadeInMask={false}
                     indicatorPulsating={true}
                     style={{
                       width: "100%",
@@ -311,54 +314,92 @@ const Averages = ({
             <Stack
               inline
               flex
-              hAlign={inline ? "start" : "center"}
-              vAlign="center"
+              hAlign={"start"}
+              vAlign={"center"}
               gap={0}
-              style={{
-                marginTop: inline ? 0 : -10,
-                marginLeft: inline ? -24 : 0,
-                marginRight: inline ? 20 : 0,
-              }}
+              style={[
+                {
+                  paddingHorizontal: 20,
+                  width: "100%",
+                },
+                inline && {
+                  position: "absolute",
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                },
+              ]}
             >
+              {Platform.OS === "ios" && inline && (
+                <LinearGradient
+                  colors={[
+                    theme.colors.background,
+                    `${theme.colors.background.toString()}AA`,
+                    `${theme.colors.background.toString()}00`,
+                  ]}
+                  start={[0, 0]}
+                  end={[1, 0]}
+                  style={{ position: "absolute", inset: 0 }}
+                  pointerEvents="none"
+                />
+              )}
               {Platform.OS === "ios" ? (
-              <Host matchContents>
-                <HStack alignment="firstTextBaseline" spacing={1} modifiers={[animation(Animation.default, shownAverage)]}>
-                  <Text modifiers={[font({ family: papillonFont("bold"), size: 30 }), contentTransition("numericText"), animation(Animation.default, shownAverage), foregroundStyle(adjustedColor)]}>
-                    {shownAverage ? shownAverage.toFixed(2) : "0.00"}
-                  </Text>
-                  <Text modifiers={[font({ family: papillonFont("bold"), size: 20 }), padding({ top: 1 }), animation(Animation.default, shownAverage), foregroundStyle(adjustedColor)]}>
-                    {getDisplayDenominator(displayScale)}
-                  </Text>
-                </HStack>
-              </Host>
-              ) : (
-              <Stack
-                animated
-                direction="horizontal"
-                hAlign="end"
-                vAlign="end"
-                gap={2}
-              >
-                <AnimatedNumber
-                  variant={inline ? "h2" : "h1"}
-                  color={adjustedColor}
-                >
-                  {shownAverage ? shownAverage.toFixed(2) : "0.00"}
-                </AnimatedNumber>
-
-                <Dynamic animated>
-                  <Typography
-                    variant="title"
-                    style={{
-                      color: adjustedColor,
-                      marginBottom: inline ? 1 : 3,
-                      opacity: 0.7,
-                    }}
+                <Host matchContents>
+                  <HStack
+                    alignment="firstTextBaseline"
+                    spacing={1}
+                    modifiers={[animation(Animation.default, shownAverage)]}
                   >
-                    {getDisplayDenominator(displayScale)}
-                  </Typography>
-                </Dynamic>
-              </Stack>
+                    <Text
+                      modifiers={[
+                        font({ family: papillonFont("bold"), size: 30 }),
+                        contentTransition("numericText"),
+                        animation(Animation.default, shownAverage),
+                        foregroundStyle(adjustedColor),
+                      ]}
+                    >
+                      {shownAverage ? shownAverage.toFixed(2) : "0.00"}
+                    </Text>
+                    <Text
+                      modifiers={[
+                        font({ family: papillonFont("bold"), size: 20 }),
+                        padding({ top: 1 }),
+                        animation(Animation.default, shownAverage),
+                        foregroundStyle(adjustedColor),
+                      ]}
+                    >
+                      {getDisplayDenominator(displayScale)}
+                    </Text>
+                  </HStack>
+                </Host>
+              ) : (
+                <Stack
+                  animated
+                  direction="horizontal"
+                  hAlign="end"
+                  vAlign="end"
+                  gap={2}
+                >
+                  <AnimatedNumber
+                    variant={inline ? "h2" : "h1"}
+                    color={adjustedColor}
+                  >
+                    {shownAverage ? shownAverage.toFixed(2) : "0.00"}
+                  </AnimatedNumber>
+
+                  <Dynamic animated>
+                    <Typography
+                      variant="title"
+                      style={{
+                        color: adjustedColor,
+                        marginBottom: inline ? 1 : 3,
+                        opacity: 0.7,
+                      }}
+                    >
+                      {getDisplayDenominator(displayScale)}
+                    </Typography>
+                  </Dynamic>
+                </Stack>
               )}
 
               <ActionMenu
@@ -418,8 +459,9 @@ const Averages = ({
                 <TouchableOpacity style={{ width: "100%", overflow: "hidden" }}>
                   <Stack
                     hAlign="center"
-                    vAlign={inline ? "start" : "center"}
+                    vAlign={"start"}
                     direction="horizontal"
+                    width={"100%"}
                     style={{ marginTop: 0 }}
                   >
                     <Typography
@@ -443,7 +485,7 @@ const Averages = ({
                 <Typography
                   variant={inline ? "body2" : "body1"}
                   color="textSecondary"
-                  style={{ marginTop: inline ? 0 : 1, flex: 1 }}
+                  style={{ marginTop: inline ? 0 : 1 }}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   align={inline ? "left" : "center"}

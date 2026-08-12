@@ -2,12 +2,11 @@ import { useTheme } from "expo-router/react-navigation";
 import { FlashList } from "@shopify/flash-list";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
-import Reanimated, { createAnimatedComponent, LinearTransition } from 'react-native-reanimated';
+import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
 import { Animation } from "../utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Typography from "./Typography";
-import { LegendList } from "@legendapp/list";
 
 type MarkerProps = {
   children?: React.ReactNode;

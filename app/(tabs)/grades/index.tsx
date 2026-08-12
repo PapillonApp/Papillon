@@ -16,8 +16,6 @@ import { CompactGrade } from '@/ui/components/CompactGrade';
 import { Dynamic } from '@/ui/components/Dynamic';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 import Icon from '@/ui/components/Icon';
-import Item, { Trailing } from '@/ui/components/Item';
-import LegacyList from '@/ui/components/List';
 import Search from '@/ui/components/Search';
 import Stack from '@/ui/components/Stack';
 import TabHeader from '@/ui/components/TabHeader';
@@ -41,6 +39,7 @@ import List from '@/ui/new/List';
 import ActionMenu from '@/ui/components/ActionMenu';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 import { trackAdvancedEvent } from '@/utils/logger/analytics';
+import useResizable from "@/ui/utils/Resizable";
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
 
@@ -51,6 +50,7 @@ const GradesView: React.FC = () => {
   // Thème
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const resize = useResizable();
   const bottomTabBarHeight = 0;
   const navigation = useNavigation();
 
@@ -354,6 +354,7 @@ const GradesView: React.FC = () => {
           color={colors.primary}
           realAverage={serviceAverage || undefined}
           displayScale={displayScale}
+          paddingTop={(headerHeight - (Platform.OS === "ios" ? insets.top : 0)) + 12}
         />
       </ErrorBoundary>
 
@@ -576,11 +577,13 @@ const GradesView: React.FC = () => {
 
 
       <List
-      animated
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: (headerHeight - (Platform.OS === "ios" ? insets.top : 0)) + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
+        animated
+        contentContainerStyle={{ paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16, paddingHorizontal: 16 }}
 
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
+
+        numColumns={resize.isLarge ? 2 : 1}
 
         keyExtractor={(item: any) => item.id}
         itemLayoutAnimation={LinearTransition.springify()}

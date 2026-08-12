@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import Stack from '@/ui/components/Stack';
 import Icon from '@/ui/components/Icon';
 import { t } from 'i18next';
@@ -6,7 +6,7 @@ import Typography from '@/ui/components/Typography';
 import { Papicons } from '@getpapillon/papicons';
 import { Link } from 'expo-router';
 import { useTheme } from "expo-router/react-navigation";
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 import { ListTouchable } from '@/ui/new/List';
 
@@ -37,31 +37,65 @@ const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
       card
       radius={25}
       gap={0}
-      style={{ elevation: 2, display: item.hidden ? 'none' : 'flex', flex: 1 }}
-      backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.dark ? theme.colors.card : '#fff'}
+      style={{ elevation: 2, display: item.hidden ? "none" : "flex", flex: 1 }}
+      backgroundColor={
+        Platform.OS === "ios"
+          ? theme.colors.card
+          : theme.dark
+            ? theme.colors.card
+            : "#fff"
+      }
     >
-      <Stack direction="horizontal" vAlign="center" hAlign="center" padding={[10, 10]} gap={10} style={{ marginTop: -1 }}>
+      <Stack
+        direction="horizontal"
+        vAlign="center"
+        hAlign="center"
+        padding={[10, 10]}
+        gap={10}
+        style={{ marginTop: -1 }}
+      >
         <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
           {item.icon}
         </Icon>
-        <Typography nowrap style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+        <Typography
+          nowrap
+          style={{ flex: 1, opacity: 0.6 }}
+          variant="title"
+          color="text"
+        >
           {item.title}
         </Typography>
         {(item.redirect || item.onPress) && (
-          <Stack bordered={Platform.OS === 'ios'} backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.colors.text + "11"} radius={20} style={{overflow: Platform.OS === 'android' ? 'hidden' : 'visible'}}>
+          <Stack
+            bordered={Platform.OS === "ios"}
+            backgroundColor={
+              Platform.OS === "ios"
+                ? theme.colors.card
+                : theme.colors.text + "11"
+            }
+            radius={20}
+            style={{
+              overflow: Platform.OS === "android" ? "hidden" : "visible",
+            }}
+          >
             <Link asChild href={item.redirect ?? "/(features)/soon"}>
-            <Link.AppleZoom>
-            <ListTouchable>
-              <Stack direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
-                <Typography variant="body2" color="secondary" inline>
-                  {t('Home_Display_More',)}
-                </Typography>
-                <Icon size={20} papicon opacity={0.5}>
-                  <Papicons name={"ArrowRightUp"} />
-                </Icon>
-              </Stack>
-            </ListTouchable>
-            </Link.AppleZoom>
+              <Link.AppleZoom>
+                <ListTouchable>
+                  <Stack
+                    direction="horizontal"
+                    hAlign="center"
+                    padding={[12, 6]}
+                    gap={6}
+                  >
+                    <Typography variant="body2" color="secondary" inline>
+                      {t("Home_Display_More")}
+                    </Typography>
+                    <Icon size={20} papicon opacity={0.5}>
+                      <Papicons name={"ArrowRightUp"} />
+                    </Icon>
+                  </Stack>
+                </ListTouchable>
+              </Link.AppleZoom>
             </Link>
           </Stack>
         )}
