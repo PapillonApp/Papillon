@@ -1,5 +1,7 @@
 import { Database } from '@nozbe/watermelondb';
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
+import { File, Paths } from 'expo-file-system';
+import { Platform } from 'react-native';
 
 import { Absence, Attendance, Delay, Observation, Punishment } from '@/database/models/Attendance';
 import CanteenMenu from '@/database/models/CanteenMenu';
@@ -17,8 +19,32 @@ import CanteenHistoryItem from './models/CanteenHistory';
 import Kid from './models/Kid';
 import { mySchema } from './schema';
 
+const appGroupId = 'group.xyz.getpapillon.ios';
+const databaseFilename = 'watermelon.db';
+
+function resolveSharedDbName(): string | undefined {
+  if (Platform.OS !== 'ios') {
+    return undefined;
+  }
+
+  const sharedContainer = Paths.appleSharedContainers[appGroupId];
+  if (!sharedContainer) {
+    return undefined;
+  }
+
+  const sharedFile = new File(sharedContainer, databaseFilename);
+  const legacyFile = new File(Paths.document, databaseFilename);
+
+  if (!sharedFile.exists && legacyFile.exists) {
+    legacyFile.copySync(sharedFile);
+  }
+
+  return sharedFile.uri;
+}
+
 const adapter = new SQLiteAdapter({
   schema: mySchema,
+  dbName: resolveSharedDbName(),
 });
 
 export const database = new Database({
