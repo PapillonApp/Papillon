@@ -23,20 +23,20 @@ const appGroupId = 'group.xyz.getpapillon.ios';
 const databaseFilename = 'watermelon.db';
 
 function resolveSharedDbName(): string | undefined {
-  if (Platform.OS !== 'ios') {
-    return undefined;
-  }
+  if (Platform.OS !== 'ios') return undefined;
 
   const sharedContainer = Paths.appleSharedContainers[appGroupId];
-  if (!sharedContainer) {
-    return undefined;
-  }
+  if (!sharedContainer) return undefined;
 
   const sharedFile = new File(sharedContainer, databaseFilename);
   const legacyFile = new File(Paths.document, databaseFilename);
 
   if (!sharedFile.exists && legacyFile.exists) {
     legacyFile.copySync(sharedFile);
+    legacyFile.delete()
+  }
+  if (sharedFile.exists && legacyFile.exists) {
+    legacyFile.delete();
   }
 
   return sharedFile.uri;
