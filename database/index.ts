@@ -33,10 +33,6 @@ function resolveSharedDbName(): string | undefined {
 
   if (!sharedFile.exists && legacyFile.exists) {
     legacyFile.copySync(sharedFile);
-    legacyFile.delete()
-  }
-  if (sharedFile.exists && legacyFile.exists) {
-    legacyFile.delete();
   }
 
   return sharedFile.uri;
