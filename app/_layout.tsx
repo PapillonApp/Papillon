@@ -4,7 +4,6 @@ import "@/utils/i18n";
 
 import { Buffer } from 'buffer';
 import React, { useEffect, useMemo, useRef } from 'react';
-import Countly from 'countly-sdk-react-native-bridge';
 import { useSegments } from 'expo-router';
 
 import { AppProviders } from '@/components/AppProviders';
@@ -13,6 +12,7 @@ import { RootNavigator } from '@/components/RootNavigator';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useNetworkStore } from '@/stores/logs';
 import { checkConsent } from '@/utils/logger/consent';
+import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
 import { LogBox } from 'react-native';
 
@@ -61,7 +61,7 @@ export default function RootLayout() {
         hasAdvancedConsentRef.current = consent.given && consent.advanced;
       }
       if (!hasAdvancedConsentRef.current) return;
-      Countly.recordView(analyticsView);
+      posthog.screen(analyticsView);
       lastTrackedView.current = analyticsView;
     };
 

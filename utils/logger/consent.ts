@@ -1,5 +1,6 @@
-import Countly from "countly-sdk-react-native-bridge";
 import { MMKV } from "react-native-mmkv";
+
+import { posthog } from "@/utils/logger/posthog";
 
 interface ConsentStatus {
   given: boolean;
@@ -33,24 +34,25 @@ export const setConsent = async (consent: keyof ConsentLevels) => {
     await consentConfig.set("countly-consent-required", false);
     await consentConfig.set("countly-consent-optional", false);
     await consentConfig.set("countly-consent-advanced", false);
+    await posthog.optOut();
   } else if (consent === "required") {
     await consentConfig.set("consent", true);
     await consentConfig.set("countly-consent-required", true);
     await consentConfig.set("countly-consent-optional", false);
     await consentConfig.set("countly-consent-advanced", false);
-    Countly.giveConsent(["sessions"]);
+    await posthog.optIn();
   } else if (consent === "optional") {
     await consentConfig.set("consent", true);
     await consentConfig.set("countly-consent-required", true);
     await consentConfig.set("countly-consent-optional", true);
     await consentConfig.set("countly-consent-advanced", false);
-    Countly.giveConsent(["sessions", "crashes", "users"]);
+    await posthog.optIn();
   } else if (consent === "advanced") {
     await consentConfig.set("consent", true);
     await consentConfig.set("countly-consent-required", true);
     await consentConfig.set("countly-consent-optional", true);
     await consentConfig.set("countly-consent-advanced", true);
-    Countly.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback", "views"]);
+    await posthog.optIn();
   }
 
   return;
