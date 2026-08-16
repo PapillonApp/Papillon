@@ -6,9 +6,12 @@ import Countly from 'countly-sdk-react-native-bridge';
 import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
 
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
-import { initializeAccountManager } from '@/services/shared';
+import { clearSpotlightIndex, reindexSpotlight } from '@/modules/papillon-native/src';
+import { initializeAccountManager, subscribeManagerUpdate } from '@/services/shared';
+import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
 import i18n from '@/utils/i18n';
+import { registerSpotlightRefreshTask } from '@/utils/background/spotlightRefreshTask';
 import { checkConsent } from '@/utils/logger/consent';
 import { log, warn } from '@/utils/logger/logger';
 import ModelManager from '@/utils/magic/ModelManager';
@@ -98,6 +101,34 @@ export function useAppInitialization() {
     return () => {
       subscription.remove();
     };
+  }, []);
+
+  // Spotlight/Siri: background refresh registration
+  useEffect(() => {
+    registerSpotlightRefreshTask().catch(e => warn(`Spotlight background task registration failed: ${e}`));
+  }, []);
+
+  // Spotlight/Siri: opportunistic reindex whenever the account manager (re)connects
+  useEffect(() => {
+    const unsubscribe = subscribeManagerUpdate(manager => {
+      reindexSpotlight(manager.getAccount().id).catch(e => warn(`Spotlight reindex failed: ${e}`));
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Spotlight/Siri: clear the index whenever the active account changes or is removed
+  useEffect(() => {
+    let previousAccountId = useAccountStore.getState().lastUsedAccount;
+
+    const unsubscribe = useAccountStore.subscribe(state => {
+      const nextAccountId = state.lastUsedAccount;
+      if (nextAccountId === previousAccountId) { return; }
+      previousAccountId = nextAccountId;
+      clearSpotlightIndex().catch(e => warn(`Spotlight clear failed: ${e}`));
+    });
+
+    return unsubscribe;
   }, []);
 
   // Magic/ModelManager Initialization

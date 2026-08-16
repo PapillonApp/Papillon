@@ -122,6 +122,7 @@ export default {
         },
       ],
       "expo-web-browser",
+      "expo-background-task",
       [
         "react-native-fast-tflite",
         {
