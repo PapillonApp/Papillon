@@ -1,3 +1,4 @@
 [submodule "database/native"]
 	path = database/native
 	url = git@github.com:PapillonApp/NativeDB.git
+	branch = main
