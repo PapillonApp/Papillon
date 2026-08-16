@@ -19,7 +19,7 @@ import CanteenHistoryItem from './models/CanteenHistory';
 import Kid from './models/Kid';
 import { mySchema } from './schema';
 
-const appGroupId = 'group.xyz.getpapillon.ios';
+const appGroupId = 'group.xyz.getpapillon';
 const databaseFilename = 'watermelon.db';
 
 function resolveSharedDbName(): string | undefined {
@@ -32,7 +32,7 @@ function resolveSharedDbName(): string | undefined {
   const legacyFile = new File(Paths.document, databaseFilename);
 
   if (!sharedFile.exists && legacyFile.exists) {
-    legacyFile.copySync(sharedFile);
+    legacyFile.moveSync(sharedFile);
   }
 
   return sharedFile.uri;

@@ -84,6 +84,7 @@
     "ical.js": "^2.2.1",
     "lottie-react-native": "^7.3.4",
     "lucide-react-native": "^0.511.0",
+    "nativedb": "file:database/native",
     "patch-package": "^8.0.1",
     "pawnote": "^1.6.2",
     "react": "19.2.3",

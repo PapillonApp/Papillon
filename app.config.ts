@@ -89,7 +89,7 @@ export default {
       },
       edgeToEdgeEnabled: true,
       supportsTablet: true,
-      predictiveBackGestureEnabled: true
+      predictiveBackGestureEnabled: true,
     },
     web: {
       bundler: "metro",
@@ -109,10 +109,10 @@ export default {
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#29947A",
-          "image": "./assets/images/logotype.png",
-          "imageWidth": 240
-        }
+          backgroundColor: "#29947A",
+          image: "./assets/images/logotype.png",
+          imageWidth: 240,
+        },
       ],
       [
         "expo-image-picker",
@@ -160,8 +160,15 @@ export default {
               { name: "SDWebImage", modular_headers: true },
               { name: "SDWebImageSVGCoder", modular_headers: true },
             ],
-            buildReactNativeFromSource: false
+            buildReactNativeFromSource: false,
           },
+        },
+      ],
+      [
+        "nativedb",
+        {
+          databaseIndexFile: "./database/index.ts",
+          databaseSchemaFile: "./database/schema.ts",
         },
       ],
     ],
