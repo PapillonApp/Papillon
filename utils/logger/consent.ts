@@ -2,58 +2,36 @@ import { MMKV } from "react-native-mmkv";
 
 import { posthog } from "@/utils/logger/posthog";
 
-interface ConsentStatus {
+const storage = new MMKV();
+
+export type ConsentLevel = "none" | "essentials" | "advanced";
+
+const GIVEN_KEY = "consent-given";
+const LEVEL_KEY = "consent-level";
+const DATE_KEY = "consent-date";
+
+export interface ConsentStatus {
   given: boolean;
-  required: boolean;
-  optional: boolean;
-  advanced: boolean;
+  level: ConsentLevel;
+  date: string | null;
 }
 
 export const checkConsent = async (): Promise<ConsentStatus> => {
-  const consentConfig = new MMKV();
-  const given = await consentConfig.getBoolean("consent") ?? false;
-  const required = await consentConfig.getBoolean("countly-consent-required") ?? false;
-  const optional = await consentConfig.getBoolean("countly-consent-optional") ?? false;
-  const advanced = await consentConfig.getBoolean("countly-consent-advanced") ?? false;
+  return {
+    given: storage.getBoolean(GIVEN_KEY) ?? false,
+    level: (storage.getString(LEVEL_KEY) as ConsentLevel | undefined) ?? "none",
+    date: storage.getString(DATE_KEY) ?? null,
+  };
+};
 
-  return { given, required, optional, advanced };
-}
+export const setConsent = async (level: ConsentLevel): Promise<void> => {
+  storage.set(GIVEN_KEY, true);
+  storage.set(LEVEL_KEY, level);
+  storage.set(DATE_KEY, new Date().toISOString());
 
-interface ConsentLevels {
-  none: boolean;
-  required: boolean;
-  optional: boolean;
-  advanced: boolean;
-}
-
-export const setConsent = async (consent: keyof ConsentLevels) => {
-  const consentConfig = new MMKV();
-
-  if (consent === "none") {
-    await consentConfig.set("consent", true);
-    await consentConfig.set("countly-consent-required", false);
-    await consentConfig.set("countly-consent-optional", false);
-    await consentConfig.set("countly-consent-advanced", false);
+  if (level === "none") {
     await posthog.optOut();
-  } else if (consent === "required") {
-    await consentConfig.set("consent", true);
-    await consentConfig.set("countly-consent-required", true);
-    await consentConfig.set("countly-consent-optional", false);
-    await consentConfig.set("countly-consent-advanced", false);
-    await posthog.optIn();
-  } else if (consent === "optional") {
-    await consentConfig.set("consent", true);
-    await consentConfig.set("countly-consent-required", true);
-    await consentConfig.set("countly-consent-optional", true);
-    await consentConfig.set("countly-consent-advanced", false);
-    await posthog.optIn();
-  } else if (consent === "advanced") {
-    await consentConfig.set("consent", true);
-    await consentConfig.set("countly-consent-required", true);
-    await consentConfig.set("countly-consent-optional", true);
-    await consentConfig.set("countly-consent-advanced", true);
+  } else {
     await posthog.optIn();
   }
-
-  return;
-}
+};

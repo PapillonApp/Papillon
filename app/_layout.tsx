@@ -36,7 +36,6 @@ export default function RootLayout() {
   const { isAppReady, fontsLoaded } = useAppInitialization();
   const segments = useSegments();
   const lastTrackedView = useRef<string | null>(null);
-  const hasAdvancedConsentRef = useRef<boolean | null>(null);
 
   const analyticsView = useMemo(() => {
     if (segments.length < 2) return null;
@@ -56,11 +55,8 @@ export default function RootLayout() {
     if (!analyticsView || lastTrackedView.current === analyticsView) return;
 
     const trackView = async () => {
-      if (hasAdvancedConsentRef.current === null) {
-        const consent = await checkConsent();
-        hasAdvancedConsentRef.current = consent.given && consent.advanced;
-      }
-      if (!hasAdvancedConsentRef.current) return;
+      const consent = await checkConsent();
+      if (!consent.given || consent.level !== "advanced") return;
       posthog.screen(analyticsView);
       lastTrackedView.current = analyticsView;
     };

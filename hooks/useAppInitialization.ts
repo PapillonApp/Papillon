@@ -99,7 +99,7 @@ export function useAppInitialization() {
     async function syncPostHogConsent() {
       const consent = await checkConsent();
 
-      if (consent.given && (consent.required || consent.optional || consent.advanced)) {
+      if (consent.given && consent.level !== "none") {
         await posthog.optIn();
       } else {
         await posthog.optOut();

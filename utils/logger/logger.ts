@@ -58,7 +58,7 @@ function error(message: string, from?: string): void {
   saveLog(date, message, LogType.ERROR, functionName);
   console.error(message);
   checkConsent().then(consent => {
-    if (consent.given && consent.optional) {
+    if (consent.given && consent.level !== "none") {
       posthog.captureException(new Error(message));
     }
   });
