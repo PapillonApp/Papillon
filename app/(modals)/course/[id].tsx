@@ -19,7 +19,7 @@ import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 
-import { getStatusText } from "./components/CalendarDay";
+import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SubjectInfo {
@@ -74,10 +74,10 @@ export default function CourseModal() {
   const endTime = Math.floor(course.to.getTime() / 1000);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       {Platform.OS !== "android" && (
         <LinearGradient
-          colors={[subjectInfo.color, colors.background]}
+          colors={[subjectInfo.color, 'transparent']}
           style={{
             position: "absolute",
             top: 0,

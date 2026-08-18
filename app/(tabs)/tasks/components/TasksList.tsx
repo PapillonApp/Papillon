@@ -106,6 +106,7 @@ const TasksList: React.FC<TasksListProps> = ({
       key={`tasks-list-${numColumns}`}
       animated
       numColumns={numColumns}
+      maintainVisibleContentPosition={{ disabled: true }}
       style={styles.list}
       contentContainerStyle={{
         paddingHorizontal: 16,

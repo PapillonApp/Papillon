@@ -495,7 +495,7 @@ const IndexScreen = () => {
                 {courses.filter(item => item.to.getTime() > Date.now()).slice(0, 2).map(item => (
                   <Link
                     key={item.id}
-                    href={{ pathname: "/(tabs)/calendar/[id]", params: { id: getCourseRouteId(item) } }}
+                    href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(item) } }}
                     asChild
                   >
                     <Course

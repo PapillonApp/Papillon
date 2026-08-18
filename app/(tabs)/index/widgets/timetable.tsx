@@ -66,7 +66,7 @@ const HomeTimeTableWidget = React.memo(() => {
       style={{ width: '100%', paddingHorizontal: 10 }}
       renderItem={({ item }) => (
         <Link
-          href={{ pathname: "/(tabs)/calendar/[id]", params: { id: getCourseRouteId(item) } }}
+          href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(item) } }}
           asChild
         >
           <Course

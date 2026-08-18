@@ -63,7 +63,7 @@ function NextCourseAccessory({ placement }) {
   return (
     <>
       <Link
-        href={{ pathname: "/(tabs)/calendar/[id]", params: { id: getCourseRouteId(nextCourse) } }}
+        href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(nextCourse) } }}
         asChild
       >
         <Link.AppleZoom>

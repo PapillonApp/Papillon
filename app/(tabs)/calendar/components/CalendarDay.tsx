@@ -151,7 +151,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
 
           return (
             <Link
-              href={{ pathname: "/(tabs)/calendar/[id]", params: { id: getCourseRouteId(item) } }}
+              href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(item) } }}
               asChild
             >
               <Course
