@@ -35,7 +35,7 @@
     "@react-native-community/datetimepicker": "9.1.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
-    "@sbaiahmed1/react-native-blur": "^4.2.1",
+    "@sbaiahmed1/react-native-blur": "^6.0.0",
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.6.2",
     "@types/uuid": "^10.0.0",

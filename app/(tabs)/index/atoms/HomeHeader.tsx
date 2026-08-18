@@ -55,6 +55,7 @@ const HomeHeader = () => {
   const HomeHeaderButtons: HomeHeaderButtonItem[] = useMemo(() => [
     {
       title: t("Home_Cards_Button_Title"),
+      image: require("@/assets/shaded_icons/cards.png"),
       icon: "card",
       color: "#EE9F00",
       description: availableCanteenCards.length > 0 ?
@@ -67,6 +68,7 @@ const HomeHeader = () => {
     },
     {
       title: t("Home_Menu_Button_Title"),
+      image: require("@/assets/shaded_icons/menu.png"),
       icon: "cutlery",
       color: "#7ED62B",
       description: t("Home_Menu_Button_Description"),
@@ -77,6 +79,7 @@ const HomeHeader = () => {
     },
     {
       title: t("Home_Attendance_Title"),
+      image: require("@/assets/shaded_icons/homework.png"),
       icon: "chair",
       color: "#D62B94",
       description: absencesCount > 0 ?
@@ -105,6 +108,7 @@ const HomeHeader = () => {
     },
     {
       title: t("Tab_News"),
+      image: require("@/assets/shaded_icons/actu.png"),
       icon: "newspaper",
       color: "#2B7ED6",
       description: news[0]?.title ?? t("News_Empty_Title"),

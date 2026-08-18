@@ -393,7 +393,7 @@ const GradesView: React.FC = () => {
               gap={8}
               vAlign="start"
               hAlign="center"
-              style={{ opacity: 0.4, marginBottom: -16 }}
+              style={{ opacity: 0.4 }}
               padding={[0, 0]}
             >
               <Icon size={20}>

@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from "expo-router/react-navigation";
 
 import Stack from '@/ui/components/Stack';
 
@@ -29,10 +30,11 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
         >
           <ProgressiveBlurView
             blurAmount={10}
+            blurType="systemUltraThinMaterial"
             direction="blurredTopClearBottom"
             startOffset={0}
             reducedTransparencyFallbackColor="#00000000"
-            style={{ width: "100%", height: "101%" }}
+            style={{ width: "100%", height: "100%" }}
           />
         </View>
       )}
