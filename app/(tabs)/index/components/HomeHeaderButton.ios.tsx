@@ -24,7 +24,7 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
 
   return (
     <LiquidGlassView
-      glassOpacity={0}
+      glassOpacity={0.4}
       glassTintColor={colors.card ?? '#ffffff'}
       glassType='regular'
       isInteractive={true}
