@@ -4,7 +4,7 @@ import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
-import { useTheme } from "expo-router/react-navigation"
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation"
 import React, { useEffect, useState } from "react"
 import { FlatList, Image, Platform, Pressable, RefreshControl, View } from "react-native"
 import { File, Directory, Paths } from 'expo-file-system';
@@ -30,6 +30,7 @@ interface Collection {
 
 const WallpaperModal = () => {
   const { colors } = useTheme()
+  const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
 
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -71,11 +72,15 @@ const WallpaperModal = () => {
       const collectionIndex = collections.findIndex((collection) => collection.images.find((image) => image.id === currentWallpaper.id));
       if (collectionIndex !== -1) {
         setTimeout(() => {
-          flatListRef.current?.scrollToIndex({ index: collectionIndex, animated: true });
+          flatListRef.current?.scrollToIndex({
+            index: collectionIndex,
+            animated: true,
+            viewOffset: Platform.OS === "ios" ? headerHeight : 0,
+          });
         }, 10);
       }
     }
-  }, [collections, currentWallpaper]);
+  }, [collections, currentWallpaper, headerHeight]);
 
   const wallpaperDirectory = new Directory(Paths.document, "wallpapers");
 

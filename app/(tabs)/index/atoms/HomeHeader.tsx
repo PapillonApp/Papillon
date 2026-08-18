@@ -57,7 +57,7 @@ const HomeHeader = () => {
       title: t("Home_Cards_Button_Title"),
       image: require("@/assets/shaded_icons/cards.png"),
       icon: "card",
-      color: "#FFA1F2",
+      color: "#c800ad",
       description: availableCanteenCards.length > 0 ?
         (availableCanteenCards.length > 1 ? t("Home_Cards_Button_Description_Number", { number: availableCanteenCards.length }) :
           t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None"),
@@ -70,7 +70,7 @@ const HomeHeader = () => {
       title: t("Home_Menu_Button_Title"),
       image: require("@/assets/shaded_icons/menu.png"),
       icon: "cutlery",
-      color: "#C2FFA1",
+      color: "#46c700",
       description: t("Home_Menu_Button_Description"),
       onPress: () => {
         router.push("/(features)/soon");
@@ -81,7 +81,7 @@ const HomeHeader = () => {
       title: t("Home_Attendance_Title"),
       image: require("@/assets/shaded_icons/homework.png"),
       icon: "chair",
-      color: "#FFE1A1",
+      color: "#ffae00",
       description: absencesCount > 0 ?
         (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular"))
         : t("Home_Attendance_Button_Description_None"),
@@ -110,7 +110,7 @@ const HomeHeader = () => {
       title: t("Tab_News"),
       image: require("@/assets/shaded_icons/actu.png"),
       icon: "newspaper",
-      color: "#A1D0FF",
+      color: "#0080ff",
       description: news[0]?.title ?? t("News_Empty_Title"),
       onPress: () => {
         router.push("/(features)/(news)/news");
@@ -129,7 +129,9 @@ const HomeHeader = () => {
 
               <View key={i} style={{ flexDirection: 'row', gap: 6, width: '100%' }}>
                 {HomeHeaderButtons.slice(i * 2, i * 2 + 2).map((item) => (
-                  <HomeHeaderButton key={item.title} item={item} />
+                  <HomeHeaderButton
+                    key={item.title} item={item}
+                  />
                 ))}
                 {HomeHeaderButtons.slice(i * 2, i * 2 + 2).length === 1 && <View style={{ flex: 1 }} />}
               </View>
