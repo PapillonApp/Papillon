@@ -27,7 +27,9 @@ export default function Layout() {
           headerTitle: t("Modal_Grades_Title"),
           headerLargeTitle: false,
           headerTransparent: true,
-          presentation: "modal",
+          presentation: Platform.OS !== "ios" ? "modal" : "formSheet",
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.5, 1],
           headerBackground: AndroidHeaderBackground,
         }}
       />

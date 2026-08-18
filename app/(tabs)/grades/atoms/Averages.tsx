@@ -355,7 +355,7 @@ const Averages = ({
                 gap={0}
                 style={[
                   {
-                    paddingHorizontal: 20,
+                    paddingHorizontal: 24,
                     width: resizable.isLarge ? 200 : "100%",
                     marginTop: -12
                   },

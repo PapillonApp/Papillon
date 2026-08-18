@@ -27,7 +27,9 @@ export default function Layout() {
           headerTitle: t("Modal_Task_Title"),
           headerTransparent: true,
           headerLargeTitle: false,
-          presentation: "modal",
+          presentation: Platform.OS !== "ios" ? "modal" : "formSheet",
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.5, 1],
           headerBackground: AndroidHeaderBackground,
         }}
       />

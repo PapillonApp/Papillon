@@ -6,7 +6,6 @@ import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useEffect, useState } from "react";
 
-import Knowunity from "@/components/Knowunity";
 import ModalOverhead from "@/components/ModalOverhead";
 import { getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
@@ -187,12 +186,6 @@ const Task = () => {
             ))}
           </List.Section>
         )}
-        <Knowunity
-          subjectColor={subjectInfo.color}
-          subjectName={subjectInfo.name}
-          subjectEmoji={subjectInfo.emoji}
-          formattedTask={formatedTask}
-        />
       </List>
     </>
   );
