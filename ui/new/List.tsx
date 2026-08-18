@@ -477,7 +477,10 @@ const List = ({
     flushImplicit();
 
     return output.map((entry, index) => {
-      if (index === 0) {
+      // In a multi-column layout, every item in the first visual row starts at
+      // the top. Applying the inter-section gap to the second item would
+      // stagger the columns before masonry positioning even begins.
+      if (index < numColumns) {
         return { ...entry, gapBefore: 0 };
       }
 
@@ -503,7 +506,7 @@ const List = ({
 
       return { ...entry, gapBefore: 0 };
     });
-  }, [children, gap]);
+  }, [children, gap, numColumns]);
 
   const ListComponent = FlashList;
 

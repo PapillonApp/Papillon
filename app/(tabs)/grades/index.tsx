@@ -417,6 +417,8 @@ const GradesView: React.FC = () => {
       features,
       displayScale,
       resize.isLarge,
+      headerHeight,
+      insets.top,
     ]
   );
 
