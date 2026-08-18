@@ -27,6 +27,20 @@ import Typography from "@/ui/new/Typography";
 import { formatDate, formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
 import * as DateLocale from 'date-fns/locale';
 
+const parseSearchParam = <T,>(value: string | string[] | undefined, fallback: T): T => {
+  const serializedValue = Array.isArray(value) ? value[0] : value;
+
+  if (!serializedValue) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(serializedValue) as T;
+  } catch {
+    return fallback;
+  }
+};
+
 const formatEventTime = (durationData: number, detailed: boolean) => {
   if(detailed) {
     return durationData >= 60
@@ -46,12 +60,12 @@ export default function AttendanceView() {
     const header = useHeaderHeight();
 
     const search = useLocalSearchParams();
-    const currentPeriod = JSON.parse(String(search.currentPeriod)) as Period;
-    const periods = JSON.parse(String(search.periods)) as Period[];
-    const attendancesFromSearch = JSON.parse(String(search.attendances)) as Attendance[];
+    const periods = parseSearchParam<Period[]>(search.periods, []);
+    const currentPeriod = parseSearchParam<Period | undefined>(search.currentPeriod, periods[0]);
+    const attendancesFromSearch = parseSearchParam<Attendance[]>(search.attendances, []);
 
     const [attendances, setAttendances] = useState<Attendance[]>(attendancesFromSearch);
-    const [period, setPeriod] = useState<Period>(currentPeriod);
+    const [period, setPeriod] = useState<Period | undefined>(currentPeriod);
 
     const { missedTime, missedTimeUnjustified, unjustifiedAbsenceCount, unjustifiedDelayCount, absenceCount, delayCount } = useMemo(() => {
       let missed = 0;

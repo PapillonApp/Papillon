@@ -15,6 +15,8 @@ export interface HomeHeaderButtonItem {
   color: string;
   description: string;
   onPress?: () => void;
+  route?: string;
+  params?: Record<string, string>;
 }
 
 interface HomeHeaderButtonProps {
@@ -48,7 +50,13 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
         }}
       />
 
-    <Link asChild href={item.route ?? "/(features)/soon"}>
+    <Link
+      asChild
+      href={{
+        pathname: item.route ?? "/(features)/soon",
+        params: item.params,
+      }}
+    >
     <Link.AppleZoom>
       <Pressable
         style={styles.headerBtn}
