@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Switch, View } from "react-native";
 import { router } from "expo-router";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
@@ -22,6 +22,12 @@ import { MAGIC_URL } from "@/utils/endpoints";
 import { initializeTransport } from "@/utils/transport";
 import LogIcon from "@/components/Log/LogIcon";
 import { getManager, initializeAccountManager } from "@/services/shared";
+import { clearSpotlightIndex, getSpotlightDebugSnapshot, reindexSpotlight, SpotlightDebugSnapshot } from "@/modules/papillon-native/src";
+import {
+  isSpotlightRefreshTaskRegistered,
+  registerSpotlightRefreshTask,
+  runSpotlightRefresh,
+} from "@/utils/background/spotlightRefreshTask";
 import { warn } from "@/utils/logger/logger";
 
 const HOSTS: Record<string, { title: string; icon: string }> = {
@@ -44,6 +50,66 @@ export default function DevMode() {
   const mockDataEnabled = useSettingsStore(
     state => state.personalization.mockDataEnabled ?? false
   );
+  const activeAccountId = useAccountStore(state => state.lastUsedAccount);
+  const accounts = useAccountStore(state => state.accounts);
+  const activeAccount = accounts.find(a => a.id === activeAccountId);
+
+  const [spotlightSnapshot, setSpotlightSnapshot] = useState<SpotlightDebugSnapshot | null>(null);
+  const [spotlightTaskRegistered, setSpotlightTaskRegistered] = useState<boolean | null>(null);
+  const [spotlightBusy, setSpotlightBusy] = useState(false);
+
+  const refreshSpotlightDebugInfo = useCallback(async () => {
+    const [snapshot, registered] = await Promise.all([
+      getSpotlightDebugSnapshot(),
+      isSpotlightRefreshTaskRegistered(),
+    ]);
+    setSpotlightSnapshot(snapshot);
+    setSpotlightTaskRegistered(registered);
+  }, []);
+
+  useEffect(() => {
+    refreshSpotlightDebugInfo();
+  }, [refreshSpotlightDebugInfo]);
+
+  const withSpotlightBusy = async (action: () => Promise<void>) => {
+    if (spotlightBusy) { return; }
+    setSpotlightBusy(true);
+    try {
+      await action();
+    } catch (e) {
+      Alert.alert("Erreur", String(e));
+    } finally {
+      await refreshSpotlightDebugInfo();
+      setSpotlightBusy(false);
+    }
+  };
+
+  const handleSpotlightReindex = () => withSpotlightBusy(async () => {
+    if (!activeAccount) {
+      Alert.alert("Erreur", "Aucun compte actif.");
+      return;
+    }
+    await reindexSpotlight(activeAccount.services.map(service => service.id));
+    Alert.alert("Succès", "Réindexation Spotlight terminée.");
+  });
+
+  const handleSpotlightClear = () => withSpotlightBusy(async () => {
+    await clearSpotlightIndex();
+    Alert.alert("Succès", "Index Spotlight vidé.");
+  });
+
+  const handleSpotlightFullRefresh = () => withSpotlightBusy(async () => {
+    const result = await runSpotlightRefresh();
+    Alert.alert(
+      "Refresh terminé",
+      `Sync: ${result.syncOk ? "OK" : `échec (${result.syncError})`}\n` +
+        `Réindexation: ${result.reindexOk ? "OK" : `échec (${result.reindexError})`}`
+    );
+  });
+
+  const handleSpotlightRegisterTask = () => withSpotlightBusy(async () => {
+    await registerSpotlightRefreshTask();
+  });
 
   const entries = useMemo(() => {
     return Array.from(hosts.entries())
@@ -400,6 +466,84 @@ export default function DevMode() {
             })}>
               <Typography variant="action">Réinitialiser la source de Magic</Typography>
             </List.Item>
+        </List.Section>
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="Search" color={colors.text + 88} />
+            <List.Label>Siri &amp; Spotlight</List.Label>
+          </List.SectionTitle>
+          <List.Item>
+            <Typography variant="action">Compte indexé</Typography>
+            <Typography variant="body2" color="textSecondary">
+              {activeAccount ? `${activeAccount.firstName} ${activeAccount.lastName} (${activeAccountId})` : "Aucun compte actif"}
+            </Typography>
+          </List.Item>
+          <List.Item>
+            <Typography variant="action">Ids de service filtrés (createdByAccount)</Typography>
+            <Typography variant="body2" color="textSecondary">
+              {activeAccount ? activeAccount.services.map(service => service.id).join(", ") : "—"}
+            </Typography>
+          </List.Item>
+          <List.Item>
+            <Typography variant="action">Cours</Typography>
+            <List.Trailing>
+              <Typography color="textSecondary" variant="action">
+                {spotlightSnapshot ? `${spotlightSnapshot.indexedCourseCount} indexés / ${spotlightSnapshot.rawCourseCount} en base` : "…"}
+              </Typography>
+            </List.Trailing>
+          </List.Item>
+          <List.Item>
+            <Typography variant="action">Devoirs</Typography>
+            <List.Trailing>
+              <Typography color="textSecondary" variant="action">
+                {spotlightSnapshot ? `${spotlightSnapshot.indexedHomeworkCount} indexés / ${spotlightSnapshot.rawHomeworkCount} en base` : "…"}
+              </Typography>
+            </List.Trailing>
+          </List.Item>
+          <List.Item>
+            <Typography variant="action">Notes</Typography>
+            <List.Trailing>
+              <Typography color="textSecondary" variant="action">
+                {spotlightSnapshot ? `${spotlightSnapshot.indexedGradeCount} indexées / ${spotlightSnapshot.rawGradeCount} en base` : "…"}
+              </Typography>
+            </List.Trailing>
+          </List.Item>
+          <List.Item>
+            <Typography variant="action">Dernière indexation</Typography>
+            <List.Trailing>
+              <Typography color="textSecondary" variant="action">
+                {spotlightSnapshot?.lastIndexedAt ? new Date(spotlightSnapshot.lastIndexedAt).toLocaleString() : "Jamais"}
+              </Typography>
+            </List.Trailing>
+          </List.Item>
+          <List.Item>
+            <Typography variant="action">Tâche de fond enregistrée</Typography>
+            <List.Trailing>
+              <Typography color="textSecondary" variant="action">
+                {spotlightTaskRegistered === null ? "…" : spotlightTaskRegistered ? "Oui" : "Non"}
+              </Typography>
+            </List.Trailing>
+          </List.Item>
+          <List.Item onPress={refreshSpotlightDebugInfo}>
+            <Typography variant="action">Rafraîchir les infos</Typography>
+          </List.Item>
+          <List.Item onPress={handleSpotlightReindex}>
+            <Typography variant="action">Réindexer Spotlight maintenant</Typography>
+          </List.Item>
+          <List.Item onPress={handleSpotlightFullRefresh}>
+            <Typography variant="action">Lancer le refresh complet (comme en tâche de fond)</Typography>
+          </List.Item>
+          <List.Item onPress={handleSpotlightRegisterTask}>
+            <Typography variant="action">(Ré)enregistrer la tâche de fond</Typography>
+          </List.Item>
+          <List.Item onPress={handleSpotlightClear}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Trash" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Vider l'index Spotlight</Typography>
+          </List.Item>
         </List.Section>
         <List.Section>
           <List.SectionTitle>

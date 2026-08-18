@@ -3,16 +3,13 @@ import 'react-native-reanimated';
 import "@/utils/i18n";
 
 import { Buffer } from 'buffer';
-import React, { useEffect, useMemo, useRef } from 'react';
-import Countly from 'countly-sdk-react-native-bridge';
-import { useSegments } from 'expo-router';
+import React, { useEffect } from 'react';
 
 import { AppProviders } from '@/components/AppProviders';
 import FakeSplash from '@/components/FakeSplash';
 import { RootNavigator } from '@/components/RootNavigator';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useNetworkStore } from '@/stores/logs';
-import { checkConsent } from '@/utils/logger/consent';
 import uuid from '@/utils/uuid/uuid';
 import { LogBox } from 'react-native';
 
@@ -34,39 +31,6 @@ LogBox.ignoreLogs([
 
 export default function RootLayout() {
   const { isAppReady, fontsLoaded } = useAppInitialization();
-  const segments = useSegments();
-  const lastTrackedView = useRef<string | null>(null);
-  const hasAdvancedConsentRef = useRef<boolean | null>(null);
-
-  const analyticsView = useMemo(() => {
-    if (segments.length < 2) return null;
-
-    if (segments[0] === '(tabs)') {
-      return `tab:${segments[1]}`;
-    }
-
-    if (segments[0] === '(features)') {
-      return `feature:${segments.slice(1).join('/')}`;
-    }
-
-    return null;
-  }, [segments]);
-
-  useEffect(() => {
-    if (!analyticsView || lastTrackedView.current === analyticsView) return;
-
-    const trackView = async () => {
-      if (hasAdvancedConsentRef.current === null) {
-        const consent = await checkConsent();
-        hasAdvancedConsentRef.current = consent.given && consent.advanced;
-      }
-      if (!hasAdvancedConsentRef.current) return;
-      Countly.recordView(analyticsView);
-      lastTrackedView.current = analyticsView;
-    };
-
-    trackView();
-  }, [analyticsView]);
 
   useEffect(() => {
     const originalFetch = window.fetch;

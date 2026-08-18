@@ -41,7 +41,6 @@
     "@types/uuid": "^10.0.0",
     "alise-api": "^0.2.5",
     "buffer": "^6.0.3",
-    "countly-sdk-react-native-bridge": "^25.4.1",
     "date-fns": "^4.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",

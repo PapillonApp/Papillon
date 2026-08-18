@@ -2,8 +2,6 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import Countly from 'countly-sdk-react-native-bridge';
-import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
 
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
 import { clearSpotlightIndex, reindexSpotlight } from '@/modules/papillon-native/src';
@@ -12,25 +10,12 @@ import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
 import i18n from '@/utils/i18n';
 import { registerSpotlightRefreshTask } from '@/utils/background/spotlightRefreshTask';
-import { checkConsent } from '@/utils/logger/consent';
-import { log, warn } from '@/utils/logger/logger';
+import { warn } from '@/utils/logger/logger';
 import ModelManager from '@/utils/magic/ModelManager';
 import { FONT_CONFIG } from '@/constants/LayoutScreenOptions';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
-let secrets = { APP_KEY: "", SALT: "", SERVER_URL: "" };
-
-try {
-  secrets = require('../secrets.json') ?? { APP_KEY: "", SALT: "", SERVER_URL: "" };
-} catch {
-  warn("No secrets.json file found, Countly will not be initialized properly.");
-}
-
-const APP_KEY = secrets.APP_KEY;
-const SALT = secrets.SALT;
-const SERVER_URL = secrets.SERVER_URL ?? "https://analytics.papillon.bzh";
 
 export function useAppInitialization() {
   const [fontsLoaded, fontsError] = useFonts(FONT_CONFIG);
@@ -111,7 +96,8 @@ export function useAppInitialization() {
   // Spotlight/Siri: opportunistic reindex whenever the account manager (re)connects
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate(manager => {
-      reindexSpotlight(manager.getAccount().id).catch(e => warn(`Spotlight reindex failed: ${e}`));
+      const accountIds = manager.getAccount().services.map(service => service.id);
+      reindexSpotlight(accountIds).catch(e => warn(`Spotlight reindex failed: ${e}`));
     });
 
     return unsubscribe;
@@ -137,40 +123,6 @@ export function useAppInitialization() {
       ModelManager.safeInit();
     }
   }, [magicEnabled]);
-
-  // Countly Initialization
-  useEffect(() => {
-    async function initializeCountly() {
-      const consent = await checkConsent();
-      log(`Countly Consent: ${JSON.stringify(consent)}`);
-
-      const countlyConfig = new CountlyConfig(SERVER_URL, APP_KEY);
-      countlyConfig.setRequiresConsent(true);
-      countlyConfig.setLoggingEnabled(false);
-      countlyConfig.enableCrashReporting();
-      countlyConfig.enableParameterTamperingProtection(SALT);
-
-      if (consent.given) {
-        if (consent.advanced) {
-          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback", "views"]);
-        }
-
-        if (consent.optional) {
-          countlyConfig.giveConsent(["sessions", "crashes", "users"]);
-        }
-
-        if (consent.required) {
-          countlyConfig.giveConsent(["sessions"]);
-        }
-
-        if (consent.required || consent.optional || consent.advanced) {
-          await Countly.initWithConfig(countlyConfig);
-        }
-      }
-    }
-
-    initializeCountly();
-  }, []);
 
   // Error Handling for Fonts
   const handleError = useCallback(() => {

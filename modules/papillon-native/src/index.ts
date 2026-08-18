@@ -1,6 +1,9 @@
 import { Platform } from "react-native";
 
 import type PapillonNativeModuleType from "./PapillonNativeModule";
+import type { SpotlightDebugSnapshot } from "./PapillonNativeModule";
+
+export type { SpotlightDebugSnapshot };
 
 let nativeModule: typeof PapillonNativeModuleType | null = null;
 
@@ -15,10 +18,14 @@ function getNativeModule(): typeof PapillonNativeModuleType | null {
   return nativeModule;
 }
 
-export async function reindexSpotlight(accountId: string): Promise<void> {
-  await getNativeModule()?.reindexSpotlight(accountId);
+export async function reindexSpotlight(accountIds: string[]): Promise<void> {
+  await getNativeModule()?.reindexSpotlight(accountIds);
 }
 
 export async function clearSpotlightIndex(): Promise<void> {
   await getNativeModule()?.clearSpotlightIndex();
+}
+
+export async function getSpotlightDebugSnapshot(): Promise<SpotlightDebugSnapshot | null> {
+  return (await getNativeModule()?.getSpotlightDebugSnapshot()) ?? null;
 }

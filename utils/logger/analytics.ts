@@ -1,5 +1,3 @@
-import Countly from "countly-sdk-react-native-bridge";
-
 import { checkConsent } from "@/utils/logger/consent";
 
 type Segmentation = Record<string, string | number | boolean>;
@@ -12,7 +10,6 @@ async function track(event: string, level: "optional" | "advanced", segmentation
   if (level === "advanced" && !consent.advanced) {
     return;
   }
-  Countly.events.recordEvent(event, segmentation, 1);
 }
 
 export async function trackOptionalEvent(event: string, segmentation?: Segmentation) {

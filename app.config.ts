@@ -20,6 +20,9 @@ export default {
       associatedDomains: ["applinks:getpapillon.xyz"],
       icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
+      entitlements: {
+        "com.apple.security.application-groups": ["group.xyz.getpapillon"],
+      },
       infoPlist: {
         CFBundleURLTypes: [
           {
