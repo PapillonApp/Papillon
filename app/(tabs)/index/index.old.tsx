@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { useNavigation, useRouter } from "expo-router";
+import { Link, useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
 import { instance } from "pawnote";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -573,30 +573,24 @@ const IndexScreen = () => {
                 data={grades}
                 keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
-                  <CompactGrade
-                    title={item.subjectName}
-                    score={item.studentScore?.value ?? 0}
-                    description={item.description}
-                    outOf={item.outOf.value}
-                    emoji={getSubjectEmoji(item.subjectName)}
-                    disabled={item.studentScore?.disabled}
-                    status={item.studentScore?.status}
-                    color={adjust(getSubjectColor(item.subjectName), -0.1)}
-                    date={item.givenAt}
-                    variant="home"
-                    onPress={() => {
-                      (navigation as any).navigate('(modals)/grade', {
-                        grade: item,
-                        subjectInfo: {
-                          id: item.subjectId,
-                          name: item.subjectName,
-                          emoji: getSubjectEmoji(item.subjectName),
-                          color: getSubjectColor(item.subjectName)
-                        },
-                        allGrades: grades
-                      });
-                    }}
-                  />
+                  <Link
+                    href={{ pathname: "/(tabs)/grades/[id]", params: { id: item.id } }}
+                    asChild
+                  >
+                    <CompactGrade
+                      title={item.subjectName}
+                      score={item.studentScore?.value ?? 0}
+                      description={item.description}
+                      outOf={item.outOf.value}
+                      emoji={getSubjectEmoji(item.subjectName)}
+                      disabled={item.studentScore?.disabled}
+                      status={item.studentScore?.status}
+                      color={adjust(getSubjectColor(item.subjectName), -0.1)}
+                      date={item.givenAt}
+                      variant="home"
+                      skillLevel={[]}
+                    />
+                  </Link>
                 )}
               />
             )

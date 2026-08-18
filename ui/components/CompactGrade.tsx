@@ -12,6 +12,7 @@ import Stack from "./Stack";
 import Typography from "./Typography";
 import { SkillChip } from "@/ui/components/SkillChip";
 import { ListTouchable } from "../new/List";
+import { Link } from "expo-router";
 
 interface CompactGradeProps {
   emoji: string;

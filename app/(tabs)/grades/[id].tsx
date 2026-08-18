@@ -1,12 +1,15 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useRoute, useTheme } from "expo-router/react-navigation";
+import { useTheme } from "expo-router/react-navigation";
+import { Link, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
-import { Grade as SharedGrade } from "@/services/shared/grade";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { getManager } from "@/services/shared";
+import { Grade as SharedGrade, Subject } from "@/services/shared/grade";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
@@ -19,19 +22,18 @@ import Typography from '@/ui/new/Typography';
 import { useSettingsStore } from '@/stores/settings';
 import { formatAssumed20ForDisplay, getGradeDisplayScale, getDisplayScaleMax } from '@/utils/grades/scale';
 import { SkillChip } from "@/ui/components/SkillChip";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { useGradeInfluence } from "./hooks/useGradeInfluence";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
+import { warn } from "@/utils/logger/logger";
 
 interface SubjectInfo {
   name: string;
   originalName: string;
   emoji: string;
   color: string;
-}
-
-interface GradesModalProps {
-  grade: SharedGrade;
-  subjectInfo: SubjectInfo;
-  avgInfluence: number;
-  avgClass: number;
 }
 
 interface GradeBadgeProps {
@@ -81,28 +83,118 @@ const GradeBadge = ({
 };
 
 export default function GradesModal() {
-  const { params } = useRoute();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useTheme();
   const colors = theme.colors;
-
-  if (!params) {
-    return null;
-  }
-  const {
-    grade,
-    subjectInfo,
-    avgInfluence = 0,
-    avgClass = 0,
-  } = params as GradesModalProps;
+  const [grade, setGrade] = useState<SharedGrade>();
+  const [subject, setSubject] = useState<Subject>();
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [loading, setLoading] = useState(true);
   const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
   const displayScaleMax = getDisplayScaleMax(displayScale);
-
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0,
   });
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchGrade = async () => {
+      setLoading(true);
+      setGrade(undefined);
+      setSubject(undefined);
+      setSubjects([]);
+
+      try {
+        const manager = getManager();
+        if (!manager || !id) return;
+
+        const periods = await manager.getGradesPeriods();
+        const currentPeriod = getCurrentPeriod(periods);
+        const orderedPeriods = currentPeriod
+          ? [currentPeriod, ...periods.filter(period => period.id !== currentPeriod.id)]
+          : periods;
+
+        for (const period of orderedPeriods) {
+          try {
+            const periodGrades = await manager.getGradesForPeriod(
+              period,
+              period.createdByAccount
+            );
+            const periodSubjects = [
+              ...(periodGrades.subjects ?? []),
+              ...(periodGrades.modules ?? []),
+            ];
+            const matchingSubject = periodSubjects.find(candidate =>
+              candidate.grades?.some(candidateGrade => candidateGrade.id === id)
+            );
+            const matchingGrade = matchingSubject?.grades?.find(
+              candidateGrade => candidateGrade.id === id
+            );
+
+            if (matchingGrade) {
+              if (!cancelled) {
+                setGrade(matchingGrade);
+                setSubject(matchingSubject);
+                setSubjects(periodSubjects);
+              }
+              return;
+            }
+          } catch (error) {
+            warn(`Unable to fetch grades for period ${period.id}: ${String(error)}`);
+          }
+        }
+      } catch (error) {
+        warn(`Unable to fetch grade ${id}: ${String(error)}`);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchGrade();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const getSubjectById = useCallback(
+    (subjectId: string) => subjects.find(candidate => candidate.id === subjectId),
+    [subjects]
+  );
+  const { getAvgInfluence, getAvgClassInfluence } = useGradeInfluence(
+    subjects,
+    getSubjectById
+  );
+  const avgInfluence = grade ? getAvgInfluence(grade) : 0;
+  const avgClass = grade ? getAvgClassInfluence(grade) : 0;
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (!grade || !subject) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <Typography variant="title">{t("Grades_Empty_Title")}</Typography>
+        <Typography variant="body1" color="textSecondary">
+          {t("Grades_Empty_Description")}
+        </Typography>
+      </View>
+    );
+  }
+
+  const subjectInfo: SubjectInfo = {
+    name: getSubjectName(subject.name),
+    originalName: subject.name,
+    emoji: getSubjectEmoji(subject.name),
+    color: getSubjectColor(subject.name),
+  };
   return (
     <>
       {Platform.OS !== "android" && (

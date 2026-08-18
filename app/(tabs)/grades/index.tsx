@@ -1,6 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from "expo-router/react-navigation";
-import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, RefreshControl, View } from "react-native";
@@ -24,15 +23,12 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import i18n from '@/utils/i18n';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
-import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 
 import Averages from './atoms/Averages';
 import FeaturesMap from './atoms/FeaturesMap';
 import { SubjectItem } from './atoms/Subject';
-import { useGradeInfluence } from './hooks/useGradeInfluence';
 import List from '@/ui/new/List';
 import ActionMenu from '@/ui/components/ActionMenu';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
@@ -49,7 +45,6 @@ const GradesView: React.FC = () => {
   const insets = useSafeAreaInsets();
   const resize = useResizable();
   const bottomTabBarHeight = insets.bottom;
-  const navigation = useNavigation();
 
   // Chargement
   const [periodsLoading, setPeriodsLoading] = useState(true);
@@ -314,34 +309,11 @@ const GradesView: React.FC = () => {
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod, periods]);
 
-  const onPressCompactGrade = (grade: Grade) => {
-    navigation.navigate("(modals)/grade", {
-      grade: grade,
-      subjectInfo: {
-        name: getSubjectName(
-          getSubjectById(grade.subjectId)?.name || ""
-        ),
-        color: getSubjectColor(
-          getSubjectById(grade.subjectId)?.name || ""
-        ),
-        emoji: getSubjectEmoji(
-          getSubjectById(grade.subjectId)?.name || ""
-        ),
-        originalName: getSubjectById(grade.subjectId)?.name || "",
-      },
-      avgInfluence: getAvgInfluence(grade),
-      avgClass: getAvgClassInfluence(grade),
-    });
-  };
-
   const keyboardHeight = useKeyboardHeight();
 
   const footerStyle = useAnimatedStyle(() => ({
     height: keyboardHeight.value - bottomTabBarHeight,
   }));
-
-  // influences
-  const { getAvgInfluence, getAvgClassInfluence } = useGradeInfluence(subjects, getSubjectById);
 
   // header
   const ListHeader = useMemo(
@@ -362,7 +334,6 @@ const GradesView: React.FC = () => {
                   grades={sortedGrades}
                   getSubjectById={getSubjectById}
                   large
-                  onPress={onPressCompactGrade}
                 />
               }
             />
@@ -409,7 +380,6 @@ const GradesView: React.FC = () => {
             <CompactGradeList
               grades={sortedGrades}
               getSubjectById={getSubjectById}
-              onPress={onPressCompactGrade}
             />
           )}
 
@@ -443,10 +413,7 @@ const GradesView: React.FC = () => {
       colors.primary,
       serviceAverage,
       serviceRank,
-      navigation,
       getSubjectById,
-      getAvgInfluence,
-      getAvgClassInfluence,
       features,
       displayScale,
       resize.isLarge,
@@ -592,9 +559,6 @@ const GradesView: React.FC = () => {
           <SubjectItem
             key={subject.id}
             subject={subject}
-            grades={grades}
-            getAvgInfluence={getAvgInfluence}
-            getAvgClassInfluence={getAvgClassInfluence}
             displayScale={displayScale}
           />
         ))}

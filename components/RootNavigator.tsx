@@ -132,17 +132,6 @@ function RootNavigatorContent() {
           }}
         />
         <Stack.Screen
-          name="(modals)/grade"
-          options={{
-            headerShown: Platform.OS !== "ios",
-            headerTitle: t("Modal_Grades_Title"),
-            headerLargeTitle: false,
-            headerTransparent: true,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground,
-          }}
-        />
-        <Stack.Screen
           name="(modals)/news"
           options={{
             headerShown: true,
