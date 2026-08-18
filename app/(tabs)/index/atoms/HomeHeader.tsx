@@ -27,7 +27,7 @@ const HomeHeader = () => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { colors } = theme;
-  const { availableCanteenCards, attendancesPeriods, attendances, absencesCount, chats } = useHomeHeaderData();
+  const { availableCanteenCards, attendancesPeriods, attendances, absencesCount, news } = useHomeHeaderData();
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const currentVersion = packageJson.version;
@@ -104,18 +104,16 @@ const HomeHeader = () => {
       },
     },
     {
-      title: t("Home_Chats_Button_Title"),
-      icon: "textbubble",
+      title: t("Tab_News"),
+      icon: "newspaper",
       color: "#2B7ED6",
-      description: chats.length > 0 ?
-        (chats.length > 1 ? t("Home_Chats_Button_Description_Number", { number: chats.length }) : t("Home_Chats_Button_Description_Singular"))
-        : t("Home_Chats_Button_Description_None"),
+      description: news[0]?.title ?? t("News_Empty_Title"),
       onPress: () => {
-        router.push("/(features)/soon");
+        router.push("/(features)/(news)/news");
       },
-      route: "/(features)/soon"
+      route: "/(features)/(news)/news"
     }
-  ], [availableCanteenCards, absencesCount, chats, currentAttendancePeriod, attendancesPeriods, attendances, t]);
+  ], [availableCanteenCards, absencesCount, news, currentAttendancePeriod, attendancesPeriods, attendances, t]);
 
   return (
     <View style={{ paddingHorizontal: 0, width: "100%", flex: 1, overflow: "visible" }}>

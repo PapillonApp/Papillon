@@ -27,13 +27,13 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
             overflow: "hidden",
           }}
         >
-          {/* <ProgressiveBlurView
+          <ProgressiveBlurView
             blurAmount={10}
             direction="blurredTopClearBottom"
             startOffset={0}
             reducedTransparencyFallbackColor="#00000000"
             style={{ width: "100%", height: "101%" }}
-          /> */}
+          />
         </View>
       )}
 

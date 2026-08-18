@@ -40,12 +40,6 @@ const SettingsTabs = () => {
       icon: "grades",
       enabled: !disabledTabs.includes("grades"),
     },
-    {
-      id: "news",
-      name: t("Tab_News"),
-      icon: "newspaper",
-      enabled: !disabledTabs.includes("news"),
-    },
   ];
 
   const toggleTab = (tabId: string) => {

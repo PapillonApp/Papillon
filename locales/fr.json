@@ -552,5 +552,6 @@
   "Settings_Features_GradeScale": "Échelle des notes",
   "Settings_Features_GradeScale_Description": "Notation par défaut dans l'interface",
   "Global_Experimental": "Expérimental",
-  "Grades_Skills_Title": "Compétences"
+  "Grades_Skills_Title": "Compétences",
+  "Tab_Search": "Recherche"
 }

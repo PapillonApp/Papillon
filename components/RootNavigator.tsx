@@ -151,10 +151,11 @@ function RootNavigatorContent() {
         <Stack.Screen
           name="(features)/(news)/news"
           options={{
-            headerShown: true,
+            headerShown: false,
             headerTitle: t("Tab_News"),
             headerTransparent: runsIOS26,
             headerLargeTitle: false,
+            presentation: "modal",
           }}
         />
 

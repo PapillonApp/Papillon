@@ -77,10 +77,6 @@ function TabLayoutContent() {
         <NativeTabs.Trigger.Label hidden={labelsHidden}>{t("Tab_Grades")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={IS_IOS_WITH_PADDING ? require('@/assets/icons/pie_padding.png') : require('@/assets/icons/pie.png')} renderingMode='template' />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="news" hidden={disabledTabs.includes('news')}>
-        <NativeTabs.Trigger.Label hidden={labelsHidden}>{t("Tab_News")}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon src={IS_IOS_WITH_PADDING ? require('@/assets/icons/newspaper_padding.png') : require('@/assets/icons/newspaper.png')} renderingMode='template' />
-      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }

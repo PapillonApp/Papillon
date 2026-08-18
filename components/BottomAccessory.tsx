@@ -66,102 +66,104 @@ function NextCourseAccessory({ placement }) {
         href={{ pathname: "/(tabs)/calendar/[id]", params: { id: getCourseRouteId(nextCourse) } }}
         asChild
       >
-        <Pressable
-          style={{
-            height: "100%",
-            paddingVertical: 10,
-            paddingHorizontal: 14,
-            alignItems: "center",
-            justifyContent: "flex-start",
-            flexDirection: "row",
-            gap: 10,
-          }}
-        >
-        <View
-          style={{
-            backgroundColor: sbjColor,
-            height: "100%",
-            width: 6,
-            borderRadius: 5,
-          }}
-        />
-        <Typography variant="h4">
-          {getSubjectEmoji(nextCourse.subject)}
-        </Typography>
-        <View
-          style={{
-            flex: 1,
-            gap: 0,
-          }}
-        >
-          <Typography variant="title" numberOfLines={1}>
-            {getSubjectName(nextCourse?.subject)}
+        <Link.AppleZoom>
+          <Pressable
+            style={{
+              height: "100%",
+              paddingVertical: 10,
+              paddingHorizontal: 14,
+              alignItems: "center",
+              justifyContent: "flex-start",
+              flexDirection: "row",
+              gap: 10,
+            }}
+          >
+          <View
+            style={{
+              backgroundColor: sbjColor,
+              height: "100%",
+              width: 6,
+              borderRadius: 5,
+            }}
+          />
+          <Typography variant="h4">
+            {getSubjectEmoji(nextCourse.subject)}
           </Typography>
+          <View
+            style={{
+              flex: 1,
+              gap: 0,
+            }}
+          >
+            <Typography variant="title" numberOfLines={1}>
+              {getSubjectName(nextCourse?.subject)}
+            </Typography>
 
-          {placement === 'inline' ? (
+            {placement === 'inline' ? (
+              <View
+                style={{
+                  marginTop: -2,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 6,
+                  width: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <Icon size={14} fill={sbjColor}>
+                  <Papicons name="Clock" />
+                </Icon>
+                <Typography variant="body2" weight="semibold" color={sbjColor} numberOfLines={1}>
+                  {getNextCourseDistance(true)}
+                </Typography>
+              </View>
+            ) : (
+              <View
+                style={{
+                  marginTop: -2,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 3,
+                  width: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <Icon size={14} opacity={0.5}>
+                  <Papicons name="MapPin" />
+                </Icon>
+                <Typography variant="body2" weight="semibold" color="textSecondary" numberOfLines={1}>
+                  {nextCourse?.room}
+                </Typography>
+                <View style={{ width: 3, height: 3, borderRadius: 8, backgroundColor: theme.colors.text, opacity: 0.5, marginHorizontal: 6 }} />
+                <Icon size={14} opacity={0.5}>
+                  <Papicons name="User" />
+                </Icon>
+                <Typography variant="body2" weight="semibold" color="textSecondary" numberOfLines={1}>
+                  {nextCourse?.teacher}
+                </Typography>
+              </View>
+            )}
+          </View>
+
+          {placement !== 'inline' && (
             <View
               style={{
                 marginTop: -2,
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 6,
-                width: "100%",
-                overflow: "hidden",
               }}
             >
               <Icon size={14} fill={sbjColor}>
                 <Papicons name="Clock" />
               </Icon>
-              <Typography variant="body2" weight="semibold" color={sbjColor} numberOfLines={1}>
-                {getNextCourseDistance(true)}
-              </Typography>
-            </View>
-          ) : (
-            <View
-              style={{
-                marginTop: -2,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 3,
-                width: "100%",
-                overflow: "hidden",
-              }}
-            >
-              <Icon size={14} opacity={0.5}>
-                <Papicons name="MapPin" />
-              </Icon>
-              <Typography variant="body2" weight="semibold" color="textSecondary" numberOfLines={1}>
-                {nextCourse?.room}
-              </Typography>
-              <View style={{ width: 3, height: 3, borderRadius: 8, backgroundColor: theme.colors.text, opacity: 0.5, marginHorizontal: 6 }} />
-              <Icon size={14} opacity={0.5}>
-                <Papicons name="User" />
-              </Icon>
-              <Typography variant="body2" weight="semibold" color="textSecondary" numberOfLines={1}>
-                {nextCourse?.teacher}
+              <Typography variant="body1" weight="semibold" color={sbjColor}>
+                {getNextCourseDistance(false)}
               </Typography>
             </View>
           )}
-        </View>
-
-        {placement !== 'inline' && (
-          <View
-            style={{
-              marginTop: -2,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <Icon size={14} fill={sbjColor}>
-              <Papicons name="Clock" />
-            </Icon>
-            <Typography variant="body1" weight="semibold" color={sbjColor}>
-              {getNextCourseDistance(false)}
-            </Typography>
-          </View>
-        )}
-        </Pressable>
+          </Pressable>
+        </Link.AppleZoom>
       </Link>
 
       <LinearGradient
