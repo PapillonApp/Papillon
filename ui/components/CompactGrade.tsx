@@ -13,6 +13,7 @@ import Typography from "./Typography";
 import { SkillChip } from "@/ui/components/SkillChip";
 import { ListTouchable } from "../new/List";
 import { Link } from "expo-router";
+import { LiquidGlassView } from "@sbaiahmed1/react-native-blur";
 
 interface CompactGradeProps {
   emoji: string;
@@ -55,20 +56,7 @@ export const CompactGrade = ({
   const trailingForeground = hasMaxScore ? "#FFFFFF" : trailingBase;
 
   return (
-    <View
-      style={{
-        width: 210,
-        height: 140,
-        borderRadius: 24,
-        borderCurve: "continuous",
-        borderColor: adjust(color, theme.dark ? 0.7 : -0.7) + "28",
-        borderWidth: Platform.OS !== "android" ? 1 : 0,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      }}
-    >
+    <CompactGradeContainer color={color}>
       <ListTouchable
         onPress={onPress}
         style={{
@@ -286,6 +274,53 @@ export const CompactGrade = ({
           </View>
         </View>
       </ListTouchable>
+    </CompactGradeContainer>
+  );
+};
+
+const CompactGradeContainer = ({
+  children,
+  color
+}: {
+  children: React.ReactNode;
+  color: string;
+}) => {
+  const theme = useTheme();
+
+  if(Platform.OS === "ios") {
+    return (
+      <LiquidGlassView
+        glassType="clear"
+        isInteractive={true}
+        glassOpacity={1}
+        style={{
+          width: 210,
+          height: 140,
+          borderRadius: 24,
+          overflow: "visible"
+        }}
+      >
+        {children}
+      </LiquidGlassView>
+    )
+  }
+
+  return (
+    <View
+      style={{
+        width: 210,
+        height: 140,
+        borderRadius: 24,
+        borderCurve: "continuous",
+        borderColor: adjust(color, theme.dark ? 0.7 : -0.7) + "28",
+        borderWidth: Platform.OS !== "android" ? 1 : 0,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+      }}
+    >
+      {children}
     </View>
   );
 };

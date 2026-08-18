@@ -35,12 +35,15 @@ export function CompactGradeList({
       data={grades.slice(0, 10)}
       style={{
         overflow: "visible",
-        height: 140,
+        height: 160,
+        marginVertical: -10,
       }}
       contentContainerStyle={{
         gap: 12,
         paddingStart: 16 + (large ? 20 : 0),
         paddingEnd: 4 + (large ? 20 : 0),
+        overflow: "visible",
+        paddingVertical: 10
       }}
       estimatedItemSize={210 + 12}
       showsHorizontalScrollIndicator={false}

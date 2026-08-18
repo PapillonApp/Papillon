@@ -15,7 +15,6 @@ interface TasksHeaderProps {
   defaultWeek: number;
   selectedWeek: number;
   onToggleWeekPicker: () => void;
-  setHeaderHeight: (height: number) => void;
   setShowUndoneOnly: React.Dispatch<React.SetStateAction<boolean>>;
   setSortMethod: React.Dispatch<React.SetStateAction<SortMethod>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
@@ -27,7 +26,6 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
   defaultWeek,
   selectedWeek,
   onToggleWeekPicker,
-  setHeaderHeight,
   setShowUndoneOnly,
   setSortMethod,
   setSearchTerm,
@@ -51,7 +49,6 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
 
   return (
     <TabHeader
-      onHeightChanged={setHeaderHeight}
       title={
         <TabHeaderTitle
           leading={t('Tasks_Week')}
