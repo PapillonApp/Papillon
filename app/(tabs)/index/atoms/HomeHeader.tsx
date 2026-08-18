@@ -57,7 +57,7 @@ const HomeHeader = () => {
       title: t("Home_Cards_Button_Title"),
       image: require("@/assets/shaded_icons/cards.png"),
       icon: "card",
-      color: "#EE9F00",
+      color: "#FFA1F2",
       description: availableCanteenCards.length > 0 ?
         (availableCanteenCards.length > 1 ? t("Home_Cards_Button_Description_Number", { number: availableCanteenCards.length }) :
           t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None"),
@@ -70,7 +70,7 @@ const HomeHeader = () => {
       title: t("Home_Menu_Button_Title"),
       image: require("@/assets/shaded_icons/menu.png"),
       icon: "cutlery",
-      color: "#7ED62B",
+      color: "#C2FFA1",
       description: t("Home_Menu_Button_Description"),
       onPress: () => {
         router.push("/(features)/soon");
@@ -81,7 +81,7 @@ const HomeHeader = () => {
       title: t("Home_Attendance_Title"),
       image: require("@/assets/shaded_icons/homework.png"),
       icon: "chair",
-      color: "#D62B94",
+      color: "#FFE1A1",
       description: absencesCount > 0 ?
         (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular"))
         : t("Home_Attendance_Button_Description_None"),
@@ -110,7 +110,7 @@ const HomeHeader = () => {
       title: t("Tab_News"),
       image: require("@/assets/shaded_icons/actu.png"),
       icon: "newspaper",
-      color: "#2B7ED6",
+      color: "#A1D0FF",
       description: news[0]?.title ?? t("News_Empty_Title"),
       onPress: () => {
         router.push("/(features)/(news)/news");
