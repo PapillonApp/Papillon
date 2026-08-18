@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+echo "===== Installing CocoaPods ====="
+export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+brew install cocoapods
+echo "===== Installing Node.js ====="
+brew install node@22
+brew link --overwrite --force node@22
+
+# Install dependencies
+echo "===== Running npm install ====="
+cd ../..
+npm install --legacy-peer-deps
+echo "===== Logging package.json ====="
+cat package.json
+echo "===== Adding secrets ====="
+printf "{\"APP_KEY\":\"%s\",\"SALT\":\"%s\",\"SERVER_URL\":\"%s\"}" "$APP_KEY" "$SALT" "$SERVER_URL" >> secrets.json
+cat secrets.json
+echo "===== Running expo prebuild ====="
+npx expo prebuild --no-install
+echo "===== Running git restore ====="
+git restore .
+echo "===== Running pod install ====="
+cd ios
+pod install

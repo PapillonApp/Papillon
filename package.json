@@ -6,6 +6,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "ios:native:restore": "node scripts/ios-native-files.js restore",
+    "ios:native:snapshot": "node scripts/ios-native-files.js snapshot",
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "eslint --fix",

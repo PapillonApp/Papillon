@@ -1,7 +1,7 @@
-import PackageJSON from "./package.json" with { type: 'json' };
+import PackageJSON from "./package.json" with { type: "json" };
 
 // versionCode: seconds since 2020-01-01 UTC — unique, strictly increasing, well under the 2.1e9 cap
-const androidVersionCode = Math.floor(Date.now() / 1000) - 1577836800
+const androidVersionCode = Math.floor(Date.now() / 1000) - 1577836800;
 
 export default {
   expo: {
@@ -89,7 +89,7 @@ export default {
       },
       edgeToEdgeEnabled: true,
       supportsTablet: true,
-      predictiveBackGestureEnabled: true
+      predictiveBackGestureEnabled: true,
     },
     web: {
       bundler: "metro",
@@ -109,10 +109,10 @@ export default {
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#29947A",
-          "image": "./assets/images/logotype.png",
-          "imageWidth": 240
-        }
+          backgroundColor: "#29947A",
+          image: "./assets/images/logotype.png",
+          imageWidth: 240,
+        },
       ],
       [
         "expo-image-picker",
@@ -160,10 +160,11 @@ export default {
               { name: "SDWebImage", modular_headers: true },
               { name: "SDWebImageSVGCoder", modular_headers: true },
             ],
-            buildReactNativeFromSource: false
+            buildReactNativeFromSource: false,
           },
         },
       ],
+      "./plugins/with-ios-native-files",
     ],
     experiments: {
       typedRoutes: true,
