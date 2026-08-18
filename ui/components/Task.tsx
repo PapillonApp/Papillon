@@ -31,7 +31,7 @@ interface TaskProps {
   hasAttachments: boolean;
   magic?: string;
   onToggle: () => void;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 const Task: React.FC<TaskProps> = ({

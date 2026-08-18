@@ -9,13 +9,14 @@ import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from "expo-router/react-navigation";
 import { differenceInCalendarDays, formatDistanceToNowStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
-import { useNavigation } from 'expo-router';
+import { Link } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import React from 'react';
 import { ActivityIndicator, Platform, Pressable } from 'react-native';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
+import { getCourseRouteId } from '@/database/useTimetable';
 
 
 function NextCourseAccessory({ placement }) {
@@ -30,7 +31,6 @@ function NextCourseAccessory({ placement }) {
   // if (placement === 'inline') {}
 
   const sbjColor = nextCourse ? getSubjectColor(nextCourse.subject) : theme.colors.primary;
-  const navigation = useNavigation<any>();
   const nextCourseDay = nextCourse ? startOfDay(nextCourse.from) : null;
   const daysUntilNextCourse = nextCourseDay
     ? differenceInCalendarDays(nextCourseDay, startOfDay(new Date()))
@@ -62,28 +62,21 @@ function NextCourseAccessory({ placement }) {
 
   return (
     <>
-      <Pressable
-        onPress={() => {
-          navigation.navigate("(modals)/course", {
-            course: nextCourse,
-            subjectInfo: {
-              id: nextCourse.subject,
-              name: getSubjectName(nextCourse.subject),
-              color: getSubjectColor(nextCourse.subject) || theme.colors.primary,
-              emoji: getSubjectEmoji(nextCourse.subject),
-            },
-          });
-        }}
-        style={{
-          height: "100%",
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          alignItems: "center",
-          justifyContent: "start",
-          flexDirection: "row",
-          gap: 10,
-        }}
+      <Link
+        href={{ pathname: "/(tabs)/calendar/[id]", params: { id: getCourseRouteId(nextCourse) } }}
+        asChild
       >
+        <Pressable
+          style={{
+            height: "100%",
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            alignItems: "center",
+            justifyContent: "flex-start",
+            flexDirection: "row",
+            gap: 10,
+          }}
+        >
         <View
           style={{
             backgroundColor: sbjColor,
@@ -168,7 +161,8 @@ function NextCourseAccessory({ placement }) {
             </Typography>
           </View>
         )}
-      </Pressable>
+        </Pressable>
+      </Link>
 
       <LinearGradient
         colors={[sbjColor, sbjColor + '00']}

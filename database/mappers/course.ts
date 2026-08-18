@@ -5,7 +5,7 @@ import Course from "../models/Timetable";
 export function mapCourseToShared(course: Course): SharedCourse {
   return {
     subject: course.subject,
-    id: course.id,
+    id: course.courseId,
     fromCache: true,
     createdByAccount: course.createdByAccount,
     type: course.type,

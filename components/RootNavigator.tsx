@@ -121,44 +121,6 @@ function RootNavigatorContent() {
           }}
         />
         <Stack.Screen
-          name="(modals)/task"
-          options={{
-            headerShown: Platform.OS !== "ios",
-            headerTitle: t("Modal_Task_Title"),
-            headerTransparent: true,
-            headerLargeTitle: false,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground,
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/news"
-          options={{
-            headerShown: true,
-            headerTitle: "",
-            headerLargeTitle: false,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground,
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/course"
-          options={{
-            headerShown: Platform.OS !== "ios",
-            headerTitle: t("Modal_Course_Title"),
-            headerLargeTitle: false,
-            headerTransparent: true,
-            presentation: Platform.OS !== "ios" ? "modal" : "formSheet",
-            sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.5, 1],
-            headerBackground: AndroidHeaderBackground,
-            contentStyle: {
-              borderRadius: Platform.OS === "ios" ? 30 : 0,
-              overflow: Platform.OS === "ios" ? "hidden" : "visible",
-            },
-          }}
-        />
-        <Stack.Screen
           name="(modals)/notifications"
           options={{
             headerShown: false,

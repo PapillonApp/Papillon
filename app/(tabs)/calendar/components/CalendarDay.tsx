@@ -1,4 +1,4 @@
-import { useNavigation } from "expo-router";
+import { Link } from "expo-router";
 import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
 import { Dimensions,FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
@@ -7,10 +7,10 @@ import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetabl
 import { TransportStorage } from "@/stores/account/types";
 import Course from "@/ui/components/Course";
 import { Colors, getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from '@/utils/subjects/name';
 
 import { EmptyCalendar } from './EmptyCalendar';
+import { getCourseRouteId } from '@/database/useTimetable';
 
 interface CalendarDayProps {
   dayDate: Date;
@@ -47,8 +47,6 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
 }
 
 export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, headerHeight, insets, tabBarHeight, transportInfo }: CalendarDayProps) => {
-  const navigation = useNavigation<any>();
-
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
 
@@ -147,50 +145,33 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
                 start={Math.floor(item.from.getTime() / 1000)}
                 end={Math.floor(item.to.getTime() / 1000)}
                 showTimes={false}
-                onPress={() => {
-                  navigation.navigate("(modals)/course", {
-                    course: item,
-                    subjectInfo: {
-                      id: item.subject,
-                      name: getSubjectName(item.subject),
-                      color: getSubjectColor(item.subject) || Colors[0],
-                      emoji: getSubjectEmoji(item.subject),
-                    },
-                  });
-                }}
               />
             );
           }
 
           return (
-            <Course
-              id={item.id}
-              name={getSubjectName(item.subject)}
-              teacher={item.teacher}
-              room={item.room}
-              color={getSubjectColor(item.subject) || Colors[0]}
-              status={{
-                label: item.customStatus
-                  ? item.customStatus
-                  : getStatusText(item.status),
-                canceled: item.status === CourseStatus.CANCELED,
-              }}
-              variant="primary"
-              start={Math.floor(item.from.getTime() / 1000)}
-              end={Math.floor(item.to.getTime() / 1000)}
-              readonly={!!item.createdByAccount}
-              onPress={() => {
-                navigation.navigate("(modals)/course", {
-                  course: item,
-                  subjectInfo: {
-                    id: item.subject,
-                    name: getSubjectName(item.subject),
-                    color: getSubjectColor(item.subject) || Colors[0],
-                    emoji: getSubjectEmoji(item.subject),
-                  },
-                });
-              }}
-            />
+            <Link
+              href={{ pathname: "/(tabs)/calendar/[id]", params: { id: getCourseRouteId(item) } }}
+              asChild
+            >
+              <Course
+                id={item.id}
+                name={getSubjectName(item.subject)}
+                teacher={item.teacher}
+                room={item.room}
+                color={getSubjectColor(item.subject) || Colors[0]}
+                status={{
+                  label: item.customStatus
+                    ? item.customStatus
+                    : getStatusText(item.status),
+                  canceled: item.status === CourseStatus.CANCELED,
+                }}
+                variant="primary"
+                start={Math.floor(item.from.getTime() / 1000)}
+                end={Math.floor(item.to.getTime() / 1000)}
+                readonly={!!item.createdByAccount}
+              />
+            </Link>
           );
         }}
       />

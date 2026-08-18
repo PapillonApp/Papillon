@@ -357,6 +357,7 @@ const Averages = ({
                   {
                     paddingHorizontal: 20,
                     width: resizable.isLarge ? 200 : "100%",
+                    marginTop: -12
                   },
                   inline && {
                     position: "absolute",

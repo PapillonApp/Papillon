@@ -16,7 +16,6 @@ import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 import { Papicons } from '@getpapillon/papicons'
 import { useTheme } from "expo-router/react-navigation"
-import { router, useRouter } from 'expo-router'
 import { t } from 'i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Platform, View } from 'react-native'
@@ -145,12 +144,7 @@ const NewsView = () => {
               <List.Item
                 key={item.id}
                 id={item.id}
-                onPress={() =>
-                  router.push({
-                    pathname: '/(modals)/news',
-                    params: { news: JSON.stringify(item) },
-                  })
-                }
+                href={{ pathname: "/(tabs)/news/[id]", params: { id: item.id } }}
               >
                 <List.Leading>
                   <Avatar

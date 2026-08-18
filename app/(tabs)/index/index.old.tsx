@@ -46,6 +46,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 
 import { getStatusText } from "../calendar";
 import GradesWidget from "./widgets/Grades";
+import { getCourseRouteId } from "@/database/useTimetable";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -492,31 +493,25 @@ const IndexScreen = () => {
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
                 {courses.filter(item => item.to.getTime() > Date.now()).slice(0, 2).map(item => (
-                  <Course
+                  <Link
                     key={item.id}
-                    id={item.id}
-                    name={getSubjectName(item.subject)}
-                    teacher={item.teacher}
-                    room={item.room}
-                    color={getSubjectColor(item.subject)}
-                    status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
-                    variant="primary"
-                    start={Math.floor(item.from.getTime() / 1000)}
-                    end={Math.floor(item.to.getTime() / 1000)}
-                    readonly={!!item.createdByAccount}
-                    compact={true}
-                    onPress={() => {
-                      (navigation as any).navigate('(modals)/course', {
-                        course: item,
-                        subjectInfo: {
-                          id: item.id,
-                          name: item.subject,
-                          color: getSubjectColor(item.subject),
-                          emoji: getSubjectEmoji(item.subject),
-                        }
-                      });
-                    }}
-                  />
+                    href={{ pathname: "/(tabs)/calendar/[id]", params: { id: getCourseRouteId(item) } }}
+                    asChild
+                  >
+                    <Course
+                      id={item.id}
+                      name={getSubjectName(item.subject)}
+                      teacher={item.teacher}
+                      room={item.room}
+                      color={getSubjectColor(item.subject)}
+                      status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
+                      variant="primary"
+                      start={Math.floor(item.from.getTime() / 1000)}
+                      end={Math.floor(item.to.getTime() / 1000)}
+                      readonly={!!item.createdByAccount}
+                      compact={true}
+                    />
+                  </Link>
                 ))}
               </Stack>
             )

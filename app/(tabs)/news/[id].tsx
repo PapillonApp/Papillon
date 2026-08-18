@@ -1,10 +1,11 @@
 import { getManager } from "@/services/shared";
 import { News } from "@/services/shared/news";
+import { getNewsById } from "@/database/useNews";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
 import TypographyLegacy from "@/ui/components/Typography";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useState } from "react";
 import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Attachment, News as SkolengoNews } from "skolengojs"
@@ -31,16 +32,35 @@ import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { useFont } from "@/utils/theme/fonts";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 
 const NewsModal = () => {
-  const search = useLocalSearchParams();
-  const news = JSON.parse(String(search.news)) as News
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [news, setNews] = useState<News>();
+  const [loading, setLoading] = useState(true);
   const insets = useSafeAreaInsets();
-
-  const navigation = useNavigation()
   const router = useRouter()
+  const { colors } = useTheme();
+  const font = useFont();
+  const [HTMLCleanupEnabled, setHTMLCleanupEnabled] = useState(true)
 
   useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getNewsById(id)
+      .then(result => {
+        if (!cancelled) setNews(result);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (!news) return;
     const acknowledgeNews = async () => {
       if (!news.acknowledged) {
         const manager = getManager();
@@ -55,16 +75,12 @@ const NewsModal = () => {
           news.ref = ref
         }
 
-        await manager.setNewsAsDone(news);
+        await manager?.setNewsAsDone(news);
       }
     };
 
     acknowledgeNews();
-  }, [])
-
-
-  const { colors } = useTheme();
-  const font = useFont();
+  }, [news])
 
   const stylesheet = StyleSheet.create({
     ...VARIANTS,
@@ -90,7 +106,14 @@ const NewsModal = () => {
     },
   });
 
-  const [HTMLCleanupEnabled, setHTMLCleanupEnabled] = useState(true)
+  if (loading) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><ActivityIndicator /></View>;
+  }
+
+  if (!news) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Typography variant="title">{t("News_Empty_Title")}</Typography></View>;
+  }
+
   const cleanedContent = HTMLCleanupEnabled ? cleanHtmlForArticle(news.content) : news.content
 
   return (
