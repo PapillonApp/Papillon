@@ -2,7 +2,7 @@ import { useTheme } from "expo-router/react-navigation";
 import { Href, Link } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, TouchableHighlight, View } from "react-native";
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
 import { Animation } from "../utils/Animation";
@@ -664,16 +664,13 @@ export const ListTouchable = React.memo(({ ...props }) => {
 
   return (
     <ListTouchableContext.Provider value={blockOwnPress}>
-      <TouchableOpacity
+      <TouchableHighlight
+        underlayColor={theme.colors.border}
         activeOpacity={0.5}
         {...props}
-        onPress={(event) => {
-          parentBlockPress?.();
-          handlePress(event);
-        }}
       >
         {props.children}
-      </TouchableOpacity>
+      </TouchableHighlight>
     </ListTouchableContext.Provider>
   );
 });

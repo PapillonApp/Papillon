@@ -262,7 +262,7 @@ export function generateMockGrades(
         maximum: { value: 19, outOf: 20 },
         minimum: { value: 7.5, outOf: 20 },
         outOf: { value: 20 },
-        grades: [0, 1, 2].map(gradeIndex => ({
+        grades: (subjectIndex % 2 === 0 ? [0, 1] : [0, 1, 2]).map(gradeIndex => ({
           id: `mock-grade-${periodIndex}-${subjectIndex}-${gradeIndex}`,
           subjectId,
           subjectName: name,

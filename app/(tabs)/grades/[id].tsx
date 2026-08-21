@@ -200,29 +200,27 @@ export default function GradesModal() {
     <>
       {Platform.OS !== "android" && (
         <LinearGradient
-          colors={[subjectInfo.color, colors.background]}
+          colors={[adjust(subjectInfo.color, theme.dark ? -0.6 : 0.6), theme.colors.background]}
+          locations={[0, 0.5]}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
-            height: 300,
-            width: "100%",
+            bottom: 0,
             zIndex: -9,
-            opacity: 0.4,
           }}
         />
       )}
 
       <List
+        contentInsetAdjustmentBehavior="automatic"
         ListHeaderComponent={
           <View
             style={{
               alignItems: "center",
               justifyContent: "center",
               gap: 16,
-              marginVertical: 20,
-              paddingTop: headerHeight - 16,
             }}
           >
             <ModalOverhead
@@ -347,10 +345,8 @@ export default function GradesModal() {
             )}
           </View>
         }
-        style={{ backgroundColor: "transparent" }}
         contentContainerStyle={{
-          padding: 16,
-          paddingBottom: 16 + insets.bottom,
+          padding: 16
         }}
       >
         {grade.skills && grade.skills.length > 0 && (

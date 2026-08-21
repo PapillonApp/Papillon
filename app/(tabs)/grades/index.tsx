@@ -1,11 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Stack, useRouter } from 'expo-router';
+import { Link, Stack, useRouter, useTheme } from 'expo-router';
 import { t } from 'i18next';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { Button, Host, List, Text, Section, HStack, VStack, Spacer, RNHostView } from '@expo/ui/swift-ui';
-import { buttonStyle, lineLimit, font, foregroundStyle, refreshable, padding, listRowInsets, shadow } from '@expo/ui/swift-ui/modifiers';
 import { useFont } from '@/utils/theme/fonts';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import i18n from '@/utils/i18n';
 import { useSettingsStore } from '@/stores/settings';
 import { getGradeDisplayScale, formatScoreForDisplay } from '@/utils/grades/scale';
@@ -18,6 +17,10 @@ import { usePeriodsData } from './hooks/usePeriodsData';
 import { useGradesData } from './hooks/useGradesData';
 import Typography from '@/ui/new/Typography';
 import Averages from './atoms/Averages';
+import { FlashList } from '@shopify/flash-list';
+import { ListTouchable } from '@/ui/new/List';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useResizable from '@/ui/utils/Resizable';
 
 type SortMethod = 'date' | 'alphabetical' | 'averages';
 
@@ -59,10 +62,15 @@ const sortSubjects = (subjects: Subject[], method: SortMethod): Subject[] => {
 const GradesView = () => {
   const papillonFont = useFont();
   const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
+  const insets = useSafeAreaInsets();
+  const theme = useTheme();
+  const resize = useResizable();
   const router = useRouter();
 
-  const { periods, currentPeriod, setCurrentPeriod, refresh: refreshPeriods } = usePeriodsData();
-  const { subjects, history, averages, refresh: refreshGrades } = useGradesData(currentPeriod);
+  const { periods, currentPeriod, setCurrentPeriod, refresh: refreshPeriods, loading: loadingPeriods } = usePeriodsData();
+  const { subjects, history, averages, refresh: refreshGrades, loading: loadingGrades } = useGradesData(currentPeriod);
+
+  const loading = loadingPeriods || loadingGrades;
 
   const [sortMethod, setSortMethod] = useState<SortMethod>('date');
   const [searchText, setSearchText] = useState('');
@@ -89,10 +97,7 @@ const GradesView = () => {
 
   return (
     <>
-      <Stack.SearchBar
-        placeholder={t('Grades_Search_Placeholder')}
-        onChangeText={event => setSearchText(event.nativeEvent.text)}
-      />
+      <Stack.SearchBar onChangeText={()=>{}} />
 
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Menu>
@@ -141,127 +146,88 @@ const GradesView = () => {
         </Stack.Toolbar.Menu>
       </Stack.Toolbar>
 
-      <Host style={{ flex: 1 }}>
-        <List modifiers={[refreshable(handleRefresh)]}>
-          {(Object.values(history).some(points => (points?.length ?? 0) > 0) || averages.student) && (
-            <Section modifiers={[ listRowInsets({ leading: 0, trailing: 0 }) ]}>
-              <RNHostView matchContents>
-                <Averages
-                  history={history}
-                  realAverage={averages.student?.value}
-                  displayScale={displayScale}
-                />
-              </RNHostView>
-            </Section>
-          )}
+      <FlashList
+        style={{ flex: 1, backgroundColor: theme.colors.overground }}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ paddingLeft: insets.left, paddingRight: insets.right }}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={handleRefresh} />}
+        data={filteredSubjects}
+        numColumns={resize.isLarge ? 2 : 1}
+        masonry={resize.isLarge}
+        renderItem={({ item: subject }) => (
+          <View style={{ padding: 16, gap:8 }}>
+            <View style={{ paddingHorizontal: 16, gap: 10, flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Typography variant="h6" inset>{getSubjectEmoji(subject.name)}</Typography>
+              <Typography style={{ flex: 1 }} numberOfLines={1} variant="action" color="textSecondary">{getSubjectName(subject.name)}</Typography>
+              </View>
 
-          {filteredSubjects.length === 0 ? (
-            <Section>
-              <VStack alignment="leading" spacing={4}>
-                <Text modifiers={[font({ family: papillonFont('semibold'), size: 17 })]}>
-                  {t('Grades_Empty_Title')}
-                </Text>
-                <Text modifiers={[font({ family: papillonFont('medium'), size: 15 }), foregroundStyle('secondary')]}>
-                  {t('Grades_Empty_Description')}
-                </Text>
-              </VStack>
-            </Section>
-          ) : (
-            filteredSubjects.map(subject => {
-              const average = subject.studentAverage;
-              const formattedAverage = average && !average.disabled && typeof average.value === 'number'
-                ? formatScoreForDisplay(average.value, average.outOf ?? subject.outOf?.value ?? 20, displayScale)
-                : undefined;
+              <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
+                <Typography variant="h5" weight='semibold' color="textSecondary">
+                  {subject.studentAverage?.value.toFixed(2) ?? 'N/A'}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  /{subject.studentAverage?.outOf ?? 'N/A'}
+                </Typography>
+              </View>
+            </View>
+            
+            <View style={{ backgroundColor: theme.colors.card, borderRadius: 24, overflow: 'hidden' }}>
+              {(subject.grades ?? []).map((grade: Grade, index: number) => {
+                const score = grade.studentScore;
+                const isUsable = score && !score.disabled && typeof score.value === 'number';
+                const formattedScore = isUsable
+                  ? formatScoreForDisplay(score!.value, grade.outOf?.value ?? 20, displayScale)
+                  : undefined;
 
-              return (
-                <Section
-                  key={subject.id}
-                  header={
-                    <HStack>
-                      <Text modifiers={[font({ size: 17 })]}>{getSubjectEmoji(subject.name)}</Text>
-                      <Text modifiers={[font({ family: papillonFont('semibold'), size: 17 }), lineLimit(1), foregroundStyle('primary')]}>
-                        {getSubjectName(subject.name)}
-                      </Text>
-                      <Spacer />
-                      {formattedAverage && (
-                        <HStack spacing={1} alignment="firstTextBaseline">
-                          <Text modifiers={[font({ family: papillonFont('semibold'), size: 18 })]}>
-                            {formattedAverage.value.toFixed(2)}
-                          </Text>
-                          <Text
-                            modifiers={[
-                              font({ family: papillonFont('semibold'), size: 14 }),
-                              foregroundStyle('secondary'),
-                            ]}
-                          >
-                            {formattedAverage.denominator}
-                          </Text>
-                        </HStack>
-                      )}
-                    </HStack>
-                  }
-                >
-                  {(subject.grades ?? []).map((grade: Grade) => {
-                    const score = grade.studentScore;
-                    const isUsable = score && !score.disabled && typeof score.value === 'number';
-                    const formattedScore = isUsable
-                      ? formatScoreForDisplay(score!.value, grade.outOf?.value ?? 20, displayScale)
-                      : undefined;
+                return (
+                  <View key={grade.id} style={{ backgroundColor: theme.colors.item }}>
+                    <Link href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }} asChild>
+                      <Link.Preview />
+                      <Link.Menu>
+                        <Link.MenuAction icon="arrow.up.right.square" title="Ouvrir la note" onPress={() => {
+                          router.push({ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } });
+                        }} />
+                      </Link.Menu>
+                      <Link.Trigger withAppleZoom>
+                        <ListTouchable onPress={() => {}}>
+                          <View style={{ paddingHorizontal: 16, backgroundColor: theme.colors.item, paddingVertical: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <View style={{ flex: 1, flexDirection: 'column', gap: 1 }}>
+                              <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description ?? 'No description'}</Typography>
+                              {grade.givenAt && (
+                                <Typography  numberOfLines={1} variant="subtitle" color="textSecondary">
+                                  {grade.givenAt.toLocaleDateString(i18n.language, {
+                                                                    day: 'numeric',
+                                                                    month: 'long',
+                                                                    year: 'numeric',
+                                                                  })}
+                                </Typography>
+                              )}
+                            </View>
 
-                    return (
-                      <Button
-                        key={grade.id}
-                        onPress={() => router.push({ pathname: '/(tabs)/grades/[id]', params: { id: grade.id } })}
-                        modifiers={[buttonStyle('automatic')]}
-                      >
-                        <HStack>
-                          <VStack alignment="leading" spacing={4}>
-                            <Text modifiers={[font({ family: papillonFont('semibold'), size: 17 }), foregroundStyle('primary')]}>
-                              {grade.description || getSubjectName(subject.name)}
-                            </Text>
-                            {grade.givenAt && (
-                              <Text
-                                modifiers={[
-                                  font({ family: papillonFont('medium'), size: 15 }),
-                                  foregroundStyle('secondary'),
-                                ]}
-                              >
-                                {grade.givenAt.toLocaleDateString(i18n.language, {
-                                  day: 'numeric',
-                                  month: 'long',
-                                  year: 'numeric',
-                                })}
-                              </Text>
-                            )}
-                          </VStack>
-
-                          <Spacer />
-
-                          <HStack spacing={1} alignment="firstTextBaseline">
-                            <Text modifiers={[font({ family: papillonFont('semibold'), size: 20 }), foregroundStyle('primary')]}>
-                              {formattedScore ? formattedScore.value.toFixed(2) : (score?.status ?? '—')}
-                            </Text>
-                            {formattedScore && (
-                              <Text
-                                modifiers={[
-                                  font({ family: papillonFont('semibold'), size: 14 }),
-                                  foregroundStyle('secondary'),
-                                ]}
-                              >
+                            <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
+                              <Typography weight='semibold' variant="h4">
+                                {formattedScore ? formattedScore.value.toFixed(2) : (score?.status ?? 'N/A')}
+                              </Typography>
+                              {formattedScore && formattedScore.denominator && (
+                              <Typography variant="subtitle" color="textSecondary">
                                 {formattedScore.denominator}
-                              </Text>
-                            )}
-                          </HStack>
-                        </HStack>
-                      </Button>
-                    );
-                  })}
-                </Section>
-              );
-            })
-          )}
-        </List>
-      </Host>
+                              </Typography>
+                              )}
+                            </View>
+                          </View>
+                        </ListTouchable>
+                      </Link.Trigger>
+                    </Link>
+
+                    <View style={{ backgroundColor: theme.colors.border, height: 1, marginLeft: 16, marginRight: 16, opacity: index < (subject.grades?.length || 0) - 1 ? 1 : 0 }} />
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
+      />
     </>
   );
 };

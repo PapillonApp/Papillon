@@ -24,10 +24,11 @@ export default function Layout() {
           headerTransparent: true,
           presentation: resize.isLarge ? 'formSheet' : 'card',
           sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.5, 1],
+          sheetAllowedDetents: [1],
           headerBackground: AndroidHeaderBackground,
         }}
       />
     </Stack>
+    
   );
 }

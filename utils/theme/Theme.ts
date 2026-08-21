@@ -81,7 +81,7 @@ export function createDarkTheme(useMaterialYou: boolean, primaryColor: string) {
       primary: useMaterialYou ? colors.dark.primary : (primaryColor || colors.dark.primary),
       tint: useMaterialYou ? colors.dark.tint : (primaryColor || colors.dark.tint),
       background: colors.dark.background,
-      overground: "#1E1E1E",
+      overground: "#000000",
       text: colors.dark.text,
       card: colors.dark.card,
       item: colors.dark.item,
