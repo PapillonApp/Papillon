@@ -150,7 +150,7 @@ const GradesView = () => {
         style={{ flex: 1, backgroundColor: theme.colors.overground }}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ paddingLeft: insets.left, paddingRight: insets.right }}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={handleRefresh} />}
+        refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
         data={filteredSubjects}
         numColumns={resize.isLarge ? 2 : 1}
         masonry={resize.isLarge}
