@@ -1,0 +1,578 @@
+import { Papicons } from '@getpapillon/papicons';
+import { useTheme } from "expo-router/react-navigation";
+import { t } from 'i18next';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Platform, RefreshControl, View } from "react-native";
+import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { getManager, subscribeManagerUpdate } from '@/services/shared';
+import { Grade, GradeScore, Period, Subject } from "@/services/shared/grade";
+import { useSettingsStore } from "@/stores/settings";
+import ChipButton from '@/ui/components/ChipButton';
+import { Dynamic } from '@/ui/components/Dynamic';
+import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
+import Icon from '@/ui/components/Icon';
+import Search from '@/ui/components/Search';
+import Stack from '@/ui/components/Stack';
+import TabHeader from '@/ui/components/TabHeader';
+import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
+import LegacyTypography from '@/ui/components/Typography';
+import { useKeyboardHeight } from '@/ui/hooks/useKeyboardHeight';
+import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import i18n from '@/utils/i18n';
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
+import { getSubjectName } from "@/utils/subjects/name";
+import { getGradeDisplayScale } from "@/utils/grades/scale";
+
+import Averages from './atoms/Averages';
+import FeaturesMap from './atoms/FeaturesMap';
+import { SubjectItem } from './atoms/Subject';
+import List from '@/ui/new/List';
+import ActionMenu from '@/ui/components/ActionMenu';
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import { trackAdvancedEvent } from '@/utils/logger/analytics';
+import useResizable from "@/ui/utils/Resizable";
+import { CompactGradeList } from "@/components/CompactGradeList";
+
+const GradesView: React.FC = () => {
+  // Layout du header
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  // Thème
+  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const resize = useResizable();
+  const bottomTabBarHeight = insets.bottom;
+
+  // Chargement
+  const [periodsLoading, setPeriodsLoading] = useState(true);
+  const [gradesLoading, setGradesLoading] = useState(true);
+  const loading = periodsLoading || gradesLoading;
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Sortings
+  const settings = useSettingsStore(state => state.personalization);
+  const mutateSettings = useSettingsStore(state => state.mutateProperty);
+  const displayScale = getGradeDisplayScale(settings.gradesDisplayScale);
+
+  const [sortMethod, setSortMethod] = useState<string>(settings.gradesSortMethod || "date");
+
+  useEffect(() => {
+    if (settings.gradesSortMethod) {
+      setSortMethod(settings.gradesSortMethod);
+    }
+  }, [settings.gradesSortMethod]);
+
+  const updateSortMethod = (method: string) => {
+    setSortMethod(method);
+    mutateSettings('personalization', { gradesSortMethod: method });
+  };
+  const sortings = [
+    {
+      label: t("Grades_Sorting_Alphabetical"),
+      value: "alphabetical",
+      papicon: "letter",
+      icon: {
+        ios: "character",
+        android: "ic_alphabetical",
+        papicon: "font",
+      }
+    },
+    {
+      label: t("Grades_Sorting_Date"),
+      value: "date",
+      papicon: "calendar",
+      icon: {
+        ios: "calendar",
+        android: "ic_date",
+        papicon: "calendar",
+      }
+    },
+    {
+      label: t("Grades_Sorting_Averages"),
+      value: "averages",
+      papicon: "grades",
+      icon: {
+        ios: "chart.xyaxis.line",
+        android: "ic_averages",
+        papicon: "grades",
+      }
+    },
+  ];
+
+  // Manager
+  const manager = getManager();
+
+  // Obtention des périodes
+  const [periods, setPeriods] = useState<Period[]>([]);
+  const [currentPeriod, setCurrentPeriod] = useState<Period>();
+  const hasAppliedSavedPeriod = useRef(false);
+
+  const fetchPeriods = async (managerToUse = manager) => {
+    if (currentPeriod || !managerToUse) { return; }
+    setPeriodsLoading(true);
+
+    const result = await managerToUse.getGradesPeriods();
+    let currentPeriodFound = getCurrentPeriod(result);
+
+    if (settings.gradesPeriodName) {
+      const savedPeriod = result.find(p => p.name === settings.gradesPeriodName);
+      if (savedPeriod) {
+        currentPeriodFound = savedPeriod;
+      }
+    }
+
+    // sort by time, then put Semestre and Trimestre on top
+    const sortedResult = [...result].sort((a, b) => {
+      const isAKey = a.name.startsWith("Semestre") || a.name.startsWith("Trimestre");
+      const isBKey = b.name.startsWith("Semestre") || b.name.startsWith("Trimestre");
+
+      if (isAKey && !isBKey) { return -1; }
+      if (!isAKey && isBKey) { return 1; }
+
+      return a.start.getTime() - b.start.getTime();
+    });
+
+    setPeriods(sortedResult);
+    setCurrentPeriod(currentPeriodFound);
+    setPeriodsLoading(false);
+  };
+
+  useEffect(() => {
+    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+      fetchPeriods(updatedManager);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Obtention des notes
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [features, setFeatures] = useState<GradeFeatures | null>(null);
+  const [serviceAverage, setServiceAverage] = useState<number | null>(null);
+  const [serviceRank, setServiceRank] = useState<GradeScore | null>(null);
+
+  const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
+    setGradesLoading(true);
+    if (period && managerToUse) {
+      const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
+
+      if (grades?.features) {
+        setFeatures(grades.features);
+      }
+      if (!grades || !grades.subjects) {
+        setGradesLoading(false);
+        return;
+      }
+      setSubjects(grades.subjects);
+      if (grades.studentOverall && typeof grades.studentOverall.value === 'number') {
+        setServiceAverage(grades.studentOverall.value)
+      } else {
+        setServiceAverage(null);
+      }
+
+      if (grades.rank && typeof grades.rank.value === 'number' && !grades.rank.disabled) {
+        setServiceRank(grades.rank)
+      } else {
+        setServiceRank(null);
+      }
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          setGradesLoading(false);
+          setIsRefreshing(false);
+        }, 200);
+      });
+    } else {
+      setGradesLoading(false);
+    }
+  };
+
+  // Fetch grades when current period changes
+  useEffect(() => {
+    fetchGradesForPeriod(currentPeriod);
+  }, [currentPeriod]);
+
+  useEffect(() => {
+    if (hasAppliedSavedPeriod.current || periods.length === 0) {
+      return;
+    }
+
+    hasAppliedSavedPeriod.current = true;
+    if (settings.gradesPeriodName) {
+      const savedPeriodByName = periods.find((period) => period.name === settings.gradesPeriodName);
+      if (savedPeriodByName && savedPeriodByName.id !== currentPeriod?.id) {
+        setCurrentPeriod(savedPeriodByName);
+      }
+    }
+  }, [periods, settings.gradesPeriodName, currentPeriod?.id]);
+
+  useEffect(() => {
+    if (!currentPeriod?.name || settings.gradesPeriodName === currentPeriod.name) {
+      return;
+    }
+
+    mutateSettings('personalization', { gradesPeriodName: currentPeriod.name });
+  }, [currentPeriod?.name, settings.gradesPeriodName, mutateSettings]);
+
+  const grades = useMemo(() => {
+    return subjects.flatMap((subject) => subject.grades || []);
+  }, [subjects]);
+
+  const getSubjectById = useCallback((id: string) => {
+    return subjects.find((subject) => subject.id === id);
+  }, [subjects]);
+
+  // Sort
+  // Sort grades in subjects by date descending then sort subjects by latest grade descending
+  const sortedSubjects = useMemo(() => {
+    const subjectsCopy = [...subjects];
+    subjectsCopy.forEach((subject) => {
+      subject.grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
+    });
+
+    switch (sortMethod) {
+      case "alphabetical":
+        subjectsCopy.sort((a, b) => {
+          const nameA = getSubjectName(a.name).toLowerCase();
+          const nameB = getSubjectName(b.name).toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+        break;
+
+      case "averages":
+        subjectsCopy.sort((a, b) => {
+          const aAvg = a.studentAverage?.value ?? 0;
+          const bAvg = b.studentAverage?.value ?? 0;
+          return bAvg - aAvg;
+        });
+        break;
+
+      default:
+        subjectsCopy.sort((a, b) => {
+          const aLatestGrade = a.grades?.[0];
+          const bLatestGrade = b.grades?.[0];
+
+          if (!aLatestGrade && !bLatestGrade) { return 0; }
+          if (!aLatestGrade) { return 1; }
+          if (!bLatestGrade) { return -1; }
+
+          return bLatestGrade.givenAt.getTime() - aLatestGrade.givenAt.getTime();
+        });
+        break;
+    }
+
+    return subjectsCopy;
+  }, [subjects, sortMethod]);
+
+  const sortedGrades = useMemo(() => {
+    const gradesCopy = [...grades];
+    gradesCopy.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
+    return gradesCopy;
+  }, [grades]);
+
+  // Search
+  const [searchText, setSearchText] = useState<string>("");
+  const filteredSubjects = useMemo(() => {
+    if (searchText.trim() === "") {
+      return sortedSubjects;
+    }
+
+    const lowerSearchText = searchText.toLowerCase();
+
+    return sortedSubjects.filter((subject) => {
+      const subjectName = getSubjectName(subject.name).toLowerCase();
+      if (subjectName.includes(lowerSearchText)) {
+        return true;
+      }
+
+      // Also search in grades descriptions
+      const matchingGrades = subject.grades?.filter((grade) => {
+        return grade.description?.toLowerCase().includes(lowerSearchText);
+      });
+
+      return (matchingGrades?.length || 0) > 0;
+    });
+  }, [searchText, sortedSubjects]);
+
+  // Refresh
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+
+    if (periods.length === 0) {
+      fetchPeriods();
+    }
+
+    fetchGradesForPeriod(currentPeriod);
+  }, [currentPeriod, periods]);
+
+  const keyboardHeight = useKeyboardHeight();
+
+  const footerStyle = useAnimatedStyle(() => ({
+    height: keyboardHeight.value - bottomTabBarHeight,
+  }));
+
+  // header
+  const ListHeader = useMemo(
+    () =>
+      sortedGrades.length > 0 && searchText.length === 0 ? (
+        <View style={{ }}>
+          <ErrorBoundary>
+            <Averages
+              grades={grades.filter(v => v.studentScore !== undefined)}
+              color={colors.primary}
+              realAverage={serviceAverage || undefined}
+              displayScale={displayScale}
+              paddingTop={
+                headerHeight - (Platform.OS === "ios" ? insets.top : 0) + 0
+              }
+              largeElement={
+                <CompactGradeList
+                  grades={sortedGrades}
+                  getSubjectById={getSubjectById}
+                  large
+                />
+              }
+            />
+          </ErrorBoundary>
+
+          {serviceRank && (
+            <List style={{ marginTop: 8 }}>
+              <List.Item>
+                <List.Leading>
+                  <Icon opacity={0.5}>
+                    <Papicons name="crown" />
+                  </Icon>
+                </List.Leading>
+
+                <LegacyTypography variant="title">
+                  {t("Grades_Tab_Rank")}
+                </LegacyTypography>
+                <LegacyTypography variant="body1" color="secondary">
+                  {t("Grades_Tab_Rank_Description")}
+                </LegacyTypography>
+
+                <List.Trailing>
+                  <Stack
+                    direction="horizontal"
+                    gap={4}
+                    vAlign="end"
+                    hAlign="end"
+                  >
+                    <LegacyTypography variant="h3" inline color="text">
+                      {serviceRank.value}
+                    </LegacyTypography>
+                    <LegacyTypography variant="body1" inline color="secondary">
+                      /{serviceRank.outOf}
+                    </LegacyTypography>
+                  </Stack>
+                </List.Trailing>
+              </List.Item>
+            </List>
+          )}
+
+          <View style={{ height: 16 }} />
+
+          {!resize.isLarge && (
+            <CompactGradeList
+              grades={sortedGrades}
+              getSubjectById={getSubjectById}
+            />
+          )}
+
+          <ErrorBoundary>
+            <FeaturesMap features={features} displayScale={displayScale} />
+          </ErrorBoundary>
+
+          <Dynamic animated>
+            <Stack
+              direction="horizontal"
+              gap={8}
+              vAlign="start"
+              hAlign="center"
+              style={{ opacity: 0.4 }}
+              padding={[0, 0]}
+            >
+              <Icon size={20}>
+                <Papicons name="grades" />
+              </Icon>
+              <LegacyTypography variant="h6" color="text">
+                {t("Grades_Tab_Subjects")}
+              </LegacyTypography>
+            </Stack>
+          </Dynamic>
+        </View>
+      ) : null,
+    [
+      sortedGrades,
+      searchText,
+      grades,
+      colors.primary,
+      serviceAverage,
+      serviceRank,
+      getSubjectById,
+      features,
+      displayScale,
+      resize.isLarge,
+      headerHeight,
+      insets.top,
+    ]
+  );
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        paddingLeft: insets.left,
+        /* @ts-expect-error colors
+        backgroundColor: colors.overground */
+      }}
+    >
+      {/* Header */}
+      <TabHeader
+        onHeightChanged={setHeaderHeight}
+        /* Nom de la période */
+        title={
+          <ActionMenu
+            onPressAction={({ nativeEvent }) => {
+              const actionId = nativeEvent.event;
+
+              if (actionId.startsWith("period:")) {
+                const selectedPeriodId = actionId.replace("period:", "");
+                const newPeriod = periods.find(period => period.id === selectedPeriodId);
+                setCurrentPeriod(newPeriod);
+                if (newPeriod?.id) {
+                  trackAdvancedEvent("grades_period_changed");
+                }
+              }
+            }}
+            actions={
+              periods.map((period) => ({
+                id: "period:" + period.id,
+                title: (getPeriodName(period.name || "") + " " + (isPeriodWithNumber(period.name || "") ? getPeriodNumber(period.name || "0") : "")).trim(),
+                subtitle: `${period.start.toLocaleDateString(i18n.language, {
+                  month: "short",
+                  year: "numeric",
+                })
+                  } - ${period.end.toLocaleDateString(i18n.language, {
+                    month: "short",
+                    year: "numeric",
+                  })
+                  } `,
+                state: currentPeriod?.id === period.id ? "on" : "off",
+                image: Platform.select({
+                  ios: (getPeriodNumber(period.name || "0")) + ".calendar"
+                }),
+                imageColor: colors.text,
+              }))
+            }
+          >
+            <TabHeaderTitle
+              color={colors.primary}
+              leading={periods.length > 0 ? getPeriodName(currentPeriod?.name || '') : t("Tab_Grades")}
+              number={isPeriodWithNumber(currentPeriod?.name || '') ? getPeriodNumber(currentPeriod?.name || '') : undefined}
+              loading={loading}
+              chevron={periods.length > 1}
+            />
+          </ActionMenu>
+        }
+        /* Filtres */
+        trailing={
+          <ChipButton
+            onPressAction={({ nativeEvent }) => {
+              const actionId = nativeEvent.event;
+              if (actionId.startsWith("sort:")) {
+                const selectedSorting = actionId.replace("sort:", "");
+                updateSortMethod(selectedSorting);
+              }
+            }}
+            actions={
+              sortings.map((s) => ({
+                id: "sort:" + s.value,
+                title: s.label,
+                state: sortMethod === s.value ? "on" : "off",
+                papicon: s.icon.papicon,
+                image: Platform.select({
+                  ios: s.icon.ios,
+                  android: s.icon.android,
+                }),
+                imageColor: colors.text,
+              }))
+            }
+            icon={sortings.find(s => s.value === sortMethod)?.icon.papicon || 'filter'} chevron
+          >
+            {sortings.find(s => s.value === sortMethod)?.label || t("Grades_Sort")}
+          </ChipButton>
+        }
+        /* Recherche */
+        bottom={<Search placeholder={t('Grades_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
+      />
+
+
+      <List
+        animated
+        contentContainerStyle={{ paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16, paddingHorizontal: 16 }}
+
+        scrollEventThrottle={16}
+        scrollIndicatorInsets={{ top: headerHeight - insets.top }}
+
+        numColumns={resize.isLarge ? 2 : 1}
+
+        keyExtractor={(item: any) => item.id}
+        itemLayoutAnimation={LinearTransition.springify()}
+
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            progressViewOffset={headerHeight}
+          />
+        }
+
+        ListHeaderComponent={ListHeader}
+
+        ListFooterComponent={<Reanimated.View style={footerStyle} />}
+
+        ListEmptyComponent={loading ? undefined :
+          <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
+            <Stack
+              hAlign="center"
+              vAlign="center"
+              flex
+              style={{ width: "100%" }}
+            >
+              <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+                <Papicons name={"Grades"} />
+              </Icon>
+              <LegacyTypography variant="h4" color="text" align="center">
+                {t('Grades_Empty_Title')}
+              </LegacyTypography>
+              <LegacyTypography variant="body2" color="secondary" align="center">
+                {t('Grades_Empty_Description')}
+              </LegacyTypography>
+            </Stack>
+          </Dynamic>
+        }
+      >
+        {filteredSubjects.map((subject) => (
+          <SubjectItem
+            key={subject.id}
+            subject={subject}
+            displayScale={displayScale}
+          />
+        ))}
+      </List>
+    </View>
+  )
+};
+
+const GradesViewWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <GradesView />
+  </MainTabErrorBoundary>
+);
+
+export default GradesViewWithBoundary;

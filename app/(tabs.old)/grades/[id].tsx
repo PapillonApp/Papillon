@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
+import { useTheme } from "expo-router/react-navigation";
 import { Link, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useState } from "react";
@@ -87,7 +87,6 @@ export default function GradesModal() {
   const theme = useTheme();
   const colors = theme.colors;
   const [grade, setGrade] = useState<SharedGrade>();
-  const headerHeight = useHeaderHeight();
   const [subject, setSubject] = useState<Subject>();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
@@ -222,7 +221,7 @@ export default function GradesModal() {
               justifyContent: "center",
               gap: 16,
               marginVertical: 20,
-              paddingTop: headerHeight - 16,
+              paddingTop: finalHeaderHeight,
             }}
           >
             <ModalOverhead

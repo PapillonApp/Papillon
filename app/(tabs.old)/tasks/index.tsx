@@ -1,0 +1,111 @@
+import React, { useState } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import TasksHeader from './components/TasksHeader';
+import TasksList from './components/TasksList';
+import WeekPicker from './components/WeekPicker';
+import { useHomeworkData } from './hooks/useHomeworkData';
+import { useTaskFilters } from './hooks/useTaskFilters';
+import { useWeekSelection } from './hooks/useWeekSelection';
+
+import { useAlert } from "@/ui/components/AlertProvider";
+import { useTheme } from "expo-router/react-navigation";
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import useResizable from '@/ui/utils/Resizable';
+
+const TasksView: React.FC = () => {
+  const alert = useAlert();
+  const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
+  const insets = useSafeAreaInsets();
+  const { isLarge } = useResizable();
+
+  // TabHeader is made of fixed-height rows. Computing this synchronously avoids
+  // an incorrect first onLayout measurement shifting the FlashList content.
+  const headerHeight =
+    insets.top +
+    (isLarge ? 70 : 118) +
+    (Platform.OS === 'android' ? 6 : 0);
+
+  const {
+    defaultWeek,
+    selectedWeek,
+    showWeekPicker,
+    toggleWeekPicker,
+    onSelectWeek,
+    setShowWeekPicker,
+  } = useWeekSelection();
+
+  const {
+    homework,
+    homeworksFromCache,
+    isRefreshing,
+    handleRefresh,
+    setAsDone,
+  } = useHomeworkData(selectedWeek, alert);
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    showUndoneOnly,
+    setShowUndoneOnly,
+    sortMethod,
+    setSortMethod,
+    collapsedGroups,
+    toggleGroup,
+    sections,
+  } = useTaskFilters(homeworksFromCache, homework);
+
+  const theme = useTheme();
+
+  return (
+    <>
+      {showWeekPicker && (
+        <WeekPicker
+          selectedWeek={selectedWeek}
+          onSelectWeek={onSelectWeek}
+          onClose={() => setShowWeekPicker(false)}
+        />
+      )}
+      <View style={[styles.container]}>
+        <TasksHeader
+          defaultWeek={defaultWeek}
+          selectedWeek={selectedWeek}
+          onToggleWeekPicker={toggleWeekPicker}
+          setShowUndoneOnly={setShowUndoneOnly}
+          setSortMethod={setSortMethod}
+          setSearchTerm={setSearchTerm}
+          sortMethod={sortMethod}
+          shouldCollapseHeader={shouldCollapseHeader}
+        />
+
+        <TasksList
+          sections={sections}
+          headerHeight={headerHeight}
+          searchTerm={searchTerm}
+          isRefreshing={isRefreshing}
+          onRefresh={handleRefresh}
+          collapsedGroups={collapsedGroups}
+          toggleGroup={toggleGroup}
+          sortMethod={sortMethod}
+          homework={homework}
+          setAsDone={setAsDone}
+        />
+      </View>
+    </>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+
+const TasksViewWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <TasksView />
+  </MainTabErrorBoundary>
+);
+
+export default TasksViewWithBoundary;

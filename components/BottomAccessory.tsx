@@ -1,4 +1,4 @@
-import { useTimetableWidgetData } from '@/app/(tabs)/index/hooks/useTimetableWidgetData';
+import { useTimetableWidgetData } from '@/app/(tabs.old)/index/hooks/useTimetableWidgetData';
 import Icon from '@/ui/components/Icon';
 import Typography from '@/ui/new/Typography';
 import i18n from '@/utils/i18n';

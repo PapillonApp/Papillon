@@ -7,6 +7,7 @@ import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
 
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
 import { initializeAccountManager } from '@/services/shared';
+import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
 import i18n from '@/utils/i18n';
 import { checkConsent } from '@/utils/logger/consent';
@@ -32,7 +33,9 @@ const SERVER_URL = secrets.SERVER_URL ?? "https://analytics.papillon.bzh";
 export function useAppInitialization() {
   const [fontsLoaded, fontsError] = useFonts(FONT_CONFIG);
   const [isDatabaseReady, setIsDatabaseReady] = useState(false);
-  
+
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+
   // Settings
   const customLanguage = useSettingsStore(state => state.personalization.language);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
@@ -70,6 +73,16 @@ export function useAppInitialization() {
 
     initDatabase();
   }, []);
+
+  // Account Manager Initialization
+  // Boots the account manager for whichever account was last used, so that
+  // `getManager()`/`subscribeManagerUpdate()` have something to serve as soon
+  // as a tab mounts on a normal cold start.
+  useEffect(() => {
+    if (!isDatabaseReady || !lastUsedAccount) return;
+
+    initializeAccountManager(lastUsedAccount).catch(e => warn(`Account manager initialization failed: ${e}`));
+  }, [isDatabaseReady, lastUsedAccount]);
 
   // AppState Monitoring
   const appState = useRef<AppStateStatus>(AppState.currentState);

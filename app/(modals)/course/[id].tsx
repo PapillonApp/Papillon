@@ -19,7 +19,7 @@ import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 
-import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
+import { getStatusText } from "../../(tabs.old)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SubjectInfo {
