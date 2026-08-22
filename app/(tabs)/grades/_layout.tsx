@@ -22,7 +22,7 @@ export default function Layout() {
           headerTitle: t('Modal_Grades_Title'),
           headerLargeTitle: false,
           headerTransparent: true,
-          presentation: resize.isLarge ? 'formSheet' : 'card',
+          presentation: 'card',
           sheetGrabberVisible: true,
           sheetAllowedDetents: [1],
           headerBackground: AndroidHeaderBackground,

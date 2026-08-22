@@ -54,6 +54,7 @@ export interface UseGradesDataResult {
   /** Every grade of the period, flattened across subjects, most recent first. */
   grades: Grade[];
   averages: PeriodAverages;
+  isAverageServiceProvided: boolean;
   rank: GradeScore | null;
   features: Record<string, any> | undefined;
   /** Average history for the student, one entry per requested calculation method. */
@@ -204,7 +205,7 @@ export function useGradesData(
       student: serviceAverages.student,
       class: serviceAverages.class,
       min,
-      max,
+      max
     };
   }, [subjects, serviceAverages]);
 
@@ -240,6 +241,7 @@ export function useGradesData(
     subjects,
     grades,
     averages,
+    isAverageServiceProvided: serviceAverages.student !== null || serviceAverages.class !== null,
     rank,
     features,
     history,

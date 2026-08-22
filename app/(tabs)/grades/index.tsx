@@ -4,7 +4,7 @@ import { t } from 'i18next';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { useFont } from '@/utils/theme/fonts';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import i18n from '@/utils/i18n';
 import { useSettingsStore } from '@/stores/settings';
 import { getGradeDisplayScale, formatScoreForDisplay } from '@/utils/grades/scale';
@@ -19,8 +19,10 @@ import Typography from '@/ui/new/Typography';
 import Averages from './atoms/Averages';
 import { FlashList } from '@shopify/flash-list';
 import { ListTouchable } from '@/ui/new/List';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import useResizable from '@/ui/utils/Resizable';
+import CompactGrade from '@/ui/new/CompactGrade';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type SortMethod = 'date' | 'alphabetical' | 'averages';
 
@@ -68,7 +70,7 @@ const GradesView = () => {
   const router = useRouter();
 
   const { periods, currentPeriod, setCurrentPeriod, refresh: refreshPeriods, loading: loadingPeriods } = usePeriodsData();
-  const { subjects, history, averages, refresh: refreshGrades, loading: loadingGrades } = useGradesData(currentPeriod);
+  const { subjects, history, averages, isAverageServiceProvided, refresh: refreshGrades, loading: loadingGrades } = useGradesData(currentPeriod);
 
   const loading = loadingPeriods || loadingGrades;
 
@@ -95,6 +97,13 @@ const GradesView = () => {
 
   const sortings = useMemo(() => getSortings(), [i18n.language]);
 
+  // 10 last grades (with subject in them (without grades))
+  const recentGrades = useMemo(() => {
+    const allGrades = subjects.flatMap(subject => (subject.grades ?? []).map(grade => ({ ...grade, subject })));
+    allGrades.sort((a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0));
+    return allGrades.slice(0, 10);
+  }, [subjects]);
+
   return (
     <>
       <Stack.SearchBar onChangeText={()=>{}} />
@@ -118,11 +127,10 @@ const GradesView = () => {
       </Stack.Toolbar>
 
       <Stack.Title
-        large
         largeStyle={{ fontFamily: papillonFont('bold') }}
         style={{ fontFamily: papillonFont('semibold') }}
       >
-        {currentPeriod ? periodTitle(currentPeriod) : t('Tab_Grades')}
+        {t('Tab_Grades')}
       </Stack.Title>
 
       <Stack.Toolbar placement="right">
@@ -146,88 +154,124 @@ const GradesView = () => {
         </Stack.Toolbar.Menu>
       </Stack.Toolbar>
 
-      <FlashList
-        style={{ flex: 1, backgroundColor: theme.colors.overground }}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ paddingLeft: insets.left, paddingRight: insets.right }}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
-        data={filteredSubjects}
-        numColumns={resize.isLarge ? 2 : 1}
-        masonry={resize.isLarge}
-        renderItem={({ item: subject }) => (
-          <View style={{ padding: 16, gap:8 }}>
-            <View style={{ paddingHorizontal: 16, gap: 10, flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Typography variant="h6" inset>{getSubjectEmoji(subject.name)}</Typography>
-              <Typography style={{ flex: 1 }} numberOfLines={1} variant="action" color="textSecondary">{getSubjectName(subject.name)}</Typography>
+      <SafeAreaView edges={['left', 'right']} style={{ flex: 1, backgroundColor: theme.colors.overground }}>
+        <FlashList
+          style={{ flex: 1 }}
+          contentInsetAdjustmentBehavior="automatic"
+          refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
+          data={filteredSubjects}
+          numColumns={resize.isLarge ? 2 : 1}
+          masonry={resize.isLarge}
+          ListHeaderComponent={() => (
+            <View
+              style={{
+                paddingVertical: 16,
+                gap: 12
+              }}>
+              <View style={{ paddingHorizontal: 16 }}>
+                <Averages history={history} realAverage={isAverageServiceProvided ? averages.student : undefined} color={theme.colors.primary} displayScale={displayScale} />
               </View>
-
-              <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
-                <Typography variant="h5" weight='semibold' color="textSecondary">
-                  {subject.studentAverage?.value.toFixed(2) ?? 'N/A'}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  /{subject.studentAverage?.outOf ?? 'N/A'}
-                </Typography>
-              </View>
-            </View>
             
-            <View style={{ backgroundColor: theme.colors.card, borderRadius: 24, overflow: 'hidden' }}>
-              {(subject.grades ?? []).map((grade: Grade, index: number) => {
-                const score = grade.studentScore;
-                const isUsable = score && !score.disabled && typeof score.value === 'number';
-                const formattedScore = isUsable
-                  ? formatScoreForDisplay(score!.value, grade.outOf?.value ?? 20, displayScale)
-                  : undefined;
-
-                return (
-                  <View key={grade.id} style={{ backgroundColor: theme.colors.item }}>
-                    <Link href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }} asChild>
-                      <Link.Preview />
-                      <Link.Menu>
-                        <Link.MenuAction icon="arrow.up.right.square" title="Ouvrir la note" onPress={() => {
-                          router.push({ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } });
-                        }} />
-                      </Link.Menu>
-                      <Link.Trigger withAppleZoom>
-                        <ListTouchable onPress={() => {}}>
-                          <View style={{ paddingHorizontal: 16, backgroundColor: theme.colors.item, paddingVertical: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <View style={{ flex: 1, flexDirection: 'column', gap: 1 }}>
-                              <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description ?? 'No description'}</Typography>
-                              {grade.givenAt && (
-                                <Typography  numberOfLines={1} variant="subtitle" color="textSecondary">
-                                  {grade.givenAt.toLocaleDateString(i18n.language, {
-                                                                    day: 'numeric',
-                                                                    month: 'long',
-                                                                    year: 'numeric',
-                                                                  })}
-                                </Typography>
-                              )}
-                            </View>
-
-                            <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
-                              <Typography weight='semibold' variant="h4">
-                                {formattedScore ? formattedScore.value.toFixed(2) : (score?.status ?? 'N/A')}
-                              </Typography>
-                              {formattedScore && formattedScore.denominator && (
-                              <Typography variant="subtitle" color="textSecondary">
-                                {formattedScore.denominator}
-                              </Typography>
-                              )}
-                            </View>
-                          </View>
-                        </ListTouchable>
-                      </Link.Trigger>
-                    </Link>
-
-                    <View style={{ backgroundColor: theme.colors.border, height: 1, marginLeft: 16, marginRight: 16, opacity: index < (subject.grades?.length || 0) - 1 ? 1 : 0 }} />
-                  </View>
-                );
-              })}
+              <FlatList
+                data={recentGrades}
+                renderItem={({ item: grade }) => (
+                  <Link href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }} asChild>
+                    <Link.Preview />
+                    <Link.Trigger>
+                    <Link.AppleZoom>
+                    <Pressable style={{ overflow: 'visible', margin: -24, padding: 24 }}>
+                        <CompactGrade
+                          grade={grade}
+                          subject={grade.subject}
+                        />
+                    </Pressable>
+                    </Link.AppleZoom>
+                    </Link.Trigger>
+                  </Link>
+                )}
+                showsHorizontalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+                horizontal
+                contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 24, overflow: 'visible' }}
+                style={{ overflow: 'visible', marginVertical: -24 }}
+              />
             </View>
-          </View>
-        )}
-      />
+          )}
+          renderItem={({ item: subject }) => (
+            <View style={{ padding: 16, gap:8 }}>
+              <View style={{ paddingHorizontal: 16, gap: 10, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Typography variant="h6" inset>{getSubjectEmoji(subject.name)}</Typography>
+                <Typography style={{ flex: 1 }} numberOfLines={1} variant="action" color="textSecondary">{getSubjectName(subject.name)}</Typography>
+                </View>
+
+                <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
+                  <Typography variant="h5" weight='semibold' color="textSecondary">
+                    {subject.studentAverage?.value.toFixed(2) ?? 'N/A'}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    /{subject.studentAverage?.outOf ?? 'N/A'}
+                  </Typography>
+                </View>
+              </View>
+              
+              <View style={{ backgroundColor: theme.colors.card, borderRadius: 24, overflow: 'hidden' }}>
+                {(subject.grades ?? []).map((grade: Grade, index: number) => {
+                  const score = grade.studentScore;
+                  const isUsable = score && !score.disabled && typeof score.value === 'number';
+                  const formattedScore = isUsable
+                    ? formatScoreForDisplay(score!.value, grade.outOf?.value ?? 20, displayScale)
+                    : undefined;
+
+                  return (
+                    <View key={grade.id} style={{ backgroundColor: theme.colors.item }}>
+                      <Link href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }} asChild>
+                        <Link.Preview />
+                        <Link.Menu>
+                          <Link.MenuAction icon="arrow.up.right.square" title="Ouvrir la note" onPress={() => {
+                            router.push({ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } });
+                          }} />
+                        </Link.Menu>
+                        <Link.Trigger withAppleZoom>
+                          <ListTouchable>
+                            <View style={{ paddingHorizontal: 16, backgroundColor: theme.colors.item, paddingVertical: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <View style={{ flex: 1, flexDirection: 'column', gap: 1 }}>
+                                <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description ?? 'No description'}</Typography>
+                                {grade.givenAt && (
+                                  <Typography  numberOfLines={1} variant="subtitle" color="textSecondary">
+                                    {grade.givenAt.toLocaleDateString(i18n.language, {
+                                                                      day: 'numeric',
+                                                                      month: 'long',
+                                                                      year: 'numeric',
+                                                                    })}
+                                  </Typography>
+                                )}
+                              </View>
+
+                              <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
+                                <Typography weight='semibold' variant="h4">
+                                  {formattedScore ? formattedScore.value.toFixed(2) : (score?.status ?? 'N/A')}
+                                </Typography>
+                                {formattedScore && formattedScore.denominator && (
+                                <Typography variant="subtitle" color="textSecondary">
+                                  {formattedScore.denominator}
+                                </Typography>
+                                )}
+                              </View>
+                            </View>
+                          </ListTouchable>
+                        </Link.Trigger>
+                      </Link>
+
+                      <View style={{ backgroundColor: theme.colors.border, height: 1, marginLeft: 16, marginRight: 16, opacity: index < (subject.grades?.length || 0) - 1 ? 1 : 0 }} />
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+        />
+      </SafeAreaView>
     </>
   );
 };

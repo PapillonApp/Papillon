@@ -7,6 +7,7 @@ import { Platform, Text, View, ViewStyle } from "react-native";
 
 const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
   const theme = useTheme();
+  const adjustedTextColor = adjust(color, theme.dark ? 0.5 : -0.5);
 
   return (
     <Stack
@@ -52,7 +53,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
         <Typography
           variant={subjectVariant}
           align="center"
-          color={adjust(color, theme.dark ? 0.3 : -0.3)}
+          color={adjustedTextColor}
         >
           {subject}
         </Typography>
@@ -84,6 +85,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
 
 const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: string, outOf?: number | string }) => {
   const theme = useTheme();
+  const adjustedTextColor = adjust(color, theme.dark ? 0.5 : -0.5);
 
   if (!score) return null;
 
@@ -99,12 +101,12 @@ const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: st
         variant="h0"
         weight="medium"
         inline
-        color={adjust(color, theme.dark ? 0.3 : -0.3)}
+        color={adjustedTextColor}
       >
         {score}
       </Typography>
       {outOf && (
-        <Typography variant='h3' weight='semibold' color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
+        <Typography variant='h3' weight='semibold' color={adjustedTextColor} style={{ marginBottom: 7, opacity: 0.5 }}>
           {typeof outOf === "string" && outOf.startsWith("%") ? outOf : `/${outOf}`}
         </Typography>
       )}

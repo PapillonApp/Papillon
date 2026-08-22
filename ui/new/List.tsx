@@ -150,6 +150,7 @@ const renderListRow = ({
   );
 
   return (
+    <>
     <ItemComponent
       style={[
         styles.rowContainer,
@@ -161,14 +162,6 @@ const renderListRow = ({
           : {
               borderColor: colors.border,
               backgroundColor: colors.border,
-              borderLeftWidth: 1,
-              borderRightWidth: 1,
-              borderBottomWidth: 1,
-              borderTopWidth: isFirst ? 1 : 0,
-              shadowColor: "#000000",
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.1,
-              shadowRadius: 2,
               elevation: 1,
               overflow: "visible",
               ...itemProps.containerStyle,
@@ -186,6 +179,12 @@ const renderListRow = ({
         touchable
       )}
     </ItemComponent>
+    {!isLast && Platform.OS === "ios" &&
+    <View style={{ backgroundColor: colors.item, height: 1 }}>
+      <View style={{ backgroundColor: colors.border, height: 0.5, marginLeft: 16, marginRight: 16 }} />
+    </View>
+    }
+    </>
   );
 };
 
@@ -693,8 +692,8 @@ const styles = StyleSheet.create({
   trailing: { marginLeft: 16 },
   sectionTitleContainer: { paddingHorizontal: Platform.OS === "android" ? 16 : 4, paddingVertical: 6, paddingBottom: Platform.OS === "android" ? 6 : 4, flexDirection: "row", alignItems: "center", gap: Platform.OS === "android" ? 10 : 8, marginRight: 6 },
   first: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: Platform.OS === "android" ? 20 : 24,
+    borderTopRightRadius: Platform.OS === "android" ? 20 : 24,
   },
   last: {
     borderBottomLeftRadius: 20,
@@ -702,7 +701,8 @@ const styles = StyleSheet.create({
   },
   listContentContainer: {
     gap: 0,
-    overflow: "visible",
+    overflow: Platform.OS === "android" ? "visible" : "hidden",
+    borderRadius: Platform.OS === "android" ? 0 : 24,
   },
   list: {
     overflow: "visible",

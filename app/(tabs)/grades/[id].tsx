@@ -196,11 +196,14 @@ export default function GradesModal() {
     emoji: getSubjectEmoji(subject.name),
     color: getSubjectColor(subject.name),
   };
+
+  const adjustedTextColor = adjust(subjectInfo.color, theme.dark ? 0.5 : -0.5);
+
   return (
     <>
       {Platform.OS !== "android" && (
         <LinearGradient
-          colors={[adjust(subjectInfo.color, theme.dark ? -0.6 : 0.6), theme.colors.background]}
+          colors={[adjust(subjectInfo.color, theme.dark ? -0.6 : 0.6), theme.colors.overground]}
           locations={[0, 0.5]}
           style={{
             position: "absolute",
@@ -289,17 +292,15 @@ export default function GradesModal() {
               <Stack
                 card
                 direction="horizontal"
+                hAlign="center"
+                gap={0}
                 width={"100%"}
-                style={{ marginTop: 8 }}
+                style={{ marginTop: 8, shadowColor: "transparent", borderWidth: 0 }}
               >
                 <Stack
                   width={"50%"}
                   vAlign="center"
                   hAlign="center"
-                  style={{
-                    borderRightWidth: 1,
-                    borderRightColor: colors.border,
-                  }}
                   padding={12}
                 >
                   <Icon papicon opacity={0.5}>
@@ -312,12 +313,17 @@ export default function GradesModal() {
                     color={
                       Platform.OS === "android"
                         ? theme.colors.tint
-                        : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)
+                        : adjustedTextColor
                     }
                   >
                     x{(grade.coefficient ?? 1).toFixed(2)}
                   </ContainedNumber>
                 </Stack>
+                <View style={{
+                  width: 0.5,
+                  height: "80%",
+                  backgroundColor: colors.border,
+                }} />
                 <Stack
                   width={"50%"}
                   vAlign="center"
@@ -334,7 +340,7 @@ export default function GradesModal() {
                     color={
                       Platform.OS === "android"
                         ? theme.colors.tint
-                        : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)
+                        : adjustedTextColor
                     }
                     denominator={"/" + grade.outOf?.value}
                   >
@@ -346,7 +352,12 @@ export default function GradesModal() {
           </View>
         }
         contentContainerStyle={{
-          padding: 16
+          padding: 16,
+          paddingLeft: insets.left + 16,
+          paddingRight: insets.right + 16,
+          width: '100%',
+          maxWidth: 900,
+          alignSelf: 'center',
         }}
       >
         {grade.skills && grade.skills.length > 0 && (
@@ -422,7 +433,7 @@ export default function GradesModal() {
                   color={
                     Platform.OS === "android"
                       ? theme.colors.tint
-                      : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)
+                      : adjustedTextColor
                   }
                   denominator={"/" + grade.outOf?.value}
                 >
@@ -448,7 +459,7 @@ export default function GradesModal() {
                   color={
                     Platform.OS === "android"
                       ? theme.colors.tint
-                      : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)
+                      : adjustedTextColor
                   }
                   denominator={"/" + grade.outOf?.value}
                 >
