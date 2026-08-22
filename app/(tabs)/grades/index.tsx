@@ -23,6 +23,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import useResizable from '@/ui/utils/Resizable';
 import CompactGrade from '@/ui/new/CompactGrade';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Papicons } from '@getpapillon/papicons';
+import Icon from '@/ui/components/Icon';
 
 type SortMethod = 'date' | 'alphabetical' | 'averages';
 
@@ -89,10 +91,21 @@ const GradesView = () => {
     if (searchText.trim() === '') { return sortedSubjects; }
 
     const query = searchText.toLowerCase();
-    return sortedSubjects.filter(subject => {
-      if (getSubjectName(subject.name).toLowerCase().includes(query)) { return true; }
-      return (subject.grades ?? []).some(grade => grade.description?.toLowerCase().includes(query));
-    });
+    return sortedSubjects.reduce<Subject[]>((acc, subject) => {
+      const subjectMatches = getSubjectName(subject.name).toLowerCase().includes(query);
+
+      if (subjectMatches) {
+        acc.push(subject);
+        return acc;
+      }
+
+      const matchingGrades = (subject.grades ?? []).filter(grade => grade.description?.toLowerCase().includes(query));
+      if (matchingGrades.length > 0) {
+        acc.push({ ...subject, grades: matchingGrades });
+      }
+
+      return acc;
+    }, []);
   }, [sortedSubjects, searchText]);
 
   const sortings = useMemo(() => getSortings(), [i18n.language]);
@@ -104,14 +117,24 @@ const GradesView = () => {
     return allGrades.slice(0, 10);
   }, [subjects]);
 
+  const [isSearchbarFocused, setIsSearchbarFocused] = useState(false);
+
   return (
     <>
-      <Stack.SearchBar onChangeText={()=>{}} />
+      <Stack.SearchBar
+        onChangeText={(e) => setSearchText(e.nativeEvent.text)}
+        placeholder={"Rechercher une matière ou une note..."}
+        onFocus={() => setIsSearchbarFocused(true)}
+        onBlur={() => setIsSearchbarFocused(false)}
+        autoCapitalize="none"
+      />
 
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Menu>
           <Stack.Toolbar.Icon sf="calendar" />
-          <Stack.Toolbar.Label>Options</Stack.Toolbar.Label>
+          <Stack.Toolbar.Label>
+            {currentPeriod ? periodTitle(currentPeriod) : t('Grades_Periods_None')}
+          </Stack.Toolbar.Label>
           {periods.map(period => (
             <Stack.Toolbar.MenuAction
               key={period.id}
@@ -135,22 +158,18 @@ const GradesView = () => {
 
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Menu>
-          <Stack.Toolbar.Icon sf="ellipsis" />
-          <Stack.Toolbar.Label>Options</Stack.Toolbar.Label>
-          <Stack.Toolbar.Menu>
-            <Stack.Toolbar.Icon sf="arrow.up.arrow.down" />
-            <Stack.Toolbar.Label>Sort by</Stack.Toolbar.Label>
-            {sortings.map(sorting => (
-              <Stack.Toolbar.MenuAction
-                key={sorting.value}
-                isOn={sortMethod === sorting.value}
-                icon={sorting.sf}
-                onPress={() => setSortMethod(sorting.value)}
-              >
-                {sorting.label}
-              </Stack.Toolbar.MenuAction>
-            ))}
-          </Stack.Toolbar.Menu>
+          <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
+          <Stack.Toolbar.Label>Sort by</Stack.Toolbar.Label>
+          {sortings.map(sorting => (
+            <Stack.Toolbar.MenuAction
+              key={sorting.value}
+              isOn={sortMethod === sorting.value}
+              icon={sorting.sf}
+              onPress={() => setSortMethod(sorting.value)}
+            >
+              {sorting.label}
+            </Stack.Toolbar.MenuAction>
+          ))}
         </Stack.Toolbar.Menu>
       </Stack.Toolbar>
 
@@ -163,6 +182,7 @@ const GradesView = () => {
           numColumns={resize.isLarge ? 2 : 1}
           masonry={resize.isLarge}
           ListHeaderComponent={() => (
+            isSearchbarFocused ? <></> : 
             <View
               style={{
                 paddingVertical: 16,
