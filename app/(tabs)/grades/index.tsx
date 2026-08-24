@@ -150,7 +150,6 @@ const GradesView = () => {
       </Stack.Toolbar>
 
       <Stack.Title
-        largeStyle={{ fontFamily: papillonFont('bold') }}
         style={{ fontFamily: papillonFont('semibold') }}
       >
         {t('Tab_Grades')}

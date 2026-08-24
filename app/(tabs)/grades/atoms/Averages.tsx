@@ -260,7 +260,7 @@ const Averages = ({
     }
 
     return (
-      <GlassContainer glassType="regular" glassOpacity={0} isInteractive={false} style={{ backgroundColor: theme.colors.item, borderRadius: 24, overflow: "visible" }}>
+      <View style={{ backgroundColor: theme.colors.item, borderRadius: 24, overflow: "hidden" }}>
         <View style={{ height: 140, marginBottom: -16 }}>
           {graph}
         </View>
@@ -339,7 +339,7 @@ const Averages = ({
             {algorithmPicker()}
           </RNHostView>
         </BottomSheet>
-      </GlassContainer>
+      </View>
     );
   } catch (e) {
     console.error(e);
