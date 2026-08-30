@@ -22,7 +22,7 @@ export default {
       icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
       infoPlist: {
-        AppGroup: "group.xyz.getpapillon",
+        AppGroupIdentifier: "group.xyz.getpapillon",
         CFBundleURLTypes: [
           {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
@@ -73,9 +73,7 @@ export default {
         LSApplicationQueriesSchemes: ["maps"],
       },
       entitlements: {
-        "com.apple.security.application-groups": [
-          "group.xyz.getpapillon"
-        ],
+        "com.apple.security.application-groups": ["group.xyz.getpapillon"],
       },
       supportsTablet: true,
       config: {

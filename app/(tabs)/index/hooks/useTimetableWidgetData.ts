@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 import { useAccountStore } from "@/stores/account";
 import { useTimetable } from "@/database/useTimetable";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 
-const widgetCacheStorage = new MMKV({ id: "home-widget-cache" });
+const widgetCacheStorage = createMMKV({ id: "home-widget-cache" });
 
 type CachedCourse = Omit<SharedCourse, "from" | "to"> & {
   from: number;
@@ -104,7 +104,7 @@ export const useTimetableWidgetData = (options: { showCancelled?: boolean } = {}
         .sort((a, b) => a.from.getTime() - b.from.getTime());
       setCourses(hydrated);
     } catch {
-      widgetCacheStorage.delete(cacheKey);
+      widgetCacheStorage.remove(cacheKey);
     } finally {
       setLoading(false);
     }
