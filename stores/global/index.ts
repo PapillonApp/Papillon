@@ -1,28 +1,34 @@
-import { MMKV } from 'react-native-mmkv'
+import { MMKV, Mode } from "react-native-mmkv";
 import { Skolengo as SkolengoSession } from "skolengojs";
-import { PersistStorage } from 'zustand/middleware'
+import { PersistStorage } from "zustand/middleware";
 
-import { UniversalClassSerializer } from './serializer';
+import { UniversalClassSerializer } from "./serializer";
 
 const classRegistry = new Map<string, any>();
-classRegistry.set('Skolengo', SkolengoSession);
+classRegistry.set("Skolengo", SkolengoSession);
 
-export const createMMKVStorage = <T>(id: string, encryptionKey?: string): PersistStorage<T> => {
+export const createMMKVStorage = <T>(
+  id: string,
+  encryptionKey?: string
+): PersistStorage<T> => {
   const mmkv = new MMKV({
     id: id,
-    encryptionKey: encryptionKey
+    encryptionKey: encryptionKey,
+    mode: Mode.MULTI_PROCESS,
   });
 
   return {
-    getItem: (name) => {
+    getItem: name => {
       const value = mmkv.getString(name);
-      if (!value) {return null;}
-      
+      if (!value) {
+        return null;
+      }
+
       try {
         const parsed = JSON.parse(value);
         return UniversalClassSerializer.deserialize(parsed, classRegistry);
       } catch (error) {
-        console.error('Error parsing MMKV data:', error);
+        console.error("Error parsing MMKV data:", error);
         return null;
       }
     },
@@ -31,11 +37,11 @@ export const createMMKVStorage = <T>(id: string, encryptionKey?: string): Persis
         const serialized = UniversalClassSerializer.serialize(value);
         mmkv.set(name, JSON.stringify(serialized));
       } catch (error) {
-        console.error('Error serializing MMKV data:', error);
+        console.error("Error serializing MMKV data:", error);
       }
     },
-    removeItem: (name) => {
+    removeItem: name => {
       mmkv.delete(name);
-    }
+    },
   };
 };

@@ -1,0 +1,3 @@
+[submodule "modules/papillonkit"]
+	path = modules/papillonkit
+	url = git@github.com:PapillonApp/PapillonKit.git
