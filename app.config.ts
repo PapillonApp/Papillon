@@ -172,6 +172,7 @@ export default {
         },
       ],
       "./plugins/with-ios-native-files",
+      "@bacons/apple-targets"
     ],
     experiments: {
       typedRoutes: true,
