@@ -1,4 +1,4 @@
-import { createMMKV, Mode } from 'react-native-mmkv'
+import { createMMKV } from 'react-native-mmkv'
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { PersistStorage } from 'zustand/middleware'
 
@@ -11,7 +11,7 @@ export const createMMKVStorage = <T>(id: string, encryptionKey?: string): Persis
   const mmkv = createMMKV({
     id: id,
     encryptionKey: encryptionKey,
-    mode: Mode.MULTI_PROCESS,
+    mode: "multi-process",
   });
 
   return {
