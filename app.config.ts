@@ -14,6 +14,7 @@ export default {
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
     ios: {
+      appleTeamId: "7RXNP6V83P",
       appStoreUrl:
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       bundleIdentifier: "xyz.getpapillon.ios",
@@ -21,6 +22,7 @@ export default {
       icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
       infoPlist: {
+        AppGroupIdentifier: "group.xyz.getpapillon",
         CFBundleURLTypes: [
           {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
@@ -69,6 +71,9 @@ export default {
         ],
         CADisableMinimumFrameDurationOnPhone: true,
         LSApplicationQueriesSchemes: ["maps"],
+      },
+      entitlements: {
+        "com.apple.security.application-groups": ["group.xyz.getpapillon"],
       },
       supportsTablet: true,
       config: {

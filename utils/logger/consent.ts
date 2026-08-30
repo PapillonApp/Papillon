@@ -1,5 +1,5 @@
 import Countly from "countly-sdk-react-native-bridge";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 
 interface ConsentStatus {
   given: boolean;
@@ -9,7 +9,7 @@ interface ConsentStatus {
 }
 
 export const checkConsent = async (): Promise<ConsentStatus> => {
-  const consentConfig = new MMKV();
+  const consentConfig = createMMKV();
   const given = await consentConfig.getBoolean("consent") ?? false;
   const required = await consentConfig.getBoolean("countly-consent-required") ?? false;
   const optional = await consentConfig.getBoolean("countly-consent-optional") ?? false;
@@ -26,7 +26,7 @@ interface ConsentLevels {
 }
 
 export const setConsent = async (consent: keyof ConsentLevels) => {
-  const consentConfig = new MMKV();
+  const consentConfig = createMMKV();
 
   if (consent === "none") {
     await consentConfig.set("consent", true);
