@@ -10,7 +10,7 @@ struct TimetableControl: ControlWidget {
   var body: some ControlWidgetConfiguration {
     StaticControlConfiguration(kind: Self.kind) {
       ControlWidgetButton(action: TimetableControlAction()) {
-        Label("Mon emploi du temps", systemImage: "calendar")
+        Label("Mon emploi du temps", image: "calendar")
       }
     }
     .displayName("Ouvrir l'emploi du temps")
