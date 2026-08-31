@@ -77,7 +77,7 @@ export default function QRCodeAndCardsPage() {
       />
 
       {wallets?.length === 0 ? (
-        <Stack flex hAlign={"center"} vAlign={"center"} height={"100%"}>
+        <Stack flex hAlign={"center"} vAlign={"center"} height={"100%"} padding={20}>
           <Dynamic
             animated
             entering={PapillonAppearIn}
