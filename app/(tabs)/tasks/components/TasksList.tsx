@@ -13,6 +13,7 @@ import DateHeader from "../atoms/DateHeader";
 import EmptyState from "../atoms/EmptyState";
 import TasksSummary from "../atoms/TasksSummary";
 import TaskItem from "./TaskItem";
+import { useTheme } from "expo-router/react-navigation";
 
 export interface HomeworkSection {
   id: string;
@@ -46,6 +47,7 @@ const TasksList: React.FC<TasksListProps> = ({
   homework,
   setAsDone,
 }) => {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { isLarge } = useResizable();
 
@@ -99,7 +101,6 @@ const TasksList: React.FC<TasksListProps> = ({
   const showsDayGroups =
     sortMethod === "date" && searchTerm.trim().length === 0;
   const numColumns = isLarge && showsDayGroups ? 2 : 1;
-  const bottomTabBarHeight = insets.bottom;
 
   return (
     <List
@@ -110,8 +111,8 @@ const TasksList: React.FC<TasksListProps> = ({
       style={styles.list}
       contentContainerStyle={{
         paddingHorizontal: 16,
-        paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
-        paddingTop: headerHeight + (Platform.OS === "android" ? 10 : 0),
+        paddingBottom: 16,
+        paddingTop: Platform.OS === "android" ? 10 : 0,
         paddingLeft: insets.left + 16,
       }}
       scrollIndicatorInsets={{
@@ -120,14 +121,15 @@ const TasksList: React.FC<TasksListProps> = ({
       ListEmptyComponent={<EmptyState isSearching={searchTerm.length > 0} />}
       ListHeaderComponent={
         searchTerm.trim().length === 0 ? (
-          <TasksSummary sections={sections} />
+          <TasksSummary sections={sections} headerHeight={headerHeight} />
         ) : null
       }
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          progressViewOffset={headerHeight}
+          progressViewOffset={headerHeight - insets.top }
+          tintColor={colors.tint}
         />
       }
     >
