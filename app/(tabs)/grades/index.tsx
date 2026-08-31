@@ -7,7 +7,7 @@ import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
-import { Grade, GradeScore, Period, Subject } from "@/services/shared/grade";
+import { GradeScore, Period, Subject } from "@/services/shared/grade";
 import { useSettingsStore } from "@/stores/settings";
 import ChipButton from '@/ui/components/ChipButton';
 import { Dynamic } from '@/ui/components/Dynamic';
@@ -319,7 +319,7 @@ const GradesView: React.FC = () => {
   const ListHeader = useMemo(
     () =>
       sortedGrades.length > 0 && searchText.length === 0 ? (
-        <View style={{ }}>
+        <View style={{}}>
           <ErrorBoundary>
             <Averages
               grades={grades.filter(v => v.studentScore !== undefined)}
@@ -327,7 +327,7 @@ const GradesView: React.FC = () => {
               realAverage={serviceAverage || undefined}
               displayScale={displayScale}
               paddingTop={
-                headerHeight - (Platform.OS === "ios" ? insets.top : 0) + 0
+                headerHeight - (Platform.OS === "ios" ? insets.top : 0)
               }
               largeElement={
                 <CompactGradeList
@@ -405,7 +405,13 @@ const GradesView: React.FC = () => {
             </Stack>
           </Dynamic>
         </View>
-      ) : null,
+      ) : (
+        <View
+          style={{
+            height: headerHeight - (Platform.OS === "ios" ? insets.top : 0) + 20,
+          }}
+        />
+      ),
     [
       sortedGrades,
       searchText,
