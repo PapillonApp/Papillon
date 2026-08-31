@@ -87,7 +87,7 @@
     "lottie-react-native": "^7.3.4",
     "lucide-react-native": "^0.511.0",
     "patch-package": "^8.0.1",
-    "pawnote": "^1.6.2",
+    "pawnote": "file:modules/pawnote-1.6.2.tgz",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-i18next": "^15.7.4",
