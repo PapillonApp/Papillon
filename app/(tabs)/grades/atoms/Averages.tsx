@@ -1,4 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
+import MaskedView from "@react-native-masked-view/masked-view";
 import { useTheme } from "expo-router/react-navigation";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,7 +12,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { ColorValue, Platform, TouchableOpacity, View } from "react-native";
+import { ColorValue, Platform, View } from "react-native";
 import { LineGraph } from "react-native-graph";
 import { LayoutAnimationConfig } from "react-native-reanimated";
 import Reanimated from "react-native-reanimated";
@@ -48,7 +49,6 @@ import {
   foregroundStyle,
   padding,
 } from "@expo/ui/swift-ui/modifiers";
-import useResizable from "@/ui/utils/Resizable";
 
 const algorithms = [
   {
@@ -97,7 +97,8 @@ const Averages = ({
     const accent = color || theme.colors.primary;
     const adjustedColor = adjust(accent, theme.dark ? 0.2 : -0.2);
     const papillonFont = useFont();
-    const resizable = useResizable();
+    const [containerWidth, setContainerWidth] = useState(0);
+    const isLargeLayout = !inline && containerWidth >= 600;
 
     const [algorithm, setAlgorithm] = useState(algorithms[0]);
 
@@ -235,15 +236,41 @@ const Averages = ({
 
     if (hasOnlySkills) return null;
 
+    const graph =
+      graphAxis.length > 0 ? (
+        <LineGraph
+          points={graphAxis}
+          animated={true}
+          color={adjustedColor}
+          enablePanGesture={true}
+          onPointSelected={handleGestureUpdate}
+          onGestureEnd={handleGestureEnd}
+          verticalPadding={inline ? 20 : 30}
+          horizontalPadding={inline ? 12 : 30}
+          lineThickness={inline ? 4.5 : 5}
+          panGestureDelay={0}
+          enableIndicator={true}
+          enableFadeInMask={false}
+          indicatorPulsating={true}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        />
+      ) : null;
+
     return (
       <Reanimated.View
+        onLayout={({ nativeEvent }) => {
+          setContainerWidth(nativeEvent.layout.width);
+        }}
         style={{
           width: "100%",
           paddingTop: inline ? 0 : 220 + paddingTop + 20,
           marginBottom: inline ? 0 : -30,
           borderRadius: inline ? 25 : 0,
           overflow: inline ? "hidden" : "visible",
-          height: inline ? undefined : resizable.isLarge ? 420 : 220,
+          height: inline ? undefined : isLargeLayout ? 420 : 220,
         }}
         entering={!inline ? PapillonAppearIn : undefined}
         exiting={!inline ? PapillonAppearOut : undefined}
@@ -265,7 +292,7 @@ const Averages = ({
                     overflow: "hidden",
                     backgroundColor: "transparent",
                     marginTop: -8,
-                    height: 120
+                    height: 120,
                   }
                 : {
                     position: "absolute",
@@ -292,42 +319,50 @@ const Averages = ({
             )}
 
             <View
-              style={{
-                height: 120,
-                width: "100%",
-                marginLeft: inline ? -2 : 0,
-                marginTop: -10,
-                justifyContent: "center",
-              }}
+              style={
+                inline
+                  ? {
+                      position: "absolute",
+                      top: 0,
+                      right: 12,
+                      bottom: 0,
+                      left: "52%",
+                      justifyContent: "center",
+                    }
+                  : {
+                      height: 120,
+                      width: "100%",
+                      marginTop: -10,
+                      justifyContent: "center",
+                    }
+              }
             >
               <View
                 style={{
                   width: "100%",
-                  height: 125,
-                  marginLeft: -30,
+                  height: inline ? 88 : 125,
+                  marginLeft: inline ? 0 : -30,
+                  overflow: "hidden",
                 }}
               >
-                {graphAxis.length > 0 ? (
-                  <LineGraph
-                    points={graphAxis}
-                    animated={true}
-                    color={adjustedColor}
-                    enablePanGesture={true}
-                    onPointSelected={handleGestureUpdate}
-                    onGestureEnd={handleGestureEnd}
-                    verticalPadding={30}
-                    horizontalPadding={30}
-                    lineThickness={inline ? 4.5 : 5}
-                    panGestureDelay={0}
-                    enableIndicator={true}
-                    enableFadeInMask={false}
-                    indicatorPulsating={true}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                    }}
-                  />
-                ) : null}
+                {inline && graph ? (
+                  <MaskedView
+                    style={{ width: "100%", height: "100%" }}
+                    maskElement={
+                      <LinearGradient
+                        colors={["#00000000", "#000000", "#000000"]}
+                        locations={[0, 0.22, 1]}
+                        start={[0, 0]}
+                        end={[1, 0]}
+                        style={{ flex: 1 }}
+                      />
+                    }
+                  >
+                    {graph}
+                  </MaskedView>
+                ) : (
+                  graph
+                )}
               </View>
             </View>
 
@@ -336,8 +371,8 @@ const Averages = ({
               inline
               width={"100%"}
               direction={"horizontal"}
-              hAlign={"center"}
-              height={inline ? 80 : resizable.isLarge ? 140 : 100}
+              hAlign={isLargeLayout ? "end" : "center"}
+              height={inline ? 80 : isLargeLayout ? 140 : 100}
               style={
                 inline
                   ? {
@@ -355,8 +390,15 @@ const Averages = ({
                 gap={0}
                 style={[
                   {
-                    paddingHorizontal: 20,
-                    width: resizable.isLarge ? 200 : "100%",
+                    paddingHorizontal: inline ? 16 : 24,
+                    width: inline ? "58%" : isLargeLayout ? 200 : "100%",
+                    marginTop: inline ? 0 : -12,
+                  },
+                  isLargeLayout && {
+                    position: "absolute",
+                    left: 0,
+                    bottom: 0,
+                    marginTop: 0,
                   },
                   inline && {
                     position: "absolute",
@@ -413,7 +455,7 @@ const Averages = ({
                     animated
                     direction="horizontal"
                     hAlign="end"
-                    vAlign="end"
+                    vAlign="start"
                     gap={2}
                   >
                     <AnimatedNumber
@@ -495,11 +537,9 @@ const Averages = ({
                     }
                   }}
                 >
-                  <TouchableOpacity
-                    style={{ width: "100%", overflow: "hidden" }}
-                  >
+                  <View style={{ width: "100%", overflow: "hidden" }}>
                     <Stack
-                      hAlign="center"
+                      hAlign="start"
                       vAlign={"start"}
                       direction="horizontal"
                       width={"100%"}
@@ -508,7 +548,7 @@ const Averages = ({
                       <Typography
                         variant={inline ? "body1" : "title"}
                         weight="bold"
-                        align="center"
+                        align="left"
                       >
                         {algorithm.label}
                       </Typography>
@@ -516,7 +556,7 @@ const Averages = ({
                         <Papicons name="chevronDown" />
                       </Icon>
                     </Stack>
-                  </TouchableOpacity>
+                  </View>
                 </ActionMenu>
 
                 <Dynamic
@@ -529,7 +569,7 @@ const Averages = ({
                     style={{ marginTop: inline ? 0 : 1 }}
                     numberOfLines={1}
                     ellipsizeMode="tail"
-                    align={inline ? "left" : "center"}
+                    align="left"
                   >
                     {isRealAverage
                       ? "par l'établissement"
@@ -546,8 +586,13 @@ const Averages = ({
                 </Dynamic>
                 {!inline && <View style={{ height: 14 }} />}
               </Stack>
-              {!inline && (
-                <View style={{ flex: 1, marginLeft: -20 }}>
+              {isLargeLayout && (
+                <View
+                  style={{
+                    flex: 1,
+                    marginLeft: 224,
+                  }}
+                >
                   {largeElement && largeElement}
                 </View>
               )}

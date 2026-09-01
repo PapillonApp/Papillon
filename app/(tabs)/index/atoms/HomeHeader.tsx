@@ -27,7 +27,7 @@ const HomeHeader = () => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { colors } = theme;
-  const { availableCanteenCards, attendancesPeriods, attendances, absencesCount, chats } = useHomeHeaderData();
+  const { availableCanteenCards, attendancesPeriods, attendances, absencesCount, news } = useHomeHeaderData();
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const currentVersion = packageJson.version;
@@ -55,8 +55,9 @@ const HomeHeader = () => {
   const HomeHeaderButtons: HomeHeaderButtonItem[] = useMemo(() => [
     {
       title: t("Home_Cards_Button_Title"),
+      image: require("@/assets/shaded_icons/cards.png"),
       icon: "card",
-      color: "#EE9F00",
+      color: "#c800ad",
       description: availableCanteenCards.length > 0 ?
         (availableCanteenCards.length > 1 ? t("Home_Cards_Button_Description_Number", { number: availableCanteenCards.length }) :
           t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None"),
@@ -67,8 +68,9 @@ const HomeHeader = () => {
     },
     {
       title: t("Home_Menu_Button_Title"),
+      image: require("@/assets/shaded_icons/menu.png"),
       icon: "cutlery",
-      color: "#7ED62B",
+      color: "#46c700",
       description: t("Home_Menu_Button_Description"),
       onPress: () => {
         router.push("/(features)/soon");
@@ -77,8 +79,9 @@ const HomeHeader = () => {
     },
     {
       title: t("Home_Attendance_Title"),
+      image: require("@/assets/shaded_icons/homework.png"),
       icon: "chair",
-      color: "#D62B94",
+      color: "#ffae00",
       description: absencesCount > 0 ?
         (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular"))
         : t("Home_Attendance_Button_Description_None"),
@@ -104,18 +107,17 @@ const HomeHeader = () => {
       },
     },
     {
-      title: t("Home_Chats_Button_Title"),
-      icon: "textbubble",
-      color: "#2B7ED6",
-      description: chats.length > 0 ?
-        (chats.length > 1 ? t("Home_Chats_Button_Description_Number", { number: chats.length }) : t("Home_Chats_Button_Description_Singular"))
-        : t("Home_Chats_Button_Description_None"),
+      title: t("Tab_News"),
+      image: require("@/assets/shaded_icons/actu.png"),
+      icon: "newspaper",
+      color: "#0080ff",
+      description: news[0]?.title ?? t("News_Empty_Title"),
       onPress: () => {
-        router.push("/(features)/soon");
+        router.push("/(features)/(news)/news");
       },
-      route: "/(features)/soon"
+      route: "/(features)/(news)/news"
     }
-  ], [availableCanteenCards, absencesCount, chats, currentAttendancePeriod, attendancesPeriods, attendances, t]);
+  ], [availableCanteenCards, absencesCount, news, currentAttendancePeriod, attendancesPeriods, attendances, t]);
 
   return (
     <View style={{ paddingHorizontal: 0, width: "100%", flex: 1, overflow: "visible" }}>
@@ -127,7 +129,9 @@ const HomeHeader = () => {
 
               <View key={i} style={{ flexDirection: 'row', gap: 6, width: '100%' }}>
                 {HomeHeaderButtons.slice(i * 2, i * 2 + 2).map((item) => (
-                  <HomeHeaderButton key={item.title} item={item} />
+                  <HomeHeaderButton
+                    key={item.title} item={item}
+                  />
                 ))}
                 {HomeHeaderButtons.slice(i * 2, i * 2 + 2).length === 1 && <View style={{ flex: 1 }} />}
               </View>

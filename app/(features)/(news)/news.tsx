@@ -1,6 +1,7 @@
 import { useNews } from '@/database/useNews'
 import { getManager, subscribeManagerUpdate } from '@/services/shared'
 import Avatar from '@/ui/components/Avatar'
+import ChipButton from '@/ui/components/ChipButton'
 import { Dynamic } from '@/ui/components/Dynamic'
 import Icon from '@/ui/components/Icon'
 import Search from '@/ui/components/Search'
@@ -16,10 +17,10 @@ import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 import { Papicons } from '@getpapillon/papicons'
 import { useTheme } from "expo-router/react-navigation"
-import { router, useRouter } from 'expo-router'
+import { router } from 'expo-router'
 import { t } from 'i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Platform, View } from 'react-native'
+import { Platform } from 'react-native'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -82,6 +83,8 @@ const NewsView = () => {
   return (
     <>
       <TabHeader
+        showAndroidBackButton
+        modal
         onHeightChanged={setHeaderHeight}
         title={
           <TabHeaderTitle
@@ -92,12 +95,18 @@ const NewsView = () => {
           />
         }
         bottom={<Search placeholder={t('News_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
+        trailing={
+          Platform.OS === 'ios' ? (
+            <ChipButton single icon='cross' onPress={() => router.dismiss()} />
+          ) : undefined
+        }
       />
 
       <LayoutAnimationConfig skipEntering>
         <List
           animated
           contentContainerStyle={{
+            paddingTop: headerHeight,
             paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
             paddingHorizontal: 16,
             gap: 9,
@@ -115,7 +124,6 @@ const NewsView = () => {
           }
           ListFooterComponent={<Reanimated.View style={footerStyle} />}
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
-          ListHeaderComponent={<View style={{ height: headerHeight - (Platform.OS === "ios" ? insets.top : 0) }} />}
           ListEmptyComponent={
             <Dynamic animated key='empty-list:warn' entering={PapillonAppearIn} exiting={PapillonAppearOut}>
               <Stack
@@ -145,12 +153,7 @@ const NewsView = () => {
               <List.Item
                 key={item.id}
                 id={item.id}
-                onPress={() =>
-                  router.push({
-                    pathname: '/(modals)/news',
-                    params: { news: JSON.stringify(item) },
-                  })
-                }
+                href={{ pathname: "/(features)/(news)/specific", params: { id: item.id } }}
               >
                 <List.Leading>
                   <Avatar

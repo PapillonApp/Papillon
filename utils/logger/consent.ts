@@ -7,7 +7,7 @@ const storage = new MMKV();
 export type ConsentLevel = "none" | "essentials" | "advanced";
 
 const GIVEN_KEY = "consent-given";
-const LEVEL_KEY = "consent-level";
+const LEVEL_KEY = "consent-level"
 const DATE_KEY = "consent-date";
 
 export interface ConsentStatus {

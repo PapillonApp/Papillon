@@ -27,6 +27,38 @@ function mapHomeworkToShared(homework: Homework): SharedHomework {
   };
 }
 
+export function getHomeworkRouteId(homework: SharedHomework): string {
+  return generateId(
+    homework.subject +
+      homework.content +
+      homework.createdByAccount +
+      homework.dueDate.toDateString()
+  );
+}
+
+export async function getHomeworkById(id: string): Promise<SharedHomework | undefined> {
+  const database = getDatabaseInstance();
+  const records = await database
+    .get<Homework>("homework")
+    .query(Q.where("homeworkId", id))
+    .fetch();
+  const cachedHomework = records[0] ? mapHomeworkToShared(records[0]) : undefined;
+
+  if (!cachedHomework) return undefined;
+
+  try {
+    const { getManager } = await import("@/services/shared");
+    const manager = getManager();
+    const freshHomeworks = await manager?.getHomeworks(
+      getWeekNumberFromDate(cachedHomework.dueDate)
+    );
+    return freshHomeworks?.find(homework => getHomeworkRouteId(homework) === id) ?? cachedHomework;
+  } catch (error) {
+    warn(`Unable to refresh homework ${id}: ${String(error)}`);
+    return cachedHomework;
+  }
+}
+
 export function useHomeworkForWeek(weekNumber: number, refresh = 0) {
   const database = useDatabase();
   const [homeworks, setHomeworks] = useState<SharedHomework[]>([]);
@@ -77,9 +109,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   );
   for (const hw of homeworks) {
     const oldId = generateId(hw.subject + hw.content + hw.createdByAccount);
-    const id = generateId(
-      hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
-    );
+    const id = getHomeworkRouteId(hw);
 
     homeworkIds.push(oldId, id);
   }
@@ -96,9 +126,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
 
   for (const hw of homeworks) {
     const oldId = generateId(hw.subject + hw.content + hw.createdByAccount);
-    const id = generateId(
-      hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
-    );
+    const id = getHomeworkRouteId(hw);
 
     const existing = await db
       .get("homework")

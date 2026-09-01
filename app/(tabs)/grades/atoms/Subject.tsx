@@ -20,15 +20,11 @@ import { getSubjectAverage } from '@/utils/grades/algorithms/subject';
 import { Grade as ServiceGrade } from '@/services/shared/grade';
 import { SkillChip } from "@/ui/components/SkillChip";
 
-const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
+const GradeItem = React.memo(({ grade, subjectName, subjectColor }: { grade: Grade, subjectName: string, subjectColor: string }) => {
   const dateString = useMemo(() => {
     // @ts-expect-error date type
     return grade.givenAt.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' });
   }, [grade.givenAt]);
-
-  const handlePress = useCallback(() => {
-    requestAnimationFrame(() => onPress(grade));
-  }, [grade, onPress]);
 
   const theme = useTheme();
 
@@ -37,7 +33,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
 
   return (
-    <List.Item onPress={handlePress}>
+    <List.Item href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }}>
       <Typography variant="title">
         {grade.description
           ? grade.description
@@ -135,7 +131,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
   );
 });
 
-export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number, displayScale: GradeDisplayScale }> = React.memo(({ subject, grades, getAvgInfluence, getAvgClassInfluence, displayScale }) => {
+export const SubjectItem: React.FC<{ subject: Subject, displayScale: GradeDisplayScale }> = React.memo(({ subject, displayScale }) => {
   const theme = useTheme();
   const navigation = useNavigation()
 
@@ -174,24 +170,6 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
       subject: subject
     });
   }, [navigation, subject]);
-
-  const handlePressGrade = useCallback(
-    (grade: Grade) => {
-      // @ts-expect-error navigation types
-      navigation.navigate('(modals)/grade', {
-        grade: grade,
-        subjectInfo: {
-          name: subjectName,
-          color: subjectAdjustedColor,
-          emoji: subjectEmoji,
-          originalName: subject.name
-        },
-        avgInfluence: getAvgInfluence(grade),
-        avgClass: getAvgClassInfluence(grade),
-      });
-    },
-    [navigation, subjectName, subjectAdjustedColor, subjectEmoji, subject.name, grades]
-  );
 
   return (
     <List.Section>
@@ -302,9 +280,6 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
           grade={grade}
           subjectName={subjectName}
           subjectColor={subjectAdjustedColor}
-          onPress={handlePressGrade}
-          getAvgInfluence={getAvgInfluence}
-          getAvgClassInfluence={getAvgClassInfluence}
         />
       ))}
     </List.Section>

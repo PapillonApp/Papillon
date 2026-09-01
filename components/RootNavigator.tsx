@@ -121,39 +121,7 @@ function RootNavigatorContent() {
           }}
         />
         <Stack.Screen
-          name="(modals)/task"
-          options={{
-            headerShown: Platform.OS !== "ios",
-            headerTitle: t("Modal_Task_Title"),
-            headerTransparent: true,
-            headerLargeTitle: false,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground,
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/grade"
-          options={{
-            headerShown: Platform.OS !== "ios",
-            headerTitle: t("Modal_Grades_Title"),
-            headerLargeTitle: false,
-            headerTransparent: true,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground,
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/news"
-          options={{
-            headerShown: true,
-            headerTitle: "",
-            headerLargeTitle: false,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground,
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/course"
+          name="(modals)/course/[id]"
           options={{
             headerShown: Platform.OS !== "ios",
             headerTitle: t("Modal_Course_Title"),
@@ -200,10 +168,11 @@ function RootNavigatorContent() {
         <Stack.Screen
           name="(features)/(news)/news"
           options={{
-            headerShown: true,
+            headerShown: false,
             headerTitle: t("Tab_News"),
             headerTransparent: runsIOS26,
             headerLargeTitle: false,
+            presentation: "modal",
           }}
         />
 

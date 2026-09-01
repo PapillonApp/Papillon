@@ -1,6 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from "expo-router/react-navigation";
-import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, RefreshControl, View } from "react-native";
@@ -8,7 +7,7 @@ import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
-import { Grade, GradeScore, Period, Subject } from "@/services/shared/grade";
+import { GradeScore, Period, Subject } from "@/services/shared/grade";
 import { useSettingsStore } from "@/stores/settings";
 import ChipButton from '@/ui/components/ChipButton';
 import { Dynamic } from '@/ui/components/Dynamic';
@@ -24,15 +23,12 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import i18n from '@/utils/i18n';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
-import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 
 import Averages from './atoms/Averages';
 import FeaturesMap from './atoms/FeaturesMap';
 import { SubjectItem } from './atoms/Subject';
-import { useGradeInfluence } from './hooks/useGradeInfluence';
 import List from '@/ui/new/List';
 import ActionMenu from '@/ui/components/ActionMenu';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
@@ -49,7 +45,6 @@ const GradesView: React.FC = () => {
   const insets = useSafeAreaInsets();
   const resize = useResizable();
   const bottomTabBarHeight = insets.bottom;
-  const navigation = useNavigation();
 
   // Chargement
   const [periodsLoading, setPeriodsLoading] = useState(true);
@@ -314,40 +309,17 @@ const GradesView: React.FC = () => {
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod, periods]);
 
-  const onPressCompactGrade = (grade: Grade) => {
-    navigation.navigate("(modals)/grade", {
-      grade: grade,
-      subjectInfo: {
-        name: getSubjectName(
-          getSubjectById(grade.subjectId)?.name || ""
-        ),
-        color: getSubjectColor(
-          getSubjectById(grade.subjectId)?.name || ""
-        ),
-        emoji: getSubjectEmoji(
-          getSubjectById(grade.subjectId)?.name || ""
-        ),
-        originalName: getSubjectById(grade.subjectId)?.name || "",
-      },
-      avgInfluence: getAvgInfluence(grade),
-      avgClass: getAvgClassInfluence(grade),
-    });
-  };
-
   const keyboardHeight = useKeyboardHeight();
 
   const footerStyle = useAnimatedStyle(() => ({
     height: keyboardHeight.value - bottomTabBarHeight,
   }));
 
-  // influences
-  const { getAvgInfluence, getAvgClassInfluence } = useGradeInfluence(subjects, getSubjectById);
-
   // header
   const ListHeader = useMemo(
     () =>
       sortedGrades.length > 0 && searchText.length === 0 ? (
-        <View style={{ marginBottom: 16 }}>
+        <View style={{}}>
           <ErrorBoundary>
             <Averages
               grades={grades.filter(v => v.studentScore !== undefined)}
@@ -355,14 +327,13 @@ const GradesView: React.FC = () => {
               realAverage={serviceAverage || undefined}
               displayScale={displayScale}
               paddingTop={
-                headerHeight - (Platform.OS === "ios" ? insets.top : 0) + 12
+                headerHeight - (Platform.OS === "ios" ? insets.top : 0)
               }
               largeElement={
                 <CompactGradeList
                   grades={sortedGrades}
                   getSubjectById={getSubjectById}
                   large
-                  onPress={onPressCompactGrade}
                 />
               }
             />
@@ -409,7 +380,6 @@ const GradesView: React.FC = () => {
             <CompactGradeList
               grades={sortedGrades}
               getSubjectById={getSubjectById}
-              onPress={onPressCompactGrade}
             />
           )}
 
@@ -423,7 +393,7 @@ const GradesView: React.FC = () => {
               gap={8}
               vAlign="start"
               hAlign="center"
-              style={{ opacity: 0.4, marginBottom: -16 }}
+              style={{ opacity: 0.4 }}
               padding={[0, 0]}
             >
               <Icon size={20}>
@@ -435,7 +405,13 @@ const GradesView: React.FC = () => {
             </Stack>
           </Dynamic>
         </View>
-      ) : null,
+      ) : (
+        <View
+          style={{
+            height: headerHeight - (Platform.OS === "ios" ? insets.top : 0) + 20,
+          }}
+        />
+      ),
     [
       sortedGrades,
       searchText,
@@ -443,13 +419,12 @@ const GradesView: React.FC = () => {
       colors.primary,
       serviceAverage,
       serviceRank,
-      navigation,
       getSubjectById,
-      getAvgInfluence,
-      getAvgClassInfluence,
       features,
       displayScale,
       resize.isLarge,
+      headerHeight,
+      insets.top,
     ]
   );
 
@@ -592,9 +567,6 @@ const GradesView: React.FC = () => {
           <SubjectItem
             key={subject.id}
             subject={subject}
-            grades={grades}
-            getAvgInfluence={getAvgInfluence}
-            getAvgClassInfluence={getAvgClassInfluence}
             displayScale={displayScale}
           />
         ))}

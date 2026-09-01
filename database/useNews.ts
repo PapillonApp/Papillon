@@ -31,6 +31,28 @@ export function useNews(refresh = 0) {
   return news;
 }
 
+export function getNewsRouteId(item: SharedNews): string {
+  return generateId(item.author + item.title + item.createdByAccount);
+}
+
+export async function getNewsById(id: string): Promise<SharedNews | undefined> {
+  const database = getDatabaseInstance();
+  const records = await database
+    .get<News>('news')
+    .query(Q.where("newsId", id))
+    .fetch();
+  const cachedNews = records[0] ? mapNewsToShared(records[0]) : undefined;
+
+  try {
+    const { getManager } = await import("@/services/shared");
+    const freshNews = await getManager()?.getNews();
+    return freshNews?.find(item => getNewsRouteId(item) === id) ?? cachedNews;
+  } catch (error) {
+    warn(`Unable to refresh news ${id}: ${String(error)}`);
+    return cachedNews;
+  }
+}
+
 export async function addNewsToDatabase(news: SharedNews[]) {
   const db = getDatabaseInstance();
 
@@ -38,7 +60,7 @@ export async function addNewsToDatabase(news: SharedNews[]) {
   const itemsToUpdate: Array<{ record: Model; item: SharedNews }> = [];
 
   for (const item of news) {
-    const id = generateId(item.author + item.title + item.createdByAccount);
+    const id = getNewsRouteId(item);
 
     const existingRecords = await db.get('news')
       .query(Q.where("newsId", id))
@@ -117,7 +139,7 @@ export async function getNewsFromCache(): Promise<SharedNews[]> {
 
 function mapNewsToShared(news: News): SharedNews {
   return {
-    id: news.id,
+    id: news.newsId,
     title: news.title,
     createdAt: new Date(news.createdAt),
     acknowledged: news.acknowledged,
@@ -126,6 +148,7 @@ function mapNewsToShared(news: News): SharedNews {
     author: news.author,
     category: news.category,
     createdByAccount: news.createdByAccount,
-    fromCache: true
+    fromCache: true,
+    question: news.question,
   };
 }

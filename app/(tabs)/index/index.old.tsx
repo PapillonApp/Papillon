@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { useNavigation, useRouter } from "expo-router";
+import { Link, useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
 import { instance } from "pawnote";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -46,6 +46,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 
 import { getStatusText } from "../calendar";
 import GradesWidget from "./widgets/Grades";
+import { getCourseRouteId } from "@/database/useTimetable";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -492,31 +493,25 @@ const IndexScreen = () => {
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
                 {courses.filter(item => item.to.getTime() > Date.now()).slice(0, 2).map(item => (
-                  <Course
+                  <Link
                     key={item.id}
-                    id={item.id}
-                    name={getSubjectName(item.subject)}
-                    teacher={item.teacher}
-                    room={item.room}
-                    color={getSubjectColor(item.subject)}
-                    status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
-                    variant="primary"
-                    start={Math.floor(item.from.getTime() / 1000)}
-                    end={Math.floor(item.to.getTime() / 1000)}
-                    readonly={!!item.createdByAccount}
-                    compact={true}
-                    onPress={() => {
-                      (navigation as any).navigate('(modals)/course', {
-                        course: item,
-                        subjectInfo: {
-                          id: item.id,
-                          name: item.subject,
-                          color: getSubjectColor(item.subject),
-                          emoji: getSubjectEmoji(item.subject),
-                        }
-                      });
-                    }}
-                  />
+                    href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(item) } }}
+                    asChild
+                  >
+                    <Course
+                      id={item.id}
+                      name={getSubjectName(item.subject)}
+                      teacher={item.teacher}
+                      room={item.room}
+                      color={getSubjectColor(item.subject)}
+                      status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
+                      variant="primary"
+                      start={Math.floor(item.from.getTime() / 1000)}
+                      end={Math.floor(item.to.getTime() / 1000)}
+                      readonly={!!item.createdByAccount}
+                      compact={true}
+                    />
+                  </Link>
                 ))}
               </Stack>
             )
@@ -573,30 +568,24 @@ const IndexScreen = () => {
                 data={grades}
                 keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
-                  <CompactGrade
-                    title={item.subjectName}
-                    score={item.studentScore?.value ?? 0}
-                    description={item.description}
-                    outOf={item.outOf.value}
-                    emoji={getSubjectEmoji(item.subjectName)}
-                    disabled={item.studentScore?.disabled}
-                    status={item.studentScore?.status}
-                    color={adjust(getSubjectColor(item.subjectName), -0.1)}
-                    date={item.givenAt}
-                    variant="home"
-                    onPress={() => {
-                      (navigation as any).navigate('(modals)/grade', {
-                        grade: item,
-                        subjectInfo: {
-                          id: item.subjectId,
-                          name: item.subjectName,
-                          emoji: getSubjectEmoji(item.subjectName),
-                          color: getSubjectColor(item.subjectName)
-                        },
-                        allGrades: grades
-                      });
-                    }}
-                  />
+                  <Link
+                    href={{ pathname: "/(tabs)/grades/[id]", params: { id: item.id } }}
+                    asChild
+                  >
+                    <CompactGrade
+                      title={item.subjectName}
+                      score={item.studentScore?.value ?? 0}
+                      description={item.description}
+                      outOf={item.outOf.value}
+                      emoji={getSubjectEmoji(item.subjectName)}
+                      disabled={item.studentScore?.disabled}
+                      status={item.studentScore?.status}
+                      color={adjust(getSubjectColor(item.subjectName), -0.1)}
+                      date={item.givenAt}
+                      variant="home"
+                      skillLevel={[]}
+                    />
+                  </Link>
                 )}
               />
             )

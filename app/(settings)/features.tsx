@@ -7,7 +7,6 @@ import Typography from "@/ui/new/Typography";
 import NativeSwitch from "@/ui/native/NativeSwitch";
 import { useTranslation } from "react-i18next";
 import Icon from "@/ui/components/Icon";
-import NativePicker from "@/ui/native/NativePicker";
 import { useMemo } from "react";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 import Picker from "@/ui/components/Picker";
@@ -20,7 +19,6 @@ export default function SettingsFeatures() {
 
   const iOSBottomAccessoryEnabled = settingsStore.iOSBottomAccessoryEnabled ?? true;
   const showTabBarLabels = settingsStore.showTabBarLabels ?? true;
-  const knowunityEnabled = settingsStore.knowunityEnabled ?? true;
   const selectedGradeScale = getGradeDisplayScale(settingsStore.gradesDisplayScale);
 
   const gradeScaleOptions = [
@@ -138,34 +136,6 @@ export default function SettingsFeatures() {
         </List.Item>
       </List.Section>
 
-      <List.Section>
-        <List.SectionTitle>
-          <List.Label>{t("Settings_Features_Partners")}</List.Label>
-        </List.SectionTitle>
-
-        <List.Item>
-          <List.Leading>
-            <Icon>
-              <Papicons name={"Sparkles"} />
-            </Icon>
-          </List.Leading>
-          <Typography variant="title">{t("Settings_Features_Knowunity")}</Typography>
-          <Typography color="textSecondary" numberOfLines={2}>
-            {t("Settings_Features_Knowunity_Description")}
-          </Typography>
-          <List.Trailing>
-            <NativeSwitch
-              value={knowunityEnabled}
-              onValueChange={(value) =>
-                mutateProperty("personalization", {
-                  ...settingsStore,
-                  knowunityEnabled: value,
-                })
-              }
-            />
-          </List.Trailing>
-        </List.Item>
-      </List.Section>
     </List>
   );
 }

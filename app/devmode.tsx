@@ -214,8 +214,8 @@ export default function DevMode() {
   };
 
   return (
-    <View style={{ paddingTop: headerHeight, padding: 16, flex: 1 }}>
-      <List showsVerticalScrollIndicator={false} animated contentInsetAdjustmentBehavior="always">
+    <View style={{ flex: 1 }}>
+      <List showsVerticalScrollIndicator={false} animated contentInsetAdjustmentBehavior="always" contentContainerStyle={{ padding: 16 }}>
         <List.Section>
           <List.SectionTitle>
             <Papicons name="Code" color={String(colors.text) + "88"} />

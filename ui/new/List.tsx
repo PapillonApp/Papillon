@@ -1,4 +1,5 @@
 import { useTheme } from "expo-router/react-navigation";
+import { Href, Link } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
@@ -16,6 +17,7 @@ type ListItemProps = MarkerProps & {
   id?: string;
   animated?: boolean;
   onPress?: () => void;
+  href?: Href;
   containerStyle?: any;
   style?: any;
   entering?: any;
@@ -115,6 +117,37 @@ const renderListRow = ({
   const ItemComponent = listAnimated ? Reanimated.View : View;
   const entering = itemProps.entering ?? (itemProps.animated ? PapillonAppearIn : undefined);
   const exiting = itemProps.exiting ?? (itemProps.animated ? PapillonAppearOut : undefined);
+  const row = (
+    <View
+      style={[
+        styles.row,
+        isFirst && styles.first,
+        isLast && styles.last,
+        {
+          backgroundColor: colors.item,
+          overflow: "hidden",
+          ...itemProps.style,
+        },
+        Platform.OS === "android"
+          ? {
+              borderTopLeftRadius: isFirst ? 20 : 8,
+              borderTopRightRadius: isFirst ? 20 : 8,
+              borderBottomLeftRadius: isLast ? 20 : 8,
+              borderBottomRightRadius: isLast ? 20 : 8,
+            }
+          : null,
+      ]}
+    >
+      {leading && <View style={styles.leading}>{leading}</View>}
+      <View style={styles.body}>{main}</View>
+      {trailing && <View style={styles.trailing}>{trailing}</View>}
+    </View>
+  );
+  const touchable = (
+    <ListTouchable {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}>
+      {row}
+    </ListTouchable>
+  );
 
   return (
     <ItemComponent
@@ -145,32 +178,13 @@ const renderListRow = ({
       entering={entering}
       exiting={exiting}
     >
-      <ListTouchable {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}>
-        <View
-          style={[
-            styles.row,
-            isFirst && styles.first,
-            isLast && styles.last,
-            {
-              backgroundColor: colors.item,
-              overflow: "hidden",
-              ...itemProps.style,
-            },
-            Platform.OS === "android"
-              ? {
-                  borderTopLeftRadius: isFirst ? 20 : 8,
-                  borderTopRightRadius: isFirst ? 20 : 8,
-                  borderBottomLeftRadius: isLast ? 20 : 8,
-                  borderBottomRightRadius: isLast ? 20 : 8,
-                }
-              : null,
-          ]}
-        >
-          {leading && <View style={styles.leading}>{leading}</View>}
-          <View style={styles.body}>{main}</View>
-          {trailing && <View style={styles.trailing}>{trailing}</View>}
-        </View>
-      </ListTouchable>
+      {itemProps.href ? (
+        <Link href={itemProps.href} asChild>
+          {touchable}
+        </Link>
+      ) : (
+        touchable
+      )}
     </ItemComponent>
   );
 };
@@ -463,7 +477,10 @@ const List = ({
     flushImplicit();
 
     return output.map((entry, index) => {
-      if (index === 0) {
+      // In a multi-column layout, every item in the first visual row starts at
+      // the top. Applying the inter-section gap to the second item would
+      // stagger the columns before masonry positioning even begins.
+      if (index < numColumns) {
         return { ...entry, gapBefore: 0 };
       }
 
@@ -489,7 +506,7 @@ const List = ({
 
       return { ...entry, gapBefore: 0 };
     });
-  }, [children, gap]);
+  }, [children, gap, numColumns]);
 
   const ListComponent = FlashList;
 

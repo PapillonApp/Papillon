@@ -1,12 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { getChatsFromCache } from '@/database/useChat';
 import { AccountManager, getManager, subscribeManagerUpdate } from '@/services/shared';
 import { Attendance } from '@/services/shared/attendance';
-import { Chat } from '@/services/shared/chat';
 import { Period } from '@/services/shared/grade';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
+import { useNews } from '@/database/useNews';
 
 export const useHomeHeaderData = () => {
   const accounts = useAccountStore((state) => state.accounts);
@@ -29,7 +28,7 @@ export const useHomeHeaderData = () => {
 
   const attendancesPeriodsRef = useRef<Period[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const [chats, setChats] = useState<Chat[]>([]);
+  const news = useNews();
 
   const absencesCount = useMemo(() => {
     if (!attendances) return 0;
@@ -43,13 +42,6 @@ export const useHomeHeaderData = () => {
   }, [attendances]);
 
   useEffect(() => {
-    const init = async () => {
-      const cachedChats = await getChatsFromCache();
-      setChats(cachedChats);
-    };
-
-    init();
-
     const updateAttendance = async (manager: AccountManager) => {
       const periods = await manager.getAttendancePeriods();
       attendancesPeriodsRef.current = periods;
@@ -65,15 +57,9 @@ export const useHomeHeaderData = () => {
       setAttendances(fetchedAttendances);
     };
 
-    const updateDiscussions = async (manager: AccountManager) => {
-      const fetchedChats = await manager.getChats();
-      setChats(fetchedChats);
-    };
-
     const unsubscribe = subscribeManagerUpdate((_) => {
       const manager = getManager();
       updateAttendance(manager);
-      updateDiscussions(manager);
     });
 
     return () => unsubscribe();
@@ -84,6 +70,6 @@ export const useHomeHeaderData = () => {
     attendancesPeriods: attendancesPeriodsRef.current,
     attendances,
     absencesCount,
-    chats
+    news
   };
 };

@@ -107,7 +107,9 @@ export default function ServiceSelection() {
         ListHeaderComponent={() => (
           <Stack padding={[4, 0]} style={{ maxWidth: 500 }}>
             <Typography variant="h2">{titleString}</Typography>
-            <Typography variant="action" color="textSecondary">{t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}</Typography>
+            <Typography variant="action" color="textSecondary">
+              {t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}
+            </Typography>
             <Divider height={18} ghost />
           </Stack>
         )}
@@ -116,27 +118,49 @@ export default function ServiceSelection() {
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,
-          width: '100%',
+          width: "100%",
           maxWidth: 500,
-          marginHorizontal: 'auto'
+          marginHorizontal: "auto",
         }}
         style={{ flex: 1 }}
       >
-        {filteredServices.map((app) => (
-          <List.Item key={app.name} onPress={() => setSelectedService(app.name)} style={{
-            backgroundColor: selectedService === app.name ? adjust(colors.tint, theme.dark ? -0.8 : 0.9) : colors.item,
-            minHeight: 62
-          }}>
+        {filteredServices.map(app => (
+          <List.Item
+            key={app.name}
+            onPress={() => setSelectedService(app.name)}
+            style={{
+              backgroundColor:
+                selectedService === app.name
+                  ? adjust(colors.tint, theme.dark ? -0.8 : 0.9)
+                  : colors.item,
+              minHeight: 62,
+            }}
+          >
             <List.Leading>
-              <Stack animated direction="horizontal" hAlign="center" gap={12}>
-                {selectedService === app.name && <Dynamic animated entering={PapillonZoomIn} exiting={PapillonZoomOut}><Icon fill={colors.primary}><Papicons name="check" /></Icon></Dynamic>}
-
-                <Dynamic animated>
-                  <Image source={app.image} style={{ width: 32, height: 32, borderRadius: 10 }} />
-                </Dynamic>
-              </Stack>
+              <Dynamic animated>
+                <Image
+                  source={app.image}
+                  style={{ width: 32, height: 32, borderRadius: 10 }}
+                />
+              </Dynamic>
             </List.Leading>
-            <Dynamic animated><Typography variant="action">{app.title}</Typography></Dynamic>
+            <Dynamic animated>
+              <Typography variant="action">{app.title}</Typography>
+            </Dynamic>
+
+            <List.Trailing>
+              {selectedService === app.name && (
+                <Dynamic
+                  animated
+                  entering={PapillonZoomIn}
+                  exiting={PapillonZoomOut}
+                >
+                  <Icon fill={colors.primary}>
+                    <Papicons name="check" />
+                  </Icon>
+                </Dynamic>
+              )}
+            </List.Trailing>
           </List.Item>
         ))}
       </List>
@@ -148,12 +172,14 @@ export default function ServiceSelection() {
           borderTopColor: colors.border,
           borderTopWidth: 1,
           backgroundColor: colors.background,
-          alignItems: 'center'
+          alignItems: "center",
         }}
       >
         <Button
           label={t("ONBOARDING_CONTINUE")}
-          onPress={() => { loginToService(selectedService) }}
+          onPress={() => {
+            loginToService(selectedService);
+          }}
           disabled={!selectedService || !hasServiceRoute}
           maxWidth={500}
           fullWidth

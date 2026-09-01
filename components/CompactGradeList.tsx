@@ -16,18 +16,17 @@ import React, { JSX, useMemo } from "react";
 import { Grade, Subject } from "@/services/shared/grade";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
 
 export interface CompactGradeListProps {
   grades: Grade[];
   getSubjectById: (id: string) => Subject | undefined;
-  onPress?: (grade: Grade) => void;
   large?: boolean;
 }
 
 export function CompactGradeList({
   grades,
   getSubjectById,
-  onPress,
   large = false,
 }: CompactGradeListProps): JSX.Element {
   const list = useMemo(() => (
@@ -35,13 +34,16 @@ export function CompactGradeList({
       horizontal
       data={grades.slice(0, 10)}
       style={{
-        overflow: "hidden",
-        height: 140,
+        overflow: "visible",
+        height: 160,
+        marginVertical: -10,
       }}
       contentContainerStyle={{
         gap: 12,
         paddingStart: 16 + (large ? 20 : 0),
         paddingEnd: 4 + (large ? 20 : 0),
+        overflow: "visible",
+        paddingVertical: 10
       }}
       estimatedItemSize={210 + 12}
       showsHorizontalScrollIndicator={false}
@@ -49,24 +51,30 @@ export function CompactGradeList({
       keyExtractor={item => item.id}
       renderItem={({ item: grade }) => (
         <ErrorBoundary fallback={<View style={{ width: 140, height: 140 }} />}>
-          <CompactGrade
-            key={grade.id + "_compactGrade_header"}
-            emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
-            title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
-            description={grade.description}
-            skillLevel={grade.skills?.map(v => v.score) ?? []}
-            score={grade.studentScore?.value || 0}
-            outOf={grade.outOf?.value || 20}
-            disabled={grade.studentScore?.disabled}
-            status={grade.studentScore?.status}
-            color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
-            date={grade.givenAt}
-            hasMaxScore={
-              (grade?.studentScore?.value ?? 0) ===
-                (grade?.maxScore?.value ?? 1) && !grade?.studentScore?.disabled
-            }
-            onPress={() => onPress(grade)}
-          />
+          <Link
+            href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }}
+            asChild
+          >
+            <Link.AppleZoom>
+              <CompactGrade
+                key={grade.id + "_compactGrade_header"}
+                emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
+                title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
+                description={grade.description}
+                skillLevel={grade.skills?.map(v => v.score) ?? []}
+                score={grade.studentScore?.value || 0}
+                outOf={grade.outOf?.value || 20}
+                disabled={grade.studentScore?.disabled}
+                status={grade.studentScore?.status}
+                color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
+                date={grade.givenAt}
+                hasMaxScore={
+                  (grade?.studentScore?.value ?? 0) ===
+                    (grade?.maxScore?.value ?? 1) && !grade?.studentScore?.disabled
+                }
+              />
+            </Link.AppleZoom>
+          </Link>
         </ErrorBoundary>
       )}
     />
