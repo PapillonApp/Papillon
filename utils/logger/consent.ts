@@ -1,8 +1,7 @@
-import { MMKV } from "react-native-mmkv";
-
+import { createMMKV } from "react-native-mmkv";
 import { posthog } from "@/utils/logger/posthog";
 
-const storage = new MMKV();
+const storage = createMMKV();
 
 export type ConsentLevel = "none" | "essentials" | "advanced";
 
