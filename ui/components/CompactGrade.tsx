@@ -290,7 +290,7 @@ const CompactGradeContainer = ({
   if(Platform.OS === "ios") {
     return (
       <LiquidGlassView
-        glassType="clear"
+        glassType="regular"
         isInteractive={true}
         glassOpacity={1}
         style={{

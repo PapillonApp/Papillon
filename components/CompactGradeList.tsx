@@ -50,7 +50,6 @@ export function CompactGradeList({
       recycleItems={true}
       keyExtractor={item => item.id}
       renderItem={({ item: grade }) => (
-        <ErrorBoundary fallback={<View style={{ width: 140, height: 140 }} />}>
           <Link
             href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }}
             asChild
@@ -75,7 +74,6 @@ export function CompactGradeList({
               />
             </Link.AppleZoom>
           </Link>
-        </ErrorBoundary>
       )}
     />
   ), [grades]);
