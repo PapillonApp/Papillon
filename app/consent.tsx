@@ -11,10 +11,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
-import { checkConsent, setConsent } from "@/utils/logger/consent";
+import { checkConsent, ConsentLevel, setConsent } from "@/utils/logger/consent";
 import { ListTouchable } from "@/ui/new/List";
 
 export default function ConsentScreen() {
@@ -22,7 +21,7 @@ export default function ConsentScreen() {
 
   const router = useRouter();
 
-  const [currentConsent, setCurrentConsent] = useState<string | null>(null);
+  const [currentConsent, setCurrentConsent] = useState<ConsentLevel | null>(null);
 
   const theme = useTheme();
   const { colors } = theme;
@@ -30,22 +29,12 @@ export default function ConsentScreen() {
   useEffect(() => {
     checkConsent().then((consent) => {
       if (consent.given) {
-        if (consent.advanced) {
-          setCurrentConsent("advanced");
-        } else if (consent.optional) {
-          setCurrentConsent("optional");
-        } else if (consent.required) {
-          setCurrentConsent("required");
-        } else {
-          setCurrentConsent(null);
-        }
+        setCurrentConsent(consent.level);
       }
     });
   }, []);
 
-  console.log("currentConsent", currentConsent)
-
-  const consents = [
+  const consents: { key: ConsentLevel; title: string; description: string; icon: string; color: string }[] = [
     {
       key: "advanced",
       title: t("Consent_Advanced_Title"),
@@ -54,7 +43,7 @@ export default function ConsentScreen() {
       color: "#C50083"
     },
     {
-      key: "optional",
+      key: "essentials",
       title: t("Consent_Required_Title"),
       description: t("Consent_Required_Description"),
       icon: "ghost",
@@ -73,8 +62,8 @@ export default function ConsentScreen() {
     return consents.find(c => c.key === currentConsent)?.color || theme.colors.primary;
   }, [currentConsent, theme]);
 
-  const saveConsentState = async (consent: string) => {
-    await setConsent(consent as "none" | "required" | "optional" | "advanced");
+  const saveConsentState = async (consent: ConsentLevel) => {
+    await setConsent(consent);
     router.back();
   };
 

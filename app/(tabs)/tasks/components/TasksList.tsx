@@ -112,7 +112,11 @@ const TasksList: React.FC<TasksListProps> = ({
       contentContainerStyle={{
         paddingHorizontal: 16,
         paddingBottom: 16,
-        paddingTop: Platform.OS === "android" ? 10 : 0,
+        paddingTop:
+          searchTerm.trim().length === 0 && visibleSections.length !== 0
+            ? 0
+            : headerHeight +
+              (Platform.OS === "android" ? 10 : -insets.top + 10),
         paddingLeft: insets.left + 16,
       }}
       scrollIndicatorInsets={{
@@ -128,7 +132,7 @@ const TasksList: React.FC<TasksListProps> = ({
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          progressViewOffset={headerHeight - insets.top }
+          progressViewOffset={headerHeight - insets.top}
           tintColor={colors.tint}
         />
       }
