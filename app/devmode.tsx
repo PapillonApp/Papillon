@@ -106,7 +106,7 @@ export default function DevMode() {
   }
 
   async function ClearAccounts() {
-    useAccountStore.getState().reset();
+    await useAccountStore.getState().reset();
   }
   async function ClearMagicCache() {
     useMagicStore.getState().clear();
@@ -189,7 +189,9 @@ export default function DevMode() {
               for (const service of mockServices) {
                 await ClearDatabaseForAccount(service.id);
                 getManager()?.removeService(service.id);
-                useAccountStore.getState().removeServiceFromAccount(service.id);
+                await useAccountStore
+                  .getState()
+                  .removeServiceFromAccount(service.id);
               }
 
               useSettingsStore.getState().mutateProperty("personalization", {

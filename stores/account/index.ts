@@ -1,25 +1,60 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { log } from "@/utils/logger/logger";
+import { deleteMyCpeToken } from "@/services/mycpe/token-storage";
+import { log, warn } from "@/utils/logger/logger";
 import { trackAdvancedEvent, trackOptionalEvent } from "@/utils/logger/analytics";
 import { initializeTransport } from "@/utils/transport";
 
 import { createMMKVStorage } from '../global'
-import { AccountsStorage, Auth, TransportAddress } from "./types";
+import {
+  AccountsStorage,
+  Auth,
+  ServiceAccount,
+  Services,
+  TransportAddress,
+} from "./types";
+
+const clearServiceSecrets = async (
+  services: ServiceAccount[]
+): Promise<boolean> => {
+  let cleared = true;
+
+  for (const service of services) {
+    if (service.serviceId !== Services.MYCPE) continue;
+
+    try {
+      await deleteMyCpeToken(service.id);
+    } catch (cleanupError) {
+      cleared = false;
+      warn(
+        `Unable to remove secure credentials for service ${service.id}: ${String(cleanupError)}`,
+        "accountStore.clearServiceSecrets"
+      );
+    }
+  }
+
+  return cleared;
+};
 
 export const useAccountStore = create<AccountsStorage>()(
   persist(
     (set, get) => ({
       lastUsedAccount: "",
       accounts: [],
-      reset: () => {
+      reset: async () => {
+        const services = get().accounts.flatMap(account => account.services);
+        if (!(await clearServiceSecrets(services))) return false;
+
         set({
           lastUsedAccount: "",
           accounts: [],
         });
+        return true;
       },
-      removeAccount: account => {
+      removeAccount: async account => {
+        if (!(await clearServiceSecrets(account.services))) return false;
+
         const accounts = get().accounts.filter(a => a.id !== account.id);
         const lastUsedAccount = get().lastUsedAccount;
 
@@ -30,6 +65,7 @@ export const useAccountStore = create<AccountsStorage>()(
               ? (accounts[0]?.id ?? "")
               : lastUsedAccount,
         });
+        return true;
       },
       addAccount: account => {
         set({ accounts: [...get().accounts, account] });
@@ -68,7 +104,12 @@ export const useAccountStore = create<AccountsStorage>()(
         });
         trackAdvancedEvent("external_account_added");
       },
-      removeServiceFromAccount: serviceId =>
+      removeServiceFromAccount: async serviceId => {
+        const services = get()
+          .accounts.flatMap(account => account.services)
+          .filter(service => service.id === serviceId);
+        if (!(await clearServiceSecrets(services))) return false;
+
         set({
           accounts: get().accounts.map(account => {
             if (account.services.find(service => service.id === serviceId)) {
@@ -81,7 +122,9 @@ export const useAccountStore = create<AccountsStorage>()(
             }
             return account;
           }),
-        }),
+        });
+        return true;
+      },
       setAccountProfilePicture: (accountId, profilePicture) =>
         set({
           accounts: get().accounts.map(account => {

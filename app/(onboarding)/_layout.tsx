@@ -79,6 +79,14 @@ export default function OnboardingLayout() {
           name="services/appscho"
           options={{ headerShown: false, title: "" }}
         />
+        <Stack.Screen
+          name="services/mycpe"
+          options={{
+            headerShown: false,
+            title: "",
+            presentation: "formSheet",
+          }}
+        />
       </Stack>
     </View>
   );

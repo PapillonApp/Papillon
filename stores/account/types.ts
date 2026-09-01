@@ -10,13 +10,13 @@ import { Skolengo } from "skolengojs";
 export interface AccountsStorage {
   lastUsedAccount: string;
   accounts: Account[];
-  reset: () => void;
-  removeAccount: (account: Account) => void;
+  reset: () => Promise<boolean>;
+  removeAccount: (account: Account) => Promise<boolean>;
   addAccount: (account: Account) => void;
   setLastUsedAccount: (accountId: string) => void;
   updateServiceAuthData: (serviceId: string, authData: Auth) => void;
   addServiceToAccount: (accountId: string, service: ServiceAccount) => void;
-  removeServiceFromAccount: (serviceId: string) => void;
+  removeServiceFromAccount: (serviceId: string) => Promise<boolean>;
   setAccountName: (
     accountId: string,
     firstName: string,
@@ -132,4 +132,5 @@ export enum Services {
   ALISE,
   APPSCHO,
   MOCK_DATA = 10,
+  MYCPE = 11,
 }

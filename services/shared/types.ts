@@ -9,6 +9,7 @@ import { Client as TurboselfClient } from "turboself-api";
 
 import { Appscho } from "@/services/appscho";
 import type { MockData } from "@/services/mock";
+import type { MyCpe } from "@/services/mycpe";
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
 import {
@@ -62,7 +63,19 @@ export interface SchoolServicePlugin {
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | MockData>;
+  ) => Promise<
+    | Pronote
+    | Skolengo
+    | EcoleDirecte
+    | Multi
+    | TurboSelf
+    | ARD
+    | Izly
+    | Alise
+    | Appscho
+    | MockData
+    | MyCpe
+  >;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;

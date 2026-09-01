@@ -105,12 +105,9 @@ export default function Devmode() {
           </Item>
         )}
         <Item
-          onPress={() => {
-            const accounts = useAccountStore.getState().accounts;
-            for (const account of accounts) {
-              useAccountStore.getState().removeAccount(account);
-            }
-            Alert.alert("Success");
+          onPress={async () => {
+            const didReset = await useAccountStore.getState().reset();
+            Alert.alert(didReset ? "Success" : "Error");
           }}
         >
           <Typography variant="title">Reset Account Store</Typography>
