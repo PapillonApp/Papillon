@@ -52,7 +52,7 @@ function log(message: string, from?: string): void {
   console.log(entry);
 }
 
-function error(message: string, from?: string): void {
+function error(message: string, from?: string): Error {
   const date = getIsoDate()
   const functionName = obtainFunctionName(from)
   saveLog(date, message, LogType.ERROR, functionName);
@@ -62,6 +62,7 @@ function error(message: string, from?: string): void {
       posthog.captureException(new Error(message));
     }
   });
+  return new Error(message);
 }
 
 function warn(message: string, from?: string): void {

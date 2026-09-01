@@ -8,7 +8,7 @@ import {
   ServerSideError,
   SessionHandle,
   UnreachableError,
-} from "pawnote";
+} from "@blockshub/pawnote-lts";
 
 import { useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";

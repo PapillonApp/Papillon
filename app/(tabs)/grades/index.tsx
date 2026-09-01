@@ -433,8 +433,7 @@ const GradesView: React.FC = () => {
       style={{
         flex: 1,
         paddingLeft: insets.left,
-        /* @ts-expect-error colors
-        backgroundColor: colors.overground */
+        backgroundColor: colors.overground
       }}
     >
       {/* Header */}

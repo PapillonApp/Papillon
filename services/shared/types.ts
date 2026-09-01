@@ -2,7 +2,7 @@ import { Client } from "@blockshub/blocksdirecte";
 import { User } from "@blockshub/blockscho";
 import { Multi as MultiClient } from "esup-multi.js";
 import { Identification } from "ezly";
-import { SessionHandle } from "pawnote";
+import { SessionHandle } from "@blockshub/pawnote-lts";
 import { Client as ArdClient } from "@blockshub/blocksrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Client as TurboselfClient } from "turboself-api";

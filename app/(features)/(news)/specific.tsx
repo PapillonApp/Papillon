@@ -4,30 +4,25 @@ import { getNewsById } from "@/database/useNews";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
-import TypographyLegacy from "@/ui/components/Typography";
-import { useLocalSearchParams, useRouter } from "expo-router"
+import TypographyLegacy, { VARIANTS } from "@/ui/components/Typography";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
-import { Attachment, News as SkolengoNews } from "skolengojs"
+import { Attachment, News as SkolengoNews } from "skolengojs";
 
-import { VARIANTS } from "@/ui/components/Typography";
-
-import HTMLView from 'react-native-htmlview';
-import * as WebBrowser from 'expo-web-browser';
-import { useTheme, HeaderBackButton } from "expo-router/react-navigation";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { MenuView } from "@react-native-menu/menu";
+import HTMLView from "react-native-htmlview";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Icon from "@/ui/components/Icon";
 import { t } from "i18next";
 import ListLegacy from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
-import { news } from "pawnote";
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { IconNames, Papicons } from "@getpapillon/papicons";
+import { Papicons } from "@getpapillon/papicons";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
@@ -71,8 +66,20 @@ const NewsPage = () => {
 
         if (service?.serviceId === Services.SKOLENGO) {
           const attachment = new Attachment("", "", "")
-          const ref = new SkolengoNews(news.id, news.createdAt, news.title ?? "", news.content, news.content, { id: "", name: "" }, "", attachment)
-          news.ref = ref
+
+          news.ref = new SkolengoNews(
+            news.id,
+            news.createdAt,
+            news.title ?? "",
+            news.content,
+            news.content,
+            {
+              id: "",
+              name: "",
+            },
+            "",
+            attachment
+          );
         }
 
         await manager?.setNewsAsDone(news);

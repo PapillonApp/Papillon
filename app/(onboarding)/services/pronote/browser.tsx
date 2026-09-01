@@ -1,6 +1,12 @@
 import { useRoute, useTheme } from "expo-router/react-navigation";
 import { router, useNavigation } from "expo-router";
-import { AccountKind, createSessionHandle, loginToken, SecurityError, SessionHandle } from "pawnote";
+import {
+  AccountKind,
+  createSessionHandle,
+  loginToken,
+  SecurityError,
+  SessionHandle,
+} from "@blockshub/pawnote-lts";
 import React, { createRef, RefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, KeyboardAvoidingView, Modal } from "react-native";

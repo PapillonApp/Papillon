@@ -1,6 +1,6 @@
-import { useHeaderHeight, useRoute, useTheme } from "expo-router/react-navigation";
+import { useHeaderHeight, useRoute } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
-import { geolocation } from "pawnote";
+import { geolocation } from "@blockshub/pawnote-lts";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, KeyboardAvoidingView, Platform } from "react-native";
@@ -57,7 +57,6 @@ const PronoteSearchHeader = memo(({
 
 export default function PronoteLoginSelectEtab() {
   const headerHeight = useHeaderHeight();
-  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -99,7 +98,7 @@ export default function PronoteLoginSelectEtab() {
         style={{ flex: 1 }}
       >
 
-        {filteredSchools.map((school, i) => (
+        {filteredSchools.map((school) => (
           <List.Item animated={true} id={school.url} key={school.url} onPress={() => selectSchool(school)}>
             <List.Leading>
               <Image

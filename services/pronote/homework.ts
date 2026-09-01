@@ -1,4 +1,9 @@
-import { assignmentsFromWeek, assignmentStatus, SessionHandle, translateToWeekNumber } from "pawnote";
+import {
+  assignmentsFromWeek,
+  assignmentStatus,
+  SessionHandle,
+  translateToWeekNumber,
+} from "@blockshub/pawnote-lts";
 
 import { getDateRangeOfWeek } from "@/database/useHomework";
 import { Homework, ReturnFormat } from "@/services/shared/homework";
@@ -55,6 +60,6 @@ export async function setPronoteHomeworkAsDone(session: SessionHandle, homework:
   return {
     ...homework,
     isDone: status || !homework.isDone,
-    progress: (status || !homework.isDone) === true ? 1 : 0
+    progress: (status || !homework.isDone) ? 1 : 0
   }
 }

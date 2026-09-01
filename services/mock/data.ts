@@ -293,7 +293,7 @@ export function generateMockGrades(
   return {
     studentOverall: { value: 15.2 - (periodIndex - 1) * 0.2, outOf: 20 },
     classAverage: { value: 13.3, outOf: 20 },
-    rank: { value: 5, outOf: 32 },
+    rank: { value: 6, outOf: 7 },
     subjects,
     createdByAccount: accountId,
   };

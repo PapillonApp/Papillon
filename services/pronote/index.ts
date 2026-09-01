@@ -1,4 +1,4 @@
-import { SessionHandle, TabLocation } from "pawnote";
+import { SessionHandle, TabLocation } from "@blockshub/pawnote-lts";
 
 import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/services/pronote/attendance";
 import { fetchPronoteCanteenMenu } from "@/services/pronote/canteen";

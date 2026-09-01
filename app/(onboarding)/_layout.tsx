@@ -31,7 +31,7 @@ export default function OnboardingLayout() {
           options={{
             ...newScreenOptions,
             title: t("ONBOARDING_HEADER_ABOUTYOU"),
-            headerRight: __DEV__
+            headerRight: 1==1
               ? () => (
                   <Pressable
                     hitSlop={12}
