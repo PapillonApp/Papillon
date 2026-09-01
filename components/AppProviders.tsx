@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DatabaseProvider } from "@/database/DatabaseProvider";
 import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from '@/stores/settings';
 import { AlertProvider } from '@/ui/components/AlertProvider';
+import { DialogProvider } from '@/ui/components/DialogProvider';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { AppColors } from "@/utils/colors";
 import { createDarkTheme, createDefaultTheme } from '@/utils/theme/Theme';
@@ -53,9 +54,11 @@ export function AppProviders({ children }: AppProvidersProps) {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "black" }}>
       <DatabaseProvider>
         <ThemeProvider value={theme}>
-          <AlertProvider>
-            {children}
-          </AlertProvider>
+          <DialogProvider>
+            <AlertProvider>
+              {children}
+            </AlertProvider>
+          </DialogProvider>
         </ThemeProvider>
       </DatabaseProvider>
     </GestureHandlerRootView>
