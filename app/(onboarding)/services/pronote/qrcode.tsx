@@ -3,8 +3,13 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { useTheme } from "expo-router/react-navigation";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Haptics from "expo-haptics";
-import { router, useGlobalSearchParams } from "expo-router";
-import { AuthenticateError, createSessionHandle, loginQrCode, SecurityError } from "pawnote";
+import { router } from "expo-router";
+import {
+  AuthenticateError,
+  createSessionHandle,
+  loginQrCode,
+  SecurityError,
+} from "@blockshub/pawnote-lts";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
@@ -141,10 +146,7 @@ export default function PronoteLoginWithQR() {
     }
   }, [permission?.granted, requestPermission]);
 
-  const handleBarCodeScanned = ({
-    type,
-    data,
-  }: {
+  const handleBarCodeScanned = ({ data }: {
     type: string;
     data: string;
   }) => {
@@ -173,8 +175,6 @@ export default function PronoteLoginWithQR() {
       keyboardDidHideListener?.remove();
     };
   }, []);
-
-  const local = useGlobalSearchParams();
 
   const { t } = useTranslation();
 

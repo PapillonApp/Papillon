@@ -67,7 +67,7 @@ import {
   BadCredentialsError,
   SecurityError,
   SessionExpiredError,
-} from "pawnote";
+} from "@blockshub/pawnote-lts";
 
 import { AuthenticationError } from "../errors/AuthenticationError";
 import { ServiceUnavailableError } from "../errors/ServiceUnavailableError";
@@ -509,10 +509,8 @@ export class AccountManager {
 
   clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
     const client = this.clients[clientId];
-    if (client?.capabilities.includes(capatibility)) {
-      return true;
-    }
-    return false;
+    return !!client?.capabilities.includes(capatibility);
+
   }
 
   getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {

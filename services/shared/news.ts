@@ -1,5 +1,5 @@
 import { ActualitiesResponse } from "esup-multi.js";
-import { NewsInformation } from "pawnote";
+import { NewsInformation } from "@blockshub/pawnote-lts";
 import { News as SkolengoNews } from "skolengojs";
 
 import { Attachment } from "@/services/shared/attachment";

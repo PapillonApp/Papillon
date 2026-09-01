@@ -1,8 +1,8 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { Link, useNavigation, useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { t } from "i18next";
-import { instance } from "pawnote";
+import { instance } from "@blockshub/pawnote-lts";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -77,7 +77,6 @@ const IndexScreen = () => {
 
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const navigation = useNavigation();
   const alert = useAlert();
 
   const settingsStore = useSettingsStore(state => state.personalization)

@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { t } from 'i18next';
-import { instance } from 'pawnote';
+import { instance } from "@blockshub/pawnote-lts";
 import { useCallback, useEffect } from 'react';
 
 import { getWeekNumberFromDate } from '@/database/useHomework';
@@ -119,7 +119,6 @@ export const useHomeData = () => {
       if (String(error).includes("Unable to find")) { return; }
       if (error instanceof AuthenticationError) {
         const instanceURL = error?.service?.auth?.additionals?.["instanceURL"] ?? "";
-        const serviceId = error?.service?.id ?? undefined;
 
         alert.showAlert({
           title: "Vous avez été déconnecté",
