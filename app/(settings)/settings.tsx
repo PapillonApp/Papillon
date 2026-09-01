@@ -57,13 +57,16 @@ export default function SettingsIndex() {
     return [firstName, lastName, level, establishment];
   }, [account]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     trackOptionalEvent("logged_out_of_account");
-    const accounts = useAccountStore.getState().accounts;
-    for (const account of accounts) {
-      useAccountStore.getState().removeAccount(account);
+    if (await useAccountStore.getState().reset()) {
+      router.replace("/(onboarding)/welcome");
+    } else {
+      Alert.alert(
+        "Déconnexion impossible",
+        "Papillon n'a pas pu effacer les identifiants sécurisés. Réessaie dans quelques instants."
+      );
     }
-    router.replace("/(onboarding)/welcome");
 
   }, [account, accountStore, router]);
 

@@ -107,6 +107,13 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       },
     },
     {
+      name: "mycpe",
+      title: t("ONBOARDING_SERVICE_MYCPE"),
+      image: require("@/assets/images/icon.png"),
+      type: ["univ"],
+      onPress: () => { redirect({ pathname: './services/mycpe/credentials' }) }
+    },
+    {
       name: "appscho",
       route: "appscho",
       title: t("ONBOARDING_OTHER_UNIVERSITIES"),

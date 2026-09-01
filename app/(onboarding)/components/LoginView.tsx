@@ -1,6 +1,6 @@
 import { useTheme } from "expo-router/react-navigation";
 import React from 'react';
-import { Alert, Image, View } from 'react-native';
+import { Alert, Image, TextInputProps, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 
 import ActivityIndicator from '@/ui/components/ActivityIndicator';
@@ -15,12 +15,16 @@ interface LoginViewProps {
   serviceName: string;
   serviceIcon: any;
   loading?: boolean;
+  initialValues?: Record<string, string>;
   fields?: {
     name: string;
     placeholder: string;
     secureTextEntry: boolean;
     textContentType?: "username" | "password";
     keyboardType?: "default" | "number-pad" | "decimal-pad" | "email-address" | "phone-pad" | "url" | "numeric";
+    autoCapitalize?: TextInputProps["autoCapitalize"];
+    autoCorrect?: boolean;
+    spellCheck?: boolean;
   }[];
   actions?: {
     label: string;
@@ -36,6 +40,7 @@ export default function LoginView({
   serviceName,
   serviceIcon,
   loading = false,
+  initialValues,
   fields,
   actions,
   onSubmit,
@@ -43,7 +48,7 @@ export default function LoginView({
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const [fieldValues, setFieldValues] = React.useState<{ [key: string]: string }>({});
+  const [fieldValues, setFieldValues] = React.useState<{ [key: string]: string }>(initialValues ?? {});
 
   const defaultFields = fields ?? [
     {
@@ -51,12 +56,18 @@ export default function LoginView({
       placeholder: t("INPUT_USERNAME"),
       secureTextEntry: false,
       textContentType: "username" as const,
+      autoCapitalize: "none" as const,
+      autoCorrect: false,
+      spellCheck: false,
     },
     {
       name: "password",
       placeholder: t("INPUT_PASSWORD"),
       secureTextEntry: true,
       textContentType: "password" as const,
+      autoCapitalize: "none" as const,
+      autoCorrect: false,
+      spellCheck: false,
     }
   ];
 
@@ -156,12 +167,16 @@ export default function LoginView({
             key={index}
             color={color}
             placeholder={field.placeholder}
+            value={fieldValues[field.name] ?? ""}
             secureTextEntry={field.secureTextEntry}
             onChangeText={value => handleChange(field.name, value)}
             textContentType={
               field.textContentType ? field.textContentType : undefined
             }
             keyboardType={field.keyboardType ? field.keyboardType : "default"}
+            autoCapitalize={field.autoCapitalize}
+            autoCorrect={field.autoCorrect}
+            spellCheck={field.spellCheck}
           />
         ))}
       </Stack>

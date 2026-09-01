@@ -37,8 +37,13 @@ export default function AccountsView() {
         {
           text: "Supprimer",
           style: "destructive",
-          onPress: () => {
-            store.removeAccount(targetAccount);
+          onPress: async () => {
+            if (!(await store.removeAccount(targetAccount))) {
+              Alert.alert(
+                "Suppression impossible",
+                "Papillon n'a pas pu effacer les identifiants sécurisés. Réessaie dans quelques instants."
+              );
+            }
           },
         },
       ]
@@ -54,8 +59,14 @@ export default function AccountsView() {
       {
         text: "Supprimer",
         style: "destructive",
-        onPress: () => {
-          store.removeServiceFromAccount(serviceId);
+        onPress: async () => {
+          if (!(await store.removeServiceFromAccount(serviceId))) {
+            Alert.alert(
+              "Suppression impossible",
+              "Papillon n'a pas pu effacer les identifiants sécurisés. Réessaie dans quelques instants."
+            );
+            return;
+          }
           removeBalanceFromDatabase(serviceId);
           const manager = getManager();
           if (manager) {

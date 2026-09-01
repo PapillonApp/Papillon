@@ -76,8 +76,14 @@ export default function CardView() {
                           {
                             text: "Supprimer",
                             style: "destructive",
-                            onPress: () => {
-                              useAccountStore.getState().removeServiceFromAccount(service.id);
+                            onPress: async () => {
+                              if (!(await useAccountStore.getState().removeServiceFromAccount(service.id))) {
+                                Alert.alert(
+                                  "Suppression impossible",
+                                  "Papillon n'a pas pu effacer les identifiants sécurisés. Réessaie dans quelques instants."
+                                );
+                                return;
+                              }
                               removeBalanceFromDatabase(service.id)
                               const manager = getManager()
                               if (manager) {

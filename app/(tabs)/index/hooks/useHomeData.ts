@@ -12,6 +12,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { useAlert } from '@/ui/components/AlertProvider';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { log, warn } from '@/utils/logger/logger';
+import { getServiceName } from '@/utils/services/helper';
 import { useAccountStore } from '@/stores/account';
 
 const REMOVED_SERVICE_ID = 9;
@@ -71,7 +72,7 @@ export const useHomeData = () => {
       });
 
       const remainingAccounts = accounts.filter(acc => acc.id !== currentAccount.id);
-      removeAccount(currentAccount);
+      if (!(await removeAccount(currentAccount))) return;
 
       if (remainingAccounts.length === 0) {
         router.replace("/(onboarding)/welcome");
@@ -119,23 +120,42 @@ export const useHomeData = () => {
       if (String(error).includes("Unable to find")) { return; }
       if (error instanceof AuthenticationError) {
         const instanceURL = error?.service?.auth?.additionals?.["instanceURL"] ?? "";
-        const serviceId = error?.service?.id ?? undefined;
+        const isMyCpe = error.service.serviceId === Services.MYCPE;
+        const canReconnect = Boolean(instanceURL) || isMyCpe;
 
         alert.showAlert({
-          title: "Vous avez été déconnecté",
-          message: instanceURL ? `En savoir plus et se reconnecter` : "En savoir plus",
-          description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
+          title: t("HOME_SESSION_EXPIRED_TITLE"),
+          message: canReconnect
+            ? t("HOME_SESSION_EXPIRED_MORE_AND_RECONNECT")
+            : t("HOME_SESSION_EXPIRED_MORE"),
+          description: isMyCpe
+            ? t("HOME_SESSION_EXPIRED_MYCPE_DESCRIPTION")
+            : t("HOME_SESSION_EXPIRED_DESCRIPTION"),
           icon: "UserCross",
           color: "#D60046",
-          customButton: instanceURL ? {
-            label: "Me reconnecter",
+          customButton: canReconnect ? {
+            label: t("HOME_SESSION_EXPIRED_RECONNECT"),
             showCancelButton: error.service.serviceId === Services.PRONOTE,
             onPress: async () => {
               const ownerAccount = accounts.find(acc =>
                 acc.services.some(s => s.id === error.service.id)
               );
+
+              if (isMyCpe && ownerAccount) {
+                const username = error.service.auth.additionals?.["username"];
+                router.navigate({
+                  pathname: "/(onboarding)/services/mycpe/credentials",
+                  params: {
+                    accountId: ownerAccount.id,
+                    serviceId: error.service.id,
+                    username: typeof username === "string" ? username : undefined,
+                  },
+                });
+                return;
+              }
+
               if (ownerAccount) {
-                removeAccount(ownerAccount);
+                if (!(await removeAccount(ownerAccount))) return;
               }
 
               const authUrl = instanceURL;
@@ -158,9 +178,10 @@ export const useHomeData = () => {
           technical: error.message
         })
       } else if (error instanceof ServiceUnavailableError) {
+        const serviceName = getServiceName(error.service.serviceId);
         alert.showAlert({
-          title: t("home.unavailable.title", "Pronote temporairement indisponible"),
-          description: t("home.unavailable.description", "Impossible de contacter Pronote pour le moment. Les données affichées correspondent à la dernière synchronisation."),
+          title: t("HOME_SERVICE_UNAVAILABLE_TITLE", { service: serviceName }),
+          description: t("HOME_SERVICE_UNAVAILABLE_DESCRIPTION", { service: serviceName }),
           icon: "WifiOff",
           color: "#FF8C00",
           withoutNavbar: true,

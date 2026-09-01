@@ -71,6 +71,7 @@ import {
 
 import { AuthenticationError } from "../errors/AuthenticationError";
 import { ServiceUnavailableError } from "../errors/ServiceUnavailableError";
+import { MyCpeAuthenticationError } from "../mycpe/api";
 
 const isPermanentAuthError = (e: unknown): boolean =>
   e instanceof BadCredentialsError ||
@@ -78,7 +79,8 @@ const isPermanentAuthError = (e: unknown): boolean =>
   e instanceof SessionExpiredError ||
   e instanceof AccessDeniedError ||
   e instanceof AccountDisabledError ||
-  e instanceof SecurityError;
+  e instanceof SecurityError ||
+  e instanceof MyCpeAuthenticationError;
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -669,6 +671,12 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/appscho/index");
       return new module.Appscho(service.id);
+    }
+
+    if (service.serviceId === Services.MYCPE) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/mycpe/index");
+      return new module.MyCpe(service.id);
     }
 
     if (service.serviceId === Services.MOCK_DATA) {
