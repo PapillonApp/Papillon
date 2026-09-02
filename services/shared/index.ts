@@ -60,7 +60,25 @@ import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 
+import {
+  AccessDeniedError,
+  AccountDisabledError,
+  AuthenticateError,
+  BadCredentialsError,
+  SecurityError,
+  SessionExpiredError,
+} from "@blockshub/pawnote-lts";
+
 import { AuthenticationError } from "../errors/AuthenticationError";
+import { ServiceUnavailableError } from "../errors/ServiceUnavailableError";
+
+const isPermanentAuthError = (e: unknown): boolean =>
+  e instanceof BadCredentialsError ||
+  e instanceof AuthenticateError ||
+  e instanceof SessionExpiredError ||
+  e instanceof AccessDeniedError ||
+  e instanceof AccountDisabledError ||
+  e instanceof SecurityError;
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -79,8 +97,7 @@ export class AccountManager {
 
   async refreshAllAccounts(): Promise<boolean> {
     log("We're refreshing all services for the account " + this.account.id);
-
-    this.handleHasInternet();
+    const hasInternet = await this.hasInternet();
 
     let refreshedAtLeastOne = false;
 
@@ -88,6 +105,11 @@ export class AccountManager {
       try {
         log("Trying to refresh " + service.id);
         const plugin = this.getServicePluginForAccount(service);
+
+        if (!hasInternet && plugin.requiresInternet !== false) {
+          warn(`Skipping network service ${service.id} while offline.`);
+          continue;
+        }
 
         if (plugin?.capabilities.includes(Capabilities.REFRESH)) {
           this.clients[service.id] = await plugin.refreshAccount(service.auth);
@@ -102,7 +124,10 @@ export class AccountManager {
           );
         }
       } catch (e) {
-        throw new AuthenticationError(String(e), service)
+        if (isPermanentAuthError(e)) {
+          throw new AuthenticationError(String(e), service);
+        }
+        throw new ServiceUnavailableError(String(e), service);
       }
     }
 
@@ -110,6 +135,10 @@ export class AccountManager {
       "Finished refreshing process for all services, services refreshed: " +
         Object.keys(this.clients).length
     );
+
+    if (!hasInternet && Object.keys(this.clients).length === 0 && this.account.services.length > 0) {
+      throw new Error("Internet not reachable and no offline service is available.");
+    }
     return refreshedAtLeastOne;
   }
 
@@ -480,10 +509,8 @@ export class AccountManager {
 
   clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
     const client = this.clients[clientId];
-    if (client?.capabilities.includes(capatibility)) {
-      return true;
-    }
-    return false;
+    return !!client?.capabilities.includes(capatibility);
+
   }
 
   getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
@@ -492,18 +519,9 @@ export class AccountManager {
     );
   }
 
-  private async handleHasInternet<T>(
-    options?: FetchOptions<T | T[]>
-  ): Promise<T | T[] | void> {
+  private async hasInternet(): Promise<boolean> {
     const networkState = await Network.getNetworkStateAsync();
-    const hasInternet = networkState.isInternetReachable ?? false;
-    if (!hasInternet) {
-      warn("No internet connection, using fallback if available.");
-      if (options?.fallback) {
-        return await options.fallback();
-      }
-      throw new Error("Internet not reachable and no fallback provided.");
-    }
+    return networkState.isInternetReachable ?? false;
   }
 
   private async fetchData<T>(
@@ -523,10 +541,6 @@ export class AccountManager {
     callback: (client: SchoolServicePlugin) => Promise<T | T[]>,
     options?: FetchOptions<T | T[]> & { multiple?: boolean }
   ): Promise<T | T[]> {
-    const resultFromFallback = await this.handleHasInternet<T>(options);
-    if (resultFromFallback !== undefined) {
-      return resultFromFallback;
-    }
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
@@ -541,6 +555,12 @@ export class AccountManager {
               options.clientId
           );
         }
+        if (client.requiresInternet !== false && !(await this.hasInternet())) {
+          if (options.fallback) {
+            return await options.fallback();
+          }
+          throw new Error("Internet not reachable and no fallback provided.");
+        }
         const result = await callback(client);
         if (options.saveToCache) {
           await options.saveToCache(result);
@@ -548,7 +568,15 @@ export class AccountManager {
         return result;
       }
 
-      const availableClients = this.getAvailableClients(capability);
+      let availableClients = this.getAvailableClients(capability);
+
+      if (!(await this.hasInternet())) {
+        availableClients = availableClients.filter(client => client.requiresInternet === false);
+        if (availableClients.length === 0 && options?.fallback) {
+          warn("No internet connection, using fallback.");
+          return await options.fallback();
+        }
+      }
 
       if (availableClients.length === 0) {
         log(
@@ -639,6 +667,12 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/appscho/index");
       return new module.Appscho(service.id);
+    }
+
+    if (service.serviceId === Services.MOCK_DATA) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/mock/index");
+      return new module.MockData(service.id);
     }
 
     error(

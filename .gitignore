@@ -38,9 +38,11 @@ yarn-error.*
 *.tsbuildinfo
 
 ios/
-!ios/Papillon
-!ios/Papillon.xcodeproj/xcshareddata/xcschemes
-ios/Podfile
+!ios/
+ios/*
+!ios/ci_scripts/
+ios/ci_scripts/*
+!ios/ci_scripts/ci_post_clone.sh
 android/**
 android/*
 !android/app/
@@ -54,3 +56,7 @@ yarn.lock
 secrets.json
 .vscode/
 .idea/
+
+.claude/
+.codex/
+graphify-out/

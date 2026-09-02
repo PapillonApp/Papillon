@@ -1,19 +1,9 @@
-import { Dimensions, Image, View, ViewProps } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { Image, View, ViewProps, ViewStyle } from "react-native";
+import { useTheme } from "expo-router/react-navigation";
 import adjust from "@/utils/adjustColor";
 import Typography from "@/ui/components/Typography";
-import Reanimated, {
-  Easing,
-  StyleProps,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import SkeletonView from "@/ui/components/SkeletonView";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { RotateCcw } from "lucide-react-native";
 
 export interface AvatarProps extends ViewProps {
   size?: number;
@@ -31,16 +21,24 @@ const Avatar = ({
   shape = "circle",
   color,
   skeleton = false,
+  style,
   ...rest
 }: AvatarProps) => {
   const { colors, dark } = useTheme();
   const [hasFailed, setHasFailed] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
 
   const borderRadius = shape === "circle" ? size / 2 : size * 0.2;
+  const showImage = !!imageUrl && !hasFailed;
+  const showInitials = hasFailed || (!showImage && !skeleton);
+  const showSkeleton = !hasFailed && (skeleton || showImage);
+  const initialsColor = color ?? (colors.primary as string);
 
-  const generateBodyStyle = (): StyleProps => {
-    let baseStyle: StyleProps = {
+  useEffect(() => {
+    setHasFailed(false);
+  }, [imageUrl]);
+
+  const generateBodyStyle = (): ViewStyle => {
+    const baseStyle: ViewStyle = {
       width: size,
       height: size,
       borderRadius: borderRadius,
@@ -49,31 +47,17 @@ const Avatar = ({
       overflow: "hidden",
     };
 
-    if (hasFailed)
-      baseStyle.backgroundColor = adjust("#DD0030", dark ? -0.6 : 0.9);
-    else if (!imageUrl && !skeleton)
-      baseStyle.backgroundColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.85);
+    if (showInitials)
+      baseStyle.backgroundColor = adjust(initialsColor, dark ? -0.6 : 0.85);
 
-    if (hasFailed)
-      baseStyle.borderColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.9);
-    else if (imageUrl || skeleton)
-      baseStyle.borderColor = colors.border;
-    else
-      baseStyle.borderColor = colors.border
+    baseStyle.borderColor = colors.border;
 
     return baseStyle;
   }
 
   return (
-    <AnimatedPressable
-      style={[generateBodyStyle(), rest.style]}
-      pointerEvents={hasFailed ? "auto" : "none"}
-      onPress={() => {
-        setHasFailed(false);
-        setReloadKey((k) => k + 1);
-      }}
-    >
-      {(skeleton || (imageUrl && !hasFailed)) && (
+    <View {...rest} style={[generateBodyStyle(), style]}>
+      {showSkeleton && (
         <SkeletonView
           style={{
             position: "absolute",
@@ -86,30 +70,24 @@ const Avatar = ({
         />
       )}
 
-      {imageUrl && (
-        <>
-          <Image
-            key={reloadKey}
-            source={{ uri: imageUrl }}
-            style={{ width: size, height: size, borderRadius: borderRadius }}
-            resizeMode="cover"
-            onError={() => setHasFailed(true)}
-          />
-        </>
+      {showImage && (
+        <Image
+          source={{ uri: imageUrl }}
+          style={{ width: size, height: size, borderRadius: borderRadius }}
+          resizeMode="cover"
+          onError={() => setHasFailed(true)}
+        />
       )}
-      {(!imageUrl && !skeleton) && (
+      {showInitials && (
         <Typography
-          color={color ?? colors.primary}
+          color={initialsColor}
           weight={"bold"}
           style={{ textTransform: "uppercase", fontSize: size * 0.4, lineHeight: size * 0.95 }}
         >
           {initials || "?"}
         </Typography>
       )}
-      {hasFailed && (
-        <RotateCcw color={"#DD0030"} size={size * 0.4} style={{ position: "absolute" }} />
-      )}
-    </AnimatedPressable>
+    </View>
   );
 };
 

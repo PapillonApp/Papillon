@@ -1,8 +1,14 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import * as Device from "expo-device"
 import { router } from "expo-router";
-import { finishLoginManually, SecurityError, securitySave, securitySource, SessionHandle } from "pawnote";
+import {
+  finishLoginManually,
+  SecurityError,
+  securitySave,
+  securitySource,
+  SessionHandle,
+} from "@blockshub/pawnote-lts";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, View } from "react-native";

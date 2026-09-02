@@ -1,12 +1,14 @@
 import React from 'react';
-import { Platform, StatusBar, View } from 'react-native';
-import { Stack } from "expo-router";
+import { Platform, Pressable, View } from 'react-native';
+import { Stack, useRouter } from "expo-router";
 
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
-import AndroidHeaderBackground, { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 import { t } from 'i18next';
+import Typography from '@/ui/new/Typography';
 
 export default function OnboardingLayout() {
+  const router = useRouter();
   const screenOptions = useScreenOptions();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
@@ -26,7 +28,27 @@ export default function OnboardingLayout() {
         />
         <Stack.Screen
           name="ageSelection"
-          options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_ABOUTYOU") }}
+          options={{
+            ...newScreenOptions,
+            title: t("ONBOARDING_HEADER_ABOUTYOU"),
+            headerRight: 1==1
+              ? () => (
+                  <Pressable
+                    hitSlop={12}
+                    onPress={() => router.push("/(onboarding)/offlineAccount")}
+                    style={{ paddingHorizontal: 8 }}
+                  >
+                    <Typography variant="action">
+                      {t("ONBOARDING_SKIP")}
+                    </Typography>
+                  </Pressable>
+                )
+              : undefined,
+          }}
+        />
+        <Stack.Screen
+          name="offlineAccount"
+          options={{ ...newScreenOptions, title: t("ONBOARDING_OFFLINE_HEADER") }}
         />
         <Stack.Screen
           name="serviceSelection"
@@ -39,19 +61,19 @@ export default function OnboardingLayout() {
 
         <Stack.Screen
           name="services/pronote"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
           name="services/ed"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
           name="services/skolengo"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
           name="services/multi"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
           name="services/appscho"

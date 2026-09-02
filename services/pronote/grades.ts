@@ -1,4 +1,11 @@
-import { GradeKind, GradesOverview, gradesOverview, GradeValue, SessionHandle, TabLocation } from "pawnote";
+import {
+  GradeKind,
+  GradesOverview,
+  gradesOverview,
+  GradeValue,
+  SessionHandle,
+  TabLocation,
+} from "@blockshub/pawnote-lts";
 
 import { AttachmentType } from "@/services/shared/attachment";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";

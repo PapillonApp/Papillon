@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 // Reporting (if consent has been given)
-import Countly from 'countly-sdk-react-native-bridge';
-
 import { useLogStore } from '@/stores/logs/index';
 import { LogType } from '@/stores/logs/types';
+import { checkConsent } from '@/utils/logger/consent';
+import { posthog } from '@/utils/logger/posthog';
 const format = "[%DATE%][%FROM%] %MESSAGE%";
 
 const typeList = ["LOG", "ERROR", "WARN", "INFO"];
@@ -42,9 +42,6 @@ function obtainFunctionName(from?: string): string {
 
 function saveLog(date: string, message: string, type: LogType, from?: string) {
   useLogStore.getState().addItem({ date, message, from, type });
-
-  // Does NOT sends anything to the server --> only if crash happens
-  Countly.addCrashLog(message);
 }
 
 function log(message: string, from?: string): void {
@@ -55,13 +52,17 @@ function log(message: string, from?: string): void {
   console.log(entry);
 }
 
-function error(message: string, from?: string): void {
+function error(message: string, from?: string): Error {
   const date = getIsoDate()
   const functionName = obtainFunctionName(from)
-  const entry = getMessage(1, date, functionName, message);
   saveLog(date, message, LogType.ERROR, functionName);
   console.error(message);
-  Countly.logException(message, true, JSON.parse(JSON.stringify(entry)));
+  checkConsent().then(consent => {
+    if (consent.given && consent.level !== "none") {
+      posthog.captureException(new Error(message));
+    }
+  });
+  return new Error(message);
 }
 
 function warn(message: string, from?: string): void {

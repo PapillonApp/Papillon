@@ -1,6 +1,6 @@
 import React from "react";
 import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View, StyleProp } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import SkeletonView from "@/ui/components/SkeletonView";
 import { useFont } from "@/utils/theme/fonts";
 

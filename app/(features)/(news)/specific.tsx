@@ -1,38 +1,61 @@
 import { getManager } from "@/services/shared";
 import { News } from "@/services/shared/news";
+import { getNewsById } from "@/database/useNews";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
-import TypographyLegacy from "@/ui/components/Typography";
-import { useLocalSearchParams, useNavigation } from "expo-router"
+import TypographyLegacy, { VARIANTS } from "@/ui/components/Typography";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
-import { Attachment, News as SkolengoNews } from "skolengojs"
-import * as Papicons from '@getpapillon/papicons';
+import { Attachment, News as SkolengoNews } from "skolengojs";
 
-import { VARIANTS } from "@/ui/components/Typography";
-
-import HTMLView from 'react-native-htmlview';
-import * as WebBrowser from 'expo-web-browser';
-import { useTheme } from "@react-navigation/native";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { MenuView } from "@react-native-menu/menu";
+import HTMLView from "react-native-htmlview";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Icon from "@/ui/components/Icon";
 import { t } from "i18next";
 import ListLegacy from "@/ui/components/List";
-import Item from "@/ui/components/Item";
-import ActionMenu from "@/ui/components/ActionMenu";
-import Typography from "@/ui/new/Typography";
+import Item, { Leading } from "@/ui/components/Item";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
+import Avatar from "@/ui/components/Avatar";
+import { getInitials } from "@/utils/chats/initials";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { Papicons } from "@getpapillon/papicons";
+import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
 import { useFont } from "@/utils/theme/fonts";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 
-export default function NewsPage() {
-  const search = useLocalSearchParams();
-  const news = JSON.parse(String(search.news)) as News
-
-  const navigation = useNavigation()
+const NewsPage = () => {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [news, setNews] = useState<News>();
+  const [loading, setLoading] = useState(true);
+  const insets = useSafeAreaInsets();
+  const router = useRouter()
+  const { colors } = useTheme();
+  const font = useFont();
+  const [HTMLCleanupEnabled, setHTMLCleanupEnabled] = useState(true)
 
   useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getNewsById(id)
+      .then(result => {
+        if (!cancelled) setNews(result);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (!news) return;
     const acknowledgeNews = async () => {
       if (!news.acknowledged) {
         const manager = getManager();
@@ -43,181 +66,178 @@ export default function NewsPage() {
 
         if (service?.serviceId === Services.SKOLENGO) {
           const attachment = new Attachment("", "", "")
-          const ref = new SkolengoNews(news.id, news.createdAt, news.title ?? "", news.content, news.content, { id: "", name: "" }, "", attachment)
-          news.ref = ref
+
+          news.ref = new SkolengoNews(
+            news.id,
+            news.createdAt,
+            news.title ?? "",
+            news.content,
+            news.content,
+            {
+              id: "",
+              name: "",
+            },
+            "",
+            attachment
+          );
         }
 
-        await manager.setNewsAsDone(news);
+        await manager?.setNewsAsDone(news);
       }
     };
 
     acknowledgeNews();
-  }, [])
+  }, [news])
 
-
-  const { colors } = useTheme();
-  const font = useFont();
-
-  const styles = {
-    "papillon": {
-      background: colors.background,
-      foreground: colors.text,
-      html: StyleSheet.create({
-        ...VARIANTS,
-        p: {
-          ...VARIANTS.body1,
-          fontFamily: font("medium"),
-        },
-        div: {
-          ...VARIANTS.body1,
-          fontFamily: font("medium"),
-        },
-        a: {
-          color: colors.primary,
-          textDecorationLine: 'underline',
-        },
-      })
+  const stylesheet = StyleSheet.create({
+    ...VARIANTS,
+    p: {
+      ...VARIANTS.body1,
+      fontFamily: font("medium"),
+      color: colors.text,
     },
-    "reading": {
-      background: "#ffe1a9ff",
-      foreground: "#634000ff",
-      html: StyleSheet.create({
-        ...VARIANTS,
-        p: {
-          fontFamily: font("medium")
-        },
-        div: {
-          fontFamily: font("medium")
-        },
-        h1: {
-          fontFamily: font("bold")
-        },
-        a: {
-          color: "#a26900ff",
-          textDecorationLine: 'underline',
-          fontFamily: font("medium")
-        },
-      })
-    }
-  };
-
-  const [style, setStyle] = useState("papillon");
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle: news.title ?? "News",
-      headerTitleStyle: {
-        color: styles[style].foreground,
-        fontFamily: styles[style].html.p.fontFamily
-      },
-      headerLargeTitleStyle: {
-        color: styles[style].foreground,
-        fontFamily: styles[style].html.h1.fontFamily
-      }
-    })
-  }, [styles, style])
-
-  // Replace all color properties in currentHTMLStyle with foreground
-  const foreground = styles[style].foreground;
-  const currentHTMLStyle = (() => {
-    const htmlStyle = { ...styles[style].html };
-    Object.keys(htmlStyle).forEach(key => {
-      htmlStyle[key] = { ...htmlStyle[key], color: foreground };
-    });
-    return htmlStyle;
-  })();
-
-  const themes = [
-    {
-      title: t("News_Theme_Papillon_Title"),
-      description: t("News_Theme_Papillon_Description"),
-      value: "papillon"
+    div: {
+      ...VARIANTS.body1,
+      fontFamily: font("medium"),
+      color: colors.text,
     },
-    {
-      title: t("News_Theme_Reading_Title"),
-      description: t("News_Theme_Reading_Description"),
-      value: "reading"
-    }
-  ]
+    a: {
+      color: colors.primary,
+      textDecorationLine: 'underline'
+    },
+    ul: {
+      ...VARIANTS.body1,
+      fontFamily: font("medium"),
+      paddingHorizontal: 4,
+      color: colors.text,
+    },
+  });
+
+  if (loading) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><ActivityIndicator /></View>;
+  }
+
+  if (!news) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Typography variant="title">{t("News_Empty_Title")}</Typography></View>;
+  }
+
+  const cleanedContent = HTMLCleanupEnabled ? cleanHtmlForArticle(news.content) : news.content
 
   return (
-    <>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={{ flex: 1, backgroundColor: styles[style].background }}
-      >
-        {news.attachments.length > 0 && (
-          <View style={{ padding: 16, width: "100%" }}>
-            <ListLegacy>
-              {news.attachments.map((attachment, i) => (
-                <Item key={i}
-                  onPress={() => {
-                    WebBrowser.openBrowserAsync(
-                      attachment.url,
-                      {
-                        controlsColor: colors.primary,
-                        dismissButtonStyle: 'done'
-                      }
-                    )
-                  }}
-                >
-                  <Icon papicon>
-                    {attachment.type === 0 ? (
-                      <Papicons.Link />
-                    ) : (
-                      <Papicons.Paper />
-                    )}
-                  </Icon>
-                  <TypographyLegacy nowrap variant="title">{attachment.name}</TypographyLegacy>
-                  <TypographyLegacy nowrap variant="caption">{attachment.url}</TypographyLegacy>
-                </Item>
-              ))}
-            </ListLegacy>
-          </View>
-        )}
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      style={{ flex: 1 }}
+      contentContainerStyle={{
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 20 + insets.bottom,
+        gap: 24
+      }}
+    >
+      {
+        Platform.OS === 'ios' && (
+          <NativeHeaderSide side="Left">
+            <HeaderBackButton
+              tintColor={runsIOS26 ? colors.text : colors.primary}
+              onPress={() => router.back()}
 
-        <List>
+              style={{
+                marginLeft: runsIOS26 ? 3 : -32,
+              }}
+            />
+          </NativeHeaderSide>
+        )
+      }
+
+      <Stack gap={10}>
+        <Stack padding={[10, 4]} radius={200} backgroundColor={colors.text + "16"}>
+          <TypographyLegacy variant="body2">
+            {news.category}
+          </TypographyLegacy>
+        </Stack>
+
+        <TypographyLegacy variant="h3">
+          {news.title}
+        </TypographyLegacy>
+
+        <Stack direction="horizontal" hAlign="center">
+          <Stack direction="horizontal" gap={8} inline flex hAlign="center">
+            <Avatar initials={getInitials(news.author)} size={28} />
+            <TypographyLegacy nowrap variant="body2">
+              {news.author}
+            </TypographyLegacy>
+          </Stack>
+
+          <TypographyLegacy nowrap variant="body2" color="secondary">
+            {new Date(news.createdAt).toLocaleDateString(undefined, {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            })}
+          </TypographyLegacy>
+        </Stack>
+      </Stack>
+
+      {news.question && (
+        <List scrollEnabled={false}>
           <List.Item>
-            <Typography>
-              Cette news contient un sondage
+            <List.Leading>
+              <Icon>
+                <Papicons name="pie" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">
+              Cette actualité contient un sondage
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              PRONOTE ne nous permet pas d'afficher les sondages pour le moment.
             </Typography>
           </List.Item>
         </List>
+      )}
 
-        <HTMLView
-          value={news.content}
-          stylesheet={currentHTMLStyle}
-          style={{
-            padding: 16,
-            paddingTop: 0
-          }}
-        />
-      </ScrollView>
+      <HTMLView
+        value={cleanedContent}
+        stylesheet={stylesheet}
+        style={{
+          gap: 12
+        }}
+        paragraphBreak=""
+        bullet="  •  "
+      />
 
-      <NativeHeaderSide side="Right">
-        <ActionMenu
-          actions={
-            themes.map(theme => ({
-              id: theme.value,
-              title: theme.title,
-              subtitle: theme.description,
-              state: theme.value === style ? 'on' : 'off'
-            }))
-          }
-          onPressAction={({ nativeEvent }) => {
-            const selectedTheme = themes.find(theme => theme.value === nativeEvent.event);
-            if (selectedTheme) {
-              setStyle(selectedTheme.value);
-            }
-          }}
-        >
-          <NativeHeaderPressable>
-            <Icon papicon>
-              <Papicons.Palette />
-            </Icon>
-          </NativeHeaderPressable>
-        </ActionMenu>
-      </NativeHeaderSide>
-    </>
-  )
-}
+      {news.attachments.length > 0 && (
+        <ListLegacy>
+          {news.attachments.map((attachment, index) => (
+            <Item key={index} onPress={() => Linking.openURL(attachment.url)}>
+              <Leading>
+                <Icon size={28}>
+                  <Papicons name={getAttachmentIcon(attachment)} />
+                </Icon>
+              </Leading>
+              <TypographyLegacy variant="title">
+                {attachment.name}
+              </TypographyLegacy>
+              <TypographyLegacy variant="body1" nowrap color="secondary">
+                {attachment.url}
+              </TypographyLegacy>
+            </Item>
+          ))}
+        </ListLegacy>
+      )}
+
+      <Stack gap={0} style={{ opacity: 0.4 }}>
+        <TypographyLegacy variant="caption">
+          Si cette actualité ne s'affiche pas correctement,
+        </TypographyLegacy>
+        <TypographyLegacy variant="caption" style={{
+          textDecorationLine: 'underline'
+        }} onPress={() => setHTMLCleanupEnabled(!HTMLCleanupEnabled)}>
+          {HTMLCleanupEnabled ? "désactiver" : "activer"} le formattage automatique
+        </TypographyLegacy>
+      </Stack>
+    </ScrollView >
+  );
+};
+
+export default NewsPage;

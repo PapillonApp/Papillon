@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from "expo-router/react-navigation";
 
 import Stack from '@/ui/components/Stack';
 
@@ -15,25 +16,25 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
 
   return (
     <>
-      {Platform.OS === 'ios' && (
+      {Platform.OS === "ios" && (
         <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             height: height + insets.top,
             zIndex: 10,
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
           <ProgressiveBlurView
             blurAmount={10}
-            blurType="systemMaterial"
+            blurType="systemUltraThinMaterial"
             direction="blurredTopClearBottom"
             startOffset={0}
             reducedTransparencyFallbackColor="#00000000"
-            style={{ width: "100%", height: "101%" }}
+            style={{ width: "100%", height: "100%" }}
           />
         </View>
       )}
@@ -41,23 +42,46 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
       <View
         style={{
           height: height,
-          position: 'absolute',
+          position: "absolute",
           top: insets.top,
-          left: 0,
-          right: 0,
+          left: insets.left,
+          right: insets.right,
           paddingHorizontal: 16,
           zIndex: 11,
+          justifyContent: "center",
           alignItems: 'center',
-          flexDirection: 'row',
-          gap: 16,
         }}
       >
-        <UserProfile />
+        <View
+          style={{
+            width: "100%",
+            maxWidth: 670,
+            alignItems: "center",
+            flexDirection: "row",
+            gap: 16,
+          }}
+        >
+          <UserProfile />
 
-        <Stack direction="horizontal" hAlign="center" vAlign="end" gap={7} inline>
-          <HomeTopBarButton icon="palette" onPress={() => router.push("/(modals)/wallpaper")} />
-          <HomeTopBarButton icon="gears" onPress={() => router.push("/(settings)/settings")} />
-        </Stack>
+          <Stack
+            direction="horizontal"
+            hAlign="center"
+            vAlign="end"
+            gap={7}
+            inline
+          >
+            <HomeTopBarButton
+              icon="palette"
+              route="/(modals)/wallpaper"
+              onPress={() => router.push("/(modals)/wallpaper")}
+            />
+            <HomeTopBarButton
+              icon="gears"
+              route="/(settings)/settings"
+              onPress={() => router.push("/(settings)/settings")}
+            />
+          </Stack>
+        </View>
       </View>
     </>
   );

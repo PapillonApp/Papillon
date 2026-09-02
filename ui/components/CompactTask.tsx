@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import Stack from "./Stack";
 import Icon from "./Icon";
 import { Sparkle } from "lucide-react-native";

@@ -35,11 +35,11 @@ export interface Personalization {
   useMaterialYou?: boolean;
   iOSBottomAccessoryEnabled?: boolean;
   showTabBarLabels?: boolean;
-  knowunityEnabled?: boolean;
   magicEnabled?: boolean;
   hideNameOnHomeScreen?: boolean;
   showAlertAtLogin?: boolean;
   showDevMode?: boolean;
+  mockDataEnabled?: boolean;
   magicModelURL?: string;
   language?: string | null;
   wallpaper?: Wallpaper;
@@ -49,4 +49,5 @@ export interface Personalization {
   gradesPeriodName?: string;
   installedVersion?: string;
   releaseNotesSeenForVersion?: string;
+  welcomeModalSeen?: boolean;
 }

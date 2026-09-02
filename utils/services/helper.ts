@@ -4,6 +4,8 @@ import { Services } from "@/stores/account/types";
 
 export function getServiceName(service: Services): string {
   switch(service) {
+  case Services.MOCK_DATA:
+    return "Mock Data";
   case Services.TURBOSELF:
     return "TurboSelf";
   case Services.ARD:
@@ -21,6 +23,8 @@ export function getServiceName(service: Services): string {
 
 export function getServiceLogo(service: Services): ImageSourcePropType {
   switch(service) {
+  case Services.MOCK_DATA:
+    return require("@/assets/images/icon.png")
   case Services.PRONOTE:
     return require("@/assets/images/service_pronote.png")
   case Services.SKOLENGO:

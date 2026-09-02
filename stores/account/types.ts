@@ -42,6 +42,7 @@ export interface AccountsStorage {
  * @property {string} id - Unique identifier for the account (read-only).
  * @property {string} firstName - The user's first name.
  * @property {string} lastName - The user's last name.
+ * @property {boolean} [custom] - Whether the account was created without an associated service.
  * @property {string} [schoolName] - (Optional) The name of the user's school.
  * @property {ServiceAccount[]} services - List of service accounts associated with this account.
  * @property {string} createdAt - ISO string representing the account creation date (stored as string due to MMKV limitations).
@@ -51,6 +52,7 @@ export interface Account {
   readonly id: string;
   firstName: string;
   lastName: string;
+  custom?: boolean;
   schoolName?: string;
   className?: string;
   customisation?: CustomisationStorage;
@@ -129,4 +131,5 @@ export enum Services {
   MULTI,
   ALISE,
   APPSCHO,
+  MOCK_DATA = 10,
 }

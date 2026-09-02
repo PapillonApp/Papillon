@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import AndroidHeaderBackground from "@/components/AndroidHeaderBackground";
+import { Platform } from "react-native";
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -17,6 +18,19 @@ export default function Layout() {
         options={{
           headerShown: false,
           headerTitle: t("Tab_Grades"),
+        }}
+      />
+      <Stack.Screen
+        name="[id]"
+        options={{
+          headerShown: Platform.OS !== "ios",
+          headerTitle: t("Modal_Grades_Title"),
+          headerLargeTitle: false,
+          headerTransparent: true,
+          presentation: Platform.OS !== "ios" ? "modal" : "formSheet",
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.5, 1],
+          headerBackground: AndroidHeaderBackground,
         }}
       />
       <Stack.Screen

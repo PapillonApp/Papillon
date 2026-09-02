@@ -1,5 +1,6 @@
 import {
-  parseTimetable, resource,
+  parseTimetable,
+  resource,
   SessionHandle,
   TabLocation,
   TimetableClassActivity,
@@ -7,9 +8,8 @@ import {
   TimetableClassLesson,
   timetableFromWeek,
   translateToWeekNumber,
-} from "pawnote";
+} from "@blockshub/pawnote-lts";
 
-import { getDateRangeOfWeek } from "@/database/useHomework";
 import { Course, CourseDay, CourseResource, CourseStatus, CourseType } from "@/services/shared/timetable";
 import { error } from "@/utils/logger/logger";
 
@@ -122,7 +122,7 @@ export async function fetchPronoteCourseResources(
     error("Course resource ID is undefined", "fetchPronoteCourseResources");
   }
 
-  const resources = (await resource(session, course.resourceId)).contents;
+  const resources = (await resource(session, course.resourceId!)).contents;
 
   return resources.map(r => ({
     title: r.title,

@@ -1,19 +1,18 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useRoute, useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
+import { useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import Knowunity from "@/components/Knowunity";
 import ModalOverhead from "@/components/ModalOverhead";
-import { updateHomeworkIsDone } from "@/database/useHomework";
+import { getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import { formatHTML } from "@/utils/format/html";
-import { generateId } from "@/utils/generateId";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
@@ -23,33 +22,47 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { Homework } from "@/services/shared/homework";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { View } from "react-native";
 
 const Task = () => {
-  const { params } = useRoute();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useTheme();
   const colors = theme.colors;
+  const [task, setTask] = useState<Homework>();
+  const [loading, setLoading] = useState(true);
+  const [isDone, setIsDone] = useState(false);
 
-  const { task } = params as { task: Homework };
-  const formatedTask = formatHTML(task.content)
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getHomeworkById(id)
+      .then(result => {
+        if (!cancelled) {
+          setTask(result);
+          setIsDone(result?.isDone ?? false);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const formatedTask = formatHTML(task?.content ?? "")
 
   const subjectInfo = {
-    color: getSubjectColor(task.subject),
-    emoji: getSubjectEmoji(task.subject),
-    name: getSubjectName(task.subject)
+    color: getSubjectColor(task?.subject ?? ""),
+    emoji: getSubjectEmoji(task?.subject ?? ""),
+    name: getSubjectName(task?.subject ?? "")
   }
-
-  const [isDone, setIsDone] = useState(task.isDone);
 
   const setAsDone = async (done: boolean) => {
     const manager = getManager();
-    await manager.setHomeworkCompletion(task, done);
-
-    const id = generateId(
-      task.subject +
-      task.content +
-      task.createdByAccount +
-      new Date(task.dueDate).toDateString()
-    );
+    if (!task) return;
+    await manager?.setHomeworkCompletion(task, done);
 
     updateHomeworkIsDone(id, done);
     setIsDone(done);
@@ -60,6 +73,14 @@ const Task = () => {
     android: insets.top + 32,
     default: 0
   });
+
+  if (loading) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><ActivityIndicator /></View>;
+  }
+
+  if (!task) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Typography variant="title">{t("Tab_Tasks")}</Typography></View>;
+  }
 
   return (
     <>
@@ -165,12 +186,6 @@ const Task = () => {
             ))}
           </List.Section>
         )}
-        <Knowunity
-          subjectColor={subjectInfo.color}
-          subjectName={subjectInfo.name}
-          subjectEmoji={subjectInfo.emoji}
-          formattedTask={formatedTask}
-        />
       </List>
     </>
   );

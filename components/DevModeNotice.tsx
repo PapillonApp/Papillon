@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Code } from "lucide-react-native";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";

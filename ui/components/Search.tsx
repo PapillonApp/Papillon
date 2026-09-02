@@ -1,15 +1,17 @@
 import { isLiquidGlassSupported } from "@callstack/liquid-glass";
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect, useState } from "react";
-import { Dimensions, Platform, TextInput, TouchableOpacity, View } from "react-native";
+import { Dimensions, Platform, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native";
 
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import { Dynamic } from "./Dynamic";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import { useFont } from "@/utils/theme/fonts";
+import useResizable from "../utils/Resizable";
+import { VARIANTS } from "./Typography";
 
 interface SearchProps {
   autoFocus?: boolean,
@@ -24,6 +26,7 @@ interface SearchProps {
 
 const SearchContainer = ({ children, style }: { children: React.ReactNode, style?: StyleProp<ViewStyle> }) => {
   const { colors } = useTheme();
+  const { isLarge } = useResizable();
 
   if (!isLiquidGlassSupported) {
     return (
@@ -46,7 +49,7 @@ const SearchContainer = ({ children, style }: { children: React.ReactNode, style
       glassTintColor="transparent"
       glassOpacity={0}
       style={[{
-        width: Dimensions.get("window").width - 32,
+        width: "100%",
         borderRadius: 300,
       }, style]}
     >
@@ -68,6 +71,8 @@ const Search: React.FC<SearchProps> = ({
   const { colors } = useTheme();
   const font = useFont();
   const [localInput, setLocalInput] = useState("");
+    const dimensions = useWindowDimensions();
+    const isLarge = dimensions.width >= 768;
 
   const input = value !== undefined && setValue !== undefined ? value : localInput;
   const setInput = (text: string) => {
@@ -85,8 +90,9 @@ const Search: React.FC<SearchProps> = ({
   return (
     <SearchContainer style={style}>
       <Stack
-        height={42}
+        height={isLarge ? 36 : 42}
         style={{
+          width: "100%",
           borderWidth: 0,
           overflow: 'hidden',
         }}
@@ -115,10 +121,10 @@ const Search: React.FC<SearchProps> = ({
           style={{
             flex: 1,
             height: '100%',
-            fontSize: 17,
+            ...VARIANTS.body1,
             color: colors.text,
             fontFamily: font("semibold"),
-            marginTop: Platform.OS === 'android' ? 2 : 0,
+            marginTop: Platform.OS === 'android' ? 2 : -1,
           }}
         />
 

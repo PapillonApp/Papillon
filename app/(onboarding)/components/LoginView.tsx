@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import React from 'react';
 import { Alert, Image, View } from 'react-native';
 import { useTranslation } from "react-i18next";
@@ -62,16 +62,16 @@ export default function LoginView({
 
   const defaultActions = actions ?? [
     {
-      label: t("LOGIN_BTN"),
-      variant: "primary" as const,
-      submit: true,
-    },
-    {
       label: t("ONBOARDING_LOGIN_HELP_ACTION"),
       variant: "secondary" as const,
       onPress: () => {
         Alert.alert(t("ONBOARDING_LOGIN_HELP_TITLE"), t("ONBOARDING_LOGIN_HELP_DESCRIPTION"));
       },
+    },
+    {
+      label: t("LOGIN_BTN"),
+      variant: "primary" as const,
+      submit: true,
     }
   ];
 
@@ -88,30 +88,31 @@ export default function LoginView({
   return (
     <View
       style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
         padding: 20,
       }}
     >
       <View
         style={{
           borderColor: colors.text + "20",
-          backgroundColor: !serviceIcon ? (color ?? colors.primary) : colors.card,
+          backgroundColor: !serviceIcon
+            ? (color ?? colors.primary)
+            : colors.card,
           borderWidth: 1,
           width: 72,
           height: 72,
-          borderRadius: 16,
+          borderRadius: 20,
           marginBottom: 16,
-          shadowColor: 'black',
+          shadowColor: "black",
           shadowOffset: {
             width: 0,
             height: 2,
           },
           shadowOpacity: 0.05,
           shadowRadius: 2,
-          alignItems: 'center',
-          justifyContent: 'center',
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {serviceIcon && (
@@ -120,7 +121,7 @@ export default function LoginView({
             style={{
               width: "100%",
               height: "100%",
-              borderRadius: 16,
+              borderRadius: 20,
             }}
           />
         )}
@@ -136,41 +137,46 @@ export default function LoginView({
         {t("ONBOARDING_LOGIN_TO_SERVICE")}
       </Typography>
 
-      <Stack animated direction='horizontal' hAlign='center' gap={10}>
+      <Stack animated direction="horizontal" hAlign="center" gap={10}>
         <Dynamic animated>
           <Typography variant="h3" align="center">
             {serviceName || t("ONBOARDING_UNKNOWN_SERVICE")}
           </Typography>
         </Dynamic>
-        {loading &&
+        {loading && (
           <Dynamic animated>
             <ActivityIndicator color={color} size={22} strokeWidth={3.5} />
           </Dynamic>
-        }
+        )}
       </Stack>
 
-      <Stack
-        padding={[0, 20]}
-        width={"100%"}
-        gap={8}
-      >
+      <Stack padding={[0, 20]} width={"100%"} gap={8} style={{ maxWidth: 600 }}>
         {defaultFields.map((field, index) => (
           <TextInput
             key={index}
             color={color}
             placeholder={field.placeholder}
             secureTextEntry={field.secureTextEntry}
-            onChangeText={(value) => handleChange(field.name, value)}
-            textContentType={field.textContentType ? field.textContentType : undefined}
-            keyboardType={field.keyboardType ? field.keyboardType : 'default'}
+            onChangeText={value => handleChange(field.name, value)}
+            textContentType={
+              field.textContentType ? field.textContentType : undefined
+            }
+            keyboardType={field.keyboardType ? field.keyboardType : "default"}
           />
         ))}
       </Stack>
 
-      <Stack
-        width={"100%"}
-        gap={8}
-      >
+      <Stack width={"100%"} gap={8} hAlign={"center"} style={{ marginTop: 'auto' }}>
+        <Typography
+          variant="caption"
+          align="center"
+          color="textSecondary"
+          style={{ marginVertical: 16, marginBottom: 8 }}
+        >
+          {t("ONBOARDING_LOGIN_DISCLAIMER", {
+            service: serviceName || t("ONBOARDING_THIS_SERVICE"),
+          })}
+        </Typography>
         {defaultActions.map((action, index) => (
           <Button
             key={index}
@@ -178,14 +184,16 @@ export default function LoginView({
             fullWidth
             label={action.label}
             variant={action.variant}
-            onPress={action.onPress ? action.onPress : action.submit ? handleSubmit : undefined}
+            onPress={
+              action.onPress
+                ? action.onPress
+                : action.submit
+                  ? handleSubmit
+                  : undefined
+            }
           />
         ))}
       </Stack>
-
-      <Typography variant="caption" align="center" color="textSecondary" style={{ marginVertical: 16, marginBottom: 32 }}>
-        {t("ONBOARDING_LOGIN_DISCLAIMER", { service: serviceName || t("ONBOARDING_THIS_SERVICE") })}
-      </Typography>
     </View>
   );
 }

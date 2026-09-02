@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
 import { t } from 'i18next';
-import { instance } from 'pawnote';
+import { instance } from "@blockshub/pawnote-lts";
 import { useCallback, useEffect } from 'react';
 
 import { getWeekNumberFromDate } from '@/database/useHomework';
 import { AuthenticationError } from '@/services/errors/AuthenticationError';
+import { ServiceUnavailableError } from '@/services/errors/ServiceUnavailableError';
 import { getManager, initializeAccountManager } from "@/services/shared";
 import { Services } from '@/stores/account/types';
 import { useSettingsStore } from '@/stores/settings';
@@ -118,7 +119,6 @@ export const useHomeData = () => {
       if (String(error).includes("Unable to find")) { return; }
       if (error instanceof AuthenticationError) {
         const instanceURL = error?.service?.auth?.additionals?.["instanceURL"] ?? "";
-        const serviceId = error?.service?.id ?? undefined;
 
         alert.showAlert({
           title: "Vous avez été déconnecté",
@@ -130,6 +130,13 @@ export const useHomeData = () => {
             label: "Me reconnecter",
             showCancelButton: error.service.serviceId === Services.PRONOTE,
             onPress: async () => {
+              const ownerAccount = accounts.find(acc =>
+                acc.services.some(s => s.id === error.service.id)
+              );
+              if (ownerAccount) {
+                removeAccount(ownerAccount);
+              }
+
               const authUrl = instanceURL;
               const instanceInfo = await instance(authUrl as string);
 
@@ -149,6 +156,14 @@ export const useHomeData = () => {
           } : undefined,
           technical: error.message
         })
+      } else if (error instanceof ServiceUnavailableError) {
+        alert.showAlert({
+          title: t("home.unavailable.title", "Pronote temporairement indisponible"),
+          description: t("home.unavailable.description", "Impossible de contacter Pronote pour le moment. Les données affichées correspondent à la dernière synchronisation."),
+          icon: "WifiOff",
+          color: "#FF8C00",
+          withoutNavbar: true,
+        });
       }
     }
     })();

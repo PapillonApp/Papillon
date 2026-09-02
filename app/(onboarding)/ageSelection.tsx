@@ -1,5 +1,4 @@
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, StatusBar, View } from "react-native";
@@ -71,23 +70,45 @@ export default function AgeSelection() {
 
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} translucent />
-          
+      <StatusBar
+        barStyle={theme.dark ? "light-content" : "dark-content"}
+        translucent
+      />
+
       <FlatList
         ListHeaderComponent={() => (
-          <Stack>
+          <Stack
+            style={{
+              alignSelf: "center",
+              width: "100%",
+              maxWidth: 500,
+            }}
+          >
             <Typography variant="h2">{t("ONBOARDING_AGE_TITLE")}</Typography>
-            <Typography variant="action" color="textSecondary">{t("ONBOARDING_AGE_DESCRIPTION")}</Typography>
+            <Typography variant="action" color="textSecondary">
+              {t("ONBOARDING_AGE_DESCRIPTION")}
+            </Typography>
             <Divider height={6} ghost />
           </Stack>
         )}
-        data={LEVELS.map((level) => ("labelKey" in level ? { ...level, label: t(level.labelKey) } : level))}
-        renderItem={({ item }) => <OnboardingSelector item={item} selected={selectedLevel} setSelected={setSelectedLevel} />}
+        data={LEVELS.map(level =>
+          "labelKey" in level ? { ...level, label: t(level.labelKey) } : level
+        )}
+        renderItem={({ item }) => (
+          <OnboardingSelector
+            item={item}
+            selected={selectedLevel}
+            setSelected={setSelectedLevel}
+          />
+        )}
         contentContainerStyle={{
           padding: 20,
           flexGrow: 1,
           gap: 10,
-          paddingTop: headerHeight + 20
+          paddingTop: headerHeight + 20,
+          width: "100%",
+          maxWidth: 500,
+          marginHorizontal: 'auto'
         }}
         initialNumToRender={2}
         maxToRenderPerBatch={2}
@@ -100,17 +121,20 @@ export default function AgeSelection() {
           padding: 20,
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
-          borderTopWidth: 1
+          borderTopWidth: 1,
+          alignItems: 'center'
         }}
       >
         <Button
           label={t("ONBOARDING_CONTINUE")}
           onPress={() => {
             navigation.navigate("serviceSelection", {
-              type: LEVELS.find((level) => level.key === selectedLevel)?.type
-            })
+              type: LEVELS.find(level => level.key === selectedLevel)?.type,
+            });
           }}
           disabled={!selectedLevel}
+          fullWidth
+          maxWidth={500}
         />
       </View>
     </View>

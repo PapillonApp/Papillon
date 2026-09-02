@@ -3,7 +3,7 @@ import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeH
 import { router, useLocalSearchParams } from "expo-router";
 import { Platform, ScrollView, View } from "react-native";
 import { Papicons } from "@getpapillon/papicons"
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
@@ -11,7 +11,6 @@ import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/serv
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
-import { useHeaderHeight } from "@react-navigation/elements";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import adjust from "@/utils/adjustColor";
 import { error } from "@/utils/logger/logger";
@@ -27,6 +26,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Typography from "@/ui/new/Typography";
 import { formatDate, formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
 import * as DateLocale from 'date-fns/locale';
+
+const parseSearchParam = <T,>(value: string | string[] | undefined, fallback: T): T => {
+  const serializedValue = Array.isArray(value) ? value[0] : value;
+
+  if (!serializedValue) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(serializedValue) as T;
+  } catch {
+    return fallback;
+  }
+};
 
 const formatEventTime = (durationData: number, detailed: boolean) => {
   if(detailed) {
@@ -47,12 +60,12 @@ export default function AttendanceView() {
     const header = useHeaderHeight();
 
     const search = useLocalSearchParams();
-    const currentPeriod = JSON.parse(String(search.currentPeriod)) as Period;
-    const periods = JSON.parse(String(search.periods)) as Period[];
-    const attendancesFromSearch = JSON.parse(String(search.attendances)) as Attendance[];
+    const periods = parseSearchParam<Period[]>(search.periods, []);
+    const currentPeriod = parseSearchParam<Period | undefined>(search.currentPeriod, periods[0]);
+    const attendancesFromSearch = parseSearchParam<Attendance[]>(search.attendances, []);
 
     const [attendances, setAttendances] = useState<Attendance[]>(attendancesFromSearch);
-    const [period, setPeriod] = useState<Period>(currentPeriod);
+    const [period, setPeriod] = useState<Period | undefined>(currentPeriod);
 
     const { missedTime, missedTimeUnjustified, unjustifiedAbsenceCount, unjustifiedDelayCount, absenceCount, delayCount } = useMemo(() => {
       let missed = 0;
@@ -109,6 +122,7 @@ export default function AttendanceView() {
 
                     if (!selectedPeriod) {
                       error(t("Attendance_InvalidPeriod"))
+                      return;
                     }
 
                     const manager = getManager()

@@ -1,20 +1,25 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useRoute, useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
+import { useLocalSearchParams } from "expo-router";
 import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
 import * as DateLocale from 'date-fns/locale';
 import i18n, { t } from "i18next";
-import React from "react";
-import { Platform } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead from "@/components/ModalOverhead";
+import { getCourseById } from "@/database/useTimetable";
 import { Course as SharedCourse } from "@/services/shared/timetable";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { getSubjectName } from '@/utils/subjects/name';
+import { getSubjectColor } from '@/utils/subjects/colors';
+import { getSubjectEmoji } from '@/utils/subjects/emoji';
 
-import { getStatusText } from "../(tabs)/calendar/components/CalendarDay";
+import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SubjectInfo {
@@ -24,36 +29,55 @@ interface SubjectInfo {
   color: string;
 }
 
-interface GradesModalProps {
-  course: SharedCourse;
-  subjectInfo: SubjectInfo;
-}
-
 export default function CourseModal() {
-  const { params } = useRoute();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
-
-  if (!params) {
-    return null;
-  }
-
-  const { course, subjectInfo } = params as GradesModalProps;
-  const item = course;
-
-  const startTime = Math.floor(course.from.getTime() / 1000);
-  const endTime = Math.floor(course.to.getTime() / 1000);
-
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0
   });
+  const [course, setCourse] = useState<SharedCourse>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getCourseById(id)
+      .then(result => {
+        if (!cancelled) setCourse(result);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (loading) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><ActivityIndicator /></View>;
+  }
+
+  if (!course) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Typography variant="title">{t("Tab_Calendar")}</Typography></View>;
+  }
+
+  const subjectInfo: SubjectInfo = {
+    name: getSubjectName(course.subject),
+    originalName: course.subject,
+    emoji: getSubjectEmoji(course.subject),
+    color: getSubjectColor(course.subject),
+  };
+  const item = course;
+  const startTime = Math.floor(course.from.getTime() / 1000);
+  const endTime = Math.floor(course.to.getTime() / 1000);
 
   return (
-    <>
-      {Platform.OS !== 'android' && (
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      {Platform.OS !== "android" && (
         <LinearGradient
-          colors={[subjectInfo.color, colors.background]}
+          colors={[subjectInfo.color, 'transparent']}
           style={{
             position: "absolute",
             top: 0,
@@ -61,8 +85,8 @@ export default function CourseModal() {
             right: 0,
             height: 500,
             width: "100%",
-            zIndex: -9,
-            opacity: 0.6
+            zIndex: 0,
+            opacity: 0.6,
           }}
         />
       )}
@@ -72,7 +96,7 @@ export default function CourseModal() {
           <ModalOverhead
             subject={getSubjectName(item.subject)}
             title={item.customStatus || getStatusText(item.status)}
-            color={Platform.OS === 'ios' ? subjectInfo.color : colors.primary}
+            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
             emoji={subjectInfo.emoji}
             subjectVariant="h3"
             date={new Date(startTime * 1000)}
@@ -81,16 +105,16 @@ export default function CourseModal() {
               month: "long",
               year: "numeric",
               hour: "numeric",
-              minute: "numeric"
+              minute: "numeric",
             }}
             style={{
               marginBottom: 24,
               marginTop: 24,
-              paddingTop: finalHeaderHeight
+              paddingTop: finalHeaderHeight,
             }}
           />
         }
-        style={{ backgroundColor: "transparent" }}
+        style={{ backgroundColor: "transparent", zIndex: 2 }}
         contentContainerStyle={{ padding: 16 }}
       >
         {getStatusText(course.status) ? (
@@ -119,20 +143,20 @@ export default function CourseModal() {
                 <Papicons name="Logout" />
               </Icon>
             </List.Leading>
-            <Typography variant="title">
-              {t("Modal_Course_Start")}
-            </Typography>
+            <Typography variant="title">{t("Modal_Course_Start")}</Typography>
             <Typography variant="body1" color="textSecondary">
               {formatDistanceToNow(startTime * 1000, {
-                locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
-                addSuffix: true
+                locale:
+                  DateLocale[i18n.language as keyof typeof DateLocale] ||
+                  DateLocale.enUS,
+                addSuffix: true,
               })}
             </Typography>
             <List.Trailing>
               <Typography variant="title">
                 {new Date(startTime * 1000).toLocaleString(undefined, {
                   hour: "numeric",
-                  minute: "numeric"
+                  minute: "numeric",
                 })}
               </Typography>
             </List.Trailing>
@@ -144,14 +168,12 @@ export default function CourseModal() {
                 <Papicons name="Login" />
               </Icon>
             </List.Leading>
-            <Typography variant="title">
-              {t("Modal_Course_End")}
-            </Typography>
+            <Typography variant="title">{t("Modal_Course_End")}</Typography>
             <List.Trailing>
               <Typography variant="title">
                 {new Date(endTime * 1000).toLocaleString(undefined, {
                   hour: "numeric",
-                  minute: "numeric"
+                  minute: "numeric",
                 })}
               </Typography>
             </List.Trailing>
@@ -169,9 +191,7 @@ export default function CourseModal() {
                 <Papicons name="User" />
               </Icon>
             </List.Leading>
-            <Typography variant="title">
-              {t("Modal_Course_Teacher")}
-            </Typography>
+            <Typography variant="title">{t("Modal_Course_Teacher")}</Typography>
             <Typography variant="body1" color="textSecondary">
               {item.teacher}
             </Typography>
@@ -183,9 +203,7 @@ export default function CourseModal() {
                 <Papicons name="MapPin" />
               </Icon>
             </List.Leading>
-            <Typography variant="title">
-              {t("Modal_Course_Room")}
-            </Typography>
+            <Typography variant="title">{t("Modal_Course_Room")}</Typography>
             <Typography variant="body1" color="textSecondary">
               {item.room || t("No_Course_Room")}
             </Typography>
@@ -202,12 +220,14 @@ export default function CourseModal() {
             </Typography>
             <Typography variant="body1" color="textSecondary">
               {formatDistanceStrict(startTime * 1000, endTime * 1000, {
-                locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS
+                locale:
+                  DateLocale[i18n.language as keyof typeof DateLocale] ||
+                  DateLocale.enUS,
               })}
             </Typography>
           </List.Item>
         </List.Section>
       </List>
-    </>
-  )
+    </View>
+  );
 }

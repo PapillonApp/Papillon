@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 import { useAccountStore } from "@/stores/account";
 import { useTimetable } from "@/database/useTimetable";
-import { Course as SharedCourse } from "@/services/shared/timetable";
+import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 
-const widgetCacheStorage = new MMKV({ id: "home-widget-cache" });
+const widgetCacheStorage = createMMKV({ id: "home-widget-cache" });
 
 type CachedCourse = Omit<SharedCourse, "from" | "to"> & {
   from: number;
@@ -28,7 +28,7 @@ const deserializeCourse = (course: CachedCourse): SharedCourse => ({
   to: new Date(course.to)
 });
 
-export const useTimetableWidgetData = () => {
+export const useTimetableWidgetData = (options: { showCancelled?: boolean } = {}) => {
   const [now, setNow] = useState(() => new Date());
   const [loading, setLoading] = useState(true);
   const accounts = useAccountStore((state) => state.accounts);
@@ -100,10 +100,11 @@ export const useTimetableWidgetData = () => {
       const hydrated = cached.courses
         .map(deserializeCourse)
         .filter((course) => course.to.getTime() > Date.now())
+        .filter((course) => options.showCancelled || course.status !== CourseStatus.CANCELED)
         .sort((a, b) => a.from.getTime() - b.from.getTime());
       setCourses(hydrated);
     } catch {
-      widgetCacheStorage.delete(cacheKey);
+      widgetCacheStorage.remove(cacheKey);
     } finally {
       setLoading(false);
     }
@@ -123,6 +124,7 @@ export const useTimetableWidgetData = () => {
         date: day.date,
         courses: day.courses
           .filter((course) => course.to.getTime() > nowTimestamp)
+          .filter((course) => options.showCancelled || course.status !== CourseStatus.CANCELED)
           .sort((a, b) => a.from.getTime() - b.from.getTime())
       }))
       .filter((day) => day.courses.length > 0)

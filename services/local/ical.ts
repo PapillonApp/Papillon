@@ -1,6 +1,7 @@
 import { Course as SharedCourse } from '@/services/shared/timetable';
 
 import { convertMultipleEvents } from './event-converter';
+import { convertICalEventToSharedCourse } from './event-converter';
 import { filterEventsByWeek } from './event-filter';
 import { getAllIcals, updateProviderIfUnknown } from './ical-database';
 import { detectProvider } from './ical-utils';
@@ -80,7 +81,7 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
         isADE: parsedData.isADE,
         isHyperplanning: parsedData.isHyperplanning,
         intelligentParsing: (ical as any).intelligentParsing || false,
-        isSchool: parsedData.isSchool,
+        isSchool: parsedData.isSchool ?? false,
         schoolName: parsedData.schoolName
       });
 
@@ -93,3 +94,28 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
   return allEvents;
 }
 
+export async function getICalCourseById(id: string): Promise<SharedCourse | undefined> {
+  const icals = await getAllIcals();
+
+  for (const ical of icals) {
+    try {
+      const { parsedData } = await processIcalData(ical);
+      const event = parsedData.events.find(candidate => candidate.uid === id);
+      if (event) {
+        return convertICalEventToSharedCourse(event, {
+          icalId: ical.id,
+          icalTitle: ical.title,
+          isADE: parsedData.isADE,
+          isHyperplanning: parsedData.isHyperplanning,
+          intelligentParsing: (ical as any).intelligentParsing || false,
+          isSchool: parsedData.isSchool ?? false,
+          schoolName: parsedData.schoolName,
+        });
+      }
+    } catch (error) {
+      console.error(`Error processing iCal ${ical.title}:`, error);
+    }
+  }
+
+  return undefined;
+}

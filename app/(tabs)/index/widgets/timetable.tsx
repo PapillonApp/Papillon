@@ -1,4 +1,4 @@
-import { useNavigation } from "expo-router";
+import { Link } from "expo-router";
 import { differenceInCalendarDays, formatDistanceToNowStrict, startOfDay } from "date-fns";
 import { t } from "i18next";
 import React from 'react';
@@ -10,11 +10,11 @@ import Course from "@/ui/components/Course";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import i18n from "@/utils/i18n";
 import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 import { getStatusText } from '../../calendar/components/CalendarDay';
+import { getCourseRouteId } from '@/database/useTimetable';
 
 function getRelativeDayStatus(date: Date): string | null {
   const days = differenceInCalendarDays(startOfDay(date), startOfDay(new Date()));
@@ -37,7 +37,6 @@ function getRelativeDayStatus(date: Date): string | null {
 }
 
 const HomeTimeTableWidget = React.memo(() => {
-  const navigation = useNavigation();
   const { courses } = useTimetableWidgetData();
 
   if (courses.length === 0) {
@@ -66,31 +65,25 @@ const HomeTimeTableWidget = React.memo(() => {
       data={courses.slice(0, 3)}
       style={{ width: '100%', paddingHorizontal: 10 }}
       renderItem={({ item }) => (
-        <Course
-          key={item.id}
-          id={item.id}
-          name={getSubjectName(item.subject)}
-          teacher={item.teacher}
-          room={item.room}
-          color={getSubjectColor(item.subject)}
-          status={{ label: getRelativeDayStatus(item.from) ?? (item.customStatus ? item.customStatus : getStatusText(item.status)), canceled: (item.status === CourseStatus.CANCELED) }}
-          variant="primary"
-          start={Math.floor(item.from.getTime() / 1000)}
-          end={Math.floor(item.to.getTime() / 1000)}
-          readonly={!!item.createdByAccount}
-          compact={true}
-          onPress={() => {
-            (navigation as any).navigate('(modals)/course', {
-              course: item,
-              subjectInfo: {
-                id: item.id,
-                name: item.subject,
-                color: getSubjectColor(item.subject),
-                emoji: getSubjectEmoji(item.subject),
-              }
-            });
-          }}
-        />
+        <Link
+          href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(item) } }}
+          asChild
+        >
+          <Course
+            key={item.id}
+            id={item.id}
+            name={getSubjectName(item.subject)}
+            teacher={item.teacher}
+            room={item.room}
+            color={getSubjectColor(item.subject)}
+            status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
+            variant="primary"
+            start={Math.floor(item.from.getTime() / 1000)}
+            end={Math.floor(item.to.getTime() / 1000)}
+            readonly={!!item.createdByAccount}
+            compact={true}
+          />
+        </Link>
       )}
     />
   );

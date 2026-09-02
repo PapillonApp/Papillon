@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
@@ -7,6 +7,7 @@ import { FlatList, Platform, StatusBar, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
+import { useSettingsStore } from '@/stores/settings';
 import { checkConsent } from '@/utils/logger/consent';
 
 import HomeHeader from './atoms/HomeHeader';
@@ -18,11 +19,8 @@ import { useTimetableWidgetData } from './hooks/useTimetableWidgetData';
 import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
 import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
-import { useAlert } from '@/ui/components/AlertProvider';
-import Button from '@/ui/new/Button';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
-import Typography from '@/ui/new/Typography';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 const HomeScreen = () => {
@@ -35,6 +33,8 @@ const HomeScreen = () => {
   const accounts = useAccountStore((state) => state.accounts);
   const account = accounts.find(a => a.id === store.lastUsedAccount);
   const router = useRouter();
+  const welcomeModalSeen = useSettingsStore(state => state.personalization.welcomeModalSeen);
+  const mutateSettings = useSettingsStore(state => state.mutateProperty);
 
   React.useEffect(() => {
     if (accounts.length === 0) {
@@ -42,16 +42,18 @@ const HomeScreen = () => {
       return;
     }
 
+    if (account && account.transport === undefined) {
+      store.initializeTransport(account.schoolName);
+    }
+  }, [account, accounts.length, router, store]);
+
+  React.useEffect(() => {
     checkConsent().then(consent => {
       if (!consent.given) {
         router.push("../consent");
       }
     });
-
-    if (account && account.transport === undefined) {
-      store.initializeTransport(account.schoolName);
-    }
-  }, [account, accounts.length, router, store]);
+  }, []);
 
   useHomeData();
   const { courses } = useTimetableWidgetData();
@@ -81,14 +83,21 @@ const HomeScreen = () => {
     }
   ], [renderTimeTable, renderGrades, gradesWidgetHidden, timetableTitle]);
 
-  const alert = useAlert();
+  React.useEffect(() => {
+    if (!account || welcomeModalSeen) {
+      return;
+    }
+
+    mutateSettings("personalization", { welcomeModalSeen: true });
+    router.navigate("/(modals)/welcome");
+  }, [account, mutateSettings, router, welcomeModalSeen]);
 
   return (
     <>
       <Wallpaper />
       <HomeTopBar />
       {focused && <StatusBar translucent animated barStyle={'light-content'} />}
-      <HomeViewContainer>
+      <HomeViewContainer key={"home"}>
         <FlatList
           renderItem={({ item }) => <HomeWidget item={item} />}
           keyExtractor={(item) => item.title}
@@ -99,7 +108,11 @@ const HomeScreen = () => {
             paddingHorizontal: 16,
             flexGrow: 1,
             gap: 12,
-            marginTop: 6
+            marginTop: 6,
+            paddingLeft: insets.left + 16,
+            width: '100%',
+            maxWidth: 670,
+            marginHorizontal: 'auto',
           }}
           data={data}
         />

@@ -1,11 +1,8 @@
 import { Papicons } from '@getpapillon/papicons';
-import { LegendList } from '@legendapp/list';
-import { MenuView } from '@react-native-menu/menu';
-import { useTheme } from '@react-navigation/native';
-import { useNavigation } from 'expo-router';
+import { useTheme } from "expo-router/react-navigation";
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, Platform, RefreshControl, View } from 'react-native';
+import { Platform, RefreshControl, View } from "react-native";
 import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -13,12 +10,9 @@ import { getManager, subscribeManagerUpdate } from '@/services/shared';
 import { GradeScore, Period, Subject } from "@/services/shared/grade";
 import { useSettingsStore } from "@/stores/settings";
 import ChipButton from '@/ui/components/ChipButton';
-import { CompactGrade } from '@/ui/components/CompactGrade';
 import { Dynamic } from '@/ui/components/Dynamic';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 import Icon from '@/ui/components/Icon';
-import Item, { Trailing } from '@/ui/components/Item';
-import LegacyList from '@/ui/components/List';
 import Search from '@/ui/components/Search';
 import Stack from '@/ui/components/Stack';
 import TabHeader from '@/ui/components/TabHeader';
@@ -29,22 +23,18 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import i18n from '@/utils/i18n';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
-import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 
 import Averages from './atoms/Averages';
 import FeaturesMap from './atoms/FeaturesMap';
 import { SubjectItem } from './atoms/Subject';
-import { useGradeInfluence } from './hooks/useGradeInfluence';
 import List from '@/ui/new/List';
-import Typography from '@/ui/new/Typography';
 import ActionMenu from '@/ui/components/ActionMenu';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 import { trackAdvancedEvent } from '@/utils/logger/analytics';
-
-const MemoizedSubjectItem = React.memo(SubjectItem);
+import useResizable from "@/ui/utils/Resizable";
+import { CompactGradeList } from "@/components/CompactGradeList";
 
 const GradesView: React.FC = () => {
   // Layout du header
@@ -53,8 +43,8 @@ const GradesView: React.FC = () => {
   // Thème
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const bottomTabBarHeight = 0;
-  const navigation = useNavigation();
+  const resize = useResizable();
+  const bottomTabBarHeight = insets.bottom;
 
   // Chargement
   const [periodsLoading, setPeriodsLoading] = useState(true);
@@ -112,9 +102,6 @@ const GradesView: React.FC = () => {
       }
     },
   ];
-
-  // Gestion du scroll
-  const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
 
   // Manager
   const manager = getManager();
@@ -258,8 +245,8 @@ const GradesView: React.FC = () => {
 
       case "averages":
         subjectsCopy.sort((a, b) => {
-          const aAvg = a.studentAverage.value;
-          const bAvg = b.studentAverage.value;
+          const aAvg = a.studentAverage?.value ?? 0;
+          const bAvg = b.studentAverage?.value ?? 0;
           return bAvg - aAvg;
         });
         break;
@@ -322,175 +309,131 @@ const GradesView: React.FC = () => {
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod, periods]);
 
-  const renderItem = useCallback(({ item }: { item: any }) => {
-    const subject = item as Subject;
-    return (
-      <ErrorBoundary>
-        {/* @ts-expect-error navigation types */}
-        <MemoizedSubjectItem
-          subject={subject}
-          grades={grades}
-          getAvgInfluence={getAvgInfluence}
-          getAvgClassInfluence={getAvgClassInfluence}
-          displayScale={displayScale}
-        />
-      </ErrorBoundary>
-    )
-  }, [grades, displayScale]);
-
   const keyboardHeight = useKeyboardHeight();
 
   const footerStyle = useAnimatedStyle(() => ({
     height: keyboardHeight.value - bottomTabBarHeight,
   }));
 
-  // influences
-  const { getAvgInfluence, getAvgClassInfluence } = useGradeInfluence(subjects, getSubjectById);
-
   // header
-  const ListHeader = useMemo(() => ((sortedGrades.length > 0 && searchText.length === 0) ? (
-    <View style={{ marginBottom: 16 }}>
-      <ErrorBoundary>
-        <Averages
-          grades={grades}
-          color={colors.primary}
-          realAverage={serviceAverage || undefined}
-          displayScale={displayScale}
-        />
-      </ErrorBoundary>
-
-      {serviceRank && (
-        <List style={{ marginTop: 8 }}>
-          <List.Item>
-            <List.Leading>
-              <Icon opacity={0.5}>
-                <Papicons name='crown' />
-              </Icon>
-            </List.Leading>
-
-            <LegacyTypography variant='title'>
-              {t('Grades_Tab_Rank')}
-            </LegacyTypography>
-            <LegacyTypography variant='body1' color='secondary'>
-              {t('Grades_Tab_Rank_Description')}
-            </LegacyTypography>
-
-            <List.Trailing>
-              <Stack
-                direction='horizontal'
-                gap={4}
-                vAlign='end'
-                hAlign='end'
-              >
-                <LegacyTypography variant='h3' inline color='text'>
-                  {serviceRank.value}
-                </LegacyTypography>
-                <LegacyTypography variant='body1' inline color='secondary'>
-                  /{serviceRank.outOf}
-                </LegacyTypography>
-              </Stack>
-            </List.Trailing>
-          </List.Item>
-        </List>
-      )}
-
-      <View style={{ height: 16 }} />
-
-      <Dynamic
-        animated
-        entering={PapillonAppearIn}
-        exiting={PapillonAppearOut}
-      >
-        <Stack gap={8}>
-          <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-            <Icon size={20}>
-              <Papicons name='star' />
-            </Icon>
-            <LegacyTypography variant='h6' color='text'>
-              {t('Grades_Tab_Latest')}
-            </LegacyTypography>
-          </Stack>
-
-          <LegendList
-            horizontal
-            data={sortedGrades.slice(0, 10)}
-            style={{ overflow: 'visible', height: 140 + 24, width: Dimensions.get('window').width - 20 }}
-            contentContainerStyle={{ gap: 12 }}
-            estimatedItemSize={210 + 12}
-            showsHorizontalScrollIndicator={false}
-            recycleItems={true}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item: grade }) =>
-              <ErrorBoundary fallback={<View style={{ width: 140, height: 140 }} />}>
-                <CompactGrade
-                  key={grade.id + "_compactGrade_header"}
-                  emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
-                  title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
-                  description={grade.description}
-                  score={grade.studentScore?.value || 0}
-                  outOf={grade.outOf?.value || 20}
-                  disabled={grade.studentScore?.disabled}
-                  status={grade.studentScore?.status}
-                  color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
-                  date={grade.givenAt}
-                  hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
-                  onPress={() => {
-                    // @ts-expect-error navigation types
-                    navigation.navigate('(modals)/grade', {
-                      grade: grade,
-                      subjectInfo: {
-                        name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
-                        color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
-                        emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
-                        originalName: getSubjectById(grade.subjectId)?.name || ""
-                      },
-                      avgInfluence: getAvgInfluence(grade),
-                      avgClass: getAvgClassInfluence(grade),
-                    })
-                  }}
+  const ListHeader = useMemo(
+    () =>
+      sortedGrades.length > 0 && searchText.length === 0 ? (
+        <View style={{}}>
+          <ErrorBoundary>
+            <Averages
+              grades={grades.filter(v => v.studentScore !== undefined)}
+              color={colors.primary}
+              realAverage={serviceAverage || undefined}
+              displayScale={displayScale}
+              paddingTop={
+                headerHeight - (Platform.OS === "ios" ? insets.top : 0)
+              }
+              largeElement={
+                <CompactGradeList
+                  grades={sortedGrades}
+                  getSubjectById={getSubjectById}
+                  large
                 />
-              </ErrorBoundary>
-            }
-          />
-        </Stack>
-      </Dynamic>
+              }
+            />
+          </ErrorBoundary>
 
-      <ErrorBoundary>
-        <FeaturesMap features={features} displayScale={displayScale} />
-      </ErrorBoundary>
+          {serviceRank && (
+            <List style={{ marginTop: 8 }}>
+              <List.Item>
+                <List.Leading>
+                  <Icon opacity={0.5}>
+                    <Papicons name="crown" />
+                  </Icon>
+                </List.Leading>
 
-      <Dynamic animated>
-        <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-          <Icon size={20}>
-            <Papicons name='grades' />
-          </Icon>
-          <LegacyTypography variant='h6' color='text'>
-            {t('Grades_Tab_Subjects')}
-          </LegacyTypography>
-        </Stack>
-      </Dynamic>
-    </View>
-  ) : null), [
-    sortedGrades,
-    searchText,
-    grades,
-    colors.primary,
-    serviceAverage,
-    serviceRank,
-    navigation,
-    getSubjectById,
-    getAvgInfluence,
-    getAvgClassInfluence,
-    features,
-    displayScale,
-  ]);
+                <LegacyTypography variant="title">
+                  {t("Grades_Tab_Rank")}
+                </LegacyTypography>
+                <LegacyTypography variant="body1" color="secondary">
+                  {t("Grades_Tab_Rank_Description")}
+                </LegacyTypography>
+
+                <List.Trailing>
+                  <Stack
+                    direction="horizontal"
+                    gap={4}
+                    vAlign="end"
+                    hAlign="end"
+                  >
+                    <LegacyTypography variant="h3" inline color="text">
+                      {serviceRank.value}
+                    </LegacyTypography>
+                    <LegacyTypography variant="body1" inline color="secondary">
+                      /{serviceRank.outOf}
+                    </LegacyTypography>
+                  </Stack>
+                </List.Trailing>
+              </List.Item>
+            </List>
+          )}
+
+          <View style={{ height: 16 }} />
+
+          {!resize.isLarge && (
+            <CompactGradeList
+              grades={sortedGrades}
+              getSubjectById={getSubjectById}
+            />
+          )}
+
+          <ErrorBoundary>
+            <FeaturesMap features={features} displayScale={displayScale} />
+          </ErrorBoundary>
+
+          <Dynamic animated>
+            <Stack
+              direction="horizontal"
+              gap={8}
+              vAlign="start"
+              hAlign="center"
+              style={{ opacity: 0.4 }}
+              padding={[0, 0]}
+            >
+              <Icon size={20}>
+                <Papicons name="grades" />
+              </Icon>
+              <LegacyTypography variant="h6" color="text">
+                {t("Grades_Tab_Subjects")}
+              </LegacyTypography>
+            </Stack>
+          </Dynamic>
+        </View>
+      ) : (
+        <View
+          style={{
+            height: headerHeight - (Platform.OS === "ios" ? insets.top : 0) + 20,
+          }}
+        />
+      ),
+    [
+      sortedGrades,
+      searchText,
+      grades,
+      colors.primary,
+      serviceAverage,
+      serviceRank,
+      getSubjectById,
+      features,
+      displayScale,
+      resize.isLarge,
+      headerHeight,
+      insets.top,
+    ]
+  );
 
   return (
     <View
       style={{
         flex: 1,
-        /* @ts-expect-error colors
-        backgroundColor: colors.overground */
+        paddingLeft: insets.left,
+        backgroundColor: colors.overground
       }}
     >
       {/* Header */}
@@ -571,16 +514,17 @@ const GradesView: React.FC = () => {
         }
         /* Recherche */
         bottom={<Search placeholder={t('Grades_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
-        shouldCollapseHeader={shouldCollapseHeader}
       />
 
 
       <List
-      animated
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: (headerHeight - (Platform.OS === "ios" ? insets.top : 0)) + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
+        animated
+        contentContainerStyle={{ paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16, paddingHorizontal: 16 }}
 
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
+
+        numColumns={resize.isLarge ? 2 : 1}
 
         keyExtractor={(item: any) => item.id}
         itemLayoutAnimation={LinearTransition.springify()}
@@ -622,9 +566,6 @@ const GradesView: React.FC = () => {
           <SubjectItem
             key={subject.id}
             subject={subject}
-            grades={grades}
-            getAvgInfluence={getAvgInfluence}
-            getAvgClassInfluence={getAvgClassInfluence}
             displayScale={displayScale}
           />
         ))}

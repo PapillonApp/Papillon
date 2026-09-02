@@ -1,4 +1,4 @@
-import { Database, Q } from "@nozbe/watermelondb";
+import { Database, Model, Q } from "@nozbe/watermelondb";
 import React, { createContext, useContext } from 'react';
 
 import { error, info } from "@/utils/logger/logger";
@@ -9,7 +9,7 @@ import { Balance } from "./models/Balance";
 import CanteenHistoryItem from "./models/CanteenHistory";
 import CanteenMenu from "./models/CanteenMenu";
 import { Chat, Message, Recipient } from "./models/Chat";
-import { Grade, Period } from "./models/Grades";
+import { Grade, Period, PeriodGrades } from "./models/Grades";
 import Homework from "./models/Homework";
 import Kid from "./models/Kid";
 import News from "./models/News";
@@ -29,6 +29,11 @@ export const useDatabase = () => useContext(DatabaseContext);
 
 export async function ClearDatabaseForAccount(accountId: string) {
   const db = getDatabaseInstance();
+  const destroy = async (records: Model[]) => {
+    for (const record of records) {
+      await record.destroyPermanently();
+    }
+  };
   const tablesWithAccount = [
     "homework",
     "news",
@@ -45,6 +50,34 @@ export async function ClearDatabaseForAccount(accountId: string) {
   ];
 
   await safeWrite(db, async () => {
+    const attendanceRecords = await db.get<Attendance>("attendance")
+      .query(Q.where("createdByAccount", accountId))
+      .fetch();
+    for (const attendance of attendanceRecords) {
+      await destroy([
+        ...(await attendance.delays.fetch()),
+        ...(await attendance.absences.fetch()),
+        ...(await attendance.observations.fetch()),
+        ...(await attendance.punishments.fetch()),
+      ]);
+    }
+
+    const periodGradeRecords = await db.get<PeriodGrades>("periodgrades")
+      .query(Q.where("createdByAccount", accountId))
+      .fetch();
+    for (const periodGrade of periodGradeRecords) {
+      const subjects = await db.get<Subject>("subjects")
+        .query(Q.where("periodGradeId", periodGrade.id))
+        .fetch();
+      for (const subject of subjects) {
+        const grades = await db.get<Grade>("grades")
+          .query(Q.where("subjectId", subject.id))
+          .fetch();
+        await destroy(grades);
+      }
+      await destroy(subjects);
+    }
+
     for (const table of tablesWithAccount) {
       try {
         const collection = db.get(table);
@@ -53,8 +86,7 @@ export async function ClearDatabaseForAccount(accountId: string) {
           .fetch();
 
         if (records.length > 0) {
-          await Promise.all(records.map((record) => record.markAsDeleted()));
-          await Promise.all(records.map((record) => record.destroyPermanently()));
+          await destroy(records);
         }
       } catch (err) {
         error(String(err))

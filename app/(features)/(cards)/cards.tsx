@@ -6,43 +6,45 @@ import Button from "@/ui/new/Button";
 import ChipButton from "@/ui/components/ChipButton";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { EmptyItem } from "@/ui/components/EmptyItem";
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import Typography from "@/ui/components/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/services/helper";
-import { Papicons, Plus } from "@getpapillon/papicons";
+import {
+  getServiceBackground,
+  getServiceLogo,
+  getServiceName,
+} from "@/utils/services/helper";
+import { Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
-import { router, useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Platform, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);
-  const accounts = useAccountStore((state) => state.accounts);
-  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const accounts = useAccountStore(state => state.accounts);
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
 
-  const account = accounts.find((a) => a.id === lastUsedAccount);
+  const account = accounts.find(a => a.id === lastUsedAccount);
 
   async function fetchWallets() {
-    const manager = getManager()
-    const balances = await manager.getCanteenBalances()
-    const result: Balance[] = []
+    const manager = getManager();
+    const balances = await manager.getCanteenBalances();
+    const result: Balance[] = [];
     for (const balance of balances) {
-      result.push(balance)
+      result.push(balance);
     }
     setWallets(result);
   }
 
   useEffect(() => {
-    setWallets([])
+    setWallets([]);
     fetchWallets();
-  }, [accounts])
+  }, [accounts]);
 
   const { t } = useTranslation();
 
@@ -61,40 +63,21 @@ export default function QRCodeAndCardsPage() {
             subtitle={t("Profile_QRCards_Subtitle", { count: wallets.length })}
           />
         }
-        trailing={Platform.OS === "ios" && (
-          <ChipButton
-            single
-            icon="cross"
-            onPress={() => {
-              router.dismiss();
-            }}
-          />
-        )}
+        trailing={
+          Platform.OS === "ios" ? (
+            <ChipButton
+              single
+              icon="cross"
+              onPress={() => {
+                router.dismiss();
+              }}
+            />
+          ) : undefined
+        }
       />
 
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic" style={{ flex: 1, paddingTop: headerHeight - 16 }} contentContainerStyle={{ padding: 20, gap: 16 }}
-      >
-        {wallets.map((c, i) => {
-          return (
-            <Dynamic
-              animated
-              key={c.createdByAccount + c.label}
-              entering={PapillonAppearIn}
-              exiting={PapillonAppearOut}
-            >
-              <Card
-                key={c.createdByAccount + c.label}
-                index={i}
-                wallet={c}
-                service={account?.services.find(service => service.id === c.createdByAccount)?.serviceId ?? Services.TURBOSELF}
-                totalCards={wallets.length}
-              />
-            </Dynamic>
-          );
-        })}
-
-        {wallets.length === 0 && (
+      {wallets?.length === 0 ? (
+        <Stack flex hAlign={"center"} vAlign={"center"} height={"100%"} padding={20}>
           <Dynamic
             animated
             entering={PapillonAppearIn}
@@ -107,21 +90,64 @@ export default function QRCodeAndCardsPage() {
               margin={0}
             />
           </Dynamic>
-        )}
 
-        <Dynamic animated>
-          <Button
-            fullWidth
-            label="Ajouter"
-            leading={<Plus color="#FFF" />}
-            onPress={() => {
-              router.navigate({
-                pathname: "/(onboarding)/restaurants/method"
-              });
-            }}
-          />
-        </Dynamic>
-      </ScrollView >
+          <Dynamic animated>
+            <Button
+              fullWidth
+              label="Ajouter ma première carte"
+              leading={<Plus color="#FFF" />}
+              onPress={() => {
+                router.navigate({
+                  pathname: "/(onboarding)/restaurants/method",
+                });
+              }}
+              style={{marginTop: 20}}
+            />
+          </Dynamic>
+        </Stack>
+      ) : (
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          style={{ flex: 1, paddingTop: headerHeight - 16 }}
+          contentContainerStyle={{ padding: 20, gap: 16 }}
+        >
+          {wallets.map((c, i) => {
+            return (
+              <Dynamic
+                animated
+                key={c.createdByAccount + c.label}
+                entering={PapillonAppearIn}
+                exiting={PapillonAppearOut}
+              >
+                <Card
+                  key={c.createdByAccount + c.label}
+                  index={i}
+                  wallet={c}
+                  service={
+                    account?.services.find(
+                      service => service.id === c.createdByAccount
+                    )?.serviceId ?? Services.TURBOSELF
+                  }
+                  totalCards={wallets.length}
+                />
+              </Dynamic>
+            );
+          })}
+
+          <Dynamic animated>
+            <Button
+              fullWidth
+              label="Ajouter"
+              leading={<Plus color="#FFF" />}
+              onPress={() => {
+                router.navigate({
+                  pathname: "/(onboarding)/restaurants/method",
+                });
+              }}
+            />
+          </Dynamic>
+        </ScrollView>
+      )}
     </>
   );
 }
@@ -147,7 +173,11 @@ export function Card({
         if (!disabled) {
           router.push({
             pathname: "/(features)/(cards)/specific",
-            params: { serviceName: getServiceName(service), service: service, wallet: JSON.stringify(wallet) }
+            params: {
+              serviceName: getServiceName(service),
+              service: service,
+              wallet: JSON.stringify(wallet),
+            },
           });
         }
       }}
@@ -174,7 +204,7 @@ export function Card({
           right: 0,
           left: 0,
           width: "100%",
-          height: '100%',
+          height: "100%",
         }}
         resizeMode="cover"
       />
@@ -193,14 +223,16 @@ export function Card({
       />
 
       {pressed && (
-        <View style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.2)",
-        }} />
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
+          }}
+        />
       )}
 
       <View style={{ padding: 15, flex: 1 }}>
@@ -221,19 +253,31 @@ export function Card({
               source={getServiceLogo(service)}
               resizeMode="cover"
             />
-            <Typography variant="title" color={"#FFFFFF"}>{getServiceName(service)}</Typography>
+            <Typography variant="title" color={"#FFFFFF"}>
+              {getServiceName(service)}
+            </Typography>
           </Stack>
 
           <Stack gap={0} direction="vertical">
-            <Typography variant="caption" align="right" color={"#FFFFFF" + 90} style={{ width: "100%", lineHeight: 0 }}>
+            <Typography
+              variant="caption"
+              align="right"
+              color={"#FFFFFF" + 90}
+              style={{ width: "100%", lineHeight: 0 }}
+            >
               {wallet.label}
             </Typography>
-            <Typography variant="title" align="right" color={"#FFFFFF"} style={{ width: "100%", lineHeight: 0 }}>
+            <Typography
+              variant="title"
+              align="right"
+              color={"#FFFFFF"}
+              style={{ width: "100%", lineHeight: 0 }}
+            >
               {(wallet.amount / 100).toFixed(2)} {wallet.currency}
             </Typography>
           </Stack>
         </Stack>
       </View>
     </Pressable>
-  )
+  );
 }

@@ -18,13 +18,14 @@ const defaultPersonalization: Personalization = {
   useMaterialYou: DEFAULT_MATERIAL_YOU_ENABLED,
   iOSBottomAccessoryEnabled: true,
   showTabBarLabels: true,
-  knowunityEnabled: true,
   magicEnabled: true,
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,
   showDevMode: false,
+  mockDataEnabled: false,
   magicModelURL: MAGIC_URL,
   gradesDisplayScale: "20",
+  welcomeModalSeen: false,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(

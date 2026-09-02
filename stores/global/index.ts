@@ -1,4 +1,4 @@
-import { MMKV } from 'react-native-mmkv'
+import { createMMKV } from 'react-native-mmkv'
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { PersistStorage } from 'zustand/middleware'
 
@@ -8,7 +8,7 @@ const classRegistry = new Map<string, any>();
 classRegistry.set('Skolengo', SkolengoSession);
 
 export const createMMKVStorage = <T>(id: string, encryptionKey?: string): PersistStorage<T> => {
-  const mmkv = new MMKV({
+  const mmkv = createMMKV({
     id: id,
     encryptionKey: encryptionKey
   });
@@ -35,7 +35,7 @@ export const createMMKVStorage = <T>(id: string, encryptionKey?: string): Persis
       }
     },
     removeItem: (name) => {
-      mmkv.delete(name);
+      mmkv.remove(name);
     }
   };
 };

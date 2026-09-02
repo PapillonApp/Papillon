@@ -67,30 +67,19 @@ export default function AccountsView() {
   };
 
   return (
-    <ScrollView
+    <List
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
         padding: 16,
         gap: 16,
       }}
     >
-      <Stack
-        direction="horizontal"
-        gap={8}
-        hAlign="center"
-        style={{
-          opacity: 0.5,
-        }}
-      >
-        <Icon size={20}>
-          <Papicons name="user" />
-        </Icon>
-        <Typography variant="title" color="textSecondary">
-          Profils utilisateur
-        </Typography>
-      </Stack>
+      <List.Section>
+        <List.SectionTitle>
+          <Icon size={20} opacity={0.6}><Papicons name="User" /></Icon>
+          <List.Label>Profils utilisateur</List.Label>
+        </List.SectionTitle>
 
-      <List>
         {accounts.map(account => (
           <List.Item key={account.id}>
             <List.Leading>
@@ -114,6 +103,11 @@ export default function AccountsView() {
               {account.className ? account.className + " " : ""}
               {formatSchoolName(account.schoolName ?? "")}
             </Typography>
+            {account.id === lastUsedAccount && (
+              <Typography color="primary" variant="body2">
+                Compte actuellement utilisé
+              </Typography>
+            )}
             <List.Trailing>
               <ActionMenu
                 actions={[
@@ -130,7 +124,7 @@ export default function AccountsView() {
                 }}
               >
                 <Icon opacity={0.7}>
-                  <Papicons name="Menu" />
+                  <Papicons name="Dots" />
                 </Icon>
               </ActionMenu>
             </List.Trailing>
@@ -153,25 +147,15 @@ export default function AccountsView() {
             Nouveau compte
           </Typography>
         </List.Item>
-      </List>
+      </List.Section>
 
-      <Stack
-        direction="horizontal"
-        gap={8}
-        hAlign="center"
-        style={{
-          opacity: 0.5,
-        }}
-      >
-        <Icon size={20}>
-          <Papicons name="card" />
-        </Icon>
-        <Typography variant="title" color="textSecondary">
-          Services et cartes
-        </Typography>
-      </Stack>
 
-      <List>
+      <List.Section>
+        <List.SectionTitle>
+          <Icon size={20} opacity={0.6}><Papicons name="Card" /></Icon>
+          <List.Label>Services et cartes</List.Label>
+        </List.SectionTitle>
+
         {services?.map(service => (
           <List.Item key={service.id}>
             <List.Leading>
@@ -214,7 +198,7 @@ export default function AccountsView() {
                 }}
               >
                 <Icon opacity={0.7}>
-                  <Papicons name="Menu" />
+                  <Papicons name="Dots" />
                 </Icon>
               </ActionMenu>
             </List.Trailing>
@@ -236,7 +220,7 @@ export default function AccountsView() {
             Ajouter un nouveau service
           </Typography>
         </List.Item>
-      </List>
-    </ScrollView>
+      </List.Section>
+    </List>
   );
 }

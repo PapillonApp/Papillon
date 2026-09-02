@@ -1,6 +1,7 @@
 import { useNews } from '@/database/useNews'
 import { getManager, subscribeManagerUpdate } from '@/services/shared'
 import Avatar from '@/ui/components/Avatar'
+import ChipButton from '@/ui/components/ChipButton'
 import { Dynamic } from '@/ui/components/Dynamic'
 import Icon from '@/ui/components/Icon'
 import Search from '@/ui/components/Search'
@@ -15,11 +16,11 @@ import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 import { Papicons } from '@getpapillon/papicons'
-import { useTheme } from '@react-navigation/native'
-import { router, useRouter } from 'expo-router'
+import { useTheme } from "expo-router/react-navigation"
+import { router } from 'expo-router'
 import { t } from 'i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Platform, View } from 'react-native'
+import { Platform } from 'react-native'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -45,10 +46,10 @@ const NewsView = () => {
   const news = useNews()
 
   const sortedNews = useMemo(() => {
-    return news.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    return [...news].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
   }, [news])
 
-  const fetchNews = useCallback(() => {
+  const fetchNews = useCallback(async () => {
     try {
       setIsLoading(true)
       const manager = getManager()
@@ -56,9 +57,9 @@ const NewsView = () => {
         warn('Manager is null, skipping news fetch')
         return
       }
-      manager.getNews()
+      await manager.getNews()
     } catch (error) {
-      console.error('Error fetching news:', error)
+      warn(`Error fetching news: ${String(error)}`)
     } finally {
       setIsLoading(false)
       setIsManuallyLoading(false)
@@ -67,7 +68,7 @@ const NewsView = () => {
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate(() => {
-      fetchNews()
+      void fetchNews()
     })
 
     return () => unsubscribe()
@@ -76,12 +77,14 @@ const NewsView = () => {
   const [searchText, setSearchText] = useState('')
 
   const filteredNews = useMemo(() => {
-    return sortedNews.filter((item) => item.title.toLowerCase().includes(searchText.toLowerCase()))
+    return sortedNews.filter((item) => (item.title ?? '').toLowerCase().includes(searchText.toLowerCase()))
   }, [sortedNews, searchText])
 
   return (
     <>
       <TabHeader
+        showAndroidBackButton
+        modal
         onHeightChanged={setHeaderHeight}
         title={
           <TabHeaderTitle
@@ -92,29 +95,35 @@ const NewsView = () => {
           />
         }
         bottom={<Search placeholder={t('News_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
+        trailing={
+          Platform.OS === 'ios' ? (
+            <ChipButton single icon='cross' onPress={() => router.dismiss()} />
+          ) : undefined
+        }
       />
 
       <LayoutAnimationConfig skipEntering>
         <List
           animated
           contentContainerStyle={{
+            paddingTop: headerHeight,
             paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
             paddingHorizontal: 16,
             gap: 9,
+            paddingLeft: insets.left + 16,
           }}
           refreshControl={
             <RefreshControl
               refreshing={isManuallyLoading}
               onRefresh={() => {
                 setIsManuallyLoading(true)
-                fetchNews()
+                void fetchNews()
               }}
               progressViewOffset={headerHeight}
             />
           }
           ListFooterComponent={<Reanimated.View style={footerStyle} />}
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
-          ListHeaderComponent={<View style={{ height: headerHeight - (Platform.OS === "ios" ? insets.top : 0) }} />}
           ListEmptyComponent={
             <Dynamic animated key='empty-list:warn' entering={PapillonAppearIn} exiting={PapillonAppearOut}>
               <Stack
@@ -144,12 +153,7 @@ const NewsView = () => {
               <List.Item
                 key={item.id}
                 id={item.id}
-                onPress={() =>
-                  router.push({
-                    pathname: '/(modals)/news',
-                    params: { news: JSON.stringify(item) },
-                  })
-                }
+                href={{ pathname: "/(features)/(news)/specific", params: { id: item.id } }}
               >
                 <List.Leading>
                   <Avatar
@@ -204,7 +208,7 @@ const NewsView = () => {
 function cleanContent(html: string): string {
   html = html.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'")
   html = html.replace(/\n/g, ' ')
-  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function truncateString(str: string, maxLength: number): string {

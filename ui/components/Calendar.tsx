@@ -1,5 +1,5 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useTheme } from "@react-navigation/native";
+import DateTimePicker from '@expo/ui/community/datetime-picker';
+import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import * as Localization from "expo-localization";
 import React, { useEffect, useState } from "react";
@@ -54,7 +54,6 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
       <DateTimePicker
         value={date}
         mode="date"
-        design="material"
         display="inline"
         accentColor={color}
         locale={Localization.getLocales()[0].languageTag}

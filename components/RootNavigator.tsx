@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { Stack } from 'expo-router';
 import { t } from 'i18next';
 import React, { useMemo } from 'react';
@@ -34,23 +34,51 @@ function RootNavigatorContent() {
   }), [theme]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: Platform.OS === "android" ? theme.colors.background : undefined }}>
-      {Platform.OS === "android" && <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} animated />}
-      <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
-
-        <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
+    <View
+      style={{
+        flex: 1,
+        backgroundColor:
+          Platform.OS === "android" ? theme.colors.background : undefined,
+      }}
+    >
+      {Platform.OS === "android" && (
+        <StatusBar
+          barStyle={theme.dark ? "light-content" : "dark-content"}
+          animated
+        />
+      )}
+      <Stack initialRouteName="(tabs)" screenOptions={stackScreenOptions}>
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false, gestureEnabled: false }}
+        />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-        <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
-        <Stack.Screen name="(settings)" options={{ headerShown: false, presentation: "modal" }} />
-        <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
+        <Stack.Screen
+          name="(new)"
+          options={{ headerShown: false, presentation: "formSheet" }}
+        />
+        <Stack.Screen
+          name="(settings)"
+          options={{ headerShown: false, presentation: "formSheet" }}
+        />
+        <Stack.Screen
+          name="(modals)"
+          options={{ headerShown: false, presentation: "formSheet" }}
+        />
         <Stack.Screen name="page" />
         <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
         <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
         <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
         <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
         <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
-        <Stack.Screen name="(dev)/requests" options={DEVMODE_REQUESTS_SCREEN_OPTIONS} />
-        <Stack.Screen name="(dev)/request" options={DEVMODE_REQUESTS_SCREEN_OPTIONS} />
+        <Stack.Screen
+          name="(dev)/requests"
+          options={DEVMODE_REQUESTS_SCREEN_OPTIONS}
+        />
+        <Stack.Screen
+          name="(dev)/request"
+          options={DEVMODE_REQUESTS_SCREEN_OPTIONS}
+        />
         <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
         <Stack.Screen
@@ -61,78 +89,52 @@ function RootNavigatorContent() {
             animation: "flip",
             contentStyle: {
               borderRadius: corners > 2 ? corners - 2 : 0,
-              overflow: "hidden"
-            }
+              overflow: "hidden",
+            },
           }}
         />
 
         <Stack.Screen
           name="(modals)/wallpaper"
           options={{
-            presentation: "modal",
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.5, 1],
             headerLargeTitle: false,
+            sheetLargestUndimmedDetentIndex: 0,
+            headerTransparent: Platform.OS === "ios",
             headerTitle: t("Modal_Wallpaper_Title"),
             contentStyle: {
-              backgroundColor: theme.colors.card
+              backgroundColor: theme.colors.card,
             },
-            headerBackground: AndroidHeaderBackground
+            headerBackground: AndroidHeaderBackground,
           }}
         />
 
         <Stack.Screen
           name="(modals)/profile"
           options={{
-            presentation: "modal",
+            presentation: "formSheet",
             headerLargeTitle: false,
             headerTitle: t("Modal_Profile_Title"),
-            headerBackground: AndroidHeaderBackground
+            headerBackground: AndroidHeaderBackground,
           }}
         />
         <Stack.Screen
-          name="(modals)/task"
+          name="(modals)/course/[id]"
           options={{
-            headerShown: Platform.OS !== 'ios',
-            headerTitle: t("Modal_Task_Title"),
-            headerTransparent: true,
-            headerLargeTitle: false,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/grade"
-          options={{
-            headerShown: Platform.OS !== 'ios',
-            headerTitle: t("Modal_Grades_Title"),
-            headerLargeTitle: false,
-            headerTransparent: true,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/news"
-          options={{
-            headerShown: true,
-            headerTitle: "",
-            headerLargeTitle: false,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/course"
-          options={{
-            headerShown: Platform.OS !== 'ios',
+            headerShown: Platform.OS !== "ios",
             headerTitle: t("Modal_Course_Title"),
             headerLargeTitle: false,
             headerTransparent: true,
-            presentation: "modal",
+            presentation: Platform.OS !== "ios" ? "modal" : "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.5, 1],
             headerBackground: AndroidHeaderBackground,
             contentStyle: {
-              borderRadius: Platform.OS === 'ios' ? 30 : 0,
-              overflow: Platform.OS === 'ios' ? "hidden" : "visible",
-            }
+              borderRadius: Platform.OS === "ios" ? 30 : 0,
+              overflow: Platform.OS === "ios" ? "hidden" : "visible",
+            },
           }}
         />
         <Stack.Screen
@@ -147,18 +149,30 @@ function RootNavigatorContent() {
             sheetAllowedDetents: [0.5, 0.75, 1],
             sheetCornerRadius: runsIOS26 ? undefined : 30,
             contentStyle: {
-              backgroundColor: runsIOS26 ? 'transparent' : undefined
-            }
+              backgroundColor: runsIOS26 ? "transparent" : undefined,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="(modals)/welcome"
+          options={{
+            headerShown: false,
+            headerTitle: "",
+            headerLargeTitle: false,
+            presentation: "modal",
+            gestureEnabled: false,
+            headerBackground: AndroidHeaderBackground,
           }}
         />
 
         <Stack.Screen
           name="(features)/(news)/news"
           options={{
-            headerShown: true,
+            headerShown: false,
             headerTitle: t("Tab_News"),
             headerTransparent: runsIOS26,
             headerLargeTitle: false,
+            presentation: "modal",
           }}
         />
 
@@ -175,15 +189,15 @@ function RootNavigatorContent() {
         <Stack.Screen
           name="(features)/soon"
           options={{
-            headerShown: Platform.OS !== 'ios',
+            headerShown: Platform.OS !== "ios",
             presentation: Platform.select({
               ios: "formSheet",
-              default: "modal"
+              default: "modal",
             }),
             sheetGrabberVisible: true,
             sheetAllowedDetents: "fitToContents",
             headerTitle: t("Modal_Soon"),
-            headerBackground: AndroidHeaderBackground
+            headerBackground: AndroidHeaderBackground,
           }}
         />
 
@@ -213,7 +227,7 @@ function RootNavigatorContent() {
             headerShown: false,
             presentation: "transparentModal",
             headerTitle: "QR-Code",
-            animation: "fade"
+            animation: "fade",
           }}
         />
 
@@ -224,7 +238,7 @@ function RootNavigatorContent() {
             headerTitle: t("Tab_Attendance"),
             headerTransparent: runsIOS26,
             headerLargeTitle: true,
-            presentation: "modal"
+            presentation: "modal",
           }}
         />
       </Stack>
