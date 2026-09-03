@@ -107,7 +107,12 @@ export default {
       "expo-status-bar",
       "expo-font",
       "expo-video",
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          enableBackgroundPlayback: false,
+        },
+      ],
       "expo-localization",
       "expo-asset",
       "@react-native-community/datetimepicker",
