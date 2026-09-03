@@ -41,7 +41,7 @@ const TasksSummary: React.FC<TasksSummaryProps> = ({
     >
       {Platform.OS === "ios" && (
         <LinearGradient
-          colors={[theme.colors.tint + "90", theme.colors.tint + "00"]}
+          colors={[theme.colors.tint + (theme.dark ? "FF" : "90"), theme.colors.tint + "00"]}
           start={[0, 0.7]}
           end={[0, 1]}
           style={{
