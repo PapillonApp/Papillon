@@ -24,7 +24,7 @@
     "@blockshub/blockscho": "^0.1.0",
     "@blockshub/blocksdirecte": "^0.0.9-alpha",
     "@blockshub/blocksrd": "^0.1.0",
-    "@blockshub/pawnote-lts": "^1.6.3",
+    "@blockshub/pawnote-lts": "^1.6.4",
     "@bottom-tabs/react-navigation": "^0.11.2",
     "@callstack/liquid-glass": "^0.4.3",
     "@eslint/js": "^9.39.1",
