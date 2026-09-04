@@ -1,5 +1,6 @@
 import Stack from "@/ui/components/Stack";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import SheetModal from "@/ui/components/SheetModal";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 import Typography from "@/ui/components/Typography";
@@ -9,7 +10,6 @@ import {
   ScrollView,
   View,
   Platform,
-  Modal,
 } from "react-native";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { Colors } from "@/utils/subjects/colors";
@@ -113,7 +113,12 @@ function EmojiPicker({
     setSelectedEmoji(item);
   }, []);
 
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const estimatedHeaderHeight = useMemo(() => {
+    const usedInsets = Platform.OS === "ios" ? 16 : insets.top;
+    return usedInsets + 4 + 40 + 16 + (Platform.OS === "android" ? 6 : 0);
+  }, [insets.top]);
+  const [measuredHeaderHeight, setMeasuredHeaderHeight] = useState(0);
+  const headerHeight = Math.max(measuredHeaderHeight, estimatedHeaderHeight);
   const [selectedEmoji, setSelectedEmoji] = useState<string>("😀");
 
   const emojiContainerStyle = {
@@ -146,7 +151,7 @@ function EmojiPicker({
     >
       <TabHeader
         modal={Platform.OS === "ios"}
-        onHeightChanged={setHeaderHeight}
+        onHeightChanged={setMeasuredHeaderHeight}
         title={
           <TabHeaderTitle
             chevron={false}
@@ -429,7 +434,7 @@ export default function EditSubject() {
           style={{ width: Dimensions.get("window").width }}
           contentContainerStyle={{
             gap: 10,
-            height: 60,
+            height: 62,
             alignItems: "center",
             paddingHorizontal: 16,
           }}
@@ -496,7 +501,7 @@ export default function EditSubject() {
           ))}
         </ScrollView>
       </Stack>
-      <Modal
+      <SheetModal
         presentationStyle={"formSheet"}
         animationType={"slide"}
         visible={showEmojiPicker}
@@ -509,7 +514,7 @@ export default function EditSubject() {
             setShowEmojiPicker(false);
           }}
         />
-      </Modal>
+      </SheetModal>
     </View>
   );
 };
