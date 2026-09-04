@@ -53,7 +53,7 @@ export const PapillonAppearIn = () => {
   "worklet";
   return {
     initialValues: {
-      opacity: Platform.OS === 'android' ? 1 : 0,
+      opacity: Platform.OS === 'android' ? 1 : 0.1,
       transform: [{ scale: 0.9 }],
     },
     animations: {
