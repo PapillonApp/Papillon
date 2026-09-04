@@ -99,13 +99,10 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
           <LiquidGlassView
             glassType="regular"
             isInteractive={true}
-            glassOpacity={0}
             style={{
-              borderRadius: 20,
-              width: 340,
-              height: 320,
-              alignItems: "center",
-              justifyContent: "center"
+              borderRadius: 30,
+              width: 350,
+              paddingHorizontal: 12,
             }}
           >
             <DateTimePicker
@@ -115,11 +112,9 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
               accentColor={color}
               locale={Localization.getLocales()[0].languageTag}
               onChange={handleChange}
+
               style={{
-                width: "100%",
-                height: "100%",
-                paddingHorizontal: 5,
-                paddingBottom: 5,
+                flex: 1,
               }}
             />
           </LiquidGlassView>
