@@ -10,7 +10,6 @@ import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
 
 import { formatDuration } from "../utils/Duration";
-import AnimatedPressable from "./AnimatedPressable";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
@@ -253,127 +252,235 @@ const Course = React.memo((props: CourseProps) => {
   }, [colors.text, dark, magicInfo, skeleton, status]);
 
   /** Bloc contenu principal */
-  const renderContent = useCallback(() => (
-    <Stack
-      gap={2}
-      direction="vertical"
-      radius={compact ? 18 : 25}
-      style={[
-        styles.container,
-        compact && styles.compactContainer,
-        {
-          borderWidth: Platform.OS === "android" ? 0 : 1,
-          borderColor: adjust(color, dark ? 0.7 : -0.7) + "36",
-        },
-        status?.canceled && { backgroundColor: colors.card },
-        skeleton && { backgroundColor: colors.text + "05" },
-        containerStyle && StyleSheet.flatten(containerStyle),
-      ]}
-    >
-      {color && !status?.canceled && Platform.OS !== "android" && (
-        <LinearGradient
-          colors={[adjust(color, dark ? -0.7 : 0.85), adjust(color, dark ? -0.8 : 0.6)]}
-          locations={[0, 1]}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: compact ? 18 : 25,
-            opacity: 0.7,
-          }}
-        />
-      )}
+  const renderContent = useCallback(
+    () => (
+      <Stack
+        gap={2}
+        direction="vertical"
+        radius={compact ? 18 : 25}
+        style={[
+          styles.container,
+          compact && styles.compactContainer,
+          {
+            borderWidth: Platform.OS === "android" ? 0 : 1,
+            borderColor: adjust(color, dark ? 0.7 : -0.7) + "36",
+          },
+          status?.canceled && { backgroundColor: colors.card },
+          skeleton && { backgroundColor: colors.text + "05" },
+          containerStyle && StyleSheet.flatten(containerStyle),
+        ]}
+      >
+        {color && !status?.canceled && Platform.OS !== "android" && (
+          <LinearGradient
+            colors={[
+              adjust(color, dark ? -0.7 : 0.85),
+              adjust(color, dark ? -0.8 : 0.6),
+            ]}
+            locations={[0, 1]}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: compact ? 18 : 25,
+              opacity: 0.7,
+            }}
+          />
+        )}
 
-      {color && !status?.canceled && Platform.OS == "android" && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: compact ? 18 : 25,
-            opacity: 1,
-            backgroundColor: adjust(color, dark ? -0.7 : 0.75),
-          }}
-        />
-      )}
+        {color && !status?.canceled && Platform.OS == "android" && (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: compact ? 18 : 25,
+              opacity: 1,
+              backgroundColor: adjust(color, dark ? -0.7 : 0.75),
+            }}
+          />
+        )}
 
-      <Stack direction="horizontal" gap={10}>
-        {/* Barre colorée */}
-        <View style={{ width: 6, height: "100%", backgroundColor: textColor, borderRadius: 300 }} />
-        <Stack style={{ flex: 1, marginTop: -2, marginBottom: -3 }}>
-          {/* Nom du cours */}
-          <Typography
-            variant="h5"
-            weight="bold"
-            numberOfLines={compact ? 1 : 2}
-            style={[styles.label, { color: textColor, opacity: skeleton ? 0.5 : 1, width: '100%' }]}
-            skeleton={skeleton}
-          >
-            {name}
-          </Typography>
+        <Stack direction="horizontal" gap={10}>
+          {/* Barre colorée */}
+          <View
+            style={{
+              width: 6,
+              height: "100%",
+              backgroundColor: textColor,
+              borderRadius: 300,
+            }}
+          />
+          <Stack style={{ flex: 1, marginTop: -2, marginBottom: -3 }}>
+            {/* Nom du cours */}
+            <Typography
+              variant="h5"
+              weight="bold"
+              numberOfLines={compact ? 1 : 2}
+              style={[
+                styles.label,
+                {
+                  color: textColor,
+                  opacity: skeleton ? 0.5 : 1,
+                  width: "100%",
+                },
+              ]}
+              skeleton={skeleton}
+            >
+              {name}
+            </Typography>
 
-          {/* Salle + Prof */}
-          {variant === "primary" && (
-            <Stack direction="horizontal" style={{ marginTop: 1, opacity: skeleton ? 0.5 : 1 }}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 5, minWidth: 0 }}>
-                <Icon papicon size={20} fill={skeleton ? colors.text + "20" : textColor}>
-                  <Papicons name="MapPin" />
-                </Icon>
-                <Typography numberOfLines={1} variant="body1" weight="semibold" style={[styles.room, { color: textColor }]} skeleton={skeleton}>
-                  {room || t("No_Course_Room")}
-                </Typography>
-              </View>
-              <View style={[styles.separator, { backgroundColor: skeleton ? colors.text + "20" : textColor, marginHorizontal: 8 }]} />
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 5, flex: 1, minWidth: 0 }}>
-                <Icon papicon size={20} fill={skeleton ? colors.text + "20" : textColor}>
-                  <Papicons name="User" />
-                </Icon>
+            {/* Salle + Prof */}
+            {variant === "primary" && (
+              <Stack
+                direction="horizontal"
+                style={{
+                  marginTop: 1,
+                  opacity: skeleton ? 0.5 : 1,
+                }}
+                width={"100%"}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 5,
+                    minWidth: 0,
+                    flexGrow: 0,
+                    flexShrink: 0,
+                  }}
+                >
+                  <Icon
+                    papicon
+                    size={20}
+                    fill={skeleton ? colors.text + "20" : textColor}
+                  >
+                    <Papicons name="MapPin" />
+                  </Icon>
+                  <Typography
+                    lineBreakStrategyIOS={"none"}
+                    variant="body1"
+                    weight="semibold"
+                    style={[styles.room, { color: textColor }]}
+                    skeleton={skeleton}
+                  >
+                    {room || t("No_Course_Room")}
+                  </Typography>
+                </View>
+                <View
+                  style={[
+                    styles.separator,
+                    {
+                      backgroundColor: skeleton
+                        ? colors.text + "20"
+                        : textColor,
+                      marginHorizontal: 8,
+                    },
+                  ]}
+                />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 5,
+                    flex: 1,
+                  }}
+                >
+                  <Icon
+                    papicon
+                    size={20}
+                    fill={skeleton ? colors.text + "20" : textColor}
+                  >
+                    <Papicons name="User" />
+                  </Icon>
+                  <Typography
+                    lineBreakStrategyIOS={"push-out"}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    variant="body1"
+                    weight="semibold"
+                    style={[styles.teacher, { color: textColor }]}
+                    skeleton={skeleton}
+                  >
+                    {teacher}
+                  </Typography>
+                </View>
+              </Stack>
+            )}
+
+            {/* Statut du cours */}
+            {status && !status.canceled && variant === "primary" && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 7,
+                  marginTop: status.label ? 4 : 0,
+                  opacity: skeleton ? 0.5 : 1,
+                }}
+              >
+                {status.label && (
+                  <Stack
+                    radius={300}
+                    backgroundColor={
+                      skeleton ? colors.text + "09" : colors.background
+                    }
+                    style={[
+                      styles.statusLabelContainer,
+                      { flexShrink: 1, maxWidth: "70%" },
+                    ]}
+                  >
+                    <Typography
+                      variant="h4"
+                      style={[
+                        styles.statusLabel,
+                        { color: textColor, padding: 0 },
+                      ]}
+                      skeleton={skeleton}
+                      numberOfLines={1}
+                    >
+                      {status.label}
+                    </Typography>
+                  </Stack>
+                )}
                 <Typography
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  variant="body1"
-                  weight="semibold"
-                  style={[styles.teacher, { color: textColor }]}
+                  variant="h4"
+                  style={[
+                    styles.statusDuration,
+                    { color: textColor + "95", flex: 1 },
+                  ]}
                   skeleton={skeleton}
                 >
-                  {teacher}
+                  {formatDuration(duration)}
                 </Typography>
               </View>
-            </Stack>
-          )}
-
-          {/* Statut du cours */}
-          {status && !status.canceled && variant === "primary" && (
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label ? 4 : 0, opacity: skeleton ? 0.5 : 1 }}>
-              {status.label && (
-                <Stack
-                  radius={300}
-                  backgroundColor={skeleton ? colors.text + "09" : colors.background}
-                  style={[styles.statusLabelContainer, { flexShrink: 1, maxWidth: "70%" }]}
-                >
-                  <Typography
-                    variant="h4"
-                    style={[styles.statusLabel, { color: textColor, padding: 0 }]}
-                    skeleton={skeleton}
-                    numberOfLines={1}
-                  >
-                    {status.label}
-                  </Typography>
-                </Stack>
-              )}
-              <Typography variant="h4" style={[styles.statusDuration, { color: textColor + "95", flex: 1 }]} skeleton={skeleton}>
-                {formatDuration(duration)}
-              </Typography>
-            </View>
-          )}
+            )}
+          </Stack>
         </Stack>
       </Stack>
-    </Stack>
-  ), [colors.border, colors.card, colors.text, compact, containerStyle, dark, duration, name, room, skeleton, status, textColor, t, teacher, variant, color]);
+    ),
+    [
+      colors.border,
+      colors.card,
+      colors.text,
+      compact,
+      containerStyle,
+      dark,
+      duration,
+      name,
+      room,
+      skeleton,
+      status,
+      textColor,
+      t,
+      teacher,
+      variant,
+      color,
+    ]
+  );
 
   /** Cours principale */
   const renderCourseCard = useCallback(() => (
@@ -437,9 +544,8 @@ const styles = StyleSheet.create({
   },
   teacher: {
     fontSize: 15,
-    flexShrink: 1,
-    flexGrow: 1,
     minWidth: 0,
+    flex: 1,
   },
   separator: {
     width: 2,
