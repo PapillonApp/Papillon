@@ -7,6 +7,7 @@ import {
   RateLimitedError,
   ServerSideError,
   SessionHandle,
+  TokenAuthenticationParams,
   UnreachableError,
 } from "@blockshub/pawnote-lts";
 
@@ -29,25 +30,21 @@ export async function refreshPronoteAccount(
   const handle = createSessionHandle(customFetcher);
 
   const loginParams = {
-    url: String(credentials.additionals?.["instanceURL"] || ""),
+    ...credentials.additionals,
     kind: (credentials.additionals?.["kind"] as AccountKind) || AccountKind.STUDENT,
-    username: String(credentials.additionals?.["username"] || ""),
-    token: String(credentials.refreshToken ?? ""),
     deviceUUID: String(credentials.additionals?.["deviceUUID"] || ""),
   };
 
   let lastError: unknown;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const refresh = await loginToken(handle, loginParams);
+      const refresh = await loginToken(handle, loginParams as TokenAuthenticationParams);
 
       const auth: Auth = {
         accessToken: refresh.token,
         refreshToken: refresh.token,
         additionals: {
-          instanceURL: refresh.url,
-          kind: refresh.kind,
-          username: refresh.username,
+          ...refresh,
           deviceUUID: String(credentials.additionals?.["deviceUUID"] || ""),
         },
       };
