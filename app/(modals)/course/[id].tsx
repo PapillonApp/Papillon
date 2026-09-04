@@ -74,10 +74,10 @@ export default function CourseModal() {
   const endTime = Math.floor(course.to.getTime() / 1000);
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+    <View style={{ flex: 1 }}>
       {Platform.OS !== "android" && (
         <LinearGradient
-          colors={[subjectInfo.color, 'transparent']}
+          colors={[subjectInfo.color, `${subjectInfo.color}00`]}
           style={{
             position: "absolute",
             top: 0,
