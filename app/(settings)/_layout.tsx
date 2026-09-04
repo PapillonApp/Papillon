@@ -133,12 +133,12 @@ export default function Layout() {
             headerLargeTitle: false,
           }}
         />
-        <Stack.Screen
+        {/*<Stack.Screen
           name="transport"
           options={{
             headerTitle: t("Settings_Transport_Title"),
           }}
-        />
+        />*/}
         <Stack.Screen
           name="features"
           options={{

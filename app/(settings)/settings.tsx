@@ -79,14 +79,14 @@ export default function SettingsIndex() {
           color: "#0038A8",
           onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
         },*/
-        {
+        /*{
           title: t("Settings_Transport_Title"),
           description: t("Settings_Transport_Description"),
           papicon: <Papicons name={"Bus"} />,
           icon: <BusIcon />,
           color: "#000",
           onPress: () => router.navigate("/(settings)/transport"),
-        },
+        },*/
         {
           title: t("Settings_Features_Title"),
           description: t("Settings_Features_Description"),
