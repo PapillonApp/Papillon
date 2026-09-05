@@ -319,16 +319,14 @@ const GradesView: React.FC = () => {
   const ListHeader = useMemo(
     () =>
       sortedGrades.length > 0 && searchText.length === 0 ? (
-        <View style={{}}>
+        <View>
           <ErrorBoundary>
             <Averages
               grades={grades.filter(v => v.studentScore !== undefined)}
               color={colors.primary}
               realAverage={serviceAverage || undefined}
               displayScale={displayScale}
-              paddingTop={
-                headerHeight - (Platform.OS === "ios" ? insets.top : 0)
-              }
+              paddingTop={headerHeight}
               largeElement={
                 <CompactGradeList
                   grades={sortedGrades}
@@ -408,7 +406,7 @@ const GradesView: React.FC = () => {
       ) : (
         <View
           style={{
-            height: headerHeight - (Platform.OS === "ios" ? insets.top : 0) + 20,
+            height: headerHeight + 20,
           }}
         />
       ),
@@ -433,7 +431,7 @@ const GradesView: React.FC = () => {
       style={{
         flex: 1,
         paddingLeft: insets.left,
-        backgroundColor: colors.overground
+        backgroundColor: colors.background
       }}
     >
       {/* Header */}

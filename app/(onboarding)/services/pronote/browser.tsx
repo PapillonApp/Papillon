@@ -273,9 +273,7 @@ export default function PronoteENTLogin() {
               accessToken: refresh.token,
               refreshToken: refresh.token,
               additionals: {
-                instanceURL: refresh.url,
-                kind: refresh.kind,
-                username: refresh.username,
+                ...refresh,
                 deviceUUID,
               },
             },
@@ -300,7 +298,7 @@ export default function PronoteENTLogin() {
 
         router.back();
         router.dismissAll();
-        return router.push("/");
+        return router.push("/(tabs)/index");
       } catch (error) {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
           setDoubleAuthError(error)

@@ -304,7 +304,10 @@ const Averages = ({
           >
             {Platform.OS === "ios" && (
               <LinearGradient
-                colors={[backgroundColor + "90", backgroundColor + "00"]}
+                colors={[
+                  backgroundColor + (theme.dark ? "FF" : "90"),
+                  backgroundColor + "00",
+                ]}
                 start={inline ? [0, 1] : [0, 0.8]}
                 end={inline ? [0, 0] : [0, 1]}
                 style={{
@@ -411,9 +414,9 @@ const Averages = ({
                 {Platform.OS === "ios" && inline && (
                   <LinearGradient
                     colors={[
-                      theme.colors.background,
-                      `${theme.colors.background.toString()}AA`,
-                      `${theme.colors.background.toString()}00`,
+                      theme.colors.card,
+                      `${theme.colors.card.toString()}AA`,
+                      `${theme.colors.card.toString()}00`,
                     ]}
                     start={[0, 0]}
                     end={[0.7, 0]}

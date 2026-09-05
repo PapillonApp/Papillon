@@ -84,20 +84,20 @@ const Task = () => {
 
   return (
     <>
-      {Platform.OS !== 'android' && (
+      {Platform.OS !== "android" && (
         <LinearGradient
-          colors={[subjectInfo.color, colors.background]}
+          colors={[subjectInfo.color, `${subjectInfo.color}00`]}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
-          right: 0,
-          height: 300,
-          width: "100%",
-          zIndex: -9,
-          opacity: 0.4
-        }}
-      />
+            right: 0,
+            height: 300,
+            width: "100%",
+            zIndex: -9,
+            opacity: 0.4,
+          }}
+        />
       )}
 
       <List
@@ -106,7 +106,7 @@ const Task = () => {
             emoji={subjectInfo.emoji}
             subject={subjectInfo.name}
             subjectVariant="header"
-            color={Platform.OS === 'ios' ? subjectInfo.color : colors.primary}
+            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
             date={new Date(task.dueDate)}
             style={{
               marginVertical: 24,
@@ -115,10 +115,10 @@ const Task = () => {
           />
         }
         style={{
-          backgroundColor: "transparent"
+          backgroundColor: "transparent",
         }}
         contentContainerStyle={{
-          padding: 16
+          padding: 16,
         }}
       >
         <List.Section>
@@ -130,7 +130,13 @@ const Task = () => {
             <List.Leading>
               <AnimatedPressable onPress={() => setAsDone(!isDone)}>
                 <Stack
-                  backgroundColor={isDone ? (Platform.OS === 'ios' ? subjectInfo.color : theme.colors.primary) : theme.colors.card}
+                  backgroundColor={
+                    isDone
+                      ? Platform.OS === "ios"
+                        ? subjectInfo.color
+                        : theme.colors.primary
+                      : theme.colors.card
+                  }
                   card
                   radius={100}
                   width={28}
@@ -138,9 +144,7 @@ const Task = () => {
                   vAlign="center"
                   hAlign="center"
                 >
-                  {isDone &&
-                    <Papicons name="check" size={22} color="white" />
-                  }
+                  {isDone && <Papicons name="check" size={22} color="white" />}
                 </Stack>
               </AnimatedPressable>
             </List.Leading>
@@ -156,9 +160,7 @@ const Task = () => {
           </List.SectionTitle>
 
           <List.Item>
-            <Typography>
-              {formatedTask}
-            </Typography>
+            <Typography>{formatedTask}</Typography>
           </List.Item>
         </List.Section>
         {task.attachments.length > 0 && (
@@ -167,10 +169,14 @@ const Task = () => {
               <List.Label>{t("Modal_Task_Attachments")}</List.Label>
             </List.SectionTitle>
 
-            {task.attachments.map((attachment) => (
-              <List.Item onPress={() => WebBrowser.openBrowserAsync(attachment.url, {
-                presentationStyle: "formSheet"
-              })}>
+            {task.attachments.map(attachment => (
+              <List.Item
+                onPress={() =>
+                  WebBrowser.openBrowserAsync(attachment.url, {
+                    presentationStyle: "formSheet",
+                  })
+                }
+              >
                 <List.Leading>
                   <Icon>
                     <Papicons name={getAttachmentIcon(attachment)} />
@@ -179,7 +185,11 @@ const Task = () => {
                 <Typography variant="title" numberOfLines={1}>
                   {attachment.name || attachment.url}
                 </Typography>
-                <Typography variant="body1" color="textSecondary" numberOfLines={1}>
+                <Typography
+                  variant="body1"
+                  color="textSecondary"
+                  numberOfLines={1}
+                >
                   {attachment.url}
                 </Typography>
               </List.Item>

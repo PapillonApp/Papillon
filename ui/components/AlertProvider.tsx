@@ -1,5 +1,3 @@
-import * as LucideIcons from "lucide-react-native";
-import type { ComponentType } from "react";
 import React, {
   createContext,
   ReactNode,
@@ -16,9 +14,7 @@ import {
   Pressable,
   StyleSheet,
 } from "react-native";
-import Reanimated, {
-  LinearTransition,
-} from "react-native-reanimated";
+import Reanimated, { LinearTransition } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
 
@@ -33,6 +29,9 @@ import { runsIOS26 } from "../utils/IsLiquidGlass";
 import { LiquidGlassView } from "@sbaiahmed1/react-native-blur";
 import { Papicons } from "@getpapillon/papicons";
 import Icon from "./Icon";
+import { FullWindowOverlay } from "react-native-screens";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { GlassView } from "expo-glass-effect";
 
 // Extend Alert type with unique ID for better performance
 export type Alert = {
@@ -70,8 +69,11 @@ export const useAlert = () => {
 
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const insets = useSafeAreaInsets();
   const router = useRouter();
-  const timeoutRefs = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const timeoutRefs = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map()
+  );
   const callbackRefs = useRef<Map<string, () => void>>(new Map());
 
   // Memoized showAlert function to prevent re-renders
@@ -83,7 +85,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
       callbackRefs.current.set(alertId, alert.customButton.onPress);
     }
 
-    setAlerts((prevAlerts) => [...prevAlerts, alertWithId]);
+    setAlerts(prevAlerts => [...prevAlerts, alertWithId]);
 
     // Clear existing timeout if alert is updated
     const existingTimeout = timeoutRefs.current.get(alertId);
@@ -93,7 +95,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
 
     // Automatically remove the alert after 5 seconds
     const timeout = setTimeout(() => {
-      setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
+      setAlerts(prevAlerts => prevAlerts.filter(a => a.id !== alertId));
       timeoutRefs.current.delete(alertId);
       callbackRefs.current.delete(alertId);
     }, alert.delay || 5000);
@@ -102,40 +104,48 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Memoized container style to prevent style recalculations
-  const containerStyle = useMemo(() => ({
-    position: "absolute" as const,
-    bottom: alerts.some(alert => alert.withoutNavbar) ? 22 : 82,
-    left: 0,
-    right: 0,
-    padding: Platform.OS === "ios" ? 20 : 10,
-    paddingBottom: Platform.OS === "ios" ? 10 : 28,
-    zIndex: 1000,
-    gap: 10,
-  }), [alerts]);
+  const containerStyle = useMemo(
+    () => ({
+      position: "absolute" as const,
+      bottom: insets.bottom,
+      left: 0,
+      right: 0,
+      padding: Platform.OS === "ios" ? 20 : 10,
+      paddingBottom: Platform.OS === "ios" ? 10 : 28,
+      zIndex: 1000,
+      gap: 10,
+    }),
+    [alerts]
+  );
 
-  const handleAlertPress = useCallback((alert: Alert, alertId: string) => {
-    const alertDataForParams = {
-      ...alert,
-      customButton: alert.customButton ? {
-        ...alert.customButton,
-        onPress: undefined,
-      } : undefined,
-    };
+  const handleAlertPress = useCallback(
+    (alert: Alert, alertId: string) => {
+      const alertDataForParams = {
+        ...alert,
+        customButton: alert.customButton
+          ? {
+              ...alert.customButton,
+              onPress: undefined,
+            }
+          : undefined,
+      };
 
-    router.navigate({
-      pathname: "/alert",
-      params: {
-        data: JSON.stringify(alertDataForParams),
-        callbackId: alertId,
-      },
-    });
-    setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
-    const timeout = timeoutRefs.current.get(alertId);
-    if (timeout) {
-      clearTimeout(timeout);
-      timeoutRefs.current.delete(alertId);
-    }
-  }, [router]);
+      router.navigate({
+        pathname: "/alert",
+        params: {
+          data: JSON.stringify(alertDataForParams),
+          callbackId: alertId,
+        },
+      });
+      setAlerts(prevAlerts => prevAlerts.filter(a => a.id !== alertId));
+      const timeout = timeoutRefs.current.get(alertId);
+      if (timeout) {
+        clearTimeout(timeout);
+        timeoutRefs.current.delete(alertId);
+      }
+    },
+    [router]
+  );
 
   const getCallback = useCallback((alertId: string) => {
     return callbackRefs.current.get(alertId);
@@ -146,12 +156,15 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Memoized context value to prevent provider re-renders
-  const contextValue = useMemo(() => ({ showAlert, getCallback, cleanupCallback }), [showAlert, getCallback, cleanupCallback]);
+  const contextValue = useMemo(
+    () => ({ showAlert, getCallback, cleanupCallback }),
+    [showAlert, getCallback, cleanupCallback]
+  );
 
   // Cleanup timeouts on unmount to prevent memory leaks
   useEffect(() => {
     return () => {
-      timeoutRefs.current.forEach((timeout) => {
+      timeoutRefs.current.forEach(timeout => {
         clearTimeout(timeout);
       });
       timeoutRefs.current.clear();
@@ -165,90 +178,140 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
       <KeyboardAvoidingView
         behavior={"height"}
         style={[
-          { position: "absolute", top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000 },
-          runsIOS26 ? { 
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-          } : {}
+          {
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+          },
+          runsIOS26
+            ? {
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.1,
+                shadowRadius: 10,
+              }
+            : {},
         ]}
         pointerEvents={"box-none"}
       >
-        {alerts.length > 0 && (
-          <Reanimated.View
-            layout={Animation(LinearTransition)}
-            style={containerStyle}
-          >
-            {alerts.map((alert) => (
-              <AlertComponent
-                alert={alert}
-                key={alert.id}
-                onPress={() => handleAlertPress(alert, alert.id!)}
-              />
-            ))}
-          </Reanimated.View>
-        )}
+        <FullWindowOverlay>
+          {alerts.length > 0 && (
+            <Reanimated.View
+              layout={Animation(LinearTransition)}
+              style={containerStyle}
+            >
+              {alerts.map(alert => (
+                <AlertComponent
+                  alert={alert}
+                  key={alert.id}
+                  onPress={() => handleAlertPress(alert, alert.id!)}
+                />
+              ))}
+            </Reanimated.View>
+          )}
+        </FullWindowOverlay>
       </KeyboardAvoidingView>
     </AlertContext.Provider>
   );
 };
 
 // Optimized Alert component with React.memo and useMemo
-const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?: () => void }) => {
-  const { colors } = useTheme();
+const AlertComponent = React.memo(
+  ({ alert, onPress }: { alert: Alert; onPress?: () => void }) => {
+    const { colors } = useTheme();
 
-  // Memoized icon component to prevent re-renders
-  const IconComponent = useMemo(() => {
-    if (!alert.icon) {
-      return null;
+    // Memoized icon component to prevent re-renders
+    const IconComponent = useMemo(() => {
+      if (!alert.icon) {
+        return null;
+      }
+      return <Papicons name={alert.icon} />;
+    }, [alert.icon]);
+
+    // Memoized styles for better performance
+    const containerStyle = useMemo(
+      () => [
+        styles.alertContainer,
+        {
+          backgroundColor: colors.item,
+          borderColor: colors.text + "30",
+        },
+      ],
+      [colors.item, colors.text]
+    );
+
+    const iconColor = useMemo(
+      () => alert.color ?? colors.text,
+      [alert.color, colors.text]
+    );
+
+    const handlePress = useCallback(() => {
+      if (onPress) {
+        onPress();
+      }
+    }, [onPress]);
+
+    if (runsIOS26) {
+      // For iOS 26, return a simpler alert without animations for better performance
+      return (
+        <Reanimated.View
+          layout={Animation(LinearTransition)}
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
+        >
+          <GlassView
+            isInteractive={true}
+            style={{
+              borderRadius: 30,
+            }}
+          >
+            <Pressable
+              onPress={handlePress}
+              style={[
+                containerStyle,
+                {
+                  width: "100%",
+                  borderWidth: 0,
+                  shadowColor: "transparent",
+                  backgroundColor: "transparent",
+                },
+              ]}
+            >
+              {IconComponent && (
+                <Reanimated.View style={styles.iconContainer}>
+                  <Icon size={24} fill={iconColor}>
+                    {IconComponent}
+                  </Icon>
+                </Reanimated.View>
+              )}
+              <Reanimated.View style={styles.textContainer}>
+                <Typography variant="title" color="text">
+                  {alert.title}
+                </Typography>
+                {alert.message && (
+                  <Typography variant="body1" color="textSecondary">
+                    {alert.message}
+                  </Typography>
+                )}
+              </Reanimated.View>
+            </Pressable>
+          </GlassView>
+        </Reanimated.View>
+      );
     }
-    return <Papicons name={alert.icon} />;
-  }, [alert.icon]);
 
-  // Memoized styles for better performance
-  const containerStyle = useMemo(() => [
-    styles.alertContainer,
-    {
-      backgroundColor: colors.item,
-      borderColor: colors.text + "30",
-    },
-  ], [colors.item, colors.text]);
-
-  const iconColor = useMemo(() => alert.color ?? colors.text, [alert.color, colors.text]);
-
-  const handlePress = useCallback(() => {
-    if (onPress) {
-      onPress();
-    }
-  }, [onPress]);
-
-  if(runsIOS26) {
-    // For iOS 26, return a simpler alert without animations for better performance
     return (
-      <Reanimated.View
+      <AnimatedPressable
+        onPress={handlePress}
         layout={Animation(LinearTransition)}
         entering={PapillonAppearIn}
         exiting={PapillonAppearOut}
+        style={containerStyle}
       >
-        <LiquidGlassView
-          glassType="regular"
-          isInteractive={true}
-          glassOpacity={0}
-          style={{
-            borderRadius: 30
-          }}
-        >
-          <Pressable
-            onPress={handlePress}
-            style={[containerStyle, {
-              width: "100%",
-              borderWidth: 0,
-              shadowColor: "transparent",
-              backgroundColor: "transparent",
-            }]}
-          >
-            {IconComponent && (
+        {IconComponent && (
           <Reanimated.View style={styles.iconContainer}>
             <Icon size={24} fill={iconColor}>
               {IconComponent}
@@ -256,48 +319,17 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
           </Reanimated.View>
         )}
         <Reanimated.View style={styles.textContainer}>
-          <Typography variant="title"
-            color="text"
-          >{alert.title}</Typography>
+          <Typography variant="title">{alert.title}</Typography>
           {alert.message && (
-            <Typography variant="body1"
-              color="textSecondary"
-            >{alert.message}</Typography>
+            <Typography variant="body1" color="textSecondary">
+              {alert.message}
+            </Typography>
           )}
         </Reanimated.View>
-          </Pressable>
-        </LiquidGlassView>
-      </Reanimated.View>
+      </AnimatedPressable>
     );
   }
-
-  return (
-    <AnimatedPressable
-      onPress={handlePress}
-      layout={Animation(LinearTransition)}
-      entering={PapillonAppearIn}
-      exiting={PapillonAppearOut}
-      style={containerStyle}
-    >
-      {IconComponent && (
-        <Reanimated.View style={styles.iconContainer}>
-          <Icon size={24} fill={iconColor}>
-              {IconComponent}
-            </Icon>
-        </Reanimated.View>
-      )}
-      <Reanimated.View style={styles.textContainer}>
-        <Typography variant="title"
-        >{alert.title}</Typography>
-        {alert.message && (
-          <Typography variant="body1"
-            color="textSecondary"
-          >{alert.message}</Typography>
-        )}
-      </Reanimated.View>
-    </AnimatedPressable>
-  );
-});
+);
 
 AlertComponent.displayName = "AlertComponent";
 
