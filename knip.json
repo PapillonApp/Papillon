@@ -1,0 +1,23 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "expo": true,
+  "entry": [
+    "app/**/*.{ts,tsx}",
+    "index.js",
+    "app.config.ts",
+    "metro.config.js",
+    "babel.config.js",
+    "scripts/**/*.js",
+    "papillon-intents.config.ts"
+  ],
+  "project": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "ignore": [
+    "ios/**",
+    "android/**",
+    "native/**",
+    "patches/**"
+  ],
+  "ignoreDependencies": ["buffer"]
+}

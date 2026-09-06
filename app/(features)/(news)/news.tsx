@@ -105,6 +105,7 @@ const NewsView = () => {
       <LayoutAnimationConfig skipEntering>
         <List
           animated
+          style={{ flex: 1, backgroundColor: colors.overground }}
           contentContainerStyle={{
             paddingTop: headerHeight,
             paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,

@@ -14,8 +14,12 @@ export async function GeographicReverse(lat: number, lon: number): Promise<GeoIn
         break;
       }
 
+      if (res.status >= 400 && res.status < 500) {
+        throw new Error(`Request rejected. Status: ${res.status}`);
+      }
+
       retries--;
-      
+
       if (retries > 0) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       } else {
@@ -54,11 +58,15 @@ export async function GeographicQuerying(q: string, retry = 3): Promise<GeoInfo>
 
     while (retries > 0) {
       res = await fetch(
-        `https://data.geopf.fr/geocodage/search?q=${q}`
+        `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(q)}`
       );
 
       if (res.ok) {
         break;
+      }
+
+      if (res.status >= 400 && res.status < 500) {
+        throw new Error(`Request rejected. Status: ${res.status}`);
       }
 
       retries--;
@@ -95,11 +103,15 @@ export async function GeographicSearchCities(q: string, retry = 3): Promise<GeoS
 
     while (retries > 0) {
       res = await fetch(
-        `https://data.geopf.fr/geocodage/search?q=${q}`
+        `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(q)}`
       );
 
       if (res.ok) {
         break;
+      }
+
+      if (res.status >= 400 && res.status < 500) {
+        throw new Error(`Request rejected. Status: ${res.status}`);
       }
 
       retries--;

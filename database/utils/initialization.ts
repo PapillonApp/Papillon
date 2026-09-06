@@ -1,6 +1,6 @@
 import { Database } from "@nozbe/watermelondb";
 
-import { error,info, warn } from "@/utils/logger/logger";
+import { debug, error, warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance } from "../DatabaseProvider";
 
@@ -33,7 +33,7 @@ export class DatabaseInitializer {
       }
 
       this.isInitialized = true;
-      info("🍉 Database initialization completed successfully");
+      debug("🍉 Database initialization completed successfully");
 
     } catch (err) {
       error(`Database initialization failed: ${err}`);
@@ -43,27 +43,23 @@ export class DatabaseInitializer {
 
   private async forceResetDatabaseQueue(db: Database): Promise<void> {
     try {
-      info("🍉 Force resetting database queue...");
-      
-      for (let i = 0; i < 3; i++) {
-        const resetPromise = db.write(async () => {
-          // Empty write operation to flush the queue
-        });
+      debug("🍉 Force resetting database queue...");
 
-        await Promise.race([
-          resetPromise,
-          new Promise<void>((_, reject) => {
-            setTimeout(() => {
-              reject(new Error(`Queue reset ${i + 1} timeout`));
-            }, 3000);
-          })
-        ]);
+      const resetPromise = db.write(async () => {
+        // Empty write operation to flush the queue
+      });
 
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
+      await Promise.race([
+        resetPromise,
+        new Promise<void>((_, reject) => {
+          setTimeout(() => {
+            reject(new Error("Queue reset timeout"));
+          }, 3000);
+        })
+      ]);
 
-      info("🍉 Database queue reset completed");
-      
+      debug("🍉 Database queue reset completed");
+
     } catch (err) {
       warn(`Database queue reset failed: ${err}`);
       warn("🍉 Database may start with degraded performance");
@@ -74,7 +70,7 @@ export class DatabaseInitializer {
     try {
       const startTime = Date.now();
       
-      const testPromise = db.collections.get('news').query().fetch();
+      const testPromise = db.collections.get('news').query().fetchCount();
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
           reject(new Error("Database health check timeout"));
@@ -84,7 +80,7 @@ export class DatabaseInitializer {
       await Promise.race([testPromise, timeoutPromise]);
 
       const duration = Date.now() - startTime;
-      info(`🍉 Database health check passed (${duration}ms)`);
+      debug(`🍉 Database health check passed (${duration}ms)`);
       
       return duration < 3000; // Consider healthy if under 3 seconds
       

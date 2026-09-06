@@ -134,20 +134,16 @@ const NewsPage = () => {
         gap: 24
       }}
     >
-      {
-        Platform.OS === 'ios' && (
-          <NativeHeaderSide side="Left">
-            <HeaderBackButton
-              tintColor={runsIOS26 ? colors.text : colors.primary}
-              onPress={() => router.back()}
+      <NativeHeaderSide side="Left">
+        <HeaderBackButton
+          tintColor={runsIOS26 ? colors.text : colors.primary}
+          onPress={() => router.back()}
 
-              style={{
-                marginLeft: runsIOS26 ? 3 : -32,
-              }}
-            />
-          </NativeHeaderSide>
-        )
-      }
+          style={{
+            marginLeft: Platform.OS === 'ios' ? (runsIOS26 ? 3 : -32) : 0,
+          }}
+        />
+      </NativeHeaderSide>
 
       <Stack gap={10}>
         <Stack padding={[10, 4]} radius={200} backgroundColor={colors.text + "16"}>

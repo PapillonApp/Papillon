@@ -268,7 +268,7 @@ export default function TurboSelfSelectHost() {
                     <Papicons name={"User"} />
                   </Icon>
                   <Typography variant="body2" nowrap ellipsizeMode="tail">
-                    {`${(item as Host).lastName.toUpperCase()} ${(item as Host).firstName}`}
+                    {`${(item as Host).lastName?.toUpperCase() ?? ""} ${(item as Host).firstName ?? ""}`}
                   </Typography>
                 </Stack>
               </AnimatedPressable>

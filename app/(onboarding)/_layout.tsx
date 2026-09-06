@@ -3,28 +3,30 @@ import { Platform, Pressable, View } from 'react-native';
 import { Stack, useRouter } from "expo-router";
 
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
-import { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 import { t } from 'i18next';
 import Typography from '@/ui/new/Typography';
 
 export default function OnboardingLayout() {
   const router = useRouter();
   const screenOptions = useScreenOptions();
+  const androidHeaderProps = useAndroidHeaderProps();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    ...AndroidHeaderProps,
+    ...androidHeaderProps,
+    headerBackVisible: true,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
-  }), [screenOptions]);
+  }), [screenOptions, androidHeaderProps]);
 
   return (
     <View style={{ flex: 1, backgroundColor: Platform.OS === "ios" ? "black" : undefined }}>
       <Stack>
         <Stack.Screen
           name="welcome"
-          options={{ ...newScreenOptions, title: "", headerLeft: () => null, headerShown: false, headerBackground: null }}
+          options={{ ...newScreenOptions, title: "", headerLeft: () => null, headerShown: false }}
         />
         <Stack.Screen
           name="ageSelection"

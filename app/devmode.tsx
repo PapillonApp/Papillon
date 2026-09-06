@@ -214,7 +214,7 @@ export default function DevMode() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: colors.overground }}>
       <List showsVerticalScrollIndicator={false} animated contentInsetAdjustmentBehavior="always" contentContainerStyle={{ padding: 16 }}>
         <List.Section>
           <List.SectionTitle>

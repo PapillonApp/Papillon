@@ -38,17 +38,16 @@ export default function RootLayout() {
   const lastTrackedView = useRef<string | null>(null);
 
   const analyticsView = useMemo(() => {
-    if (segments.length < 2) return null;
+    if (segments.length === 0) return null;
 
-    if (segments[0] === '(tabs)') {
-      return `tab:${segments[1]}`;
+    const groupMatch = segments[0].match(/^\((.+)\)$/);
+    if (groupMatch) {
+      const group = groupMatch[1];
+      const rest = segments.slice(1).join('/');
+      return rest ? `${group}:${rest}` : group;
     }
 
-    if (segments[0] === '(features)') {
-      return `feature:${segments.slice(1).join('/')}`;
-    }
-
-    return null;
+    return segments.join('/');
   }, [segments]);
 
   useEffect(() => {

@@ -10,9 +10,11 @@ import Icon from "@/ui/components/Icon";
 import { useMemo } from "react";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 import Picker from "@/ui/components/Picker";
+import { useTheme } from "expo-router/react-navigation";
 
 export default function SettingsFeatures() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
@@ -48,7 +50,7 @@ export default function SettingsFeatures() {
     <List
       contentInsetAdjustmentBehavior="always"
       contentContainerStyle={{ padding: 16 }}
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: colors.overground }}
     >
       <List.Section>
         <List.SectionTitle>

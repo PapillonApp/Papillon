@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from "expo-router/react-navigation";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { Link, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useState } from "react";
@@ -87,6 +87,7 @@ export default function GradesModal() {
   const theme = useTheme();
   const colors = theme.colors;
   const [grade, setGrade] = useState<SharedGrade>();
+  const headerHeight = useHeaderHeight();
   const [subject, setSubject] = useState<Subject>();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
@@ -195,33 +196,36 @@ export default function GradesModal() {
     emoji: getSubjectEmoji(subject.name),
     color: getSubjectColor(subject.name),
   };
+
+  const adjustedTextColor = adjust(subjectInfo.color, theme.dark ? 0.5 : -0.5);
+
   return (
     <>
       {Platform.OS !== "android" && (
         <LinearGradient
-          colors={[subjectInfo.color, colors.background]}
+          colors={[adjust(subjectInfo.color, theme.dark ? -0.6 : 0.6), theme.colors.overground]}
+          locations={[0, 0.5]}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
-            height: 300,
-            width: "100%",
+            bottom: 0,
             zIndex: -9,
-            opacity: 0.4,
           }}
         />
       )}
 
       <List
+        style={{ flex: 1 }}
+        contentInsetAdjustmentBehavior="automatic"
         ListHeaderComponent={
           <View
             style={{
               alignItems: "center",
               justifyContent: "center",
               gap: 16,
-              marginVertical: 20,
-              paddingTop: finalHeaderHeight,
+              paddingTop: finalHeaderHeight + (Platform.OS === "ios" ? 0 : 16),
             }}
           >
             <ModalOverhead
@@ -290,17 +294,15 @@ export default function GradesModal() {
               <Stack
                 card
                 direction="horizontal"
+                hAlign="center"
+                gap={0}
                 width={"100%"}
-                style={{ marginTop: 8 }}
+                style={{ marginTop: 8, shadowColor: "transparent", borderWidth: 0 }}
               >
                 <Stack
                   width={"50%"}
                   vAlign="center"
                   hAlign="center"
-                  style={{
-                    borderRightWidth: 1,
-                    borderRightColor: colors.border,
-                  }}
                   padding={12}
                 >
                   <Icon papicon opacity={0.5}>
@@ -313,12 +315,17 @@ export default function GradesModal() {
                     color={
                       Platform.OS === "android"
                         ? theme.colors.tint
-                        : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)
+                        : adjustedTextColor
                     }
                   >
                     x{(grade.coefficient ?? 1).toFixed(2)}
                   </ContainedNumber>
                 </Stack>
+                <View style={{
+                  width: 0.5,
+                  height: "80%",
+                  backgroundColor: colors.border,
+                }} />
                 <Stack
                   width={"50%"}
                   vAlign="center"
@@ -335,7 +342,7 @@ export default function GradesModal() {
                     color={
                       Platform.OS === "android"
                         ? theme.colors.tint
-                        : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)
+                        : adjustedTextColor
                     }
                     denominator={"/" + grade.outOf?.value}
                   >
@@ -346,10 +353,13 @@ export default function GradesModal() {
             )}
           </View>
         }
-        style={{ backgroundColor: "transparent" }}
         contentContainerStyle={{
           padding: 16,
-          paddingBottom: 16 + insets.bottom,
+          paddingLeft: insets.left + 16,
+          paddingRight: insets.right + 16,
+          width: '100%',
+          maxWidth: 900,
+          alignSelf: 'center',
         }}
       >
         {grade.skills && grade.skills.length > 0 && (
@@ -425,7 +435,7 @@ export default function GradesModal() {
                   color={
                     Platform.OS === "android"
                       ? theme.colors.tint
-                      : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)
+                      : adjustedTextColor
                   }
                   denominator={"/" + grade.outOf?.value}
                 >
@@ -451,7 +461,7 @@ export default function GradesModal() {
                   color={
                     Platform.OS === "android"
                       ? theme.colors.tint
-                      : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)
+                      : adjustedTextColor
                   }
                   denominator={"/" + grade.outOf?.value}
                 >

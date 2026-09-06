@@ -54,7 +54,7 @@ export default function RequestDetails() {
   );
 
   return (
-    <View style={{ padding: 16, paddingTop: height, flex: 1 }}>
+    <View style={{ padding: 16, paddingTop: height, flex: 1, backgroundColor: colors.overground }}>
       <TabHeader
         modal
         onHeightChanged={setHeight}

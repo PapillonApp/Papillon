@@ -92,7 +92,6 @@ export default {
         backgroundColor: "#ffffff",
         monochromeImage: "./assets/images/monochrome-icon.png",
       },
-      edgeToEdgeEnabled: true,
       supportsTablet: true,
       predictiveBackGestureEnabled: true,
     },
@@ -175,6 +174,7 @@ export default {
         },
       ],
       "./plugins/with-ios-native-files",
+      "./plugins/with-android-gradle-properties-newline",
     ],
     experiments: {
       typedRoutes: true,

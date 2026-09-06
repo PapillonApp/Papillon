@@ -6,7 +6,7 @@ import packageJson from "@/package.json";
 import { useSettingsStore } from "@/stores/settings";
 
 import { MAGIC_URL } from "../endpoints";
-import { log } from "../logger/logger";
+import { debug, log } from "../logger/logger";
 import { checkAndUpdateModel, getCurrentPtr } from "./updater"; 
 
 export type ModelPrediction = {
@@ -133,7 +133,7 @@ class ModelManager {
         }
       }
       this.hasInitialized = true;
-      log("SafeInit completed successfully. Model is up-to-date.");
+      debug("SafeInit completed successfully. Model is up-to-date.");
     } catch (error) {
       log(`Safe init error: ${String(error)}`);
       throw new Error(`Safe init error: ${String(error)}`);
@@ -159,7 +159,7 @@ class ModelManager {
       try {
         await checkAndUpdateModel(packageJson.version, getMagicURL());
       } catch {
-        log("Model update failed");
+        debug("Model update failed");
       }
 
       const loadedAfterUpdate = await this.tryLoadFromActivePtr();
@@ -170,7 +170,7 @@ class ModelManager {
 
       const ptr = await getCurrentPtr();
       const errorMsg = `No dynamic model available. Reason: ${ptr ? "ptr exists" : "no ptr"}`;
-      log(`Initialization error: ${errorMsg}`);
+      debug(`Initialization error: ${errorMsg}`);
       return { source: "none", success: false, error: errorMsg };
     } catch (error) {
       log(`Initialization error: ${String(error)}`);
@@ -272,7 +272,7 @@ class ModelManager {
         MODELS_ROOT.delete();
       }
 
-      log("Model reset successfully");
+      debug("Model reset successfully");
       return { success: true };
     } catch (error) {
       log(`Reset error: ${String(error)}`);
@@ -395,7 +395,7 @@ class ModelManager {
         wordIndex = JSON.parse(wordIndexRaw);
       } else if (indexWordFile.exists) {
         const indexWordRaw = await indexWordFile.text();
-        const indexWord = JSON.parse(indexWordRaw);
+        const indexWord = JSON.parse(indexWordRaw) ?? {};
         wordIndex = {};
         for (const [index, word] of Object.entries(indexWord)) {
           if (typeof word === "string") {
@@ -433,7 +433,7 @@ class ModelManager {
       const labelToIdFile = new File(dirUri + "model/label_to_id.json");
       if (labelToIdFile.exists) {
         const labelToIdRaw = await labelToIdFile.text();
-        this.labelToId = JSON.parse(labelToIdRaw);
+        this.labelToId = JSON.parse(labelToIdRaw) ?? {};
       } else {
         this.labelToId = {};
         for (let i = 0; i < this.labels.length; i++) {

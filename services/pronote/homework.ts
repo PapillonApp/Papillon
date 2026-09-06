@@ -50,6 +50,7 @@ export async function fetchPronoteHomeworks(session: SessionHandle, accountId: s
 export async function setPronoteHomeworkAsDone(session: SessionHandle, homework: Homework, status?: boolean): Promise<Homework> {
   if (homework.fromCache) {
     error("You can't set data from cache as done.")
+    return homework;
   }
 
   try {

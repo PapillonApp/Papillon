@@ -58,7 +58,7 @@ import {
 } from "@/services/shared/types";
 import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
-import { error, log, warn } from "@/utils/logger/logger";
+import { debug, error, log, warn } from "@/utils/logger/logger";
 
 import {
   AccessDeniedError,
@@ -78,7 +78,8 @@ const isPermanentAuthError = (e: unknown): boolean =>
   e instanceof SessionExpiredError ||
   e instanceof AccessDeniedError ||
   e instanceof AccountDisabledError ||
-  e instanceof SecurityError;
+  e instanceof SecurityError ||
+  /\b401\b|unauthorized/i.test(String(e));
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -96,14 +97,14 @@ export class AccountManager {
   }
 
   async refreshAllAccounts(): Promise<boolean> {
-    log("We're refreshing all services for the account " + this.account.id);
+    debug("We're refreshing all services for the account " + this.account.id);
     const hasInternet = await this.hasInternet();
 
     let refreshedAtLeastOne = false;
 
     for (const service of this.account.services) {
       try {
-        log("Trying to refresh " + service.id);
+        debug("Trying to refresh " + service.id);
         const plugin = this.getServicePluginForAccount(service);
 
         if (!hasInternet && plugin.requiresInternet !== false) {
@@ -114,10 +115,10 @@ export class AccountManager {
         if (plugin?.capabilities.includes(Capabilities.REFRESH)) {
           this.clients[service.id] = await plugin.refreshAccount(service.auth);
           refreshedAtLeastOne = true;
-          log("Successfully refreshed " + service.id);
+          debug("Successfully refreshed " + service.id);
         } else {
           this.clients[service.id] = plugin;
-          log(
+          debug(
             "Plugin for " +
               service.id +
               " doesn't support refresh but is available for other capabilities"
@@ -131,7 +132,7 @@ export class AccountManager {
       }
     }
 
-    log(
+    debug(
       "Finished refreshing process for all services, services refreshed: " +
         Object.keys(this.clients).length
     );
@@ -541,6 +542,16 @@ export class AccountManager {
     callback: (client: SchoolServicePlugin) => Promise<T | T[]>,
     options?: FetchOptions<T | T[]> & { multiple?: boolean }
   ): Promise<T | T[]> {
+    const callFallback = async (): Promise<T | T[]> => {
+      const fallbackResult = await options!.fallback!();
+      if (options?.multiple && Array.isArray(fallbackResult)) {
+        return fallbackResult.filter(
+          (item): item is T => item !== null && item !== undefined
+        );
+      }
+      return fallbackResult;
+    };
+
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
@@ -557,7 +568,7 @@ export class AccountManager {
         }
         if (client.requiresInternet !== false && !(await this.hasInternet())) {
           if (options.fallback) {
-            return await options.fallback();
+            return await callFallback();
           }
           throw new Error("Internet not reachable and no fallback provided.");
         }
@@ -574,7 +585,7 @@ export class AccountManager {
         availableClients = availableClients.filter(client => client.requiresInternet === false);
         if (availableClients.length === 0 && options?.fallback) {
           warn("No internet connection, using fallback.");
-          return await options.fallback();
+          return await callFallback();
         }
       }
 
@@ -583,7 +594,7 @@ export class AccountManager {
           `No clients available for capability ${capability}, falling back to cache`
         );
         if (options?.fallback) {
-          return await options.fallback();
+          return await callFallback();
         }
         throw new Error(`No clients available for capability: ${capability}`);
       }
@@ -602,7 +613,7 @@ export class AccountManager {
       }
     } catch (e) {
       if (options?.fallback) {
-        return await options.fallback();
+        return await callFallback();
       }
       throw e;
     }
@@ -712,7 +723,7 @@ export const initializeAccountManager = async (
   if (!accountId) {
     const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
     if (!lastUsedAccount) {
-      error("No account ID provided and no last used account found.");
+      throw error("No account ID provided and no last used account found.");
     }
     accountId = lastUsedAccount;
   }
@@ -721,7 +732,7 @@ export const initializeAccountManager = async (
     .accounts.find(acc => acc.id === accountId);
 
   if (!account) {
-    error("Account not found for ID: " + accountId);
+    throw error("Account not found for ID: " + accountId);
   }
 
   const manager = new AccountManager(account);
@@ -731,8 +742,8 @@ export const initializeAccountManager = async (
   return manager;
 };
 
-export const getManager = (): AccountManager => {
-  if (!globalManager) {
+export const getManager = (silent = false): AccountManager => {
+  if (!globalManager && !silent) {
     warn(
       "Account manager not initialized. Call initializeAccountManager first."
     );

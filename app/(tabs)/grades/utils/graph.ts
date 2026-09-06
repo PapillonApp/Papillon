@@ -1,4 +1,3 @@
-
 export interface GraphPoint {
   value: number;
   date: Date;

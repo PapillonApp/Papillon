@@ -1,5 +1,12 @@
 import { Database } from '@nozbe/watermelondb';
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
+import logger from '@nozbe/watermelondb/utils/common/logger';
+
+// WatermelonDB's internal work-queue diagnostics ("Enqueued writer",
+// "can't be performed yet, because there are N other readers/writers...")
+// are purely informational dev-mode noise, not error reporting — our own
+// database/utils/safeTransaction.ts handles real failure logging separately.
+logger.silence();
 import { File, Paths } from 'expo-file-system';
 import { Platform } from 'react-native';
 

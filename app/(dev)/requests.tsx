@@ -41,7 +41,7 @@ export default function Requests() {
 
   return (
     <View
-      style={{ padding: 16, gap: 20, flex: 1 }}
+      style={{ padding: 16, gap: 20, flex: 1, backgroundColor: colors.overground }}
     >
       <TabHeader
         modal

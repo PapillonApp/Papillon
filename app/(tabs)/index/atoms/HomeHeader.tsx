@@ -16,7 +16,6 @@ import { Papicons } from '@getpapillon/papicons';
 
 import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
 import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
-import WrappedBanner from './WrappedBanner';
 import { useTheme } from "expo-router/react-navigation";
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
@@ -181,9 +180,6 @@ const HomeHeader = () => {
         </ListTouchable>
       )}
 
-      {__DEV__ && 1 === 2 && (
-        <WrappedBanner />
-      )}
     </View>
   );
 };

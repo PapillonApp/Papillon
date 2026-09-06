@@ -7,8 +7,6 @@ import * as DateLocale from 'date-fns/locale';
 
 import { CourseStatus } from "@/services/shared/timetable";
 import Course from "@/ui/components/Course";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectName } from "@/utils/subjects/name";
 import i18n from "@/utils/i18n";
@@ -40,23 +38,7 @@ const HomeTimeTableWidget = React.memo(() => {
   const { courses } = useTimetableWidgetData();
 
   if (courses.length === 0) {
-    return (
-      <Stack
-        inline flex
-        hAlign="center"
-        vAlign="center"
-        padding={[22, 16]}
-        gap={2}
-        style={{ paddingTop: 12, marginBottom: 3 }}
-      >
-        <Typography align="center" variant="title" color="text">
-          {t("Home_Widget_NoCourses")}
-        </Typography>
-        <Typography align="center" variant="body1" color="secondary">
-          {t("Home_Widget_NoCourses_Description")}
-        </Typography>
-      </Stack>
-    );
+    return null;
   }
 
   return (

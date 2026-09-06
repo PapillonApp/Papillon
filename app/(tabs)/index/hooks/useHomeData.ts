@@ -11,7 +11,7 @@ import { Services } from '@/stores/account/types';
 import { useSettingsStore } from '@/stores/settings';
 import { useAlert } from '@/ui/components/AlertProvider';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
-import { log, warn } from '@/utils/logger/logger';
+import { debug, warn } from '@/utils/logger/logger';
 import { useAccountStore } from '@/stores/account';
 
 const REMOVED_SERVICE_ID = 9;
@@ -99,7 +99,7 @@ export const useHomeData = () => {
     state.inFlight = (async () => {
     try {
       await initializeAccountManager(lastUsedAccount);
-      log("Refreshed Manager received");
+      debug("Refreshed Manager received");
 
       await Promise.all([fetchEDT(), fetchGrades()]);
       state.lastSyncedAt = Date.now();
@@ -160,7 +160,7 @@ export const useHomeData = () => {
         alert.showAlert({
           title: t("home.unavailable.title", "Pronote temporairement indisponible"),
           description: t("home.unavailable.description", "Impossible de contacter Pronote pour le moment. Les données affichées correspondent à la dernière synchronisation."),
-          icon: "WifiOff",
+          icon: "GlobeCross",
           color: "#FF8C00",
           withoutNavbar: true,
         });

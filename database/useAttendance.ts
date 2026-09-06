@@ -162,7 +162,7 @@ export async function addAttendanceToDatabase(attendances: SharedAttendance[], p
 }
 
 
-export async function getAttendanceFromCache(period: string): Promise<SharedAttendance> {
+export async function getAttendanceFromCache(period: string): Promise<SharedAttendance | undefined> {
   try {
     const database = getDatabaseInstance();
 
@@ -172,7 +172,7 @@ export async function getAttendanceFromCache(period: string): Promise<SharedAtte
       .fetch();
 
     if (!attendance[0]) {
-      throw new Error("Attendance not found");
+      return undefined;
     }
     const att = attendance[0];
     return {

@@ -125,6 +125,7 @@ export default function ConsentScreen() {
                   paddingVertical: 13,
                   flexDirection: "row",
                   alignItems: "center",
+                  overflow: "hidden",
                   gap: 16,
                   borderColor: currentConsent === consent.key ? consent.color : colors.border,
                   borderWidth: 1,

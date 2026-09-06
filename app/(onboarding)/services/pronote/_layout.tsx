@@ -4,19 +4,21 @@ import { useTranslation } from "react-i18next";
 
 import { Stack } from 'expo-router';
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
-import AndroidHeaderBackground, { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
 export default function OnboardingLayout() {
   const { t } = useTranslation();
   const screenOptions = useScreenOptions();
+  const androidHeaderProps = useAndroidHeaderProps();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    ...AndroidHeaderProps,
+    ...androidHeaderProps,
+    headerBackVisible: true,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
-  }), [screenOptions]);
+  }), [screenOptions, androidHeaderProps]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -35,7 +37,7 @@ export default function OnboardingLayout() {
         />
         <Stack.Screen
           name="browser"
-          options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_ENT_LOGIN"), presentation: "modal", headerBackground: null }}
+          options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_ENT_LOGIN"), presentation: "modal", headerStyle: { backgroundColor: "transparent" } }}
         />
         <Stack.Screen
           name="qrcode"

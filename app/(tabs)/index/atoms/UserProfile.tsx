@@ -77,6 +77,10 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 return;
               }
 
+              if (nativeEvent.event === "workspaces" || !accounts.some(account => account.id === nativeEvent.event)) {
+                return;
+              }
+
               const store = useAccountStore.getState();
               const settingsStore = useSettingsStore.getState();
               const currentAccountId = store.lastUsedAccount;
@@ -91,7 +95,11 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 disabledTabs: disabledTabsForAccount,
               });
               store.setLastUsedAccount(nativeEvent.event);
-              await initializeAccountManager();
+              try {
+                await initializeAccountManager();
+              } catch (err) {
+                console.error("Failed to switch account:", err);
+              }
             }}
             actions={[
               ...(Platform.OS === "ios" ? [{

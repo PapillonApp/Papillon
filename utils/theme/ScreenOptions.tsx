@@ -1,6 +1,5 @@
 import { Platform } from "react-native";
 import AndroidBackButton from "./AndroidBackButton";
-import AndroidHeaderBackground from "@/components/AndroidHeaderBackground";
 import { useFont } from "./fonts";
 import React from "react";
 

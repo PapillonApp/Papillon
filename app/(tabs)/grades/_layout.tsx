@@ -1,55 +1,29 @@
-import { Stack } from "expo-router";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { Stack } from 'expo-router';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useScreenOptions } from "@/utils/theme/ScreenOptions";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import AndroidHeaderBackground from "@/components/AndroidHeaderBackground";
-import { Platform } from "react-native";
+import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { useScreenOptions } from '@/utils/theme/ScreenOptions';
 
 export default function Layout() {
   const { t } = useTranslation();
   const screenOptions = useScreenOptions();
+  const androidHeaderProps = useAndroidHeaderProps();
 
   return (
     <Stack screenOptions={screenOptions}>
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown: false,
-          headerTitle: t("Tab_Grades"),
-        }}
-      />
+      <Stack.Screen name="index" options={{ ...androidHeaderProps }} />
       <Stack.Screen
         name="[id]"
         options={{
-          headerShown: Platform.OS !== "ios",
-          headerTitle: t("Modal_Grades_Title"),
+          headerShown: true,
+          headerTitle: t('Modal_Grades_Title'),
           headerLargeTitle: false,
           headerTransparent: true,
-          presentation: Platform.OS !== "ios" ? "modal" : "formSheet",
+          presentation: 'card',
           sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.5, 1],
-          headerBackground: AndroidHeaderBackground,
-        }}
-      />
-      <Stack.Screen
-        name="modals/SubjectInfo"
-        options={{
-          headerShown: true,
-          headerLargeTitle: false,
-          headerTitle: t("Grades_SubjectInfo"),
-          presentation: "modal",
-          headerBackground: AndroidHeaderBackground
-        }}
-      />
-      <Stack.Screen
-        name="modals/AboutAverages"
-        options={{
-          headerShown: true,
-          headerLargeTitle: false,
-          headerTitle: t("Grades_Avg_KnowMore"),
-          presentation: "modal",
+          sheetAllowedDetents: [1],
+          ...androidHeaderProps,
         }}
       />
     </Stack>

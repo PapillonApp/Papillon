@@ -78,7 +78,7 @@ const PersonalizationSettings = () => {
       <List
         contentContainerStyle={{ padding: 16 }}
         contentInsetAdjustmentBehavior="always"
-        style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0 }}
+        style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0, backgroundColor: theme.colors.overground }}
       >
         {!useMaterialYou &&
           <List.Section>

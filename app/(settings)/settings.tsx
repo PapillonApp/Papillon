@@ -302,6 +302,7 @@ export default function SettingsIndex() {
   return (
     <>
       <List
+        style={{ flex: 1, backgroundColor: colors.overground }}
         contentInsetAdjustmentBehavior="automatic"
         gap={12}
         ListHeaderComponent={(

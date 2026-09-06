@@ -110,7 +110,7 @@ export default function SubjectPersonalization() {
       </NativeHeaderSide>
 
       <List
-        style={{ flex: 1 }}
+        style={{ flex: 1, backgroundColor: colors.overground }}
         contentContainerStyle={{ padding: 16 }}
         contentInsetAdjustmentBehavior="always"
       >

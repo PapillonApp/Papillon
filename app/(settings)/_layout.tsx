@@ -5,10 +5,11 @@ import { Platform, StatusBar } from "react-native";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { t } from "i18next";
-import AndroidHeaderBackground from "@/components/AndroidHeaderBackground";
+import { useAndroidHeaderProps } from "@/components/AndroidHeaderBackground";
 
 export default function Layout() {
   const screenOptions = useScreenOptions();
+  const androidHeaderProps = useAndroidHeaderProps();
 
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
@@ -16,8 +17,9 @@ export default function Layout() {
     headerLargeTitle: false,
     headerTransparent: runsIOS26,
     headerShadowVisible: false,
-    headerBackground: AndroidHeaderBackground
-  }), [screenOptions]);
+    ...androidHeaderProps,
+    headerBackVisible: Platform.OS === "ios",
+  }), [screenOptions, androidHeaderProps]);
 
   return (
     <>
@@ -27,7 +29,6 @@ export default function Layout() {
           name="settings"
           options={{
             headerTitle: t("Tab_Settings"),
-            headerBackground: AndroidHeaderBackground,
             headerTransparent: true
           }}
         />
@@ -53,7 +54,7 @@ export default function Layout() {
             headerBackButtonDisplayMode: "minimal",
             headerTransparent: true,
             headerLargeTitle: false,
-            headerBackground: null
+            headerStyle: { backgroundColor: "transparent" },
           }}
         />
 

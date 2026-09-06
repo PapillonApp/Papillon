@@ -16,8 +16,10 @@ import { getInitials } from "@/utils/chats/initials";
 import { formatSchoolName } from "@/utils/format/formatSchoolName";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
 import ActionMenu from "@/ui/components/ActionMenu";
+import { useTheme } from "expo-router/react-navigation";
 
 export default function AccountsView() {
+  const { colors } = useTheme();
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
   const account = accounts.find(a => a.id === lastUsedAccount);
@@ -68,6 +70,7 @@ export default function AccountsView() {
 
   return (
     <List
+      style={{ flex: 1, backgroundColor: colors.overground }}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
         padding: 16,

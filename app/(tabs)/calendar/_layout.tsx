@@ -3,11 +3,12 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
-import AndroidHeaderBackground from "@/components/AndroidHeaderBackground";
+import { useAndroidHeaderProps } from "@/components/AndroidHeaderBackground";
 
 export default function Layout() {
   const { t } = useTranslation();
   const screenOptions = useScreenOptions();
+  const androidHeaderProps = useAndroidHeaderProps();
 
   return (
     <Stack screenOptions={screenOptions}>
@@ -31,7 +32,7 @@ export default function Layout() {
           presentation: "modal",
           headerLargeTitle: false,
           headerTitle: t("Tab_Calendar_Icals"),
-          headerBackground: AndroidHeaderBackground
+          ...androidHeaderProps,
         }}
       />
     </Stack>

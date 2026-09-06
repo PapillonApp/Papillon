@@ -119,7 +119,7 @@ export default function SettingsMagic() {
 
   return (
     <List
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: colors.overground }}
       contentContainerStyle={{ padding: 20 }}
       contentInsetAdjustmentBehavior="always"
     >

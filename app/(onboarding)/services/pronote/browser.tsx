@@ -297,8 +297,7 @@ export default function PronoteENTLogin() {
         }
 
         router.back();
-        router.dismissAll();
-        return router.push("/(tabs)/index");
+        return router.replace('/');
       } catch (error) {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
           setDoubleAuthError(error)

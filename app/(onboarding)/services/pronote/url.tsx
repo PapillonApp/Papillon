@@ -1,4 +1,4 @@
-import { useHeaderHeight } from "expo-router/react-navigation";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
@@ -43,10 +43,11 @@ const PronoteSearchHeader = memo(({
 
 export default function PronoteLoginURL() {
   const headerHeight = useHeaderHeight();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior="padding" keyboardVerticalOffset={20}>
       <List
         ListHeaderComponent={<PronoteSearchHeader />}
         contentContainerStyle={{

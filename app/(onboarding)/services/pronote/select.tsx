@@ -1,4 +1,4 @@
-import { useHeaderHeight, useRoute } from "expo-router/react-navigation";
+import { useHeaderHeight, useRoute, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import { geolocation } from "@blockshub/pawnote-lts";
 import React, { memo, useEffect, useState } from "react";
@@ -57,6 +57,7 @@ const PronoteSearchHeader = memo(({
 
 export default function PronoteLoginSelectEtab() {
   const headerHeight = useHeaderHeight();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -84,7 +85,7 @@ export default function PronoteLoginSelectEtab() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
         animated
         ListHeaderComponent={<PronoteSearchHeader search={search} setSearch={setSearch} loading={loading} t={t} />}

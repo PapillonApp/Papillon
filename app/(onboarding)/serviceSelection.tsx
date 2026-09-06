@@ -102,7 +102,7 @@ export default function ServiceSelection() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: colors.overground }}>
       <List
         ListHeaderComponent={() => (
           <Stack padding={[4, 0]} style={{ maxWidth: 500 }}>

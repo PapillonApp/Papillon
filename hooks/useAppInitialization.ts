@@ -18,8 +18,7 @@ SplashScreen.preventAutoHideAsync();
 
 export function useAppInitialization() {
   const [fontsLoaded, fontsError] = useFonts(FONT_CONFIG);
-  const [isDatabaseReady, setIsDatabaseReady] = useState(false);
-  
+
   // Settings
   const customLanguage = useSettingsStore(state => state.personalization.language);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
@@ -44,18 +43,14 @@ export function useAppInitialization() {
   }, [customLanguage]);
 
   // Database Initialization
+  // The WatermelonDB adapter is constructed synchronously at module load
+  // (see database/index.ts), so it's already usable before this effect runs.
+  // initializeDatabaseOnStartup() only runs diagnostic health checks, so it
+  // does not need to gate app readiness / the splash screen.
   useEffect(() => {
-    async function initDatabase() {
-      try {
-        await initializeDatabaseOnStartup();
-      } catch (err) {
-        warn(`Database initialization failed: ${err}`);
-      } finally {
-        setIsDatabaseReady(true);
-      }
-    }
-
-    initDatabase();
+    initializeDatabaseOnStartup().catch(err => {
+      warn(`Database initialization failed: ${err}`);
+    });
   }, []);
 
   // AppState Monitoring
@@ -117,7 +112,7 @@ export function useAppInitialization() {
   useEffect(handleError, [handleError]);
 
   return {
-    isAppReady: isDatabaseReady && fontsLoaded,
+    isAppReady: fontsLoaded,
     fontsLoaded,
     fontsError
   };

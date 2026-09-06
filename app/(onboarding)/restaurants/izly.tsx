@@ -29,7 +29,7 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { log } from "@/utils/logger/logger";
+import { error, log } from "@/utils/logger/logger";
 import uuid from "@/utils/uuid/uuid";
 import LoginView from "../components/LoginView";
 
@@ -78,6 +78,7 @@ export default function TurboSelfLoginWithCredentials() {
   const alert = useAlert();
 
   const handleActivation = useCallback(async (url: string) => {
+   try {
     const id = uuid();
     const { identification, profile } = await tokenize(url);
     const service: ServiceAccount = {
@@ -135,6 +136,9 @@ export default function TurboSelfLoginWithCredentials() {
             router.back();
             router.dismissAll();
             return router.push('/')
+   } catch (err) {
+     error("Failed to activate Izly account: " + String(err));
+   }
   }, [password, action]);
 
   useEffect(() => {

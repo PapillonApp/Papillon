@@ -1,11 +1,15 @@
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { Papicons } from "@getpapillon/papicons";
+import { useRouter } from "expo-router";
 import React from "react";
-import { Linking, View } from "react-native";
+import { Linking, Platform, View } from "react-native";
 
 export default function Soon() {
+  const router = useRouter();
+
   return (
     <View
       style={{
@@ -13,6 +17,16 @@ export default function Soon() {
         paddingBottom: 0,
       }}
     >
+      {Platform.OS === "android" && (
+        <NativeHeaderSide side="Left">
+          <NativeHeaderPressable onPress={() => router.back()}>
+            <Icon size={28}>
+              <Papicons name="Cross" />
+            </Icon>
+          </NativeHeaderPressable>
+        </NativeHeaderSide>
+      )}
+
       <Stack
         padding={20}
         gap={10}

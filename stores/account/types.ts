@@ -29,6 +29,8 @@ export interface AccountsStorage {
     subjects: Record<string, { color: string; emoji: string; name: string }>
   ) => void;
   setAccountProfilePicture: (accountId: string, profilePicture: string) => void;
+  recordTeamModalHomeLaunch: (accountId: string) => boolean;
+  dismissTeamWidget: (accountId: string) => void;
   setTransportEnabled: (transportEnabled: boolean) => void;
   setTransportService: (id: string) => void;
   setTransportHomeAddress: (address: TransportAddress) => void;
@@ -56,10 +58,17 @@ export interface Account {
   schoolName?: string;
   className?: string;
   customisation?: CustomisationStorage;
+  teamModal?: TeamModalStorage;
   transport?: TransportStorage;
   services: ServiceAccount[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TeamModalStorage {
+  homeLaunchCount: number;
+  shown: boolean;
+  widgetDismissed?: boolean;
 }
 
 export interface CustomisableSubject {

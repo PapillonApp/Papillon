@@ -17,7 +17,7 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
   const account = store.accounts.find(acc => acc.id === store.lastUsedAccount);
   type Service = { id: string };
   const services = useMemo(() => account?.services?.map((s: Service) => s.id) ?? [], [account]);
-  const manager = getManager();
+  const [manager, setManager] = useState(() => getManager(true));
 
   const homeworksFromCache = useHomeworkForWeek(selectedWeek, refreshTrigger)
     .filter(h => services.includes(h.createdByAccount));
@@ -47,6 +47,7 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
   useEffect(() => {
     fetchHomeworks();
     const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+      setManager(updatedManager);
       fetchHomeworks(updatedManager);
     });
     return () => unsubscribe();

@@ -2,14 +2,13 @@ import React from 'react';
 
 import { Stack } from 'expo-router';
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
-import { Platform } from 'react-native';
 
 export default function OnboardingLayout() {
   const screenOptions = useScreenOptions();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerBackVisible: Platform.select({ android: false, default: true }),
+    headerBackVisible: true,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,

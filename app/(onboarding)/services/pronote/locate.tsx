@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useHeaderHeight } from "expo-router/react-navigation";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -67,6 +67,7 @@ const PronoteSearchHeader = memo(({
 
 export default function PronoteLoginMethod() {
   const headerHeight = useHeaderHeight();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -119,7 +120,7 @@ export default function PronoteLoginMethod() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
         ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} t={t} />}
         contentContainerStyle={{

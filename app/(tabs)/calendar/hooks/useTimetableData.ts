@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo,useRef, useState } from 'react';
 import { useTimetable } from '@/database/useTimetable';
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { useAccountStore } from '@/stores/account';
-import { log, warn } from "@/utils/logger/logger";
+import { debug, log } from "@/utils/logger/logger";
 
 export function useTimetableData(weekNumber: number, currentDate: Date = new Date()) {
   const safeDate = currentDate;
@@ -13,14 +13,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
   const [fetchedWeeks, setFetchedWeeks] = useState<string[]>([]);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  let manager: ReturnType<typeof getManager> | null;
-
-  try {
-    manager = getManager();
-  } catch (error) {
-    warn('Manager not initialized, iCal events will still work');
-    manager = null;
-  }
+  const [manager, setManager] = useState(() => getManager(true));
 
   const store = useAccountStore.getState();
   const account = store.accounts.find(account => store.lastUsedAccount);
@@ -50,7 +43,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
       }
       try {
         if (!manager) {
-          warn('Manager is null, skipping timetable fetch');
+          debug('Manager is null, skipping timetable fetch');
           return;
         }
 
@@ -94,6 +87,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((updatedManager) => {
       if (updatedManager) {
+        setManager(updatedManager);
         fetchWeeklyTimetable(weekNumber);
       }
     });

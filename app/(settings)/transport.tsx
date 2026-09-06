@@ -58,7 +58,7 @@ export default function TransportView() {
 
   return (
     <List
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.overground }}
       contentContainerStyle={{
         padding: 20,
         paddingTop: 16,

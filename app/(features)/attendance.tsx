@@ -75,7 +75,10 @@ export default function AttendanceView() {
       let Abs = 0
       let Delays = 0
       for (const attendance of attendances) {
-        for (const absence of attendance.absences) {
+        if (!attendance) {
+          continue;
+        }
+        for (const absence of attendance.absences ?? []) {
           Abs += 1;
           missed += absence.timeMissed;
           if (!absence.justified) {
@@ -83,7 +86,7 @@ export default function AttendanceView() {
             unjustifiedAbs += 1;
           }
         }
-        for (const delay of attendance.delays) {
+        for (const delay of attendance.delays ?? []) {
           Delays += 1;
           if (!delay.justified) {
             unjustifiedDelays += 1;
@@ -160,13 +163,14 @@ export default function AttendanceView() {
         />
 
         <List
+          style={{ flex: 1, backgroundColor: colors.overground }}
           contentContainerStyle={{
             padding: 16,
             paddingTop: headerHeight,
             paddingBottom: insets.bottom + 16,
           }}
         >
-          {attendances.some(attendance => attendance.absences.length == 0) && attendances.some(attendance => attendance.delays.length == 0) ? (
+          {attendances.some(attendance => (attendance?.absences ?? []).length == 0) && attendances.some(attendance => (attendance?.delays ?? []).length == 0) ? (
             <List.Item>
               <List.Leading>
                 <Icon>
@@ -236,7 +240,7 @@ export default function AttendanceView() {
             </List.Section>
           )}
 
-          {attendances.some(attendance => attendance.absences.length > 0) && (
+          {attendances.some(attendance => (attendance?.absences ?? []).length > 0) && (
             <List.Section>
               <List.SectionTitle>
                 <Icon opacity={0.5} size={20}>
@@ -251,7 +255,7 @@ export default function AttendanceView() {
               </List.SectionTitle>
 
               {attendances.map((attendance, index) =>
-                attendance.absences.map((absence, absenceIndex) => {
+                (attendance?.absences ?? []).map((absence, absenceIndex) => {
                   const fromDate = new Date(absence.from);
                   const dateString = formatDistanceToNowStrict(fromDate, {
                     locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
@@ -279,7 +283,7 @@ export default function AttendanceView() {
             </List.Section>
           )}
 
-          {attendances.some(attendance => attendance.delays.length > 0) && (
+          {attendances.some(attendance => (attendance?.delays ?? []).length > 0) && (
             <List.Section>
               <List.SectionTitle>
                 <Icon opacity={0.5} size={20}>
@@ -294,7 +298,7 @@ export default function AttendanceView() {
               </List.SectionTitle>
 
               {attendances.map((attendance, index) =>
-                attendance.delays.map((delay, absenceIndex) => {
+                (attendance?.delays ?? []).map((delay, absenceIndex) => {
                   const fromDate = new Date(delay.givenAt);
                   const date = fromDate.getTime();
                   const dateString = formatDistanceToNowStrict(date, {

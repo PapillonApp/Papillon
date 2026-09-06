@@ -206,7 +206,7 @@ const WelcomeModal: React.FC = () => {
         </Dynamic>
       </View>
 
-      <View style={{ justifyContent: "center", alignItems: "center", padding: 16, paddingBottom: insets.bottom + 16, gap: 12 }}>
+      <View style={{ justifyContent: "center", alignItems: "center", padding: 16, paddingBottom: insets.bottom + 24, gap: 12 }}>
         <Dynamic animated>
           <Button disabled={!hasAPhotoBeenAdded} label={t("ONBOARDING_CONTINUE")} variant="primary" fullWidth onPress={goNextStep} />
         </Dynamic>

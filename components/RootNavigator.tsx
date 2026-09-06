@@ -5,7 +5,6 @@ import React, { useMemo } from 'react';
 import { Platform, StatusBar, View } from 'react-native';
 
 import {
-  AI_SCREEN_OPTIONS,
   ALERT_SCREEN_OPTIONS,
   CHANGELOG_SCREEN_OPTIONS,
   CONSENT_SCREEN_OPTIONS,
@@ -14,15 +13,14 @@ import {
   DEVMODE_SCREEN_OPTIONS,
   STACK_SCREEN_OPTIONS
 } from '@/constants/LayoutScreenOptions';
-import getCorners from '@/ui/utils/Corners';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
-import AndroidHeaderBackground from './AndroidHeaderBackground';
+import { useAndroidHeaderProps } from './AndroidHeaderBackground';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 function RootNavigatorContent() {
   const theme = useTheme();
-  const corners = getCorners();
+  const androidHeaderProps = useAndroidHeaderProps();
 
   // Memoize combined screen options to prevent object recreation
   const stackScreenOptions = useMemo(() => ({
@@ -61,15 +59,9 @@ function RootNavigatorContent() {
           name="(settings)"
           options={{ headerShown: false, presentation: "formSheet" }}
         />
-        <Stack.Screen
-          name="(modals)"
-          options={{ headerShown: false, presentation: "formSheet" }}
-        />
-        <Stack.Screen name="page" />
         <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
         <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
         <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
-        <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
         <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
         <Stack.Screen
           name="(dev)/requests"
@@ -80,19 +72,6 @@ function RootNavigatorContent() {
           options={DEVMODE_REQUESTS_SCREEN_OPTIONS}
         />
         <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
-
-        <Stack.Screen
-          name="(modals)/wrapped"
-          options={{
-            headerShown: false,
-            presentation: "fullScreenModal",
-            animation: "flip",
-            contentStyle: {
-              borderRadius: corners > 2 ? corners - 2 : 0,
-              overflow: "hidden",
-            },
-          }}
-        />
 
         <Stack.Screen
           name="(modals)/wallpaper"
@@ -107,7 +86,7 @@ function RootNavigatorContent() {
             contentStyle: {
               backgroundColor: theme.colors.card,
             },
-            headerBackground: AndroidHeaderBackground,
+            ...androidHeaderProps,
           }}
         />
 
@@ -117,20 +96,16 @@ function RootNavigatorContent() {
             presentation: "formSheet",
             headerLargeTitle: false,
             headerTitle: t("Modal_Profile_Title"),
-            headerBackground: AndroidHeaderBackground,
+            ...androidHeaderProps,
           }}
         />
         <Stack.Screen
           name="(modals)/course/[id]"
           options={{
-            headerShown: Platform.OS !== "ios",
             headerTitle: t("Modal_Course_Title"),
             headerLargeTitle: false,
             headerTransparent: true,
-            presentation: Platform.OS !== "ios" ? "modal" : "formSheet",
-            sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.5, 1],
-            headerBackground: AndroidHeaderBackground,
+            ...androidHeaderProps,
             contentStyle: {
               borderRadius: Platform.OS === "ios" ? 30 : 0,
               overflow: Platform.OS === "ios" ? "hidden" : "visible",
@@ -161,7 +136,7 @@ function RootNavigatorContent() {
             headerLargeTitle: false,
             presentation: "modal",
             gestureEnabled: false,
-            headerBackground: AndroidHeaderBackground,
+            ...androidHeaderProps,
           }}
         />
 
@@ -187,6 +162,20 @@ function RootNavigatorContent() {
         />
 
         <Stack.Screen
+          name="(modals)/team"
+          options={{
+            headerShown: Platform.OS !== "ios",
+            presentation: Platform.select({
+              ios: "formSheet",
+              default: "modal",
+            }),
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: "fitToContents",
+            ...androidHeaderProps,
+          }}
+        />
+
+        <Stack.Screen
           name="(features)/soon"
           options={{
             headerShown: Platform.OS !== "ios",
@@ -197,7 +186,7 @@ function RootNavigatorContent() {
             sheetGrabberVisible: true,
             sheetAllowedDetents: "fitToContents",
             headerTitle: t("Modal_Soon"),
-            headerBackground: AndroidHeaderBackground,
+            ...androidHeaderProps,
           }}
         />
 

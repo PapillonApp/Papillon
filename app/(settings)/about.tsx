@@ -191,7 +191,7 @@ export default function SettingsAbout() {
 
   return (
     <List
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.overground }}
       contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 20 }}
       contentInsetAdjustmentBehavior="always"
       showsVerticalScrollIndicator={false}

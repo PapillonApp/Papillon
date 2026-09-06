@@ -1,7 +1,7 @@
 import { t } from "i18next";
 import { Calendar, Link2Icon, TypeIcon, Brain } from "lucide-react-native";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, TextInput, Switch } from "react-native";
+import { Alert, Platform, ScrollView, StyleSheet, TextInput, Switch } from "react-native";
 
 import { useAddIcal, useIcals, useRemoveIcal, useUpdateIcalParsing } from "@/database/useIcals";
 import { isValidUrl, normalizeUrl } from "@/services/local/ical-utils";
@@ -13,12 +13,15 @@ import Item, { Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
 import { useTheme } from "expo-router/react-navigation";
+import { useRouter } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import NativeSwitch from "@/ui/native/NativeSwitch";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { useFont } from "@/utils/theme/fonts";
 
 export default function TabOneScreen() {
+  const router = useRouter();
   const [icalUrl, setIcalUrl] = useState("");
   const [icalTitle, setIcalTitle] = useState("");
   const [intelligentParsing, setIntelligentParsing] = useState(false);
@@ -69,6 +72,15 @@ export default function TabOneScreen() {
       style={styles.container}
       keyboardShouldPersistTaps="handled"
     >
+      {Platform.OS === "android" && (
+        <NativeHeaderSide side="Left">
+          <NativeHeaderPressable onPress={() => router.back()}>
+            <Icon size={28}>
+              <Papicons name="Cross" />
+            </Icon>
+          </NativeHeaderPressable>
+        </NativeHeaderSide>
+      )}
       <List>
         {icalUrl.length > 0 &&
           <Item>

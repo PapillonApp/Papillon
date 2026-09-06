@@ -1,6 +1,6 @@
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from "expo-router/react-navigation";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
 import * as DateLocale from 'date-fns/locale';
 import i18n, { t } from "i18next";
@@ -15,6 +15,7 @@ import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
@@ -32,6 +33,7 @@ interface SubjectInfo {
 export default function CourseModal() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
@@ -74,7 +76,17 @@ export default function CourseModal() {
   const endTime = Math.floor(course.to.getTime() / 1000);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: colors.overground }}>
+      {Platform.OS === "android" && (
+        <NativeHeaderSide side="Left">
+          <NativeHeaderPressable onPress={() => router.back()}>
+            <Icon size={28}>
+              <Papicons name="Cross" />
+            </Icon>
+          </NativeHeaderPressable>
+        </NativeHeaderSide>
+      )}
+
       {Platform.OS !== "android" && (
         <LinearGradient
           colors={[subjectInfo.color, `${subjectInfo.color}00`]}
@@ -92,6 +104,7 @@ export default function CourseModal() {
       )}
 
       <List
+        contentInsetAdjustmentBehavior="automatic"
         ListHeaderComponent={
           <ModalOverhead
             subject={getSubjectName(item.subject)}
@@ -109,7 +122,6 @@ export default function CourseModal() {
             }}
             style={{
               marginBottom: 24,
-              marginTop: 24,
               paddingTop: finalHeaderHeight,
             }}
           />

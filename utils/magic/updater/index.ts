@@ -1,7 +1,7 @@
 import { Directory, File, Paths } from "expo-file-system";
 import { loadTensorflowModel } from "react-native-fast-tflite";
 
-import { log } from "@/utils/logger/logger";
+import { debug } from "@/utils/logger/logger";
 
 import { extractMagicToStaging, validateExtractedTree } from "./extract";
 import { ensureDir, readJSON, withLock, writeJSON } from "./fileUtils";
@@ -15,50 +15,50 @@ const MODELS_ROOT = new Directory(Paths.document, "papillon-models");
 
 export async function getCurrentPtr(): Promise<CurrentPtr | null> {
   const currentPtrFile = new File(MODELS_ROOT, "current.json");
-  log(`[MODELUPDATER] Lecture du pointeur actuel: ${currentPtrFile.uri}`);
+  debug(`[MODELUPDATER] Lecture du pointeur actuel: ${currentPtrFile.uri}`);
   
   // Vérifier si le répertoire parent existe
   if (!MODELS_ROOT.exists) {
-    log("[PTR] Répertoire papillon-models n'existe pas");
+    debug("[PTR] Répertoire papillon-models n'existe pas");
     return null;
   }
   
   if (!currentPtrFile.exists) {
-    log("[PTR] Aucun pointeur trouvé.");
+    debug("[PTR] Aucun pointeur trouvé.");
     return null;
   }
   
   try {
     const ptr = await readJSON<CurrentPtr>(currentPtrFile.uri);
-    log(`[MODELUPDATER] Actuel: ${ptr.name} v${ptr.version}`);
+    debug(`[MODELUPDATER] Actuel: ${ptr.name} v${ptr.version}`);
     return ptr;
   } catch (error) {
-    log(`[PTR] Erreur lecture pointeur: ${String(error)}`);
+    debug(`[PTR] Erreur lecture pointeur: ${String(error)}`);
     return null;
   }
 }
 
 export async function setCurrentPtr(ptr: CurrentPtr) {
-  log(`[PTR] Mise à jour du pointeur -> ${ptr.name} v${ptr.version}`);
+  debug(`[PTR] Mise à jour du pointeur -> ${ptr.name} v${ptr.version}`);
   await ensureDir(MODELS_ROOT.uri);
   const currentPtrFile = new File(MODELS_ROOT, "current.json");
   await writeJSON(currentPtrFile.uri, ptr);
 }
 
 async function smokeTestModel(dirUri: string) {
-  log(`[MODELUPDATER] Test du modèle: ${dirUri}model/model.tflite`);
+  debug(`[MODELUPDATER] Test du modèle: ${dirUri}model/model.tflite`);
   const m = await loadTensorflowModel({ url: dirUri + "model/model.tflite" });
   const inputShape = m?.inputs?.[0]?.shape;
   const batchSize = inputShape?.[0] ?? 1;
   const maxLen = inputShape?.[1] ?? 128;
   const totalElements = batchSize * maxLen;
-  log(`[MODELUPDATER] Input shape: ${inputShape}, batchSize=${batchSize}, maxLen=${maxLen}, totalElements=${totalElements}`);
+  debug(`[MODELUPDATER] Input shape: ${inputShape}, batchSize=${batchSize}, maxLen=${maxLen}, totalElements=${totalElements}`);
   
   const inputArr = new Int32Array(totalElements);
   inputArr.fill(0);
   
   await m.run([inputArr]);
-  log("[MODELUPDATER] Test réussi");
+  debug("[MODELUPDATER] Test réussi");
 }
 
 export async function checkAndUpdateModel(
@@ -66,10 +66,10 @@ export async function checkAndUpdateModel(
   manifestUrl?: string
 ) {
   return withLock(new File(MODELS_ROOT, ".update.lock").uri, async () => {
-    log("[MODELUPDATER] Démarrage de l'updater");
+    debug("[MODELUPDATER] Démarrage de l'updater");
 
     if (!(await isInternetReachable())) {
-      log("[MODELUPDATER] Pas de connexion internet. Annulation.");
+      debug("[MODELUPDATER] Pas de connexion internet. Annulation.");
       return {
         updated: false,
         using: await getCurrentPtr(),
@@ -82,13 +82,13 @@ export async function checkAndUpdateModel(
     }
     const latest = await fetchManifest(manifestUrl, appVersion);
     validateManifest(latest);
-    log("[MODELUPDATER] Manifest valide");
+    debug("[MODELUPDATER] Manifest valide");
 
     if (
       latest.compatible_versions?.length &&
       !satisfiesAll(appVersion, latest.compatible_versions)
     ) {
-      log(
+      debug(
         `[MODELUPDATER] Version app ${appVersion} incompatible avec ${latest.compatible_versions.join(", ")}`
       );
       return {
@@ -97,31 +97,31 @@ export async function checkAndUpdateModel(
         reason: "incompatible",
       };
     }
-    log("[MODELUPDATER] Compatible");
+    debug("[MODELUPDATER] Compatible");
 
-    log("[MODELUPDATER] Vérification si déjà à jour…");
+    debug("[MODELUPDATER] Vérification si déjà à jour…");
     const current = await getCurrentPtr();
     if (
       current &&
       current.version === latest.version &&
       current.name === latest.name
     ) {
-      log("[MODELUPDATER] Déjà à jour");
+      debug("[MODELUPDATER] Déjà à jour");
       return { updated: false, using: current, reason: "same-version" };
     }
-    log("[MODELUPDATER] Nouvelle version détectée");
+    debug("[MODELUPDATER] Nouvelle version détectée");
 
     const magicFile = new File(MODELS_ROOT, `tmp_${Date.now()}.magic`);
-    log(
+    debug(
       `[MODELUPDATER] Téléchargement du nouveau modèle: ${latest.download_url}`
     );
     const downloadedFile = await File.downloadFileAsync(latest.download_url, MODELS_ROOT);
     await downloadedFile.move(magicFile);
-    log(`[MODELUPDATER] Téléchargement terminé -> ${magicFile.uri}`);
+    debug(`[MODELUPDATER] Téléchargement terminé -> ${magicFile.uri}`);
 
     if (latest.size_bytes) {
       await verifySize(magicFile.uri, latest.size_bytes);
-      log("[MODELUPDATER] Taille correcte");
+      debug("[MODELUPDATER] Taille correcte");
     }
 
     if (latest.sha256) {
@@ -129,12 +129,12 @@ export async function checkAndUpdateModel(
       if (hex !== latest.sha256.toLowerCase()) {
         throw new Error(`sha256-mismatch expected=${latest.sha256} got=${hex}`);
       }
-      log("[MODELUPDATER] Intégrité OK");
+      debug("[MODELUPDATER] Intégrité OK");
     }
 
     const staging = new Directory(MODELS_ROOT, `_staging_${latest.name}_${latest.version}`);
     await extractMagicToStaging(magicFile.uri, staging.uri);
-    log("[MODELUPDATER] Extraction terminée");
+    debug("[MODELUPDATER] Extraction terminée");
 
     const infos = (await validateExtractedTree(staging.uri)) as {
       name: string;
@@ -143,21 +143,21 @@ export async function checkAndUpdateModel(
     if (infos.name !== latest.name || infos.version !== latest.version) {
       throw new Error("infos-mismatch");
     }
-    log("[MODELUPDATER] Structure valide");
+    debug("[MODELUPDATER] Structure valide");
 
-    log("[MODELUPDATER] Lancement du test");
+    debug("[MODELUPDATER] Lancement du test");
     await smokeTestModel(staging.uri);
 
     const modelDir = new Directory(MODELS_ROOT, latest.name);
     const finalDir = new Directory(modelDir, latest.version);
-    log(`[MODELUPDATER] Promotion vers dossier final: ${finalDir.uri}`);
+    debug(`[MODELUPDATER] Promotion vers dossier final: ${finalDir.uri}`);
     await ensureDir(modelDir.uri);
     if (finalDir.exists) {
-      log("[MODELUPDATER] Suppression ancienne version…");
+      debug("[MODELUPDATER] Suppression ancienne version…");
       finalDir.delete();
     }
     staging.move(finalDir);
-    log("[MODELUPDATER] Promotion effectuée ✅");
+    debug("[MODELUPDATER] Promotion effectuée ✅");
 
     const nextPtr: CurrentPtr = {
       name: latest.name,
@@ -167,13 +167,13 @@ export async function checkAndUpdateModel(
     await setCurrentPtr(nextPtr);
 
     try {
-      log(`[MODELUPDATER] Suppression fichier temporaire: ${magicFile.uri}`);
+      debug(`[MODELUPDATER] Suppression fichier temporaire: ${magicFile.uri}`);
       magicFile.delete();
     } catch (e) {
-      log(`[MODELUPDATER]  Erreur suppression temp: ${String(e)}`);
+      debug(`[MODELUPDATER]  Erreur suppression temp: ${String(e)}`);
     }
 
-    log("[MODELUPDATER] Mise a jour terminé");
+    debug("[MODELUPDATER] Mise a jour terminé");
     return { updated: true, using: nextPtr };
   });
 }
