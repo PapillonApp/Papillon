@@ -8,7 +8,7 @@ export default {
     name: "Papillon",
     slug: "papillon",
     version: PackageJSON.version,
-    orientation: "both",
+    orientation: "default",
     icon: "./assets/images/icon.png",
     scheme: ["papillon", "izly", "skoapp-prod"],
     platforms: ["ios", "android"],
