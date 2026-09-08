@@ -24,7 +24,7 @@ import Typography from "@/ui/components/Typography";
 
 import { PlatformPressable } from "../ed/credentials";
 
-export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string }) {
+export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId, relinkAccountId, relinkServiceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string, relinkAccountId?: string, relinkServiceId?: string }) {
   const { t } = useTranslation();
   const { colors, dark } = useTheme();
   const alert = useAlert();
@@ -58,6 +58,26 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
       const schoolName = session.user.resources[0].establishmentName
       const className = session.user.resources[0].className
 
+      const auth = {
+        accessToken: refresh.token,
+        refreshToken: refresh.token,
+        additionals: {
+          instanceURL: refresh.url,
+          kind: refresh.kind,
+          username: refresh.username,
+          deviceUUID: deviceId
+        }
+      }
+
+      const store = useAccountStore.getState()
+
+      if (relinkServiceId && relinkAccountId) {
+        store.updateServiceAuthData(relinkServiceId, auth)
+        store.setLastUsedAccount(relinkAccountId)
+        setChallengeModalVisible(false)
+        return router.replace("/");
+      }
+
       const account = {
         id: deviceId,
         firstName,
@@ -66,16 +86,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         className,
         services: [{
           id: deviceId,
-          auth: {
-            accessToken: refresh.token,
-            refreshToken: refresh.token,
-            additionals: {
-              instanceURL: refresh.url,
-              kind: refresh.kind,
-              username: refresh.username,
-              deviceUUID: deviceId
-            }
-          },
+          auth,
           serviceId: Services.PRONOTE,
           createdAt: (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString()
@@ -84,7 +95,6 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         updatedAt: (new Date()).toISOString()
       }
 
-      const store = useAccountStore.getState()
       store.addAccount(account)
       store.setLastUsedAccount(deviceId)
 

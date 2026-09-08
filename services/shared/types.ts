@@ -63,6 +63,7 @@ export interface SchoolServicePlugin {
   refreshAccount: (
     credentials: Auth
   ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | MockData>;
+  isTokenValid?: () => boolean;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
