@@ -92,7 +92,7 @@ export async function addGradesToDatabase(grades: SharedGrade[], subject: string
 
 export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period: string) {
   const db = getDatabaseInstance();
-  const id = generateId(period + item.createdByAccount);
+  const id = generateId(period);
 
   const existing = await db.get('periodgrades').query(
     Q.where("id", id)
@@ -122,17 +122,12 @@ export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period
   }, 10000, 'addPeriodGradesToDatabase');
 }
 
-export async function getGradePeriodsFromCache(period: string): Promise<SharedPeriodGrades> {
-  try {
-    const database = getDatabaseInstance();
-    const id = generateId(period)
-    const periodgrades = await database
-      .get<PeriodGrades>('periodgrades')
-      .query(Q.where('id', id))
-      .fetch();
+export async function getGradePeriodsFromCache(period: string): Promise<SharedPeriodGrades | null> {
+  const rows = await getDatabaseInstance()
+    .get<PeriodGrades>('periodgrades')
+    .query(Q.where('periodGradeId', period))
+    .fetch();
 
-    return mapPeriodGradesToShared(periodgrades[0])
-  } catch (e) {
-    error(String(e));
-  }
+  if (rows.length === 0) { return null; }
+  return mapPeriodGradesToShared(rows[0]);
 }
