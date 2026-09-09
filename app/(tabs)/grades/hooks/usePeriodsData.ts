@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { AccountManager } from "@/services/shared";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Period } from "@/services/shared/grade";
+import { Capabilities, ServiceFailure } from "@/services/shared/types";
 import { useSettingsStore } from "@/stores/settings";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
@@ -17,6 +18,7 @@ export interface UsePeriodsDataResult {
   loading: boolean;
   refreshing: boolean;
   error: Error | null;
+  failures: ServiceFailure[];
   refresh: () => Promise<void>;
 }
 
@@ -45,6 +47,7 @@ export function usePeriodsData(): UsePeriodsDataResult {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [failures, setFailures] = useState<ServiceFailure[]>([]);
 
   const savedPeriodName = useSettingsStore(state => state.personalization.gradesPeriodName);
   const mutateSettings = useSettingsStore(state => state.mutateProperty);
@@ -56,9 +59,11 @@ export function usePeriodsData(): UsePeriodsDataResult {
   const fetchPeriods = useCallback(async (managerToUse: AccountManager, isRefresh = false) => {
     if (isRefresh) { setRefreshing(true); } else { setLoading(true); }
     setError(null);
+    setFailures([]);
 
     try {
       const result = await managerToUse.getGradesPeriods();
+      setFailures(managerToUse.getFailures(Capabilities.GRADES));
       const sorted = sortPeriods(result);
       setPeriods(sorted);
 
@@ -78,6 +83,7 @@ export function usePeriodsData(): UsePeriodsDataResult {
       });
     } catch (e) {
       warn(String(e), "usePeriodsData");
+      setFailures(managerToUse.getFailures(Capabilities.GRADES));
       setError(e instanceof Error ? e : new Error(String(e)));
     } finally {
       setLoading(false);
@@ -115,6 +121,7 @@ export function usePeriodsData(): UsePeriodsDataResult {
     loading,
     refreshing,
     error,
+    failures,
     refresh,
   };
 }

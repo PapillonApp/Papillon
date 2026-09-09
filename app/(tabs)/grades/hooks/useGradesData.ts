@@ -4,6 +4,7 @@ import type { AccountManager } from "@/services/shared";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
 import type { Kid } from "@/services/shared/kid";
+import { Capabilities, ServiceFailure } from "@/services/shared/types";
 import { ScoreProperty } from "@/utils/grades/algorithms/helpers";
 import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
@@ -63,6 +64,7 @@ export interface UseGradesDataResult {
   loading: boolean;
   refreshing: boolean;
   error: Error | null;
+  failures: ServiceFailure[];
   refresh: () => Promise<void>;
 }
 
@@ -97,6 +99,7 @@ export function useGradesData(
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [failures, setFailures] = useState<ServiceFailure[]>([]);
 
   // Avoids re-fetching a period that's already been loaded once.
   const cacheRef = useRef<Map<string, PeriodGrades>>(new Map());
@@ -131,11 +134,13 @@ export function useGradesData(
         applyResult(cacheRef.current.get(cacheKey));
         setLoading(false);
         setError(null);
+        setFailures([]);
         return;
       }
 
       if (isRefresh) { setRefreshing(true); } else { setLoading(true); }
       setError(null);
+      setFailures([]);
 
       try {
         const result = await managerToUse.getGradesForPeriod(
@@ -146,11 +151,13 @@ export function useGradesData(
 
         if (requestId !== requestIdRef.current) { return; } // A newer request has taken over.
 
+        setFailures(managerToUse.getFailures(Capabilities.GRADES));
         cacheRef.current.set(cacheKey, result);
         applyResult(result);
       } catch (e) {
         if (requestId !== requestIdRef.current) { return; }
         warn(String(e), "useGradesData");
+        setFailures(managerToUse.getFailures(Capabilities.GRADES));
         setError(e instanceof Error ? e : new Error(String(e)));
       } finally {
         if (requestId === requestIdRef.current) {
@@ -166,6 +173,7 @@ export function useGradesData(
     if (!period) {
       requestIdRef.current++;
       applyResult(undefined);
+      setFailures([]);
       setLoading(false);
       return;
     }
@@ -249,6 +257,7 @@ export function useGradesData(
     loading,
     refreshing,
     error,
+    failures,
     refresh,
   };
 }

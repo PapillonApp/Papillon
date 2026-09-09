@@ -36,6 +36,14 @@ import { TurboSelf } from "../turboself";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
+export interface ServiceFailure {
+  service: Services;
+  displayName: string;
+  capability: Capabilities;
+  reason: unknown;
+  at: Date;
+}
+
 /** Represents a plugin for a school service.
  *
  * @property {string} displayName - The name of the service displayed to the user.

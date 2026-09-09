@@ -21,9 +21,7 @@ import List from '@/ui/new/List';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import useResizable from '@/ui/utils/Resizable';
 import CompactGrade from '@/ui/new/CompactGrade';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from '@/ui/components/Icon';
+import { EmptyItem } from '@/ui/components/EmptyItem';
 
 type SortMethod = 'date' | 'alphabetical' | 'averages';
 
@@ -69,10 +67,12 @@ const GradesView = () => {
   const theme = useTheme();
   const resize = useResizable();
 
-  const { periods, currentPeriod, setCurrentPeriod, refresh: refreshPeriods, loading: loadingPeriods } = usePeriodsData();
-  const { subjects, history, averages, isAverageServiceProvided, refresh: refreshGrades, loading: loadingGrades } = useGradesData(currentPeriod);
+  const { periods, currentPeriod, setCurrentPeriod, refresh: refreshPeriods, loading: loadingPeriods, error: periodsError, failures: periodsFailures } = usePeriodsData();
+  const { subjects, history, averages, isAverageServiceProvided, refresh: refreshGrades, loading: loadingGrades, error: gradesError, failures: gradesFailures } = useGradesData(currentPeriod);
 
   const loading = loadingPeriods || loadingGrades;
+  const failure = gradesFailures[0] ?? periodsFailures[0];
+  const hasError = Boolean(gradesError || periodsError || failure);
 
   const [sortMethod, setSortMethod] = useState<SortMethod>('date');
   const [searchText, setSearchText] = useState('');
@@ -177,6 +177,30 @@ const GradesView = () => {
           contentInsetAdjustmentBehavior="automatic"
           refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
           numColumns={resize.isLarge ? 2 : 1}
+          ListEmptyComponent={
+            loading ? null : (
+              <EmptyItem
+                icon={hasError ? 'AlertTriangle' : 'Grades'}
+                title={
+                  hasError
+                    ? t('Grades_Error_Title')
+                    : searchText.trim() !== '' && subjects.length > 0
+                      ? t('Grades_Search_Empty_Title')
+                      : t('Grades_Empty_Title')
+                }
+                description={
+                  hasError
+                    ? (failure
+                      ? t('Grades_Error_Description', { service: failure.displayName })
+                      : t('Grades_Error_Description_Unknown'))
+                    : searchText.trim() !== '' && subjects.length > 0
+                      ? t('Grades_Search_Empty_Description')
+                      : t('Grades_Empty_Description')
+                }
+                margin={32}
+              />
+            )
+          }
           ListHeaderComponent={() => (
             isSearchbarFocused ? <></> : (
               <View

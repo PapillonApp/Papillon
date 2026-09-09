@@ -55,6 +55,7 @@ import {
   Capabilities,
   FetchOptions,
   SchoolServicePlugin,
+  ServiceFailure,
 } from "@/services/shared/types";
 import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
@@ -83,6 +84,11 @@ import { Kid } from "./kid";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
+  private failures = new Map<Capabilities, ServiceFailure[]>();
+
+  getFailures(capability: Capabilities): ServiceFailure[] {
+    return this.failures.get(capability) ?? [];
+  }
 
   constructor(public account: Account) {}
 
@@ -588,6 +594,22 @@ export class AccountManager {
       return fallbackResult;
     };
 
+    const failures: ServiceFailure[] = [];
+
+    const noteFailure = (client: SchoolServicePlugin, reason: unknown) => {
+      warn(
+        `[${client.displayName}] capability ${capability}: ${String(reason)}`,
+        "fetchData"
+      );
+      failures.push({
+        service: client.service,
+        displayName: client.displayName,
+        capability,
+        reason,
+        at: new Date(),
+      });
+    };
+
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
@@ -608,7 +630,13 @@ export class AccountManager {
           }
           throw new Error("Internet not reachable and no fallback provided.");
         }
-        const result = await callback(client);
+        let result: T | T[];
+        try {
+          result = await callback(client);
+        } catch (e) {
+          noteFailure(client, e);
+          throw e;
+        }
         if (options.saveToCache) {
           await options.saveToCache(result);
         }
@@ -636,22 +664,34 @@ export class AccountManager {
       }
 
       if (options?.multiple) {
-        const results = await Promise.all(
+        const settled = await Promise.allSettled(
           availableClients.map(client => callback(client) as Promise<T[]>)
         );
-        const combinedResult = results.flat();
 
-        if (options?.saveToCache) {
+        settled.forEach((result, index) => {
+          if (result.status === "rejected") {
+            noteFailure(availableClients[index], result.reason);
+          }
+        });
+
+        const combinedResult = settled.flatMap(result =>
+          result.status === "fulfilled" ? result.value : []
+        );
+
+        if (options?.saveToCache && failures.length === 0) {
           await options.saveToCache(combinedResult);
         }
 
         return combinedResult;
       }
     } catch (e) {
+      warn(`capability ${capability} failed: ${String(e)}`, "fetchData");
       if (options?.fallback) {
         return await callFallback();
       }
       throw e;
+    } finally {
+      this.failures.set(capability, failures);
     }
 
     error(
