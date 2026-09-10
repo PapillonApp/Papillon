@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
-import { Dimensions,FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { TransportStorage } from "@/stores/account/types";
@@ -46,6 +46,7 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
 }
 
 export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, insets, tabBarHeight, transportInfo }: CalendarDayProps) => {
+  const { width: windowWidth } = useWindowDimensions();
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
 
@@ -110,7 +111,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
   const isEmpty = enrichedEvents.length === 0;
 
   return (
-    <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
+    <View style={{ width: windowWidth, flex: 1 }}>
       <FlatList
         data={enrichedEvents}
         style={[styles.container, insets.left > 0 ? { marginLeft: insets.left } : null]}

@@ -1,7 +1,7 @@
 import { Stack, useRouter } from "expo-router";
 import { useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -104,6 +104,7 @@ function TabOneScreen() {
     handleDateChange,
     onMomentumScrollEnd,
     onScroll,
+    isResizingRef,
     INITIAL_INDEX,
     windowWidth
   } = useCalendarState();
@@ -126,6 +127,32 @@ function TabOneScreen() {
   // and opacity across a relabel.
   const scrollPage = useSharedValue(INITIAL_INDEX);
   const lastEmittedPage = useSharedValue(INITIAL_INDEX);
+
+  // A window resize changes the page width under the pager: the scroll offset
+  // still points at the old geometry, which would otherwise be read back as a
+  // completely different day. Pin the pager back onto the settled day at the new
+  // width, and ignore every offset until it lands.
+  const previousWidth = useRef(windowWidth);
+  useLayoutEffect(() => {
+    if (previousWidth.current === windowWidth) {
+      return;
+    }
+    previousWidth.current = windowWidth;
+
+    const offset = settledIndex * windowWidth;
+    isResizingRef.current = true;
+    scrollPage.value = settledIndex;
+    lastEmittedPage.value = settledIndex;
+    flatListRef.current?.scrollToOffset({ offset, animated: false });
+
+    // The list re-lays out its items a frame later, so the offset has to be
+    // reasserted once the new widths are in place.
+    const frame = requestAnimationFrame(() => {
+      flatListRef.current?.scrollToOffset({ offset, animated: false });
+      isResizingRef.current = false;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [windowWidth, settledIndex, isResizingRef, flatListRef, scrollPage, lastEmittedPage]);
 
   const emitScroll = useCallback((x: number) => {
     onScroll({ nativeEvent: { contentOffset: { x } } });

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Dimensions, FlatList } from 'react-native';
+import { FlatList, useWindowDimensions } from 'react-native';
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
@@ -13,7 +13,11 @@ export function useCalendarState() {
   const lastTrackedDateKey = useRef<string>("");
   const flatListRef = useRef<FlatList<any>>(null);
   const referenceDate = useRef(new Date());
-  const windowWidth = Dimensions.get("window").width;
+  const { width: windowWidth } = useWindowDimensions();
+  // Set while the pager is being re-laid out after a window resize. Scroll
+  // offsets are meaningless until the correction scroll lands, so they must not
+  // be turned into a new date.
+  const isResizingRef = useRef(false);
 
   useEffect(() => {
     referenceDate.current.setHours(0, 0, 0, 0);
@@ -80,6 +84,7 @@ export function useCalendarState() {
   }, [date, getIndexFromDate, currentIndex, weekNumber]);
 
   const onMomentumScrollEnd = useCallback((e: any) => {
+    if (isResizingRef.current) {return;}
     const newIndex = Math.round(e.nativeEvent.contentOffset.x / windowWidth);
     if (newIndex !== currentIndex) {
       setCurrentIndex(newIndex);
@@ -91,6 +96,7 @@ export function useCalendarState() {
   const lastEmittedIndex = useRef(currentIndex);
 
   const onScroll = useCallback((e: any) => {
+    if (isResizingRef.current) {return;}
     const offsetX = e.nativeEvent.contentOffset.x;
     const newIndex = Math.round(offsetX / windowWidth);
     if (newIndex !== lastEmittedIndex.current) {
@@ -117,6 +123,7 @@ export function useCalendarState() {
     handleDateChange,
     onMomentumScrollEnd,
     onScroll,
+    isResizingRef,
     INITIAL_INDEX,
     windowWidth
   };
