@@ -5,13 +5,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Homework } from "@/services/shared/homework";
 import List from "@/ui/new/List";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import useResizable from "@/ui/utils/Resizable";
-import { generateId } from "@/utils/generateId";
 
 import DateHeader from "../atoms/DateHeader";
 import EmptyState from "../atoms/EmptyState";
-import TasksSummary from "../atoms/TasksSummary";
 import TaskItem from "./TaskItem";
 import { useTheme } from "expo-router/react-navigation";
 
@@ -30,8 +27,14 @@ interface TasksListProps {
   collapsedGroups: string[];
   toggleGroup: (headerId: string) => void;
   sortMethod: string;
-  homework: Record<string, Homework>;
   setAsDone: (item: Homework, done: boolean) => void;
+  isLoaded?: boolean;
+  /**
+   * Rows animate in only on the page the screen opened with. Every other page
+   * is mounted off-screen by the week pager, where a couple of dozen entering
+   * animations would cost frames without anyone seeing them.
+   */
+  animateItems?: boolean;
 }
 
 const TasksList: React.FC<TasksListProps> = ({
@@ -42,53 +45,39 @@ const TasksList: React.FC<TasksListProps> = ({
   collapsedGroups,
   toggleGroup,
   sortMethod,
-  homework,
   setAsDone,
+  isLoaded = true,
+  animateItems = true,
 }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { isLarge } = useResizable();
 
+  // Items arrive already merged with the freshly fetched homework, so a row
+  // only needs the item itself — no per-row lookup, no per-row id hashing.
   const renderTask = useCallback(
-    (item: Homework, index: number) => {
-      // Generate the same ID used to store homeworks in the homework object
-      const generatedId = generateId(
-        item.subject +
-          item.content +
-          item.createdByAccount +
-          new Date(item.dueDate).toDateString()
-      );
-      const inFresh = homework[generatedId];
-      const source = inFresh ?? item;
-      const fromCache = !inFresh;
-
-      return (
-        <Reanimated.View
-          layout={LinearTransition}
-          entering={PapillonAppearIn}
-          exiting={PapillonAppearOut}
-        >
-          <TaskItem
-            item={source}
-            index={index}
-            fromCache={fromCache}
-            setAsDone={(item, done) => {
-              setAsDone(item, done);
-            }}
-          />
-        </Reanimated.View>
-      );
-    },
-    [homework, setAsDone]
+    (item: Homework, index: number) => (
+      <Reanimated.View layout={LinearTransition}>
+        <TaskItem
+          item={item}
+          index={index}
+          fromCache={item.fromCache}
+          animated={animateItems}
+          setAsDone={setAsDone}
+        />
+      </Reanimated.View>
+    ),
+    [setAsDone, animateItems]
   );
 
   const taskKeyExtractor = useCallback((item: Homework) => {
     return (
+      item.id ??
       "hw:" +
-      item.subject +
-      item.content +
-      item.createdByAccount +
-      new Date(item.dueDate).toDateString()
+        item.subject +
+        item.content +
+        item.createdByAccount +
+        new Date(item.dueDate).toDateString()
     );
   }, []);
 
@@ -113,7 +102,11 @@ const TasksList: React.FC<TasksListProps> = ({
         paddingLeft: insets.left + 16,
       }}
       contentInsetAdjustmentBehavior="automatic"
-      ListEmptyComponent={<EmptyState isSearching={searchTerm.length > 0} />}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      ListEmptyComponent={
+        isLoaded ? <EmptyState isSearching={searchTerm.length > 0} /> : null
+      }
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}

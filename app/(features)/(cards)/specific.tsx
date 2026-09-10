@@ -152,14 +152,6 @@ export default function QRCodeAndCardsPage() {
 
   return (
     <>
-      <Calendar
-        key={`calendar-${date.toISOString()}`}
-        date={date}
-        onDateChange={handleDateChange}
-        showDatePicker={showDatePicker}
-        setShowDatePicker={setShowDatePicker}
-      />
-
       <LinearGradient
         colors={[getServiceColor(service) + 40, colors.background, colors.background, colors.background]}
         locations={[0, 0.87]}
@@ -240,6 +232,14 @@ export default function QRCodeAndCardsPage() {
 
           {hasBookingCapacity && (
             <View>
+              {/* Sits right above the button so the popover's arrow lands on it. */}
+              <Calendar
+                date={date}
+                onDateChange={handleDateChange}
+                color={serviceColor}
+                visible={showDatePicker}
+                onVisibleChange={setShowDatePicker}
+              />
               <AnimatedPressable onPress={() => setShowDatePicker(prev => !prev)}>
                 <Stack hAlign="center" vAlign="center" style={{ padding: 20 }}>
                   <Stack direction="horizontal" gap={5}>

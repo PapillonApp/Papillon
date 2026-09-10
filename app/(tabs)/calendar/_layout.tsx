@@ -4,6 +4,9 @@ import { useTranslation } from "react-i18next";
 
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { useAndroidHeaderProps } from "@/components/AndroidHeaderBackground";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+
+import CalendarHeaderBackground from "./components/CalendarHeaderBackground";
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -14,7 +17,15 @@ export default function Layout() {
     <Stack screenOptions={screenOptions}>
       <Stack.Screen
         name="index"
-        options={{ ...androidHeaderProps }}
+        options={{
+          ...androidHeaderProps,
+          // The custom title on this screen suppresses the bar's own scroll-edge
+          // material, so iOS 26 gets our progressive blur instead. Everywhere
+          // else the header keeps a plain opaque background.
+          ...(runsIOS26
+            ? { headerTransparent: true, headerBackground: () => <CalendarHeaderBackground /> }
+            : { headerTransparent: false }),
+        }}
       />
       <Stack.Screen
         name="event/[id]"

@@ -1,7 +1,7 @@
 import { Stack, useRouter } from "expo-router";
-import { useTheme } from "expo-router/react-navigation";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Platform, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -10,6 +10,7 @@ import { useAccountStore } from "@/stores/account";
 import Calendar, { CalendarRef } from "@/ui/components/Calendar";
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 import Typography from '@/ui/new/Typography';
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import i18n from "@/utils/i18n";
 
 import Reanimated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
@@ -19,6 +20,13 @@ import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
 
 const TITLE_SLIDE_RATIO = 0.4; // Slide this share of the screen width when changing titles
+
+// Geometry of the leading toolbar button, which the date popover points at. The
+// button is native and cannot host a SwiftUI anchor, so the popover hangs off an
+// invisible strip centered on this box instead, and the box has to be restated
+// here rather than measured.
+const TOOLBAR_BUTTON_INSET = 40;
+const TOOLBAR_BUTTON_SIZE = 40;
 
 interface DayLabels {
   main: string;
@@ -87,6 +95,7 @@ function TabOneScreen() {
   const router = useRouter();
   const calendarRef = useRef<CalendarRef>(null);
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
   const tabBarHeight = insets.bottom;
   const { width: screenWidth } = useWindowDimensions();
 
@@ -188,6 +197,14 @@ function TabOneScreen() {
     settleAt(e.nativeEvent.contentOffset.x);
   }, [settleAt]);
 
+  // Kept referentially stable so the memoized Calendar is not re-rendered, and
+  // its SwiftUI host not re-fed props, on every day crossing.
+  const calendarAnchor = useMemo(() => ({
+    top: runsIOS26 ? headerHeight : 0,
+    left: TOOLBAR_BUTTON_INSET,
+    width: TOOLBAR_BUTTON_SIZE,
+  }), [headerHeight]);
+
   const handlePickDate = useCallback((picked: Date) => {
     handleDateChange(picked);
     setSettledIndex(getIndexFromDate(picked));
@@ -224,6 +241,7 @@ function TabOneScreen() {
         date={date}
         onDateChange={handlePickDate}
         color="#D6502B"
+        anchor={calendarAnchor}
       />
 
       <Stack.Toolbar placement="left">

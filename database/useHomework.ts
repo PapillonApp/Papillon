@@ -74,6 +74,55 @@ export function useHomeworkForWeek(weekNumber: number, refresh = 0) {
   return homeworks;
 }
 
+// Reads several weeks in one pass so a pager can render neighbouring weeks
+// without waiting for their own effect to run. Weeks that drop out of the
+// requested window are kept for one step, so scrolling back does not flash an
+// empty page before the query resolves.
+export function useHomeworkForWeeks(weekNumbers: number[], refresh = 0) {
+  const database = useDatabase();
+  const [homeworks, setHomeworks] = useState<Record<number, SharedHomework[]>>({});
+  const weeksKey = weekNumbers.join(",");
+
+  useEffect(() => {
+    let cancelled = false;
+    const weeks = weeksKey.length > 0 ? weeksKey.split(",").map(Number) : [];
+
+    const fetchHomeworks = async () => {
+      const entries = await Promise.all(
+        weeks.map(async week => [week, await getHomeworksFromCache(week)] as const)
+      );
+      if (cancelled) {
+        return;
+      }
+      setHomeworks(previous => {
+        const next: Record<number, SharedHomework[]> = {};
+        // Anything further than one window away is dropped: the map would grow
+        // for the whole session otherwise.
+        const keep = Math.max(...weeks.map(week => Math.abs(week - weeks[0]))) + 1;
+        for (const [key, value] of Object.entries(previous)) {
+          if (Math.abs(Number(key) - weeks[0]) <= keep) {
+            next[Number(key)] = value;
+          }
+        }
+        for (const [week, value] of entries) {
+          next[week] = value;
+        }
+        return next;
+      });
+    };
+
+    if (weeks.length > 0) {
+      fetchHomeworks();
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [weeksKey, refresh, database]);
+
+  return homeworks;
+}
+
 export async function getHomeworksFromCache(
   weekNumber: number
 ): Promise<SharedHomework[]> {

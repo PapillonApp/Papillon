@@ -6,6 +6,7 @@ import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View }
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
 import { Animation } from "../utils/Animation";
+import { useDragSafePress } from "../utils/useDragSafePress";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Typography from "./Typography";
 
@@ -679,12 +680,16 @@ export const ListTouchable = React.memo(({ ...props }) => {
   }, []);
 
   const handlePress = useCallback((event) => {
+    parentBlockPress?.();
     if (blockOwnPressRef.current) {
       blockOwnPressRef.current = false;
       return;
     }
     props.onPress?.(event);
-  }, [props.onPress]);
+  }, [props.onPress, parentBlockPress]);
+
+  // A press that drifted was a scroll or a page swipe; it must not fire.
+  const dragSafe = useDragSafePress(handlePress, props.onPressIn);
 
   if (!hasOnPress) {
     return (
@@ -701,10 +706,8 @@ export const ListTouchable = React.memo(({ ...props }) => {
           background={TouchableNativeFeedback.Ripple(theme.colors.text + "22", true)}
           useForeground
           {...props}
-          onPress={(event) => {
-            parentBlockPress?.();
-            handlePress(event);
-          }}
+          onPressIn={dragSafe.onPressIn}
+          onPress={dragSafe.onPress}
         >
           {props.children}
         </TouchableNativeFeedback>
@@ -717,10 +720,8 @@ export const ListTouchable = React.memo(({ ...props }) => {
       <TouchableOpacity
         activeOpacity={0.5}
         {...props}
-        onPress={(event) => {
-          parentBlockPress?.();
-          handlePress(event);
-        }}
+        onPressIn={dragSafe.onPressIn}
+        onPress={dragSafe.onPress}
       >
         {props.children}
       </TouchableOpacity>
