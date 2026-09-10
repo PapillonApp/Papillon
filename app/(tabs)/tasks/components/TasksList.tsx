@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { Platform, RefreshControl, StyleSheet } from "react-native";
+import { RefreshControl, StyleSheet } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -24,7 +24,6 @@ export interface HomeworkSection {
 
 interface TasksListProps {
   sections: HomeworkSection[];
-  headerHeight: number;
   searchTerm: string;
   isRefreshing: boolean;
   onRefresh: () => void;
@@ -37,7 +36,6 @@ interface TasksListProps {
 
 const TasksList: React.FC<TasksListProps> = ({
   sections,
-  headerHeight,
   searchTerm,
   isRefreshing,
   onRefresh,
@@ -112,19 +110,14 @@ const TasksList: React.FC<TasksListProps> = ({
       contentContainerStyle={{
         paddingHorizontal: 16,
         paddingBottom: 16,
-        paddingTop:
-          headerHeight + (Platform.OS === "android" ? 10 : -insets.top + 10),
         paddingLeft: insets.left + 16,
       }}
-      scrollIndicatorInsets={{
-        top: headerHeight - insets.top,
-      }}
+      contentInsetAdjustmentBehavior="automatic"
       ListEmptyComponent={<EmptyState isSearching={searchTerm.length > 0} />}
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          progressViewOffset={headerHeight - insets.top}
           tintColor={colors.tint}
         />
       }

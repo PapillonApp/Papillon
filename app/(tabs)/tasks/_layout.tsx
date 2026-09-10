@@ -15,11 +15,7 @@ export default function Layout() {
     <Stack screenOptions={screenOptions}>
       <Stack.Screen
         name="index"
-        options={{
-          headerShown: false,
-          headerTitle: t("Tab_Tasks"),
-          headerTransparent: true,
-        }}
+        options={{ ...androidHeaderProps }}
       />
       <Stack.Screen
         name="[id]"

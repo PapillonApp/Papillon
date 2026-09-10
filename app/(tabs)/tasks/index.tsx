@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router';
+import { t } from 'i18next';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
-import TasksHeader from './components/TasksHeader';
+import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
+import { useAlert } from "@/ui/components/AlertProvider";
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import { useFont } from '@/utils/theme/fonts';
+import i18n from '@/utils/i18n';
+
 import TasksList from './components/TasksList';
 import WeekPicker from './components/WeekPicker';
 import { useHomeworkData } from './hooks/useHomeworkData';
 import { useTaskFilters } from './hooks/useTaskFilters';
 import { useWeekSelection } from './hooks/useWeekSelection';
+import type { SortMethod } from './hooks/useTaskFilters';
 
-import { useAlert } from "@/ui/components/AlertProvider";
-import { useTheme } from "expo-router/react-navigation";
-import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
-import useResizable from '@/ui/utils/Resizable';
+const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol }[] => [
+  { value: 'date', label: t('Tasks_Sorting_Methods_DueDate'), sf: 'calendar' },
+  { value: 'subject', label: t('Tasks_Sorting_Methods_Subject'), sf: 'character' },
+  { value: 'done', label: t('Tasks_Sorting_Methods_Done'), sf: 'checkmark.circle' },
+];
 
 const TasksView: React.FC = () => {
   const alert = useAlert();
-  const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
-  const insets = useSafeAreaInsets();
-  const { isLarge } = useResizable();
-
-  // TabHeader is made of fixed-height rows. Computing this synchronously avoids
-  // an incorrect first onLayout measurement shifting the FlashList content.
-  const headerHeight =
-    insets.top +
-    (isLarge ? 70 : 118) +
-    (Platform.OS === 'android' ? 6 : 0);
+  const papillonFont = useFont();
 
   const {
     defaultWeek,
@@ -47,8 +47,6 @@ const TasksView: React.FC = () => {
   const {
     searchTerm,
     setSearchTerm,
-    showUndoneOnly,
-    setShowUndoneOnly,
     sortMethod,
     setSortMethod,
     collapsedGroups,
@@ -56,7 +54,11 @@ const TasksView: React.FC = () => {
     sections,
   } = useTaskFilters(homeworksFromCache, homework);
 
-  const theme = useTheme();
+  const sortings = useMemo(() => getSortings(), [i18n.language]);
+
+  const weekLabel = selectedWeek === defaultWeek
+    ? t('Tasks_ThisWeek')
+    : `${t('Tasks_Week')} ${getWeekNumberFromDate(getDateRangeOfWeek(selectedWeek, new Date().getFullYear()).start)}`;
 
   return (
     <>
@@ -67,21 +69,45 @@ const TasksView: React.FC = () => {
           onClose={() => setShowWeekPicker(false)}
         />
       )}
-      <View style={[styles.container]}>
-        <TasksHeader
-          defaultWeek={defaultWeek}
-          selectedWeek={selectedWeek}
-          onToggleWeekPicker={toggleWeekPicker}
-          setShowUndoneOnly={setShowUndoneOnly}
-          setSortMethod={setSortMethod}
-          setSearchTerm={setSearchTerm}
-          sortMethod={sortMethod}
-          shouldCollapseHeader={shouldCollapseHeader}
-        />
 
+      <Stack.SearchBar
+        placeholder={t('Tasks_Search_Placeholder')}
+        onChangeText={(e) => setSearchTerm(e.nativeEvent.text)}
+        autoCapitalize="none"
+      />
+
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button icon="calendar" onPress={toggleWeekPicker}>
+          {weekLabel}
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
+
+      <Stack.Title
+        style={{ fontFamily: papillonFont('semibold') }}
+      >
+        {t('Tab_Tasks')}
+      </Stack.Title>
+
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Menu>
+          <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
+          <Stack.Toolbar.Label>{t('Task_Sorting_Title')}</Stack.Toolbar.Label>
+          {sortings.map(sorting => (
+            <Stack.Toolbar.MenuAction
+              key={sorting.value}
+              isOn={sortMethod === sorting.value}
+              icon={sorting.sf}
+              onPress={() => setSortMethod(sorting.value)}
+            >
+              {sorting.label}
+            </Stack.Toolbar.MenuAction>
+          ))}
+        </Stack.Toolbar.Menu>
+      </Stack.Toolbar>
+
+      <View style={styles.container}>
         <TasksList
           sections={sections}
-          headerHeight={headerHeight}
           searchTerm={searchTerm}
           isRefreshing={isRefreshing}
           onRefresh={handleRefresh}
