@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { InteractionManager, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
@@ -19,12 +19,16 @@ import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 import Typography from '@/ui/new/Typography';
 import i18n from '@/utils/i18n';
 
+import { AndroidHeaderButton, AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
+
 import TasksWeekPage from './components/TasksWeekPage';
 import WeekPicker from './components/WeekPicker';
 import { useHomeworkData } from './hooks/useHomeworkData';
 import { useTaskFilters } from './hooks/useTaskFilters';
 import { useWeekSelection } from './hooks/useWeekSelection';
 import type { SortMethod } from './hooks/useTaskFilters';
+
+const isAndroid = Platform.OS === 'android';
 
 const TITLE_SLIDE_RATIO = 0.4; // Slide this share of the screen width when changing titles
 
@@ -66,10 +70,10 @@ const VELOCITY_PROJECTION = 0.12;
 const PAN_ACTIVATE_X = 14;
 const PAN_FAIL_Y = 30;
 
-const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol }[] => [
-  { value: 'date', label: t('Tasks_Sorting_Methods_DueDate'), sf: 'calendar' },
-  { value: 'subject', label: t('Tasks_Sorting_Methods_Subject'), sf: 'character' },
-  { value: 'done', label: t('Tasks_Sorting_Methods_Done'), sf: 'checkmark.circle' },
+const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol; papicon: string }[] => [
+  { value: 'date', label: t('Tasks_Sorting_Methods_DueDate'), sf: 'calendar', papicon: 'Calendar' },
+  { value: 'subject', label: t('Tasks_Sorting_Methods_Subject'), sf: 'character', papicon: 'List' },
+  { value: 'done', label: t('Tasks_Sorting_Methods_Done'), sf: 'checkmark.circle', papicon: 'Check' },
 ];
 
 // The pager addresses weeks as an offset from the week the screen opened in;
@@ -276,14 +280,20 @@ const TasksView: React.FC = () => {
         autoCapitalize="none"
       />
 
-      <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button icon="calendar" onPress={toggleWeekPicker}>
-          {weekLabel}
-        </Stack.Toolbar.Button>
-      </Stack.Toolbar>
+      {isAndroid ? (
+        <Stack.Toolbar placement="left" asChild>
+          <AndroidHeaderButton icon="Calendar" accessibilityLabel={weekLabel} onPress={toggleWeekPicker} />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="left">
+          <Stack.Toolbar.Button icon="calendar" onPress={toggleWeekPicker}>
+            {weekLabel}
+          </Stack.Toolbar.Button>
+        </Stack.Toolbar>
+      )}
 
       <Stack.Title asChild>
-        <View style={[styles.titleContainer, { width: screenWidth - 140 }]}>
+        <View style={[styles.titleContainer, { width: screenWidth - (Platform.OS === "android" ? 72 : 140) }]}>
           {TITLE_LAYER_OFFSETS.map(offset => {
             const pageIndex = settledIndex + offset;
             return (
@@ -300,22 +310,38 @@ const TasksView: React.FC = () => {
         </View>
       </Stack.Title>
 
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Menu>
-          <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
-          <Stack.Toolbar.Label>{t('Task_Sorting_Title')}</Stack.Toolbar.Label>
-          {sortings.map(sorting => (
-            <Stack.Toolbar.MenuAction
-              key={sorting.value}
-              isOn={sortMethod === sorting.value}
-              icon={sorting.sf}
-              onPress={() => setSortMethod(sorting.value)}
-            >
-              {sorting.label}
-            </Stack.Toolbar.MenuAction>
-          ))}
-        </Stack.Toolbar.Menu>
-      </Stack.Toolbar>
+      {isAndroid ? (
+        <Stack.Toolbar placement="right" asChild>
+          <AndroidHeaderMenu
+            icon="Filter"
+            accessibilityLabel={t('Task_Sorting_Title')}
+            actions={sortings.map(sorting => ({
+              id: sorting.value,
+              title: sorting.label,
+              papicon: sorting.papicon,
+              state: sortMethod === sorting.value ? 'on' : 'off',
+            }))}
+            onPressAction={({ nativeEvent }) => setSortMethod(nativeEvent.event as SortMethod)}
+          />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Menu>
+            <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
+            <Stack.Toolbar.Label>{t('Task_Sorting_Title')}</Stack.Toolbar.Label>
+            {sortings.map(sorting => (
+              <Stack.Toolbar.MenuAction
+                key={sorting.value}
+                isOn={sortMethod === sorting.value}
+                icon={sorting.sf}
+                onPress={() => setSortMethod(sorting.value)}
+              >
+                {sorting.label}
+              </Stack.Toolbar.MenuAction>
+            ))}
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar>
+      )}
 
       <View style={styles.container}>
         <GestureDetector gesture={panGesture}>
@@ -378,7 +404,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   // Fixed size, so the header title view never re-measures when the labels swap
-  // or the subtitle comes and goes. Every layer is centered in this same box.
+  // or the subtitle comes and goes. Every layer fills this same box.
   titleContainer: {
     height: 44,
   },
@@ -388,7 +414,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    alignItems: "center",
+    // Android headers align their title to the leading edge; iOS centers it.
+    alignItems: Platform.OS === "android" ? "flex-start" : "center",
+    paddingHorizontal: Platform.OS === "android" ? 10 : 0,
     justifyContent: "center",
   },
   titleSubtitle: {

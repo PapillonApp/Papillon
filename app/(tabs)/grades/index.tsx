@@ -22,13 +22,16 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import useResizable from '@/ui/utils/Resizable';
 import CompactGrade from '@/ui/new/CompactGrade';
 import { EmptyItem } from '@/ui/components/EmptyItem';
+import { AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
+
+const isAndroid = Platform.OS === 'android';
 
 type SortMethod = 'date' | 'alphabetical' | 'averages';
 
-const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol }[] => [
-  { value: 'date', label: t('Grades_Sorting_Date'), sf: 'calendar' },
-  { value: 'averages', label: t('Grades_Sorting_Averages'), sf: 'chart.xyaxis.line' },
-  { value: 'alphabetical', label: t('Grades_Sorting_Alphabetical'), sf: 'character' },
+const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol; papicon: string }[] => [
+  { value: 'date', label: t('Grades_Sorting_Date'), sf: 'calendar', papicon: 'Calendar' },
+  { value: 'averages', label: t('Grades_Sorting_Averages'), sf: 'chart.xyaxis.line', papicon: 'Grades' },
+  { value: 'alphabetical', label: t('Grades_Sorting_Alphabetical'), sf: 'character', papicon: 'List' },
 ];
 
 const periodTitle = (period: Period) => {
@@ -127,46 +130,84 @@ const GradesView = () => {
         autoCapitalize="none"
       />
 
-      <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Menu>
-          <Stack.Toolbar.Icon sf="calendar" />
-          <Stack.Toolbar.Label>
-            {currentPeriod ? periodTitle(currentPeriod) : t('Grades_Periods_None')}
-          </Stack.Toolbar.Label>
-          {periods.map(period => (
-            <Stack.Toolbar.MenuAction
-              key={period.id}
-              isOn={currentPeriod?.id === period.id}
-              icon={(isPeriodWithNumber(period.name || '') ? `${getPeriodNumber(period.name || '')}.calendar` : 'calendar') as SFSymbol}
-              subtitle={periodSubtitle(period)}
-              onPress={() => setCurrentPeriod(period)}
-            >
-              {periodTitle(period)}
-            </Stack.Toolbar.MenuAction>
-          ))}
-        </Stack.Toolbar.Menu>
-      </Stack.Toolbar>
+      {isAndroid ? (
+        <Stack.Toolbar placement="left" asChild>
+          <AndroidHeaderMenu
+            icon="Calendar"
+            accessibilityLabel={currentPeriod ? periodTitle(currentPeriod) : t('Grades_Periods_None')}
+            actions={periods.map(period => ({
+              id: period.id,
+              title: periodTitle(period),
+              subtitle: periodSubtitle(period),
+              papicon: 'Calendar',
+              state: currentPeriod?.id === period.id ? 'on' : 'off',
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const period = periods.find(p => p.id === nativeEvent.event);
+              if (period) {
+                setCurrentPeriod(period);
+              }
+            }}
+          />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="left">
+          <Stack.Toolbar.Menu>
+            <Stack.Toolbar.Icon sf="calendar" />
+            <Stack.Toolbar.Label>
+              {currentPeriod ? periodTitle(currentPeriod) : t('Grades_Periods_None')}
+            </Stack.Toolbar.Label>
+            {periods.map(period => (
+              <Stack.Toolbar.MenuAction
+                key={period.id}
+                isOn={currentPeriod?.id === period.id}
+                icon={(isPeriodWithNumber(period.name || '') ? `${getPeriodNumber(period.name || '')}.calendar` : 'calendar') as SFSymbol}
+                subtitle={periodSubtitle(period)}
+                onPress={() => setCurrentPeriod(period)}
+              >
+                {periodTitle(period)}
+              </Stack.Toolbar.MenuAction>
+            ))}
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar>
+      )}
 
       <Stack.Title style={{ fontFamily: papillonFont('semibold'), fontSize: 17 }}>
         {currentPeriod ? periodTitle(currentPeriod) : t('Tab_Grades')}
       </Stack.Title>
 
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Menu>
-          <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
-          <Stack.Toolbar.Label>Sort by</Stack.Toolbar.Label>
-          {sortings.map(sorting => (
-            <Stack.Toolbar.MenuAction
-              key={sorting.value}
-              isOn={sortMethod === sorting.value}
-              icon={sorting.sf}
-              onPress={() => setSortMethod(sorting.value)}
-            >
-              {sorting.label}
-            </Stack.Toolbar.MenuAction>
-          ))}
-        </Stack.Toolbar.Menu>
-      </Stack.Toolbar>
+      {isAndroid ? (
+        <Stack.Toolbar placement="right" asChild>
+          <AndroidHeaderMenu
+            icon="Filter"
+            accessibilityLabel="Sort by"
+            actions={sortings.map(sorting => ({
+              id: sorting.value,
+              title: sorting.label,
+              papicon: sorting.papicon,
+              state: sortMethod === sorting.value ? 'on' : 'off',
+            }))}
+            onPressAction={({ nativeEvent }) => setSortMethod(nativeEvent.event as SortMethod)}
+          />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Menu>
+            <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
+            <Stack.Toolbar.Label>Sort by</Stack.Toolbar.Label>
+            {sortings.map(sorting => (
+              <Stack.Toolbar.MenuAction
+                key={sorting.value}
+                isOn={sortMethod === sorting.value}
+                icon={sorting.sf}
+                onPress={() => setSortMethod(sorting.value)}
+              >
+                {sorting.label}
+              </Stack.Toolbar.MenuAction>
+            ))}
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar>
+      )}
 
       <SafeAreaView edges={['left', 'right']} style={{ flex: 1, backgroundColor: Platform.OS === 'ios' ? theme.colors.overground : theme.colors.background }}>
         <List

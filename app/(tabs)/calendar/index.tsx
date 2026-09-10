@@ -15,9 +15,13 @@ import i18n from "@/utils/i18n";
 
 import Reanimated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
 
+import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
+
 import { CalendarDay } from "./components/CalendarDay";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
+
+const isAndroid = Platform.OS === "android";
 
 const TITLE_SLIDE_RATIO = 0.4; // Slide this share of the screen width when changing titles
 
@@ -244,17 +248,27 @@ function TabOneScreen() {
         anchor={calendarAnchor}
       />
 
-      <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button
-          icon="calendar"
-          onPress={() => calendarRef.current?.toggle()}
-        >
-          {dayLabel}
-        </Stack.Toolbar.Button>
-      </Stack.Toolbar>
+      {isAndroid ? (
+        <Stack.Toolbar placement="left" asChild>
+          <AndroidHeaderButton
+            icon="Calendar"
+            accessibilityLabel={dayLabel}
+            onPress={() => calendarRef.current?.toggle()}
+          />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="left">
+          <Stack.Toolbar.Button
+            icon="calendar"
+            onPress={() => calendarRef.current?.toggle()}
+          >
+            {dayLabel}
+          </Stack.Toolbar.Button>
+        </Stack.Toolbar>
+      )}
 
       <Stack.Title asChild>
-        <View style={[styles.titleContainer, { width: screenWidth - 140 }]}>
+        <View style={[styles.titleContainer, { width: screenWidth - (Platform.OS === "android" ? 72 : 140) }]}>
           {TITLE_LAYER_OFFSETS.map(offset => {
             const pageIndex = settledIndex + offset;
             return (
@@ -270,18 +284,29 @@ function TabOneScreen() {
         </View>
       </Stack.Title>
 
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Menu>
-          <Stack.Toolbar.Icon sf="ellipsis" />
-          <Stack.Toolbar.Label>{t('Tab_Calendar_Icals')}</Stack.Toolbar.Label>
-          <Stack.Toolbar.MenuAction
-            icon="calendar"
-            onPress={() => router.push({ pathname: "./calendar/icals", params: {} })}
-          >
-            {t('Tab_Calendar_Icals')}
-          </Stack.Toolbar.MenuAction>
-        </Stack.Toolbar.Menu>
-      </Stack.Toolbar>
+      {isAndroid ? (
+        <Stack.Toolbar placement="right" asChild>
+          <AndroidHeaderMenu
+            icon="Dots"
+            accessibilityLabel={t('Tab_Calendar_Icals')}
+            actions={[{ id: "icals", title: t('Tab_Calendar_Icals'), papicon: "Calendar" }]}
+            onPressAction={() => router.push({ pathname: "./calendar/icals", params: {} })}
+          />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Menu>
+            <Stack.Toolbar.Icon sf="ellipsis" />
+            <Stack.Toolbar.Label>{t('Tab_Calendar_Icals')}</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              icon="calendar"
+              onPress={() => router.push({ pathname: "./calendar/icals", params: {} })}
+            >
+              {t('Tab_Calendar_Icals')}
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar>
+      )}
 
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Reanimated.FlatList
@@ -327,7 +352,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   // Fixed size, so the header title view never re-measures when the labels swap
-  // or the subtitle comes and goes. Every layer is centered in this same box.
+  // or the subtitle comes and goes. Every layer fills this same box.
   titleContainer: {
     height: 44,
   },
@@ -337,7 +362,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    alignItems: "center",
+    // Android headers align their title to the leading edge; iOS centers it.
+    alignItems: Platform.OS === "android" ? "flex-start" : "center",
+    paddingHorizontal: Platform.OS === "android" ? 10 : 0,
     justifyContent: "center",
   },
   titleSubtitle: {
