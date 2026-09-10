@@ -164,14 +164,10 @@ function RootNavigatorContent() {
         <Stack.Screen
           name="(modals)/team"
           options={{
-            headerShown: Platform.OS !== "ios",
-            presentation: Platform.select({
-              ios: "formSheet",
-              default: "modal",
-            }),
+            headerShown: false,
+            presentation: "formSheet",
             sheetGrabberVisible: true,
             sheetAllowedDetents: "fitToContents",
-            ...androidHeaderProps,
           }}
         />
 
