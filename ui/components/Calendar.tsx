@@ -212,7 +212,8 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
         value={date ?? new Date()}
         mode="date"
         presentation="dialog"
-        accentColor={color}
+        // No accent colour: the Material dialog keeps its own theme rather than
+        // being tinted to match the iOS picker.
         onValueChange={(_event, picked) => {
           setVisible(false);
           onDateChange?.(picked);
