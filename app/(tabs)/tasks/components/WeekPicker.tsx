@@ -100,7 +100,7 @@ const useWheels = (selectedWeek: number, onSelectWeek: (week: number) => void) =
     [weeks]
   );
 
-  const months = useMemo(() => monthOptions(), []);
+  const months = useMemo(() => monthOptions(), [i18n.language]);
 
   const years = useMemo(() => {
     const thisYear = new Date().getFullYear();

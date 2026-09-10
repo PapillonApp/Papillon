@@ -17,11 +17,12 @@ import { usePeriodsData } from './hooks/usePeriodsData';
 import { useGradesData } from './hooks/useGradesData';
 import Typography from '@/ui/new/Typography';
 import Averages from './atoms/Averages';
+import GradesEmptyState from './atoms/GradesEmptyState';
+import GradesLoading from './atoms/GradesLoading';
 import List from '@/ui/new/List';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import useResizable from '@/ui/utils/Resizable';
 import CompactGrade from '@/ui/new/CompactGrade';
-import { EmptyItem } from '@/ui/components/EmptyItem';
 import { AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
 
 const isAndroid = Platform.OS === 'android';
@@ -217,26 +218,13 @@ const GradesView = () => {
           refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
           numColumns={resize.isLarge ? 2 : 1}
           ListEmptyComponent={
-            loading ? null : (
-              <EmptyItem
-                icon={hasError ? 'AlertTriangle' : 'Grades'}
-                title={
-                  hasError
-                    ? t('Grades_Error_Title')
-                    : searchText.trim() !== '' && subjects.length > 0
-                      ? t('Grades_Search_Empty_Title')
-                      : t('Grades_Empty_Title')
-                }
-                description={
-                  hasError
-                    ? (failure
-                      ? t('Grades_Error_Description', { service: failure.displayName })
-                      : t('Grades_Error_Description_Unknown'))
-                    : searchText.trim() !== '' && subjects.length > 0
-                      ? t('Grades_Search_Empty_Description')
-                      : t('Grades_Empty_Description')
-                }
-                margin={32}
+            loading ? (
+              <GradesLoading />
+            ) : (
+              <GradesEmptyState
+                hasError={hasError}
+                serviceName={failure?.displayName}
+                isSearching={searchText.trim() !== '' && subjects.length > 0}
               />
             )
           }

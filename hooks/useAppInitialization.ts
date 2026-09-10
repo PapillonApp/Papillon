@@ -4,8 +4,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
+import { configureTips, resetTipsDatastore, showAllTips } from '@/modules/papillon-tips';
 import { initializeAccountManager } from '@/services/shared';
 import { useSettingsStore } from '@/stores/settings';
+import { useTipsStore } from '@/stores/tips';
 import i18n from '@/utils/i18n';
 import { checkConsent } from '@/utils/logger/consent';
 import { warn } from '@/utils/logger/logger';
@@ -41,6 +43,36 @@ export function useAppInitialization() {
       });
     }
   }, [customLanguage]);
+
+  // TipKit Initialization
+  // Has to happen before any tip is asked whether it should show, and exactly
+  // once per process. `immediate` because our tips point at something on screen
+  // right now — holding one back for an hour would point at nothing.
+  //
+  // A reset asked for from the debug menu is carried out here rather than
+  // there: TipKit only lets its datastore be wiped before it is configured, so
+  // this launch is the first chance to honour it.
+  useEffect(() => {
+    const setUpTips = async () => {
+      const { pendingDatastoreReset, clearPendingDatastoreReset, forceAll } =
+        useTipsStore.getState();
+
+      if (pendingDatastoreReset) {
+        await resetTipsDatastore();
+        clearPendingDatastoreReset();
+      }
+
+      await configureTips('immediate');
+
+      if (forceAll) {
+        await showAllTips();
+      }
+    };
+
+    setUpTips().catch(err => {
+      warn(`TipKit configuration failed: ${err}`);
+    });
+  }, []);
 
   // Database Initialization
   // The WatermelonDB adapter is constructed synchronously at module load

@@ -9,6 +9,10 @@ import { LineGraph } from "react-native-graph";
 
 import GlassContainer from "@/ui/new/GlassContainer";
 
+import { TipIds } from "@/constants/Tips";
+import { retireTip } from "@/stores/tips";
+import Tip from "@/ui/components/Tip";
+
 import { useFont } from '@/utils/theme/fonts';
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -81,6 +85,10 @@ const algorithms: { key: AverageMethodKey; label: string; description: string; r
   },
 ];
 
+// Static, and kept out of the render: Averages re-renders on every frame of a
+// scrub, and a fresh style object each time would re-feed the SwiftUI host.
+const GRAPH_TIP_STYLE = { top: 76, left: 0, right: 0 } as const;
+
 interface AveragesProps {
   history: Partial<Record<AverageMethodKey, AverageHistoryPoint[]>>;
   realAverage?: number | null;
@@ -133,6 +141,9 @@ const Averages = ({
         setActive(true);
         setShownAverage(p.originalValue ?? p.value);
         setShownDate(p.originalDate ?? p.date);
+        // Scrubbing the graph is exactly what the tip was hinting at, so it has
+        // done its job and is retired rather than left to be closed by hand.
+        retireTip(TipIds.gradesAverageHistory);
       },
       []
     );
@@ -263,6 +274,21 @@ const Averages = ({
       <View style={{ backgroundColor: theme.colors.item, borderRadius: 24, overflow: "hidden" }}>
         <View style={{ height: 140, marginBottom: -16 }}>
           {graph}
+
+          {/* Pinned into the body of the graph rather than along its bottom
+              edge, so the arrow lands on the line itself instead of on the
+              average printed underneath. `top` hangs the callout above it. */}
+          {graph && (
+            <Tip
+              tipId={TipIds.gradesAverageHistory}
+              title={t("Grades_Tip_Graph_Title")}
+              message={t("Grades_Tip_Graph_Message")}
+              systemImage="chart.xyaxis.line"
+              arrowEdge="top"
+              width={200}
+              style={GRAPH_TIP_STYLE}
+            />
+          )}
         </View>
 
         <View style={{ padding: 18, paddingTop: 0, width: '100%', gap: 1 }}>

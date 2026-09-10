@@ -14,8 +14,11 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { TipIds } from '@/constants/Tips';
 import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
+import { retireTip } from '@/stores/tips';
 import { useAlert } from "@/ui/components/AlertProvider";
+import Tip from '@/ui/components/Tip';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 import Typography from '@/ui/new/Typography';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
@@ -40,6 +43,11 @@ const TITLE_SLIDE_RATIO = 0.4; // Slide this share of the screen width when chan
 // here rather than measured.
 const TOOLBAR_BUTTON_INSET = 40;
 const TOOLBAR_BUTTON_SIZE = 40;
+
+// Width of the invisible strip the week-scrolling tip attaches to. Centered in
+// the screen and about as wide as the title it points at, so the popover's
+// arrow lands under the title rather than off to one side.
+const TIP_ANCHOR_WIDTH = 160;
 
 // One title per week around the settled one. Keyed by absolute week index, so a
 // layer is never remounted while it is on screen.
@@ -234,6 +242,9 @@ const TasksView: React.FC = () => {
         .activeOffsetX([-PAN_ACTIVATE_X, PAN_ACTIVATE_X])
         .failOffsetY([-PAN_FAIL_Y, PAN_FAIL_Y])
         .onStart(event => {
+          // The swipe *is* the thing the tip was teaching, so it goes now —
+          // waiting for the settle would let it flash back mid-gesture.
+          runOnJS(retireTip)(TipIds.tasksWeekScroll);
           cancelAnimation(offsetX);
           // Swiping again before the last settle came to rest: commit it now,
           // otherwise the page being swiped towards may not be mounted.
@@ -280,6 +291,13 @@ const TasksView: React.FC = () => {
     left: TOOLBAR_BUTTON_INSET,
     width: TOOLBAR_BUTTON_SIZE,
   }), [headerHeight]);
+
+  // Stable across week crossings, so the tip's SwiftUI host is not re-fed props
+  // every time the pager settles.
+  const weekTipStyle = useMemo(
+    () => ({ top: weekPickerAnchor.top, left: 0, right: 0 }),
+    [weekPickerAnchor.top]
+  );
 
   const closeWeekPicker = useCallback(() => setShowWeekPicker(false), [setShowWeekPicker]);
 
@@ -407,6 +425,17 @@ const TasksView: React.FC = () => {
         onSelectWeek={handlePickWeek}
         onClose={closeWeekPicker}
         anchor={weekPickerAnchor}
+      />
+
+      {/* Hangs off the same line as the week popover — just under the header —
+          so its arrow points back up at the title. */}
+      <Tip
+        tipId={TipIds.tasksWeekScroll}
+        title={t('Tasks_Tip_Weeks_Title')}
+        message={t('Tasks_Tip_Weeks_Message')}
+        systemImage="hand.draw"
+        width={TIP_ANCHOR_WIDTH}
+        style={weekTipStyle}
       />
     </>
   );

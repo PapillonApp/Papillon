@@ -16,6 +16,8 @@ import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import { useSettingsStore } from "@/stores/settings";
+import { useTipsStore } from "@/stores/tips";
+import { showAllTips, tipsAreSupported } from "@/modules/papillon-tips";
 import { useMagicStore } from "@/stores/magic";
 import ModelManager from "@/utils/magic/ModelManager";
 import { MAGIC_URL } from "@/utils/endpoints";
@@ -213,6 +215,48 @@ export default function DevMode() {
     );
   };
 
+  const forceAllTips = useTipsStore(state => state.forceAll);
+
+  const triggerAllTips = async () => {
+    useTipsStore.getState().setForceAll(true);
+    await showAllTips();
+    Alert.alert(
+      "Astuces forcées",
+      "Chaque astuce réapparaîtra sur son écran sans attendre le nombre d'ouvertures habituel, et sans consommer ses passages."
+    );
+  };
+
+  // Only lifts our own override. TipKit's `showAllTipsForTesting` has no
+  // counterpart that simply cancels it — `hideAllTipsForTesting` force-hides
+  // everything instead — so the override itself dies with the process, and is
+  // just not re-applied at the next launch.
+  const stopForcingTips = () => {
+    useTipsStore.getState().setForceAll(false);
+    Alert.alert(
+      "Astuces",
+      "Les astuces reprennent leur rythme normal. Celles déjà à l'écran le resteront jusqu'au prochain lancement."
+    );
+  };
+
+  const resetAllTips = () => {
+    Alert.alert(
+      "Réinitialiser les astuces",
+      "Les compteurs d'ouverture et d'affichage repartent de zéro. TipKit n'accepte d'oublier les astuces déjà fermées qu'au démarrage, alors elles reviendront au prochain lancement de l'app.",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Réinitialiser",
+          style: "destructive",
+          onPress: () => {
+            const tips = useTipsStore.getState();
+            tips.reset();
+            tips.requestDatastoreReset();
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.overground }}>
       <List showsVerticalScrollIndicator={false} animated contentInsetAdjustmentBehavior="always" contentContainerStyle={{ padding: 16 }}>
@@ -288,6 +332,40 @@ export default function DevMode() {
             <Typography variant="action">Ouvrir le modal de bienvenue</Typography>
           </List.Item>
         </List.Section>
+        {tipsAreSupported && (
+          <List.Section>
+            <List.SectionTitle>
+              <Papicons name="Sparkles" color={String(colors.text) + "88"} />
+              <List.Label>Astuces</List.Label>
+            </List.SectionTitle>
+            <List.Item onPress={() => (forceAllTips ? stopForcingTips() : triggerAllTips())}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Sparkles" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">
+                {forceAllTips ? "Ne plus forcer les astuces" : "Forcer toutes les astuces"}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Affiche chaque astuce dès le prochain passage sur son écran, sans
+                attendre le nombre d'ouvertures habituel.
+              </Typography>
+            </List.Item>
+            <List.Item onPress={resetAllTips}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Trash" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Réinitialiser toutes les astuces</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Remet les compteurs à zéro. Les astuces déjà fermées reviennent au
+                prochain lancement.
+              </Typography>
+            </List.Item>
+          </List.Section>
+        )}
         <List.Section>
           <List.SectionTitle>
             <Papicons name="Bus" color={colors.text + 88} />

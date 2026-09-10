@@ -111,7 +111,6 @@ const TasksList: React.FC<TasksListProps> = ({
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          tintColor={colors.tint}
         />
       }
     >

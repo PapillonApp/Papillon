@@ -1,4 +1,6 @@
+import { TipIds } from "@/constants/Tips"
 import { useAccountStore } from "@/stores/account"
+import { retireTip } from "@/stores/tips"
 import { useSettingsStore } from "@/stores/settings"
 import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
@@ -52,6 +54,13 @@ const WallpaperModal = () => {
 
   useEffect(() => {
     fetchCollections();
+  }, []);
+
+  // Getting here is the whole point of the home tip pointing at the palette
+  // button, however the user got here. Retire it rather than leave it waiting
+  // to be closed by hand.
+  useEffect(() => {
+    retireTip(TipIds.homeWallpaper);
   }, []);
 
 
