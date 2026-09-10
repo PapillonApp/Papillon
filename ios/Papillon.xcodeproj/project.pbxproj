@@ -11,8 +11,8 @@
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		995E380C1B7F4C9B8FA2401D /* app.icon in Resources */ = {isa = PBXBuildFile; fileRef = 79A034F9E0B949338288BACE /* app.icon */; };
-		CF78ED0157B049EA97EF1720 /* CoreML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14B06FDB38084BC4836802A5 /* CoreML.framework */; };
+		DD955EFB4C4B4C8DB50B65B3 /* app.icon in Resources */ = {isa = PBXBuildFile; fileRef = F84648E9B9764B34A7440ECD /* app.icon */; };
+		5E4820FBA26A449FB371610A /* CoreML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C54CBE618614DD28D9C6F59 /* CoreML.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,8 +24,8 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Papillon/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* Papillon-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Papillon-Bridging-Header.h"; path = "Papillon/Papillon-Bridging-Header.h"; sourceTree = "<group>"; };
-		79A034F9E0B949338288BACE /* app.icon */ = {isa = PBXFileReference; name = "app.icon"; path = "Papillon/app.icon"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		14B06FDB38084BC4836802A5 /* CoreML.framework */ = {isa = PBXFileReference; name = "CoreML.framework"; path = "System/Library/Frameworks/CoreML.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
+		F84648E9B9764B34A7440ECD /* app.icon */ = {isa = PBXFileReference; name = "app.icon"; path = "Papillon/app.icon"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4C54CBE618614DD28D9C6F59 /* CoreML.framework */ = {isa = PBXFileReference; name = "CoreML.framework"; path = "System/Library/Frameworks/CoreML.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,7 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF78ED0157B049EA97EF1720 /* CoreML.framework in Frameworks */,
+				5E4820FBA26A449FB371610A /* CoreML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,7 +49,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				79A034F9E0B949338288BACE /* app.icon */,
+				F84648E9B9764B34A7440ECD /* app.icon */,
 			);
 			name = Papillon;
 			sourceTree = "<group>";
@@ -58,7 +58,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				14B06FDB38084BC4836802A5 /* CoreML.framework */,
+				4C54CBE618614DD28D9C6F59 /* CoreML.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -113,7 +113,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				7D02A8843E324F88BA115315 /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
+				7F24313F78734B22BB7B66EE /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
 			);
 			buildRules = (
 			);
@@ -163,7 +163,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				995E380C1B7F4C9B8FA2401D /* app.icon in Resources */,
+				DD955EFB4C4B4C8DB50B65B3 /* app.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,7 +231,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Papillon/Pods-Papillon-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7D02A8843E324F88BA115315 /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
+		7F24313F78734B22BB7B66EE /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
