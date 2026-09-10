@@ -35,7 +35,13 @@ export default function PronoteENTLogin() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { params } = useRoute();
-  const { url, school } = params;
+  const { url, school, relinkAccountId, relinkServiceId, relinkDeviceUUID } = (params ?? {}) as {
+    url: string;
+    school?: { name?: string };
+    relinkAccountId?: string;
+    relinkServiceId?: string;
+    relinkDeviceUUID?: string;
+  };
   const baseURL = url.split("/pronote")[0];
 
   // UI Logic
@@ -66,7 +72,7 @@ export default function PronoteENTLogin() {
   // Login logic
   const infoMobileURL = url + "/InfoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4";
 
-  const [deviceUUID] = useState(uuid());
+  const [deviceUUID] = useState(() => relinkDeviceUUID || uuid());
   const [received, setReceived] = useState<boolean>(false);
   console.log("WebViewScreen initialized with URL:", url);
 
@@ -257,34 +263,44 @@ export default function PronoteENTLogin() {
           pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
         }
 
-        useAccountStore.getState().addAccount({
-          id: deviceUUID,
-          firstName,
-          lastName,
-          schoolName,
-          className,
-          customisation: {
-            profilePicture: pp,
-            subjects: {}
+        const auth = {
+          accessToken: refresh.token,
+          refreshToken: refresh.token,
+          additionals: {
+            ...refresh,
+            instanceURL: refresh.url,
+            deviceUUID,
           },
-          services: [{
+        };
+
+        const store = useAccountStore.getState();
+
+        if (relinkServiceId && relinkAccountId) {
+          store.updateServiceAuthData(relinkServiceId, auth);
+          store.setLastUsedAccount(relinkAccountId);
+        } else {
+          store.addAccount({
             id: deviceUUID,
-            auth: {
-              accessToken: refresh.token,
-              refreshToken: refresh.token,
-              additionals: {
-                ...refresh,
-                deviceUUID,
-              },
+            firstName,
+            lastName,
+            schoolName,
+            className,
+            customisation: {
+              profilePicture: pp,
+              subjects: {}
             },
-            serviceId: Services.PRONOTE,
+            services: [{
+              id: deviceUUID,
+              auth,
+              serviceId: Services.PRONOTE,
+              createdAt: (new Date()).toISOString(),
+              updatedAt: (new Date()).toISOString(),
+            }],
             createdAt: (new Date()).toISOString(),
             updatedAt: (new Date()).toISOString(),
-          }],
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString(),
-        });
-        useAccountStore.getState().setLastUsedAccount(deviceUUID);
+          });
+          store.setLastUsedAccount(deviceUUID);
+        }
 
         const parent = navigation.getParent();
         if (parent) {
@@ -403,7 +419,7 @@ export default function PronoteENTLogin() {
         presentationStyle="pageSheet"
         onRequestClose={() => setChallengeModalVisible(false)}
       >
-        <Pronote2FAModal doubleAuthSession={doubleAuthSession} doubleAuthError={doubleAuthError} setChallengeModalVisible={setChallengeModalVisible} deviceId={deviceId} />
+        <Pronote2FAModal doubleAuthSession={doubleAuthSession} doubleAuthError={doubleAuthError} setChallengeModalVisible={setChallengeModalVisible} deviceId={deviceId} relinkAccountId={relinkAccountId} relinkServiceId={relinkServiceId} />
       </Modal>
     </KeyboardAvoidingView>
   )

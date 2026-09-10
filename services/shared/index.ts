@@ -55,6 +55,7 @@ import {
   Capabilities,
   FetchOptions,
   SchoolServicePlugin,
+  ServiceFailure,
 } from "@/services/shared/types";
 import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
@@ -65,11 +66,11 @@ import {
   AccountDisabledError,
   AuthenticateError,
   BadCredentialsError,
-  SecurityError,
   SessionExpiredError,
 } from "@blockshub/pawnote-lts";
 
 import { AuthenticationError } from "../errors/AuthenticationError";
+import { SecurityChallengeError } from "../errors/SecurityChallengeError";
 import { ServiceUnavailableError } from "../errors/ServiceUnavailableError";
 
 const isPermanentAuthError = (e: unknown): boolean =>
@@ -77,16 +78,28 @@ const isPermanentAuthError = (e: unknown): boolean =>
   e instanceof AuthenticateError ||
   e instanceof SessionExpiredError ||
   e instanceof AccessDeniedError ||
-  e instanceof AccountDisabledError ||
-  e instanceof SecurityError ||
-  /\b401\b|unauthorized/i.test(String(e));
+  e instanceof AccountDisabledError;
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
+  private failures = new Map<Capabilities, ServiceFailure[]>();
 
-  constructor(readonly account: Account) {}
+  getFailures(capability: Capabilities): ServiceFailure[] {
+    return this.failures.get(capability) ?? [];
+  }
+
+  constructor(public account: Account) {}
+
+  syncAccount(account: Account): void {
+    this.account = account;
+    for (const id of Object.keys(this.clients)) {
+      if (!account.services.some(service => service.id === id)) {
+        delete this.clients[id];
+      }
+    }
+  }
 
   removeService(id: string): void {
     delete this.clients[id];
@@ -102,13 +115,23 @@ export class AccountManager {
 
     let refreshedAtLeastOne = false;
 
+    const failures: Array<{ service: ServiceAccount; err: unknown }> = [];
+
     for (const service of this.account.services) {
       try {
         debug("Trying to refresh " + service.id);
-        const plugin = this.getServicePluginForAccount(service);
+        const reusable =
+          service.serviceId === Services.PRONOTE ? this.clients[service.id] : undefined;
+        const plugin = reusable ?? this.getServicePluginForAccount(service);
 
         if (!hasInternet && plugin.requiresInternet !== false) {
           warn(`Skipping network service ${service.id} while offline.`);
+          continue;
+        }
+
+        if (reusable && reusable.isTokenValid?.()) {
+          refreshedAtLeastOne = true;
+          debug("Reusing the still valid session of " + service.id);
           continue;
         }
 
@@ -125,10 +148,8 @@ export class AccountManager {
           );
         }
       } catch (e) {
-        if (isPermanentAuthError(e)) {
-          throw new AuthenticationError(String(e), service);
-        }
-        throw new ServiceUnavailableError(String(e), service);
+        warn(`Refresh failed for ${service.id}: ${e}`);
+        failures.push({ service, err: e });
       }
     }
 
@@ -137,9 +158,30 @@ export class AccountManager {
         Object.keys(this.clients).length
     );
 
+    const challenge = failures.find(f => f.err instanceof SecurityChallengeError);
+    if (challenge) {
+      const err = challenge.err as SecurityChallengeError;
+      throw new SecurityChallengeError(
+        err.securityError,
+        err.session,
+        err.deviceUUID,
+        challenge.service
+      );
+    }
+
+    const authFailure = failures.find(f => isPermanentAuthError(f.err));
+    if (authFailure) {
+      throw new AuthenticationError(String(authFailure.err), authFailure.service);
+    }
+
     if (!hasInternet && Object.keys(this.clients).length === 0 && this.account.services.length > 0) {
       throw new Error("Internet not reachable and no offline service is available.");
     }
+
+    if (!refreshedAtLeastOne && failures.length > 0) {
+      throw new ServiceUnavailableError(String(failures[0].err), failures[0].service);
+    }
+
     return refreshedAtLeastOne;
   }
 
@@ -552,6 +594,22 @@ export class AccountManager {
       return fallbackResult;
     };
 
+    const failures: ServiceFailure[] = [];
+
+    const noteFailure = (client: SchoolServicePlugin, reason: unknown) => {
+      warn(
+        `[${client.displayName}] capability ${capability}: ${String(reason)}`,
+        "fetchData"
+      );
+      failures.push({
+        service: client.service,
+        displayName: client.displayName,
+        capability,
+        reason,
+        at: new Date(),
+      });
+    };
+
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
@@ -572,7 +630,13 @@ export class AccountManager {
           }
           throw new Error("Internet not reachable and no fallback provided.");
         }
-        const result = await callback(client);
+        let result: T | T[];
+        try {
+          result = await callback(client);
+        } catch (e) {
+          noteFailure(client, e);
+          throw e;
+        }
         if (options.saveToCache) {
           await options.saveToCache(result);
         }
@@ -600,22 +664,34 @@ export class AccountManager {
       }
 
       if (options?.multiple) {
-        const results = await Promise.all(
+        const settled = await Promise.allSettled(
           availableClients.map(client => callback(client) as Promise<T[]>)
         );
-        const combinedResult = results.flat();
 
-        if (options?.saveToCache) {
+        settled.forEach((result, index) => {
+          if (result.status === "rejected") {
+            noteFailure(availableClients[index], result.reason);
+          }
+        });
+
+        const combinedResult = settled.flatMap(result =>
+          result.status === "fulfilled" ? result.value : []
+        );
+
+        if (options?.saveToCache && failures.length === 0) {
           await options.saveToCache(combinedResult);
         }
 
         return combinedResult;
       }
     } catch (e) {
+      warn(`capability ${capability} failed: ${String(e)}`, "fetchData");
       if (options?.fallback) {
         return await callFallback();
       }
       throw e;
+    } finally {
+      this.failures.set(capability, failures);
     }
 
     error(
@@ -717,6 +793,8 @@ const notifyManagerListeners = (manager: AccountManager) => {
   managerListeners.forEach(listener => listener(manager));
 };
 
+const managerInFlight = new Map<string, Promise<AccountManager>>();
+
 export const initializeAccountManager = async (
   accountId?: string
 ): Promise<AccountManager> => {
@@ -727,19 +805,44 @@ export const initializeAccountManager = async (
     }
     accountId = lastUsedAccount;
   }
-  const account = useAccountStore
-    .getState()
-    .accounts.find(acc => acc.id === accountId);
 
-  if (!account) {
-    throw error("Account not found for ID: " + accountId);
+  const pending = managerInFlight.get(accountId);
+  if (pending) {
+    debug("An initialization is already running for " + accountId + ", joining it.");
+    return pending;
   }
 
-  const manager = new AccountManager(account);
-  await manager.refreshAllAccounts();
-  globalManager = manager;
-  notifyManagerListeners(manager);
-  return manager;
+  const targetId = accountId;
+
+  const task = (async () => {
+    const account = useAccountStore
+      .getState()
+      .accounts.find(acc => acc.id === targetId);
+
+    if (!account) {
+      throw error("Account not found for ID: " + targetId);
+    }
+
+    let manager = globalManager;
+    if (manager && manager.account.id === targetId) {
+      manager.syncAccount(account);
+    } else {
+      manager = new AccountManager(account);
+    }
+
+    await manager.refreshAllAccounts();
+    globalManager = manager;
+    notifyManagerListeners(manager);
+    return manager;
+  })();
+
+  managerInFlight.set(targetId, task);
+
+  try {
+    return await task;
+  } finally {
+    managerInFlight.delete(targetId);
+  }
 };
 
 export const getManager = (silent = false): AccountManager => {

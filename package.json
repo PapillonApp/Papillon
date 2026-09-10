@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "index.js",
-  "version": "8.5.2",
+  "version": "8.5.3",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -21,7 +21,7 @@
   "dependencies": {
     "@aramir/react-native-barcode": "^1.0.2",
     "@blockshub/blockscho": "^0.1.0",
-    "@blockshub/blocksdirecte": "^0.0.9-alpha",
+    "@blockshub/blocksdirecte": "^0.0.10-alpha",
     "@blockshub/blocksrd": "^0.1.0",
     "@blockshub/pawnote-lts": "^1.6.4",
     "@callstack/liquid-glass": "^0.4.3",
@@ -106,7 +106,7 @@
     "react-native-web": "^0.21.2",
     "react-native-webview": "13.16.1",
     "react-native-worklets": "0.10.1",
-    "skolengojs": "^1.1.10",
+    "skolengojs": "^1.2.2",
     "turboself-api": "^2.1.9",
     "typescript-eslint": "^8.49.0",
     "zustand": "^5.0.9"

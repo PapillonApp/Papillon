@@ -25,6 +25,8 @@ import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 
+const PRONOTE_TOKEN_TTL_MS = 5 * 60 * 1000;
+
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
   service = Services.PRONOTE;
@@ -36,17 +38,20 @@ export class Pronote implements SchoolServicePlugin {
 
   constructor(public accountId: string) {}
 
+  isTokenValid(): boolean {
+    return Boolean(this.session) && Date.now() < this.tokenExpiration;
+  }
+
   private async checkTokenValidty(): Promise<void> {
     if (this.refreshInFlight) {
       await this.refreshInFlight;
       return;
     }
-    if (Date.now() <= this.tokenExpiration) return;
+    if (this.isTokenValid()) return;
 
-    this.refreshInFlight = (async () => {
-      await this.refreshAccount(this.authData);
-      this.tokenExpiration = Date.now() + (5 * 60 * 1000);
-    })().finally(() => { this.refreshInFlight = null; });
+    this.refreshInFlight = this.refreshAccount(this.authData)
+      .then(() => {})
+      .finally(() => { this.refreshInFlight = null; });
 
     await this.refreshInFlight;
   }
@@ -55,6 +60,8 @@ export class Pronote implements SchoolServicePlugin {
     const refresh = (await refreshPronoteAccount(this.accountId, credentials));
     this.authData = refresh.auth;
     this.session = refresh.session;
+    this.tokenExpiration = Date.now() + PRONOTE_TOKEN_TTL_MS;
+    this.capabilities = [Capabilities.REFRESH];
 
     const tabCapabilities: Partial<Record<TabLocation, Capabilities | Capabilities[]>> = {
       [TabLocation.Assignments]: Capabilities.HOMEWORK,
