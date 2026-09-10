@@ -7,7 +7,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
 import { useAlert } from "@/ui/components/AlertProvider";
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
-import { useFont } from '@/utils/theme/fonts';
+import Typography from '@/ui/new/Typography';
 import i18n from '@/utils/i18n';
 
 import TasksList from './components/TasksList';
@@ -25,7 +25,6 @@ const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol }[] => 
 
 const TasksView: React.FC = () => {
   const alert = useAlert();
-  const papillonFont = useFont();
 
   const {
     defaultWeek,
@@ -56,9 +55,11 @@ const TasksView: React.FC = () => {
 
   const sortings = useMemo(() => getSortings(), [i18n.language]);
 
+  const weekNumberDisplay = getWeekNumberFromDate(getDateRangeOfWeek(selectedWeek, new Date().getFullYear()).start);
+
   const weekLabel = selectedWeek === defaultWeek
     ? t('Tasks_ThisWeek')
-    : `${t('Tasks_Week')} ${getWeekNumberFromDate(getDateRangeOfWeek(selectedWeek, new Date().getFullYear()).start)}`;
+    : `${t('Tasks_Week')} ${weekNumberDisplay}`;
 
   return (
     <>
@@ -82,10 +83,10 @@ const TasksView: React.FC = () => {
         </Stack.Toolbar.Button>
       </Stack.Toolbar>
 
-      <Stack.Title
-        style={{ fontFamily: papillonFont('semibold') }}
-      >
-        {t('Tab_Tasks')}
+      <Stack.Title asChild>
+        <Typography variant="header" weight="semibold">
+          {t('Tasks_Week')} {weekNumberDisplay}
+        </Typography>
       </Stack.Title>
 
       <Stack.Toolbar placement="right">

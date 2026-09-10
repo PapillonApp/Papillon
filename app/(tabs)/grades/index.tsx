@@ -148,9 +148,11 @@ const GradesView = () => {
       </Stack.Toolbar>
 
       <Stack.Title
-        style={{ fontFamily: papillonFont('semibold') }}
+        asChild
       >
-        {t('Tab_Grades')}
+        <Typography variant="header" weight="semibold">
+          {currentPeriod ? periodTitle(currentPeriod) : t('Tab_Grades')}
+        </Typography>
       </Stack.Title>
 
       <Stack.Toolbar placement="right">

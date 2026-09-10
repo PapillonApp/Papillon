@@ -56,6 +56,11 @@ const VARIANTS: Record<string, Record<string, string | number>> = {
     fontSize: 13,
     lineHeight: "140%",
     letterSpacing: 0.1
+  },
+  "header": {
+    fontFamily: WEIGHTS[2],
+    fontSize: 17,
+    lineHeight: "140%"
   }
 };
 

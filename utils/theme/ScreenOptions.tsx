@@ -8,7 +8,7 @@ export const useScreenOptions = (): any => {
   const font = useFont();
 
   return React.useMemo(() => ({
-    headerLargeTitle: true,
+    headerLargeTitle: false,
     headerTransparent: Platform.OS === "ios" && parseInt(Platform.Version) >= 26,
     headerBackButtonDisplayMode:
       Platform.OS === "ios" && parseInt(Platform.Version) < 26
