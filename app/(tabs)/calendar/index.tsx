@@ -1,22 +1,26 @@
+import { Stack, useRouter } from "expo-router";
 import { useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
-import React, { useCallback, useRef, useState } from "react";
-import { FlatList, Platform, StyleSheet,View } from "react-native";
+import React, { useCallback, useRef } from "react";
+import { FlatList, Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
+import Calendar, { CalendarRef } from "@/ui/components/Calendar";
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import i18n from "@/utils/i18n";
+import { useFont } from "@/utils/theme/fonts";
 
 import { CalendarDay } from "./components/CalendarDay";
-import { CalendarHeader } from "./components/CalendarHeader";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
-import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 function TabOneScreen() {
   const { colors } = useTheme();
-  const calendarRef = useRef<any>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const router = useRouter();
+  const papillonFont = useFont();
+  const calendarRef = useRef<CalendarRef>(null);
   const insets = useSafeAreaInsets();
   const tabBarHeight = insets.bottom;
 
@@ -41,8 +45,19 @@ function TabOneScreen() {
     timetable,
     manualRefreshing,
     handleRefresh,
-    isLoading
   } = useTimetableData(weekNumber, date);
+
+  const isToday = date.toDateString() === new Date().toDateString();
+  const isYesterday = date.toDateString() === new Date(new Date().setDate(new Date().getDate() - 1)).toDateString();
+  const isTomorrow = date.toDateString() === new Date(new Date().setDate(new Date().getDate() + 1)).toDateString();
+
+  const dayLabel = isToday
+    ? t("Today")
+    : isYesterday
+      ? t("Yesterday")
+      : isTomorrow
+        ? t("Tomorrow")
+        : date.toLocaleDateString(i18n.language, { weekday: "long", day: "numeric", month: "long" });
 
   const renderDay = useCallback(({ index }: { index: number }) => {
     const dayDate = getDateFromIndex(index);
@@ -61,23 +76,49 @@ function TabOneScreen() {
         isRefreshing={manualRefreshing}
         onRefresh={handleRefresh}
         colors={colors}
-        headerHeight={headerHeight}
         insets={insets}
         tabBarHeight={tabBarHeight}
         transportInfo={account?.transport ?? undefined}
       />
     );
-  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
+  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, insets, tabBarHeight, account]);
 
   return (
     <>
-      <CalendarHeader
+      <Calendar
+        ref={calendarRef}
         date={date}
         onDateChange={handleDateChange}
-        onHeaderHeightChange={setHeaderHeight}
-        calendarRef={calendarRef}
-        isLoading={isLoading}
+        color="#D6502B"
       />
+
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button
+          icon="calendar"
+          onPress={() => calendarRef.current?.toggle()}
+        >
+          {dayLabel}
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
+
+      <Stack.Title
+        style={{ fontFamily: papillonFont('semibold') }}
+      >
+        {t('Tab_Calendar')}
+      </Stack.Title>
+
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Menu>
+          <Stack.Toolbar.Icon sf="ellipsis" />
+          <Stack.Toolbar.Label>{t('Tab_Calendar_Icals')}</Stack.Toolbar.Label>
+          <Stack.Toolbar.MenuAction
+            icon="calendar"
+            onPress={() => router.push({ pathname: "./calendar/icals", params: {} })}
+          >
+            {t('Tab_Calendar_Icals')}
+          </Stack.Toolbar.MenuAction>
+        </Stack.Toolbar.Menu>
+      </Stack.Toolbar>
 
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <FlatList
@@ -102,7 +143,7 @@ function TabOneScreen() {
           initialNumToRender={3}
           showsVerticalScrollIndicator={false}
           removeClippedSubviews
-          extraData={{ manualRefreshing, headerHeight, colors, timetable }}
+          extraData={{ manualRefreshing, colors, timetable }}
         />
       </View>
     </>

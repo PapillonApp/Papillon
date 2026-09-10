@@ -14,10 +14,7 @@ export default function Layout() {
     <Stack screenOptions={screenOptions}>
       <Stack.Screen
         name="index"
-        options={{
-          headerShown: false,
-          headerTitle: t("Tab_Calendar"),
-        }}
+        options={{ ...androidHeaderProps }}
       />
       <Stack.Screen
         name="event/[id]"

@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
-import { Dimensions,FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
+import { Dimensions,FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { TransportStorage } from "@/stores/account/types";
@@ -18,7 +18,6 @@ interface CalendarDayProps {
   isRefreshing: boolean;
   onRefresh: () => void;
   colors: { primary: string, background: string };
-  headerHeight: number;
   insets: any;
   tabBarHeight: number;
   transportInfo?: TransportStorage;
@@ -46,7 +45,7 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
   return true;
 }
 
-export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, headerHeight, insets, tabBarHeight, transportInfo }: CalendarDayProps) => {
+export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, insets, tabBarHeight, transportInfo }: CalendarDayProps) => {
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
 
@@ -116,11 +115,11 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
         data={enrichedEvents}
         style={[styles.container, insets.left > 0 ? { marginLeft: insets.left } : null]}
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
           paddingHorizontal: 12,
           paddingVertical: 12,
           gap: 4,
-          paddingTop: headerHeight - 8,
           paddingBottom: tabBarHeight + 6,
           ...(isEmpty ? { alignItems: "center" } : {}),
         }}
@@ -130,7 +129,6 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
             onRefresh={onRefresh}
             colors={[colors.primary]}
             progressBackgroundColor={colors.background}
-            progressViewOffset={Platform.OS === 'android' ? headerHeight : 0}
           />
         }
         keyExtractor={item => item.id || `${item.type}-${item.from || item.targetTime}`}
@@ -182,7 +180,6 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.onRefresh === nextProps.onRefresh &&
-    prevProps.headerHeight === nextProps.headerHeight &&
     prevProps.insets.left === nextProps.insets.left &&
     areCoursesEquivalent(prevProps.courses, nextProps.courses)
   );
