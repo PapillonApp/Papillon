@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
@@ -17,6 +18,7 @@ import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomewor
 import { useAlert } from "@/ui/components/AlertProvider";
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 import Typography from '@/ui/new/Typography';
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import i18n from '@/utils/i18n';
 
 import { AndroidHeaderButton, AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
@@ -31,6 +33,13 @@ import type { SortMethod } from './hooks/useTaskFilters';
 const isAndroid = Platform.OS === 'android';
 
 const TITLE_SLIDE_RATIO = 0.4; // Slide this share of the screen width when changing titles
+
+// Geometry of the leading toolbar button, which the week popover points at. The
+// button is native and cannot host a SwiftUI anchor, so the popover hangs off an
+// invisible strip centered on this box instead, and the box has to be restated
+// here rather than measured.
+const TOOLBAR_BUTTON_INSET = 40;
+const TOOLBAR_BUTTON_SIZE = 40;
 
 // One title per week around the settled one. Keyed by absolute week index, so a
 // layer is never remounted while it is on screen.
@@ -128,6 +137,7 @@ function TitleLayer({ offset, pageOffset, pageWidth, labels, slideDistance }: {
 const TasksView: React.FC = () => {
   const alert = useAlert();
   const { width: screenWidth } = useWindowDimensions();
+  const headerHeight = useHeaderHeight();
 
   const {
     defaultWeek,
@@ -263,6 +273,16 @@ const TasksView: React.FC = () => {
     transform: [{ translateX: -offsetX.value }],
   }));
 
+  // Kept referentially stable so the memoized picker is not re-rendered, and
+  // its SwiftUI host not re-fed props, on every week crossing.
+  const weekPickerAnchor = useMemo(() => ({
+    top: runsIOS26 ? headerHeight : 0,
+    left: TOOLBAR_BUTTON_INSET,
+    width: TOOLBAR_BUTTON_SIZE,
+  }), [headerHeight]);
+
+  const closeWeekPicker = useCallback(() => setShowWeekPicker(false), [setShowWeekPicker]);
+
   const handlePickWeek = useCallback((week: number) => {
     const index = getIndexFromWeek(week);
     cancelAnimation(offsetX);
@@ -378,14 +398,16 @@ const TasksView: React.FC = () => {
       </View>
 
       {/* Rendered last so the pager stays the screen's first child: the native
-          header binds to the first scroll view it finds from there. */}
-      {showWeekPicker && (
-        <WeekPicker
-          selectedWeek={Math.max(0, selectedWeek)}
-          onSelectWeek={handlePickWeek}
-          onClose={() => setShowWeekPicker(false)}
-        />
-      )}
+          header binds to the first scroll view it finds from there. Mounted
+          whether or not it is open, because the popover attaches to an anchor
+          that has to already exist when the toolbar button is tapped. */}
+      <WeekPicker
+        visible={showWeekPicker}
+        selectedWeek={selectedWeek}
+        onSelectWeek={handlePickWeek}
+        onClose={closeWeekPicker}
+        anchor={weekPickerAnchor}
+      />
     </>
   );
 };

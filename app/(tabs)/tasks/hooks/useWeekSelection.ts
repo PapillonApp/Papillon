@@ -1,7 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
-import { getWeekNumberFromDate } from "@/database/useHomework";
 import { trackAdvancedEvent } from '@/utils/logger/analytics';
+
+import { getCurrentWeekIndex } from '../utils/weekGrid';
 
 // Middle of the pager. Weeks are addressed relative to it, so page positions
 // stay small numbers for as long as the screen is alive.
@@ -12,7 +13,7 @@ export const useWeekSelection = () => {
 
   // The week the screen opened in. Captured once so a page index always maps to
   // the same week, even across midnight.
-  const defaultWeek = useRef(getWeekNumberFromDate(new Date())).current;
+  const defaultWeek = useRef(getCurrentWeekIndex()).current;
 
   const [selectedWeek, setSelectedWeek] = useState<number>(defaultWeek);
   const [showWeekPicker, setShowWeekPicker] = useState(false);
