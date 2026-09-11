@@ -9,6 +9,7 @@ import { useTheme } from "expo-router/react-navigation";
 import { Papicons } from '@getpapillon/papicons';
 
 import { Dynamic } from '@/ui/components/Dynamic';
+import { useDragSafePress } from '@/ui/utils/useDragSafePress';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
@@ -23,6 +24,10 @@ const DateHeader = memo(
   ({ title, isCollapsed, onToggle }: DateHeaderProps) => {
     const { colors } = useTheme();
 
+    // A collapse must not fire because a swipe or a scroll happened to start
+    // on the header.
+    const dragSafeToggle = useDragSafePress(onToggle);
+
     const papillonEasing = Easing.bezier(0.3, 0.3, 0, 1);
 
     const animatedStyle = useAnimatedStyle(() => {
@@ -34,7 +39,7 @@ const DateHeader = memo(
 
     return (
       <Dynamic animated key={`header:${title}`} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-        <TouchableOpacity onPress={onToggle} activeOpacity={0.6}>
+        <TouchableOpacity {...dragSafeToggle} activeOpacity={0.6}>
           <Stack
             direction='horizontal'
             gap={8}

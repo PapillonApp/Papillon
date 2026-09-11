@@ -1,14 +1,19 @@
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
 import { useRouter } from 'expo-router';
+import { t } from 'i18next';
 import React from 'react';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from "expo-router/react-navigation";
 
+import { TipIds } from '@/constants/Tips';
 import Stack from '@/ui/components/Stack';
+import Tip from '@/ui/components/Tip';
 
 import HomeTopBarButton from '../components/HomeTopBarButton';
 import UserProfile from './UserProfile';
+
+const WALLPAPER_TIP_STYLE = { bottom: 0, left: 0, right: 0 } as const;
 
 const HomeTopBar = ({ height = 56 }: { height?: number }) => {
   const insets = useSafeAreaInsets();
@@ -70,11 +75,23 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
             gap={7}
             inline
           >
-            <HomeTopBarButton
-              icon="palette"
-              route="/(modals)/wallpaper"
-              onPress={() => router.push("/(modals)/wallpaper")}
-            />
+            {/* The tip anchors to the button's own box, pinned along its
+                bottom edge so the callout drops below it and points back up. */}
+            <View>
+              <HomeTopBarButton
+                icon="palette"
+                route="/(modals)/wallpaper"
+                onPress={() => router.push("/(modals)/wallpaper")}
+              />
+              <Tip
+                tipId={TipIds.homeWallpaper}
+                title={t("Home_Tip_Wallpaper_Title")}
+                message={t("Home_Tip_Wallpaper_Message")}
+                systemImage="photo.on.rectangle.angled"
+                width={42}
+                style={WALLPAPER_TIP_STYLE}
+              />
+            </View>
             <HomeTopBarButton
               icon="gears"
               route="/(settings)/settings"

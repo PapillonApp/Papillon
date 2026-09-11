@@ -19,7 +19,7 @@ const FALLBACK_COLORS = {
     primary: "#29947A",
     tint: "#29947A",
     background: "#000000",
-    overground: "#121212",
+    overground: "#000000",
     text: "#FFFFFF",
     card: "#121212",
     item: "#121212",

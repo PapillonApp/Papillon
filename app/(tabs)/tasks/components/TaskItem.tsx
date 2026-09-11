@@ -16,13 +16,15 @@ interface TaskItemProps {
   item: Homework;
   index: number;
   fromCache?: boolean;
+  /** Off for rows the week pager mounts off-screen — nobody sees them appear. */
+  animated?: boolean;
   setAsDone: (item: Homework, done: boolean) => void;
 }
 
 const TaskItem = memo(
   ({
     item,
-    fromCache = false,
+    animated = true,
     setAsDone
   }: TaskItemProps) => {
     const cleanContent = useMemo(() => item.content.replace(/<[^>]*>/g, ""), [item.content]);
@@ -31,8 +33,8 @@ const TaskItem = memo(
     return (
       <Reanimated.View
         style={{ marginBottom: 10 }}
-        entering={PapillonAppearIn}
-        exiting={PapillonAppearOut}
+        entering={animated ? PapillonAppearIn : undefined}
+        exiting={animated ? PapillonAppearOut : undefined}
       >
         <Link
           href={{

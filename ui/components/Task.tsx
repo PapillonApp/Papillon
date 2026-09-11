@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Stack from './Stack';
 import Typography from './Typography';
 import { formatHTML } from '@/utils/format/html';
@@ -34,7 +34,7 @@ interface TaskProps {
   onPress?: () => void;
 }
 
-const Task: React.FC<TaskProps> = ({
+const Task: React.FC<TaskProps> = React.memo(({
   subject,
   emoji,
   title,
@@ -48,7 +48,8 @@ const Task: React.FC<TaskProps> = ({
   onPress
 }) => {
   const theme = useTheme();
-  const tintedColor = adjust(color, theme.dark ? 0.3 : -0.3);
+  const tintedColor = useMemo(() => adjust(color, theme.dark ? 0.3 : -0.3), [color, theme.dark]);
+  const formattedDescription = useMemo(() => formatHTML(description), [description]);
 
   function formatDistanceDay(date: Date): string {
     // if yesterday, today or tomorrow
@@ -71,8 +72,11 @@ const Task: React.FC<TaskProps> = ({
 
   return (
     <ListTouchable onPress={onPress}>
-      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: (Platform.OS === 'android' && !theme.dark) ? "#FFF" : theme.colors.item, elevation: 2, overflow: "hidden" }}>
-        <Stack animated layout={Animation(LinearTransition, "list")} padding={[16, 14]} gap={12} radius={20} style={{ overflow: "hidden" }}>
+      <Stack card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: (Platform.OS === 'android' && !theme.dark) ? "#FFF" : theme.colors.item, elevation: 2, overflow: "hidden" }}>
+        {/* The card above already clips to its corners: a second rounded clip
+            here would cost another offscreen pass per row, on every row the
+            week pager moves across the screen. */}
+        <Stack padding={[16, 14]} gap={12}>
           {Platform.OS !== "android" && (
             <LinearGradient
               colors={[color, theme.colors.card]}
@@ -115,7 +119,7 @@ const Task: React.FC<TaskProps> = ({
           {/* Content */}
           <Stack animated layout={Animation(LinearTransition, "list")}>
             <Typography numberOfLines={3} variant='title' weight='medium'>
-              {formatHTML(description)}
+              {formattedDescription}
             </Typography>
           </Stack>
 
@@ -179,6 +183,8 @@ const Task: React.FC<TaskProps> = ({
       </Stack>
     </ListTouchable >
   );
-};
+});
+
+Task.displayName = "Task";
 
 export default Task;
