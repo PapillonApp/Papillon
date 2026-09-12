@@ -173,7 +173,7 @@ export default {
               "displayName": "Emploi du temps",
               "description": "Affiche tes prochains cours et événements",
               "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+                "supportedFamilies": ["systemSmall", "systemMedium"]
               }
             },
             {
@@ -183,7 +183,7 @@ export default {
               "ios": {
                 "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
               }
-            },
+            }/*,
             {
               "name": "Notes",
               "displayName": "Notes",
@@ -199,7 +199,7 @@ export default {
               "ios": {
                 "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
               }
-            }
+            }*/
           ]
         }
       ],
