@@ -69,7 +69,7 @@ const TasksWidgetLayout = (props: TasksWidgetProps, environment: WidgetEnvironme
           fixedSize(),
           scaleEffect(0.75),
           frame({ width: 35, height: 35, alignment: "leading" }),
-          offset({ x: -6 })
+          offset({ x: compact ? -10 : -6, y : compact ? -2 : 0 })
         ]}
       />
       <Spacer />
@@ -113,7 +113,7 @@ const TasksWidgetLayout = (props: TasksWidgetProps, environment: WidgetEnvironme
 
   if (compact) {
     return (
-      <VStack alignment="leading" modifiers={rootModifiers}>
+      <VStack alignment="leading" modifiers={[...rootModifiers, padding({ vertical: -2, horizontal: -4 })]}>
         {summary}
       </VStack>
     );

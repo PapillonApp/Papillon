@@ -1,8 +1,12 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAccountStore } from "@/stores/account";
-import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import type { AccountManager } from "@/services/shared";
+import { getManager } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
 import { useHomeworkForWeeks, updateHomeworkIsDone } from "@/database/useHomework";
+import { useLoadErrorAlert } from "@/hooks/useLoadErrorAlert";
+import { useManagerSubscription } from "@/hooks/useManagerSubscription";
+import { Capabilities, ServiceFailure } from "@/services/shared/types";
 import { generateId } from "@/utils/generateId";
 import { error } from '@/utils/logger/logger';
 import { trackAdvancedEvent } from '@/utils/logger/analytics';
@@ -51,11 +55,16 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [homework, setHomework] = useState<Record<string, Homework>>({});
 
-  const store = useAccountStore.getState();
-  const account = store.accounts.find(acc => acc.id === store.lastUsedAccount);
+  // Read through selectors: switching accounts has to rebuild `services`, or the
+  // filter below would keep matching the previous account and hide every task.
+  const accounts = useAccountStore(state => state.accounts);
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const account = accounts.find(acc => acc.id === lastUsedAccount);
   type Service = { id: string };
   const services = useMemo(() => account?.services?.map((s: Service) => s.id) ?? [], [account]);
   const [manager, setManager] = useState(() => getManager(true));
+  const [loadError, setLoadError] = useState<Error | null>(null);
+  const [failures, setFailures] = useState<ServiceFailure[]>([]);
 
   const cacheByWeek = useHomeworkForWeeks(weeks, refreshTrigger);
 
@@ -131,8 +140,14 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
         fetchedWeeks.current.add(week);
         setHomework(prev => ({ ...prev, ...fetched }));
         scheduleRefresh();
+        // The manager falls back to the cache rather than throwing, so a service
+        // that failed is only visible through its recorded failures.
+        setFailures(managerToUse.getFailures(Capabilities.HOMEWORK));
+        setLoadError(null);
       } catch (e) {
         error("Fetch error", String(e));
+        setFailures(managerToUse.getFailures(Capabilities.HOMEWORK));
+        setLoadError(e instanceof Error ? e : new Error(String(e)));
       } finally {
         inFlightWeeks.current.delete(week);
       }
@@ -147,16 +162,29 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     }
   }, [weeksKey, fetchWeek]);
 
-  useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
-      setManager(updatedManager);
-      fetchedWeeks.current.clear();
-      for (const week of weeksRef.current) {
-        fetchWeek(week, updatedManager, true);
-      }
-    });
-    return () => unsubscribe();
+  const managerRef = useRef(manager);
+  const handleManager = useCallback((updatedManager: AccountManager) => {
+    // The subscription is re-established whenever `fetchWeek` changes, and fires
+    // straight away with the manager already in hand: only an actually new
+    // manager is worth re-fetching every week for.
+    if (managerRef.current === updatedManager) { return; }
+    managerRef.current = updatedManager;
+    setManager(updatedManager);
+    fetchedWeeks.current.clear();
+    setLoadError(null);
+    for (const week of weeksRef.current) {
+      fetchWeek(week, updatedManager, true);
+    }
   }, [fetchWeek]);
+
+  // Without a manager nothing is ever fetched: say so rather than leaving the
+  // week looking like it simply has no homework.
+  const handleManagerUnavailable = useCallback(() => {
+    setRefreshingWeek(null);
+    setLoadError(new Error("Account manager unavailable"));
+  }, []);
+
+  useManagerSubscription(handleManager, handleManagerUnavailable);
 
   const handleRefresh = useCallback(
     async (week: number) => {
@@ -217,13 +245,23 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
         scheduleRefresh();
       }
     },
-    [scheduleRefresh]
+    [alert, scheduleRefresh]
   );
+
+  const hasData = Object.values(homeworkByWeek).some(list => list.length > 0);
+  useLoadErrorAlert({
+    subject: "tes devoirs",
+    error: loadError,
+    failures,
+    hasData,
+  });
 
   return {
     homeworkByWeek,
     refreshingWeek,
     handleRefresh,
     setAsDone,
+    error: loadError,
+    failures,
   };
 };

@@ -21,6 +21,8 @@ interface CalendarDayProps {
   insets: any;
   tabBarHeight: number;
   transportInfo?: TransportStorage;
+  /** The timetable could not be loaded: an empty day means "unknown", not "free". */
+  hasError?: boolean;
 }
 
 function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
@@ -45,7 +47,7 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
   return true;
 }
 
-export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, insets, tabBarHeight, transportInfo }: CalendarDayProps) => {
+export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, insets, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
   const { width: windowWidth } = useWindowDimensions();
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
@@ -133,7 +135,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
           />
         }
         keyExtractor={item => item.id || `${item.type}-${item.from || item.targetTime}`}
-        ListEmptyComponent={<EmptyCalendar />}
+        ListEmptyComponent={<EmptyCalendar hasError={hasError} />}
         renderItem={({ item }: { item: SharedCourse }) => {
           if ((item as any).type === "separator") {
             return (
@@ -180,6 +182,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
   return (
     prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
     prevProps.isRefreshing === nextProps.isRefreshing &&
+    prevProps.hasError === nextProps.hasError &&
     prevProps.onRefresh === nextProps.onRefresh &&
     prevProps.insets.left === nextProps.insets.left &&
     areCoursesEquivalent(prevProps.courses, nextProps.courses)

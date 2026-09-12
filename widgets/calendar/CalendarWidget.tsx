@@ -33,7 +33,9 @@ const CalendarWidgetLayout = (
 
   const family = environment.widgetFamily;
   const compact = family === "systemSmall";
-  const surface = environment.colorScheme === "dark" ? "#1C1C1E" : "#FFFFFF";
+  const themeColors =
+    environment.colorScheme === "dark" ? props.theme.dark : props.theme.light;
+  const surface = themeColors.surface;
 
   // Like Apple's Calendar widget: the small family spells one course out over
   // three lines, the wider ones trade that middle line for more courses.
@@ -45,7 +47,7 @@ const CalendarWidgetLayout = (
       <Text
         modifiers={[
           font({ family: fonts.bold, size: 13 }),
-          foregroundStyle(props.accentColor),
+          foregroundStyle(themeColors.strong),
           textCase("uppercase"),
           kerning(1),
           lineLimit(1)
@@ -163,7 +165,7 @@ const CalendarWidgetLayout = (
   }
 
   return (
-    <VStack alignment="leading" spacing={compact ? 10 : 12} modifiers={[...rootModifiers, padding({ all: 6 })]}>
+    <VStack alignment="leading" spacing={compact ? 10 : 12} modifiers={[...rootModifiers, padding(compact ? { all: 0 } : { all: 6 })]}>
       <HStack alignment="top" spacing={0}>
         {header}
         <Spacer />

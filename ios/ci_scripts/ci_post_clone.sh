@@ -13,6 +13,11 @@ brew install bun
 echo "===== Running bun install ====="
 cd ../..
 bun install
+echo "===== Checking Skia prebuilt binaries ====="
+if [ ! -d node_modules/@shopify/react-native-skia/libs/ios ]; then
+  echo "Skia libs missing, running install-skia"
+  npx install-skia
+fi
 echo "===== Logging package.json ====="
 cat package.json
 echo "===== Adding secrets ====="

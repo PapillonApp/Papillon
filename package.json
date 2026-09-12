@@ -123,6 +123,9 @@
     "typescript": "~6.0.3"
   },
   "private": true,
+  "trustedDependencies": [
+    "@shopify/react-native-skia"
+  ],
   "overrides": {
     "react-native-screens": "^4.27.0",
     "@expo/ui": "57.0.11"
