@@ -9,6 +9,7 @@ import {
   createSessionHandle,
   loginQrCode,
   SecurityError,
+  securitySource,
 } from "@blockshub/pawnote-lts";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,6 +26,7 @@ import { URLToBase64 } from "@/utils/attachments/helper";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
+import * as Device from "expo-device";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -43,6 +45,8 @@ export default function PronoteLoginWithQR() {
 
   const codeInput = React.createRef<TextInput>();
   const [QRData, setQRData] = useState<string | null>(null);
+
+  const deviceName: string = Device.deviceName ?? "Pronote" 
 
   async function loginQR() {
     setScanned(false);
@@ -71,14 +75,18 @@ export default function PronoteLoginWithQR() {
         deviceUUID: accountID
       }).catch((error) => {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          router.push({
-            pathname: "/(onboarding)/services/pronote/2fa",
-            params: {
-              error: JSON.stringify(error),
-              session: JSON.stringify(session),
-              deviceId: accountID
-            }
-          });
+          if (error.handle.shouldEnterSource && !error.handle.shouldEnterPIN) {
+            securitySource(session, deviceName.length > 30 ? "Pronote" : deviceName);
+          } else {
+            router.push({
+              pathname: "/(onboarding)/services/pronote/2fa",
+              params: {
+                error: JSON.stringify(error),
+                session: JSON.stringify(session),
+                deviceId: accountID
+              }
+            });
+          }
         } else {
           throw error;
         }

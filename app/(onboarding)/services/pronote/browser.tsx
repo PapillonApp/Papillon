@@ -1,10 +1,12 @@
 import { useRoute, useTheme } from "expo-router/react-navigation";
 import { router, useNavigation } from "expo-router";
+import * as Device from "expo-device"
 import {
   AccountKind,
   createSessionHandle,
   loginToken,
   SecurityError,
+  securitySource,
   SessionHandle,
 } from "@blockshub/pawnote-lts";
 import React, { createRef, RefObject, useEffect, useState } from "react";
@@ -74,6 +76,7 @@ export default function PronoteENTLogin() {
 
   const [deviceUUID] = useState(() => relinkDeviceUUID || uuid());
   const [received, setReceived] = useState<boolean>(false);
+  const deviceName: string = Device.deviceName ?? "Pronote" 
   console.log("WebViewScreen initialized with URL:", url);
 
   const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
@@ -316,6 +319,10 @@ export default function PronoteENTLogin() {
         return router.replace('/');
       } catch (error) {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
+          if (error.handle.shouldEnterSource && !error.handle.shouldEnterPIN) {
+            securitySource(session, deviceName.length > 30 ? "Pronote" : deviceName);
+            return router.replace("/");
+          }
           setDoubleAuthError(error)
           setDoubleAuthSession(session)
           setDeviceId(deviceUUID)
