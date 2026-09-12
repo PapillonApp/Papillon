@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppState, type AppStateStatus } from "react-native";
 
-import { useTimetableWidgetData } from "@/app/(tabs)/index/hooks/useTimetableWidgetData";
+import {
+  useTimetableWidgetData,
+  type UpcomingCourseDay
+} from "@/app/(tabs)/index/hooks/useTimetableWidgetData";
 import { useUpcomingHomework } from "@/app/(tabs)/tasks/hooks/useUpcomingHomework";
 import { useSettingsStore } from "@/stores/settings";
 import { AppColors } from "@/utils/colors";
@@ -11,6 +14,8 @@ import { useFont } from "@/utils/theme/fonts";
 
 import { CalendarWidget } from "./calendar/CalendarWidget";
 import { buildCalendarTimeline } from "./calendar/data";
+import { nextLiveActivityTransition } from "./course/selection";
+import { syncCourseLiveActivity } from "./course/liveActivity";
 import { TasksWidget } from "./tasks/TasksWidget";
 import { buildTasksTimeline } from "./tasks/data";
 import { buildWidgetTheme, type WidgetFonts } from "./theme";
@@ -79,6 +84,57 @@ const push = (name: string, update: () => void) => {
 };
 
 /**
+ * The longest a transition timer is allowed to run for. Anything further out is
+ * re-checked from here rather than waited on in one go — the app is unlikely to
+ * still be in the foreground by then anyway.
+ */
+const MAX_TRANSITION_DELAY_MS = 30 * 60 * 1000;
+
+/**
+ * Keeps the course Live Activity in step with the timetable. Live Activities
+ * cannot be scheduled ahead of time without a push, so the app starts, updates
+ * and ends them itself: on every foreground, whenever the courses change, and
+ * at the exact moment the answer changes while it is open — a course coming
+ * within a quarter of an hour, starting, or ending.
+ */
+const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
+  const testMode = useSettingsStore(
+    (state) => state.personalization.liveActivityTestMode ?? false
+  );
+  // Labels and the fonts the layout draws with are resolved by the app, so the
+  // content has to be rebuilt when either changes.
+  const { i18n } = useTranslation();
+  const fontFamily = useSettingsStore((state) => state.personalization.fontFamily);
+  const foregroundTick = useForegroundTick();
+  const [transitionTick, setTransitionTick] = useState(0);
+  const timeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const courses = useMemo(() => days.flatMap((day) => day.courses), [days]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    const at = new Date();
+    // Never rejects — it reports its own failures.
+    syncCourseLiveActivity(courses, { at, testMode });
+
+    const next = nextLiveActivityTransition(courses, at);
+    if (next === null) {
+      return;
+    }
+
+    // A second of slack, so the clock has passed the moment rather than landed
+    // exactly on it.
+    const delay = Math.min(next - at.getTime() + 1000, MAX_TRANSITION_DELAY_MS);
+    timeout.current = setTimeout(() => setTransitionTick((value) => value + 1), delay);
+
+    return () => clearTimeout(timeout.current);
+  }, [courses, loading, testMode, fontFamily, i18n.language, foregroundTick, transitionTick]);
+};
+
+/**
  * Keeps the home screen widgets in sync with the app's data. Mounted once at the
  * root, so widgets are refreshed on every launch and whenever the data they
  * display changes while the app is running.
@@ -93,6 +149,8 @@ export const useWidgetSync = () => {
   // user switches language.
   const { i18n } = useTranslation();
   const foregroundTick = useForegroundTick();
+
+  useCourseLiveActivity(upcomingDays, loading);
 
   useEffect(() => {
     if (loading) {

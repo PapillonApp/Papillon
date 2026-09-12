@@ -40,6 +40,7 @@ export interface Personalization {
   showAlertAtLogin?: boolean;
   showDevMode?: boolean;
   mockDataEnabled?: boolean;
+  liveActivityTestMode?: boolean;
   magicModelURL?: string;
   language?: string | null;
   wallpaper?: Wallpaper;
