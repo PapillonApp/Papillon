@@ -73,7 +73,10 @@ export default {
         LSApplicationQueriesSchemes: ["maps"],
       },
       entitlements: {
-        "com.apple.security.application-groups": ["group.xyz.getpapillon"],
+        "com.apple.security.application-groups": [
+          "group.xyz.getpapillon",
+          "group.xyz.getpapillon.ios",
+        ],
       },
       supportsTablet: true,
       config: {
@@ -159,6 +162,48 @@ export default {
         },
       ],
       [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "xyz.getpapillon.ios.widgets",
+          "groupIdentifier": "group.xyz.getpapillon.ios",
+          "enablePushNotifications": true,
+          "widgets": [
+            {
+              "name": "Calendar",
+              "displayName": "Emploi du temps",
+              "description": "Affiche tes prochains cours et événements",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium"]
+              }
+            },
+            {
+              "name": "Tasks",
+              "displayName": "Tâches",
+              "description": "Affiche tes tâches à faire",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+              }
+            }/*,
+            {
+              "name": "Notes",
+              "displayName": "Notes",
+              "description": "Affiche tes dernières notes",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+              }
+            },
+            {
+              "name": "Averages",
+              "displayName": "Moyenne générale",
+              "description": "Affiche ta moyenne générale",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+              }
+            }*/
+          ]
+        }
+      ],
+      [
         "expo-build-properties",
         {
           android: {
@@ -173,6 +218,7 @@ export default {
           },
         },
       ],
+      "./plugins/with-widget-fonts",
       "./plugins/with-ios-native-files",
       "./plugins/with-android-gradle-properties-newline",
     ],

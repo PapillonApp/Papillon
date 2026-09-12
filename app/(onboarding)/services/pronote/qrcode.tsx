@@ -7,8 +7,12 @@ import { router } from "expo-router";
 import {
   AuthenticateError,
   createSessionHandle,
+  DoubleAuthMode,
+  finishLoginManually,
   loginQrCode,
+  RefreshInformation,
   SecurityError,
+  securitySave,
   securitySource,
 } from "@blockshub/pawnote-lts";
 import React, { useEffect, useState } from "react";
@@ -69,14 +73,28 @@ export default function PronoteLoginWithQR() {
       };
 
       const session = createSessionHandle(customFetcher);
-      const refresh = await loginQrCode(session, {
-        qr: data,
-        pin: QRValidationCode,
-        deviceUUID: accountID
-      }).catch((error) => {
+      let refresh: RefreshInformation | undefined;
+      try {
+        refresh = await loginQrCode(session, {
+          qr: data,
+          pin: QRValidationCode,
+          deviceUUID: accountID
+        })
+      } catch(error) {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
           if (error.handle.shouldEnterSource && !error.handle.shouldEnterPIN) {
-            securitySource(session, deviceName.length > 30 ? "Pronote" : deviceName);
+            const mode: DoubleAuthMode = DoubleAuthMode.MGDA_NotificationSeulement;
+            const source = deviceName.length > 30 ? "Pronote" : deviceName;
+            await securitySource(session, source);
+            await securitySave(session, error.handle, { mode, deviceName: source });
+
+            const context = error.handle.context;
+            refresh = await finishLoginManually(
+              session,
+              context.authentication,
+              context.identity,
+              context.initialUsername,
+            );
           } else {
             router.push({
               pathname: "/(onboarding)/services/pronote/2fa",
@@ -87,10 +105,8 @@ export default function PronoteLoginWithQR() {
               }
             });
           }
-        } else {
-          throw error;
         }
-      });
+      }
 
       if (!refresh) { throw AuthenticateError; }
 

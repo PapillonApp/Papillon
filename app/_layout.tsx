@@ -14,6 +14,7 @@ import { useNetworkStore } from '@/stores/logs';
 import { checkConsent } from '@/utils/logger/consent';
 import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
+import { useWidgetSync } from '@/widgets';
 import { LogBox } from 'react-native';
 
 // Polyfill Buffer
@@ -36,6 +37,8 @@ export default function RootLayout() {
   const { isAppReady, fontsLoaded } = useAppInitialization();
   const segments = useSegments();
   const lastTrackedView = useRef<string | null>(null);
+
+  useWidgetSync();
 
   const analyticsView = useMemo(() => {
     if (segments.length === 0) return null;
