@@ -105,7 +105,7 @@ function TabOneScreen() {
 
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
-  const account = accounts.find(a => a.id === lastUsedAccount)!;
+  const account = accounts.find(a => a.id === lastUsedAccount);
 
   const {
     date,
@@ -126,7 +126,11 @@ function TabOneScreen() {
     timetable,
     manualRefreshing,
     handleRefresh,
+    error: timetableError,
+    failures: timetableFailures,
   } = useTimetableData(weekNumber, date);
+
+  const hasTimetableError = Boolean(timetableError) || timetableFailures.length > 0;
 
   // The header is rebuilt natively whenever its options change, so the title and
   // the toolbar label are anchored to the last *settled* day instead of the live
@@ -234,9 +238,10 @@ function TabOneScreen() {
         insets={insets}
         tabBarHeight={tabBarHeight}
         transportInfo={account?.transport ?? undefined}
+        hasError={hasTimetableError}
       />
     );
-  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, insets, tabBarHeight, account]);
+  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, insets, tabBarHeight, account, hasTimetableError]);
 
   return (
     <>

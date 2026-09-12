@@ -29,6 +29,10 @@ export const useHomeData = () => {
 
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping timetable fetch');
+      return;
+    }
     const date = new Date();
     const weekNumber = getWeekNumberFromDate(date);
     await manager.getWeeklyTimetable(weekNumber, date);
@@ -197,6 +201,18 @@ export const useHomeData = () => {
           icon: "GlobeCross",
           color: "#FF8C00",
           withoutNavbar: true,
+        });
+      } else if (!(error instanceof SecurityChallengeError)) {
+        // Anything left is unexpected. Saying so beats a home screen that
+        // silently keeps showing the last synchronisation.
+        warn(String(error), "useHomeData");
+        alert.showAlert({
+          title: "Synchronisation impossible",
+          description: "Nous n'avons pas réussi à mettre à jour tes données. Vérifie ta connexion, puis tire la page vers le bas pour réessayer.",
+          icon: "GlobeCross",
+          color: "#D60046",
+          withoutNavbar: true,
+          technical: String(error),
         });
       }
     }

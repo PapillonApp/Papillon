@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useManagerSubscription } from "@/hooks/useManagerSubscription";
 import type { AccountManager } from "@/services/shared";
-import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import { getManager } from "@/services/shared";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
 import type { Kid } from "@/services/shared/kid";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
@@ -170,24 +171,38 @@ export function useGradesData(
   );
 
   useEffect(() => {
-    if (!period) {
-      requestIdRef.current++;
-      applyResult(undefined);
-      setFailures([]);
-      setLoading(false);
-      return;
-    }
+    if (period) { return; }
+    requestIdRef.current++;
+    applyResult(undefined);
+    setFailures([]);
+    setLoading(false);
+  }, [period, applyResult]);
 
-    const unsubscribe = subscribeManagerUpdate(manager => {
-      fetchGrades(manager, period);
-    });
+  const handleManager = useCallback((manager: AccountManager) => {
+    if (!period) { return; }
+    fetchGrades(manager, period);
+  }, [fetchGrades, period]);
 
-    return unsubscribe;
-  }, [period, fetchGrades, applyResult]);
+  // Nothing else ever ends the load if no manager turns up, so the spinner
+  // would stay on screen indefinitely.
+  const handleManagerUnavailable = useCallback(() => {
+    if (!period) { return; }
+    setLoading(false);
+    setRefreshing(false);
+    setError(new Error("Account manager unavailable"));
+  }, [period]);
+
+  useManagerSubscription(handleManager, handleManagerUnavailable);
 
   const refresh = useCallback(async () => {
     const manager = getManager();
-    if (!manager || !period) { return; }
+    if (!period) { return; }
+    if (!manager) {
+      // A pull-to-refresh has to end in something the user can see.
+      setRefreshing(false);
+      setError(new Error("Account manager unavailable"));
+      return;
+    }
     await fetchGrades(manager, period, true);
   }, [fetchGrades, period]);
 

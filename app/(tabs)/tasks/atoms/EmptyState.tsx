@@ -9,9 +9,11 @@ import React, { memo } from "react";
 
 interface EmptyStateProps {
   isSearching: boolean;
+  /** The week is empty because it could not be loaded, not because there is nothing to do. */
+  hasError?: boolean;
 }
 
-const EmptyState = memo(({ isSearching }: EmptyStateProps) => (
+const EmptyState = memo(({ isSearching, hasError = false }: EmptyStateProps) => (
   <Dynamic
     animated
     key="empty-list:warn"
@@ -20,15 +22,19 @@ const EmptyState = memo(({ isSearching }: EmptyStateProps) => (
   >
     <Stack hAlign="center" vAlign="center" flex style={{ width: "100%" }}>
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons name={isSearching ? "Search" : "tasks"} />
+        <Papicons name={hasError ? "GlobeCross" : isSearching ? "Search" : "tasks"} />
       </Icon>
       <Typography variant="h4" color="text" align="center">
-        {isSearching ? t("Tasks_Search_NoResults") : t("Tasks_NoTasks_Title")}
+        {hasError
+          ? "Devoirs indisponibles"
+          : isSearching ? t("Tasks_Search_NoResults") : t("Tasks_NoTasks_Title")}
       </Typography>
       <Typography variant="body2" color="secondary" align="center">
-        {isSearching
-          ? "Essaie avec un autre mot clé."
-          : t("Tasks_NoTasks_Description")}
+        {hasError
+          ? "Nous n'avons pas réussi à récupérer tes devoirs. Tire la page vers le bas pour réessayer."
+          : isSearching
+            ? "Essaie avec un autre mot clé."
+            : t("Tasks_NoTasks_Description")}
       </Typography>
     </Stack>
   </Dynamic>

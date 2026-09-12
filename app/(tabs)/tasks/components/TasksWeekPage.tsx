@@ -18,6 +18,8 @@ interface TasksWeekPageProps {
   setAsDone: (item: Homework, done: boolean) => void;
   /** Only the page the screen opens on animates its rows in — see TasksList. */
   animateItems?: boolean;
+  /** The homework could not be loaded. */
+  hasError?: boolean;
 }
 
 // One page of the week pager. Sections are derived here rather than on the
@@ -33,6 +35,7 @@ const TasksWeekPage: React.FC<TasksWeekPageProps> = ({
   onRefresh,
   setAsDone,
   animateItems,
+  hasError,
 }) => {
   const sections = useMemo(
     () => buildHomeworkSections(homeworks ?? [], { searchTerm, sortMethod }),
@@ -52,6 +55,7 @@ const TasksWeekPage: React.FC<TasksWeekPageProps> = ({
       sortMethod={sortMethod}
       setAsDone={setAsDone}
       animateItems={animateItems}
+      hasError={hasError}
       // Until the week has been read once, an empty page means "not loaded
       // yet", not "nothing to do".
       isLoaded={homeworks !== undefined}
