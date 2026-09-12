@@ -13,32 +13,22 @@ import { useFont } from "@/utils/theme/fonts";
 
 export interface WeekEventBlockProps {
   course: Course;
-  /** Vertical frame as a share of the grid, so a zoom needs no re-render. */
   topRatio: number;
   heightRatio: number;
-  /** Horizontal frame inside the day column, in pixels. */
   left: number;
   width: number;
-  /** How tall the block currently is, to pick how much detail to show. */
   renderedHeight: number;
   minHeight: number;
 }
 
-// Heights at which another line of detail still fits inside the block.
 const ROOM_MIN_HEIGHT = 42;
 const TIME_MIN_HEIGHT = 62;
-// Below this the block is too narrow for anything but the subject name.
 const DETAIL_MIN_WIDTH = 76;
 
 function formatTime(date: Date) {
   return date.toLocaleTimeString(i18n.language, { hour: "2-digit", minute: "2-digit" });
 }
 
-/**
- * One course drawn in the weekly grid, positioned by the caller. Blocks are
- * absolutely placed rather than laid out in a flow, so only their own frame
- * changes when the grid is re-measured.
- */
 export const WeekEventBlock = React.memo(({
   course,
   topRatio,

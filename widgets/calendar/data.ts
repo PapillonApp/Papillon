@@ -11,7 +11,6 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { formatRelativeDayLabel } from "../dates";
 import { buildWidgetTheme, type WidgetFonts, type WidgetTheme } from "../theme";
 
-/** Enough events for the large family, which shows the most of them. */
 const MAX_EVENTS = 6;
 
 const MAX_TIMELINE_ENTRIES = 24;
@@ -30,7 +29,6 @@ export type CalendarWidgetProps = {
   dayLabel: string;
   dayNumber: string;
   accentColor: string;
-  /** Tinted from the first upcoming course's color, for the compact background. */
   theme: WidgetTheme;
   emptyLabel: string;
   events: CalendarWidgetEvent[];
@@ -79,12 +77,6 @@ const buildProps = (
   };
 };
 
-/**
- * Turns the upcoming days into the entries WidgetKit will walk through on its
- * own. The rendered content only changes when a course ends (it drops off the
- * list) or when the day rolls over (the "Aujourd'hui"/"Demain" label moves), so
- * those two moments are the only ones worth an entry.
- */
 export const buildCalendarTimeline = (
   days: UpcomingCourseDay[],
   from: Date,

@@ -36,11 +36,8 @@ import {
 import { EmptyCalendar } from "./EmptyCalendar";
 import { WeekEventBlock } from "./WeekEventBlock";
 
-// The pager addresses pages by index, so its data is a fixed-length stand-in
-// built once rather than rebuilt on every render.
 const PAGES: undefined[] = Array.from({ length: PAGE_COUNT });
 
-/** Day headers are kept rendered one page either side of the visible one. */
 const HEADER_WINDOW_PAGES = 1;
 
 const NOW_TICK_MS = 60_000;
@@ -48,46 +45,30 @@ const NOW_COLOR = "#FF3B30";
 
 const NO_COURSES: Course[] = [];
 
-/**
- * Height of the grid at the live zoom. Everything inside it is laid out in
- * shares of this height, so resizing it is the whole of a zoom: no block has to
- * be re-rendered while the pinch is in flight.
- */
 function useGridHeightStyle(hourHeight: SharedValue<number>, hours: number) {
   return useAnimatedStyle(() => ({ height: hourHeight.value * hours }), [hours]);
 }
 
 export interface WeekViewProps {
-  /** Day the grid is anchored on. Changing it from outside jumps to its page. */
   date: Date;
   timetable: CourseDay[];
   geometry: WeekGeometry;
   isRefreshing: boolean;
   onRefresh: () => void;
-  /** The timetable could not be loaded: an empty grid means "unknown", not "free". */
   hasError?: boolean;
-  /** Live pager position, in pages, shared with the header title. */
   scrollPage: SharedValue<number>;
-  /** Fires as soon as a page boundary is crossed, to start loading its week. */
   onPageCrossed: (page: number) => void;
-  /** Fires once the pager comes to rest, to relabel the header. */
   onPageSettled: (page: number) => void;
-  /** Height of the transparent navigation bar sitting above the grid. */
   topInset: number;
   bottomInset: number;
 }
-
-/* -------------------------------------------------------------------------- */
 
 interface DayColumnProps {
   courses: Course[];
   range: HourRange;
   width: number;
-  /** Committed hour height, to size each block's text. The live zoom is separate. */
   hourHeight: number;
   separatorColor: string;
-  /** First day of a week: drawn with a firmer rule, since a skipped weekend
-   *  otherwise leaves Friday and Monday looking like consecutive days. */
   startsWeek: boolean;
   weekSeparatorColor: string;
 }
@@ -122,8 +103,6 @@ const DayColumn = React.memo(({
 });
 
 DayColumn.displayName = "DayColumn";
-
-/* -------------------------------------------------------------------------- */
 
 interface WeekPageProps {
   pageIndex: number;
@@ -175,8 +154,6 @@ const WeekPage = React.memo(({
 });
 
 WeekPage.displayName = "WeekPage";
-
-/* -------------------------------------------------------------------------- */
 
 interface DayHeaderCellProps {
   date: Date;
@@ -233,16 +210,6 @@ const DayHeaderCell = React.memo(({
 
 DayHeaderCell.displayName = "DayHeaderCell";
 
-/* -------------------------------------------------------------------------- */
-
-/**
- * The weekly grid: a fixed row of day names, an hour gutter, and a horizontal
- * pager of day columns that all share one vertical scroll.
- *
- * The pager owns the horizontal position. The day names and the current-time
- * marker are plain views translated by the pager's live offset on the UI thread,
- * so neither has to be re-rendered while a page is being swiped.
- */
 export function WeekView({
   date,
   timetable,
@@ -260,13 +227,9 @@ export function WeekView({
   const font = useFont();
 
   const listRef = useRef<FlatList<any>>(null);
-  // Animated so the pinch can keep the hour under the fingers in place from the
-  // UI thread, without a round trip through JS on every frame.
   const verticalRef = useAnimatedRef<Reanimated.ScrollView>();
 
   const initialPage = useRef(geometry.pageOfDate(date)).current;
-  // Page the grid is resting on. Decides which day headers stay rendered, so it
-  // follows every crossing instead of waiting for the pager to settle.
   const [windowPage, setWindowPage] = useState(initialPage);
   const currentPage = useRef(initialPage);
 
@@ -284,10 +247,6 @@ export function WeekView({
   const separatorColor = textColor + "14";
   const weekSeparatorColor = textColor + "33";
 
-  /* ------------------------------------------------------------ grid extent */
-
-  // Held by value rather than by identity: the timetable is rebuilt on every
-  // refresh, and a new range object would re-lay out every day column with it.
   const measuredRange = useMemo(() => getHourRange(timetable), [timetable]);
   const rangeRef = useRef(measuredRange);
   if (
@@ -299,17 +258,12 @@ export function WeekView({
   const range = rangeRef.current;
   const totalHours = range.endHour - range.startHour;
 
-  /* ------------------------------------------------------------------- zoom */
-
   const storedHourHeight = useSettingsStore(state => state.personalization.calendarHourHeight);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-  // Committed zoom, which decides how much detail each block shows. The live
-  // value below runs ahead of it during a pinch and is committed on release.
   const [hourHeight, setHourHeight] = useState(() => clampHourHeight(storedHourHeight ?? BASE_HOUR_HEIGHT));
   const liveHourHeight = useSharedValue(hourHeight);
   const gridHeight = totalHours * hourHeight;
-  // One instance per view: an animated style belongs to a single component.
   const gridRowHeightStyle = useGridHeightStyle(liveHourHeight, totalHours);
   const pagerHeightStyle = useGridHeightStyle(liveHourHeight, totalHours);
 
@@ -321,10 +275,6 @@ export function WeekView({
     return map;
   }, [timetable]);
 
-  /* ----------------------------------------------------------------- paging */
-
-  // Held in a ref so the scroll worklet below is built once: rebuilding it on
-  // every crossing would re-attach the handler mid-swipe.
   const onPageCrossedRef = useRef(onPageCrossed);
   useEffect(() => {
     onPageCrossedRef.current = onPageCrossed;
@@ -336,8 +286,6 @@ export function WeekView({
     onPageCrossedRef.current(page);
   }, []);
 
-  // Runs on the UI thread so the header title and the day names keep up with the
-  // pager even while JS is busy; JS only hears about whole-page crossings.
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       const position = event.contentOffset.x / pageWidth;
@@ -366,9 +314,6 @@ export function WeekView({
     settleAt(event.nativeEvent.contentOffset.x);
   }, [settleAt]);
 
-  // A day picked from the header's calendar jumps to the page holding it. A day
-  // that is already on screen leaves the pager alone, so reporting a settled
-  // page can never scroll it back.
   useEffect(() => {
     if (geometry.pageContainsDate(currentPage.current, date)) {
       return;
@@ -382,14 +327,9 @@ export function WeekView({
     listRef.current?.scrollToIndex({ index: target, animated: false });
   }, [date, geometry, pageWidth, lastCrossedPage, scrollPage, scrollX]);
 
-  /* ------------------------------------------------------- vertical position */
-
   const hasUserScrolled = useRef(false);
   const lastAutoScrollKey = useRef("");
 
-  // Puts the interesting part of the day at the top of the viewport: the current
-  // hour when today is on screen, otherwise the first course of the visible
-  // page. Stops as soon as the user scrolls the grid themselves.
   useEffect(() => {
     if (hasUserScrolled.current || gridHeight <= 0) {
       return;
@@ -444,8 +384,6 @@ export function WeekView({
     },
   });
 
-  /* ------------------------------------------------------------ pinch zoom */
-
   const commitHourHeight = useCallback((value: number) => {
     const rounded = Math.round(value * 10) / 10;
     setHourHeight(previous => (previous === rounded ? previous : rounded));
@@ -456,9 +394,6 @@ export function WeekView({
   const pinchStartScrollY = useSharedValue(0);
   const pinchFocalY = useSharedValue(0);
 
-  // Pinching resizes the grid and, in the same frame, moves the scroll offset so
-  // the hour between the fingers stays put — the grid grows around it rather
-  // than away from it.
   const pinch = useMemo(() => Gesture.Pinch()
     .onStart(event => {
       pinchStartHourHeight.value = liveHourHeight.value;
@@ -488,8 +423,6 @@ export function WeekView({
     verticalRef,
   ]);
 
-  /* --------------------------------------------------------- current time bar */
-
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), NOW_TICK_MS);
@@ -498,9 +431,6 @@ export function WeekView({
 
   const todayStart = startOfDay(now).getTime();
   const nowMinutes = minutesIntoDay(now);
-  // A hidden weekend day has no column of its own and folds onto the next day
-  // the grid draws; the marker has to sit this one out rather than claim to be
-  // the current time on somebody else's Monday.
   const todayHasColumn = startOfDay(geometry.dateOfDayIndex(geometry.dayIndexOfDate(now))).getTime() === todayStart;
   const nowVisible = todayHasColumn
     && nowMinutes >= range.startHour * 60
@@ -511,8 +441,6 @@ export function WeekView({
   const nowStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: todayOffsetX - scrollX.value }],
   }), [todayOffsetX]);
-
-  /* ------------------------------------------------------------- day headers */
 
   const { cells: headerCells, offsetX: headerOffsetX } = useMemo(() => {
     const start = geometry.dayIndexOfPage(windowPage - HEADER_WINDOW_PAGES);
@@ -541,10 +469,6 @@ export function WeekView({
     transform: [{ translateX: headerOffsetX - scrollX.value }],
   }), [headerOffsetX]);
 
-  /* --------------------------------------------------------------- hour grid */
-
-  // Half-hour lines only earn their place once an hour is tall enough that the
-  // eye cannot halve it on its own.
   const showHalfHours = hourHeight >= HALF_HOUR_LINE_THRESHOLD;
 
   const hourLines = useMemo(() => {
@@ -598,8 +522,6 @@ export function WeekView({
     return labels;
   }, [range, totalHours, textColor, font]);
 
-  /* ------------------------------------------------------------------ render */
-
   const renderPage = useCallback(({ index }: { index: number }) => (
     <WeekPage
       pageIndex={index}
@@ -645,8 +567,6 @@ export function WeekView({
           <Reanimated.ScrollView
             ref={verticalRef}
             style={styles.vertical}
-            // The first hour label straddles the top of the grid: a little padding
-            // keeps it readable when the grid is scrolled to the top.
             contentContainerStyle={{ paddingTop: 8, paddingBottom: bottomInset + 16 }}
             contentInsetAdjustmentBehavior="never"
             showsVerticalScrollIndicator={false}
@@ -797,7 +717,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   dayColumn: {
-    // Definite, so the blocks inside can size themselves as shares of it.
     height: "100%",
     borderLeftWidth: StyleSheet.hairlineWidth,
   },

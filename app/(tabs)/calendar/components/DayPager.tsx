@@ -15,7 +15,6 @@ import type { TransportStorage } from "@/stores/account/types";
 import type { CalendarState } from "../hooks/useCalendarState";
 import { CalendarDay } from "./CalendarDay";
 
-// One page per day, centred on the pager's initial index.
 const DAYS: undefined[] = Array.from({ length: 20001 });
 
 export interface DayPagerProps {
@@ -25,16 +24,11 @@ export interface DayPagerProps {
   onRefresh: () => void;
   hasError: boolean;
   transportInfo?: TransportStorage;
-  /** Day the header is currently labelled for, as an index into the pager. */
   settledIndex: number;
   onSettle: (index: number) => void;
-  /** Live pager position, in pages, shared with the header title. */
   scrollPage: SharedValue<number>;
 }
 
-/**
- * The list mode: one scrollable day per page, swiped horizontally.
- */
 export function DayPager({
   calendar,
   timetable,
@@ -60,23 +54,18 @@ export function DayPager({
     windowWidth,
   } = calendar;
 
-  // Read once: the pager is remounted when the calendar switches modes, and that
-  // is the only time its starting page can change.
   const initialIndex = useRef(currentIndex).current;
 
   const lastEmittedPage = useSharedValue(settledIndex);
 
-  // The theme exposes its colours as `ColorValue`, which can be an opaque
-  // platform handle; the day only ever needs the two it tints with.
   const dayColors = useMemo(() => ({
     primary: String(colors.primary),
     background: String(colors.background),
   }), [colors.primary, colors.background]);
 
-  // A window resize changes the page width under the pager: the scroll offset
-  // still points at the old geometry, which would otherwise be read back as a
-  // completely different day. Pin the pager back onto the settled day at the new
-  // width, and ignore every offset until it lands.
+  // A resize changes the page width under the pager: the scroll offset still
+  // points at the old geometry and would read back as a completely different day.
+  // Pin it back onto the settled day, and ignore every offset until it lands.
   const previousWidth = useRef(windowWidth);
   useLayoutEffect(() => {
     if (previousWidth.current === windowWidth) {
@@ -90,8 +79,7 @@ export function DayPager({
     lastEmittedPage.value = settledIndex;
     flatListRef.current?.scrollToOffset({ offset, animated: false });
 
-    // The list re-lays out its items a frame later, so the offset has to be
-    // reasserted once the new widths are in place.
+    // The list re-lays out its items a frame later, so the offset has to be reasserted.
     const frame = requestAnimationFrame(() => {
       flatListRef.current?.scrollToOffset({ offset, animated: false });
       isResizingRef.current = false;
@@ -103,9 +91,6 @@ export function DayPager({
     onScroll({ nativeEvent: { contentOffset: { x } } });
   }, [onScroll]);
 
-  // Runs on the UI thread so the title keeps up with the pager even while JS is
-  // busy. `onScroll` only reacts to whole-page changes, so it is bridged back to
-  // JS on day crossings instead of every frame.
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       const page = event.contentOffset.x / windowWidth;

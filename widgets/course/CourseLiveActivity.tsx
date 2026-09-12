@@ -19,11 +19,9 @@ import { createLiveActivity, type LiveActivityEnvironment } from "expo-widgets";
 
 import type { CourseLiveActivityProps } from "./content";
 
-// Everything this layout needs has to live inside the function: it is
-// serialized and re-evaluated by the widget extension, which has no access to
-// the app bundle, so a reference to anything outside throws at render time.
-// That is why the sizes and the colours arrive as props — see `sizes.ts` and
-// `appearance.ts`, which is where they are meant to be edited.
+// Serialized and re-evaluated inside the widget extension, which cannot reach
+// the app bundle: anything referenced from outside this function throws.
+// Sizes and colours therefore arrive as props — see `sizes.ts` and `appearance.ts`.
 const CourseLiveActivityLayout = (
   props: CourseLiveActivityProps,
   _environment: LiveActivityEnvironment
@@ -34,28 +32,16 @@ const CourseLiveActivityLayout = (
   const ink = props.appearance.ink;
   const sizes = props.sizes;
 
-  // The extension evaluates this at render time, so the course can move from
-  // "about to start" to "under way" on its own — the app does not have to be
-  // running for the switch. The staleDate the app hands to ActivityKit is the
-  // moment of that switch, which is what gets the system to re-render here.
   const now = Date.now();
   const ongoing = now >= props.startsAt;
   const ended = now >= props.endsAt;
 
   const countsTo = new Date(ongoing ? props.endsAt : props.startsAt);
-  // A timer needs an interval, not just a target: before the course starts the
-  // interval opens at the moment this content was built, so what it counts down
-  // is the wait the user is actually in.
   const countsFrom = new Date(
     ongoing ? props.startsAt : Math.min(props.referenceAt, props.startsAt)
   );
   const targetTime = ongoing ? props.endTime : props.startTime;
 
-  // The roll only lands on the slower positions: the minutes and hours change
-  // through a view update the transition can animate, while the seconds are
-  // ticked by the system's own timer-text renderer, which redraws them without
-  // going through SwiftUI at all. `monospacedDigit` is what keeps the digits
-  // from shifting sideways either way.
   const timer = (
     size: number,
     color: string,
@@ -85,20 +71,10 @@ const CourseLiveActivityLayout = (
     />
   );
 
-  // A running clock reserves the room of the widest one it could ever show
-  // rather than the one it is showing, which is what holds the island open and
-  // pulls a trailing clock off its edge. What it needs is known here: a
-  // countdown only ever runs down from what is left of it.
   const longCountdown = countsTo.getTime() - now >= 60 * 60 * 1000;
   const timerWidth = (size: number) =>
     Math.ceil(size * (longCountdown ? sizes.timerBox.long : sizes.timerBox.short));
 
-  // The one thing that does move every second: the system runs this
-  // continuously rather than a step at a time, which is what the digits cannot
-  // do. It fills through a course under way and empties through the wait for
-  // one about to start, so the bar always reads as "how far along are we".
-  // `labelsHidden` drops the remaining time it would otherwise write next to
-  // itself — the countdown above already says it.
   const progress = (
     <ProgressView
       timerInterval={{ lower: countsFrom, upper: countsTo }}
@@ -123,9 +99,6 @@ const CourseLiveActivityLayout = (
     <Text modifiers={[font({ size })]}>{props.emoji}</Text>
   );
 
-  // The Lock Screen banner and the expanded island are built out of the same two
-  // blocks, so moving between them reads as one thing growing rather than two
-  // layouts swapping over.
   const schedule = (timerSize: number) => (
     <VStack alignment="trailing" spacing={0}>
       {!ended && (
@@ -134,8 +107,6 @@ const CourseLiveActivityLayout = (
             font({ family: fonts.semibold, size: sizes.schedule.label }),
             foregroundStyle(ink.detail),
             lineLimit(1),
-            // "Se termine dans" all but fills the trailing region: better it
-            // gives up a point of size than an end of the word.
             minimumScaleFactor(0.7)
           ]}
         >
@@ -161,8 +132,6 @@ const CourseLiveActivityLayout = (
     </VStack>
   );
 
-  // The hour the countdown runs to joins the room and the teacher, since the
-  // countdown itself has the trailing block to itself.
   const course = (
     <VStack alignment="leading" spacing={sizes.course.gap}>
       <Spacer modifiers={[frame({ height: sizes.course.lead })]} />
@@ -245,8 +214,6 @@ const CourseLiveActivityLayout = (
         {props.emoji}
       </Text>
     ),
-    // The timer carries no padding of its own — the frame it needs for its
-    // width would swallow it — so the inset goes on a wrapper instead.
     compactTrailing: (
       <HStack modifiers={[padding({ trailing: sizes.island.compact.trailing })]}>
         {ended ? (
@@ -287,9 +254,6 @@ const CourseLiveActivityLayout = (
         {schedule(sizes.island.expanded.timer)}
       </VStack>
     ),
-    // The course goes in the bottom region rather than beside the badge: the
-    // leading region is a third of the width, which is not enough for a subject
-    // name and a room.
     expandedBottom: (
       <VStack
         alignment="leading"

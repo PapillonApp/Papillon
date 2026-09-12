@@ -49,10 +49,6 @@ const useWidgetFonts = (): WidgetFonts => {
   );
 };
 
-/**
- * Bumps a counter every time the app comes back to the foreground, so the
- * widget timelines get rebuilt (with a fresh `new Date()`) on every focus.
- */
 const useForegroundTick = () => {
   const [tick, setTick] = useState(0);
 
@@ -83,20 +79,11 @@ const push = (name: string, update: () => void) => {
   }
 };
 
-/**
- * The longest a transition timer is allowed to run for. Anything further out is
- * re-checked from here rather than waited on in one go — the app is unlikely to
- * still be in the foreground by then anyway.
- */
 const MAX_TRANSITION_DELAY_MS = 30 * 60 * 1000;
 
-/**
- * Keeps the course Live Activity in step with the timetable. Live Activities
- * cannot be scheduled ahead of time without a push, so the app starts, updates
- * and ends them itself: on every foreground, whenever the courses change, and
- * at the exact moment the answer changes while it is open — a course coming
- * within a quarter of an hour, starting, or ending.
- */
+// Live Activities cannot be scheduled ahead without a push, so the app starts,
+// updates and ends them itself: on foreground, on data change, and on a timer
+// set to the exact moment the selected course changes.
 const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
   const enabled = useSettingsStore(
     (state) => state.personalization.liveActivitiesEnabled ?? true
@@ -104,8 +91,6 @@ const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
   const testMode = useSettingsStore(
     (state) => state.personalization.liveActivityTestMode ?? false
   );
-  // Labels and the fonts the layout draws with are resolved by the app, so the
-  // content has to be rebuilt when either changes.
   const { i18n } = useTranslation();
   const fontFamily = useSettingsStore((state) => state.personalization.fontFamily);
   const foregroundTick = useForegroundTick();
@@ -120,18 +105,13 @@ const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
     }
 
     const at = new Date();
-    // Never rejects — it reports its own failures.
     syncCourseLiveActivity(courses, { at, testMode, enabled });
 
-    // Nothing to wait for when the feature is off: the sync above has already
-    // taken down whatever was on screen.
     const next = enabled ? nextLiveActivityTransition(courses, at) : null;
     if (next === null) {
       return;
     }
 
-    // A second of slack, so the clock has passed the moment rather than landed
-    // exactly on it.
     const delay = Math.min(next - at.getTime() + 1000, MAX_TRANSITION_DELAY_MS);
     timeout.current = setTimeout(() => setTransitionTick((value) => value + 1), delay);
 
@@ -148,19 +128,12 @@ const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
   ]);
 };
 
-/**
- * Keeps the home screen widgets in sync with the app's data. Mounted once at the
- * root, so widgets are refreshed on every launch and whenever the data they
- * display changes while the app is running.
- */
 export const useWidgetSync = () => {
   const { upcomingDays, loading } = useTimetableWidgetData({ showCancelled: true });
   const homework = useUpcomingHomework();
   const accentColor = useAccentColor();
   const fonts = useWidgetFonts();
   const theme = useMemo(() => buildWidgetTheme(accentColor), [accentColor]);
-  // Widget labels are rendered by the app, so they have to be rebuilt when the
-  // user switches language.
   const { i18n } = useTranslation();
   const foregroundTick = useForegroundTick();
 

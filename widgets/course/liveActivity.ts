@@ -1,6 +1,3 @@
-// Live Activities are iOS-only, so this is what every other platform gets: a
-// no-op that keeps ActivityKit and `@expo/ui/swift-ui` out of their bundle.
-// `liveActivity.ios.ts` holds the real implementation.
 import type { Course as SharedCourse } from "@/services/shared/timetable";
 
 import type { CourseLiveActivityPreviewMode } from "./content";

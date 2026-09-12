@@ -6,16 +6,9 @@ import type { WeekendVisibility } from "../utils/weekGeometry";
 const SATURDAY = 6;
 const SUNDAY = 0;
 
-/**
- * Which weekend days the grid should give a column to: only those the timetable
- * has actually put a class on.
- *
- * Only ever turns days on. The timetable is loaded a few weeks at a time, so a
- * rule that also turned them back off would collapse the grid the moment the
- * user swiped past the week with the Saturday class in it — and take every
- * other column's width with it. Once a weekend day has proved it can hold a
- * class, it keeps its column for the rest of the session.
- */
+// Only ever turns days on. The timetable loads a few weeks at a time, so turning
+// them back off would collapse the grid the moment the user swiped past the week
+// holding the Saturday class.
 export function useWeekendVisibility(timetable: CourseDay[]): WeekendVisibility {
   const visibility = useRef<WeekendVisibility>({ saturday: false, sunday: false });
 

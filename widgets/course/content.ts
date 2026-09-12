@@ -10,16 +10,9 @@ import type { WidgetFonts } from "../theme";
 import { buildCourseAppearance, type CourseLiveActivityAppearance } from "./appearance";
 import { COURSE_LIVE_ACTIVITY_SIZES, type CourseLiveActivitySizes } from "./sizes";
 
-/** Which of the two states the dev trigger should put on screen. */
 export type CourseLiveActivityPreviewMode = "upcoming" | "ongoing";
 
-/**
- * Everything the layout draws with. It is serialized to JSON and handed to the
- * widget extension, which can reach nothing else — so what is not in here does
- * not exist as far as the Live Activity is concerned.
- */
 export type CourseLiveActivityProps = {
-  /** The course this activity stands for, so a sync can tell "same course, new content" from "another course". */
   courseId: string;
   fonts: WidgetFonts;
   appearance: CourseLiveActivityAppearance;
@@ -27,15 +20,12 @@ export type CourseLiveActivityProps = {
   emoji: string;
   subject: string;
   detail: string;
-  /** Epoch milliseconds — Dates do not survive the JSON trip to the extension. */
   startsAt: number;
   endsAt: number;
-  /** When this content was built, used as the lower bound of the countdown to the start. */
   referenceAt: number;
   startTime: string;
   endTime: string;
   endedLabel: string;
-  /** "Commence dans" / "Se termine dans" — what the countdown under it runs to. */
   startingLabel: string;
   endingLabel: string;
 };
