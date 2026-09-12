@@ -8,7 +8,8 @@
     "metro.config.js",
     "babel.config.js",
     "scripts/**/*.js",
-    "papillon-intents.config.ts"
+    "papillon-intents.config.ts",
+    "widgets/useWidgetSync.ios.ts"
   ],
   "project": [
     "**/*.{ts,tsx,js,jsx}"

@@ -259,6 +259,7 @@
   "Tasks_NoTasks_Description": "Il n'y a pas de tâches prévues pour cette semaine. Profite-en pour te reposer !",
   "Tasks_NoTasks_ForWeek": "pour la semaine {{week}}",
   "Tasks_NoTasks_Nav": "Aucune tâche",
+  "Tasks_Widget_For": "Pour {{day}}",
   "Task_Start": "À faire",
   "Task_Complete": "Terminé",
   "Task_Sorting_Title": "Trier par",

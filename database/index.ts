@@ -42,7 +42,7 @@ function resolveSharedDbName(): string | undefined {
     legacyFile.copySync(sharedFile);
   }
 
-  return sharedFile.uri;
+  return sharedFile.uri.replace(/^file:\/\//, '');
 }
 
 const adapter = new SQLiteAdapter({
