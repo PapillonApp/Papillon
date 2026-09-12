@@ -97,6 +97,7 @@ const Task = () => {
       )}
 
       {Platform.OS !== "android" && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.colors.overground, zIndex: -10 }}>
         <LinearGradient
           colors={[subjectInfo.color, theme.colors.overground]}
           style={{
@@ -110,6 +111,7 @@ const Task = () => {
             opacity: 0.4,
           }}
         />
+        </View>
       )}
 
 <SafeAreaView style={{ flex: 1 }} edges={["left", "right"]}>
