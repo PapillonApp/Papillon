@@ -183,7 +183,7 @@ export default {
               "ios": {
                 "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
               }
-            }/*,
+            }
             {
               "name": "Notes",
               "displayName": "Notes",
@@ -199,7 +199,7 @@ export default {
               "ios": {
                 "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
               }
-            }*/
+            }
           ]
         }
       ],

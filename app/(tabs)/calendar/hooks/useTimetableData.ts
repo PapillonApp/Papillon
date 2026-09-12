@@ -16,8 +16,11 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
   const [manager, setManager] = useState(() => getManager(true));
 
   const store = useAccountStore.getState();
-  const account = store.accounts.find(account => store.lastUsedAccount);
-  const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
+  const account = store.accounts.find(account => account.id === store.lastUsedAccount);
+  const services: string[] = useMemo(
+    () => account?.services?.map((service: { id: string }) => service.id) ?? [],
+    [account]
+  );
   
   const rawTimetable = useTimetable(refresh, [weekNumber - 1, weekNumber, weekNumber + 1], safeDate);
   

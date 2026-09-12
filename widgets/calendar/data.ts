@@ -9,7 +9,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectName } from "@/utils/subjects/name";
 
 import { formatRelativeDayLabel } from "../dates";
-import type { WidgetFonts } from "../theme";
+import { buildWidgetTheme, type WidgetFonts, type WidgetTheme } from "../theme";
 
 /** Enough events for the large family, which shows the most of them. */
 const MAX_EVENTS = 6;
@@ -30,6 +30,8 @@ export type CalendarWidgetProps = {
   dayLabel: string;
   dayNumber: string;
   accentColor: string;
+  /** Tinted from the first upcoming course's color, for the compact background. */
+  theme: WidgetTheme;
   emptyLabel: string;
   events: CalendarWidgetEvent[];
 };
@@ -61,17 +63,19 @@ const buildProps = (
   const upcoming = scheduled.filter((item) => item.to > at);
   const day = upcoming.length > 0 ? upcoming[0].day : startOfDay(new Date(at)).getTime();
   const dayDate = new Date(day);
+  const events = upcoming
+    .filter((item) => item.day === day)
+    .slice(0, MAX_EVENTS)
+    .map((item) => item.event);
 
   return {
     fonts,
     dayLabel: formatRelativeDayLabel(dayDate, new Date(at)),
     dayNumber: format(dayDate, "d"),
     accentColor,
+    theme: buildWidgetTheme(events[0]?.color ?? accentColor),
     emptyLabel: t("Home_Widget_NoCourses"),
-    events: upcoming
-      .filter((item) => item.day === day)
-      .slice(0, MAX_EVENTS)
-      .map((item) => item.event)
+    events
   };
 };
 
