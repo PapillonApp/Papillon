@@ -1,40 +1,46 @@
 import { Stack, useRouter } from "expo-router";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
-import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Platform, StyleSheet, useWindowDimensions, View } from "react-native";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { LayoutChangeEvent, Platform, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
+import type { CalendarViewMode } from "@/stores/settings/types";
 import Calendar, { CalendarRef } from "@/ui/components/Calendar";
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 import Typography from '@/ui/new/Typography';
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import useResizable from "@/ui/utils/Resizable";
 import i18n from "@/utils/i18n";
 
-import Reanimated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
+import Reanimated, { useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
 
 import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
 
-import { CalendarDay } from "./components/CalendarDay";
+import { DayPager } from "./components/DayPager";
+import { WeekView } from "./components/WeekView";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
+import { useWeekGeometry, type WeekGeometry } from "./hooks/useWeekGeometry";
+import { useWeekendVisibility } from "./hooks/useWeekendVisibility";
 
 const isAndroid = Platform.OS === "android";
 
-const TITLE_SLIDE_RATIO = 0.4; // Slide this share of the screen width when changing titles
+const TITLE_SLIDE_RATIO = 0.4;
 
-// Geometry of the leading toolbar button, which the date popover points at. The
-// button is native and cannot host a SwiftUI anchor, so the popover hangs off an
-// invisible strip centered on this box instead, and the box has to be restated
-// here rather than measured.
 const TOOLBAR_BUTTON_INSET = 40;
 const TOOLBAR_BUTTON_SIZE = 40;
 
 interface DayLabels {
   main: string;
   relative?: string;
+}
+
+function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function getDayLabels(day: Date): DayLabels {
@@ -59,13 +65,40 @@ function getDayLabels(day: Date): DayLabels {
   };
 }
 
-// One title per day around the settled one. Keyed by absolute day index, so a
-// layer is never remounted while it is on screen.
+function getWeekLabels(geometry: WeekGeometry, pageIndex: number): DayLabels {
+  const firstDayIndex = geometry.dayIndexOfPage(pageIndex);
+  const first = geometry.dateOfDayIndex(firstDayIndex);
+  const last = geometry.dateOfDayIndex(firstDayIndex + geometry.columns - 1);
+
+  if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
+    return {
+      main: capitalize(first.toLocaleDateString(i18n.language, { month: "long", year: "numeric" })),
+    };
+  }
+
+  const sameYear = first.getFullYear() === last.getFullYear();
+  const firstPart = first.toLocaleDateString(
+    i18n.language,
+    sameYear ? { month: "short" } : { month: "short", year: "numeric" }
+  );
+  const lastPart = last.toLocaleDateString(i18n.language, { month: "short", year: "numeric" });
+
+  return { main: `${capitalize(firstPart)} – ${capitalize(lastPart)}` };
+}
+
+function getToolbarLabel(day: Date, compact: boolean): string {
+  const labels = getDayLabels(day);
+  if (labels.relative) {
+    return labels.relative;
+  }
+  if (compact) {
+    return day.toLocaleDateString(i18n.language, { day: "numeric", month: "short" });
+  }
+  return labels.main;
+}
+
 const TITLE_LAYER_OFFSETS = [-2, -1, 0, 1, 2];
 
-// `pageIndex` is the day this layer renders, as an index into the pager.
-// `page` is the pager's live scroll position in the same unit, so the layer is
-// centered when they match and slides/fades away as the two drift apart.
 function TitleLayer({ page, pageIndex, labels, slideDistance }: {
   page: SharedValue<number>;
   pageIndex: number;
@@ -100,27 +133,37 @@ function TabOneScreen() {
   const calendarRef = useRef<CalendarRef>(null);
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const tabBarHeight = insets.bottom;
   const { width: screenWidth } = useWindowDimensions();
 
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
   const account = accounts.find(a => a.id === lastUsedAccount);
 
-  const {
-    date,
-    weekNumber,
-    currentIndex,
-    flatListRef,
-    getDateFromIndex,
-    getIndexFromDate,
-    handleDateChange,
-    onMomentumScrollEnd,
-    onScroll,
-    isResizingRef,
-    INITIAL_INDEX,
-    windowWidth
-  } = useCalendarState();
+  const { isTablet } = useResizable();
+  const storedViewMode = useSettingsStore(state => state.personalization.calendarViewMode);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
+
+  const viewMode = storedViewMode ?? (isTablet ? "week" : "list");
+  const isWeekMode = viewMode === "week";
+
+  const setViewMode = useCallback((mode: CalendarViewMode) => {
+    mutateProperty("personalization", { calendarViewMode: mode });
+  }, [mutateProperty]);
+
+  useEffect(() => {
+    if (storedViewMode === undefined) {
+      setViewMode(viewMode);
+    }
+  }, [storedViewMode, viewMode, setViewMode]);
+
+  const [contentWidth, setContentWidth] = useState<number | null>(null);
+  const handleContentLayout = useCallback((event: LayoutChangeEvent) => {
+    const measured = Math.round(event.nativeEvent.layout.width);
+    setContentWidth(previous => (previous === measured || measured <= 0 ? previous : measured));
+  }, []);
+
+  const calendar = useCalendarState(contentWidth ?? screenWidth);
+  const { date, weekNumber, getDateFromIndex, getIndexFromDate, handleDateChange } = calendar;
 
   const {
     timetable,
@@ -130,83 +173,41 @@ function TabOneScreen() {
     failures: timetableFailures,
   } = useTimetableData(weekNumber, date);
 
+  const weekend = useWeekendVisibility(timetable);
+  const weekGeometry = useWeekGeometry(weekend, contentWidth ?? screenWidth);
+
   const hasTimetableError = Boolean(timetableError) || timetableFailures.length > 0;
 
-  // The header is rebuilt natively whenever its options change, so the title and
-  // the toolbar label are anchored to the last *settled* day instead of the live
-  // one: nothing in the header changes while a swipe is in flight.
-  const [settledIndex, setSettledIndex] = useState(INITIAL_INDEX);
-  const settledLabels = getDayLabels(getDateFromIndex(settledIndex));
-  const dayLabel = settledLabels.relative ?? settledLabels.main;
+  const pageIndexOfDate = useCallback((day: Date) => (
+    isWeekMode ? weekGeometry.pageOfDate(day) : getIndexFromDate(day)
+  ), [isWeekMode, weekGeometry, getIndexFromDate]);
 
-  // The pager's live scroll position, in pages. Each title layer is anchored to
-  // the absolute index of the day it renders, so a day keeps the same position
-  // and opacity across a relabel.
-  const scrollPage = useSharedValue(INITIAL_INDEX);
-  const lastEmittedPage = useSharedValue(INITIAL_INDEX);
+  const dateOfPageIndex = useCallback((pageIndex: number) => (
+    isWeekMode
+      ? weekGeometry.dateOfDayIndex(weekGeometry.dayIndexOfPage(pageIndex))
+      : getDateFromIndex(pageIndex)
+  ), [isWeekMode, weekGeometry, getDateFromIndex]);
 
-  // A window resize changes the page width under the pager: the scroll offset
-  // still points at the old geometry, which would otherwise be read back as a
-  // completely different day. Pin the pager back onto the settled day at the new
-  // width, and ignore every offset until it lands.
-  const previousWidth = useRef(windowWidth);
+  const [settledIndex, setSettledIndex] = useState(() => pageIndexOfDate(date));
+
+  const scrollPage = useSharedValue(settledIndex);
+
+  const pageSpace = isWeekMode
+    ? `week:${weekGeometry.columns}:${weekGeometry.daysPerWeek}:${Math.round(weekGeometry.pageWidth)}`
+    : "list";
+  const previousPageSpace = useRef(pageSpace);
   useLayoutEffect(() => {
-    if (previousWidth.current === windowWidth) {
+    if (previousPageSpace.current === pageSpace) {
       return;
     }
-    previousWidth.current = windowWidth;
+    previousPageSpace.current = pageSpace;
+    const index = pageIndexOfDate(date);
+    setSettledIndex(index);
+    scrollPage.value = index;
+  }, [pageSpace, pageIndexOfDate, date, scrollPage]);
 
-    const offset = settledIndex * windowWidth;
-    isResizingRef.current = true;
-    scrollPage.value = settledIndex;
-    lastEmittedPage.value = settledIndex;
-    flatListRef.current?.scrollToOffset({ offset, animated: false });
+  const toolbarLabel = getToolbarLabel(dateOfPageIndex(settledIndex), isWeekMode);
 
-    // The list re-lays out its items a frame later, so the offset has to be
-    // reasserted once the new widths are in place.
-    const frame = requestAnimationFrame(() => {
-      flatListRef.current?.scrollToOffset({ offset, animated: false });
-      isResizingRef.current = false;
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [windowWidth, settledIndex, isResizingRef, flatListRef, scrollPage, lastEmittedPage]);
-
-  const emitScroll = useCallback((x: number) => {
-    onScroll({ nativeEvent: { contentOffset: { x } } });
-  }, [onScroll]);
-
-  // Runs on the UI thread so the title keeps up with the pager even while JS is
-  // busy. `onScroll` only reacts to whole-page changes, so it is bridged back to
-  // JS on day crossings instead of every frame.
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      const page = event.contentOffset.x / windowWidth;
-      scrollPage.value = page;
-
-      const rounded = Math.round(page);
-      if (rounded !== lastEmittedPage.value) {
-        lastEmittedPage.value = rounded;
-        runOnJS(emitScroll)(event.contentOffset.x);
-      }
-    },
-  });
-
-  const settleAt = useCallback((offsetX: number) => {
-    const index = Math.round(offsetX / windowWidth);
-    setSettledIndex(previous => (previous === index ? previous : index));
-  }, [windowWidth]);
-
-  const handleMomentumScrollEnd = useCallback((e: any) => {
-    onMomentumScrollEnd(e);
-    settleAt(e.nativeEvent.contentOffset.x);
-  }, [onMomentumScrollEnd, settleAt]);
-
-  const handleScrollEndDrag = useCallback((e: any) => {
-    settleAt(e.nativeEvent.contentOffset.x);
-  }, [settleAt]);
-
-  // Kept referentially stable so the memoized Calendar is not re-rendered, and
-  // its SwiftUI host not re-fed props, on every day crossing.
   const calendarAnchor = useMemo(() => ({
     top: runsIOS26 ? headerHeight : 0,
     left: TOOLBAR_BUTTON_INSET,
@@ -215,33 +216,32 @@ function TabOneScreen() {
 
   const handlePickDate = useCallback((picked: Date) => {
     handleDateChange(picked);
-    setSettledIndex(getIndexFromDate(picked));
-  }, [handleDateChange, getIndexFromDate]);
+    setSettledIndex(pageIndexOfDate(picked));
+  }, [handleDateChange, pageIndexOfDate]);
 
-  const renderDay = useCallback(({ index }: { index: number }) => {
-    const dayDate = getDateFromIndex(index);
-    const normalizedDate = new Date(dayDate);
-    normalizedDate.setHours(0, 0, 0, 0);
-    const dayCourses = timetable.find(d => {
-      const dDate = new Date(d.date);
-      dDate.setHours(0, 0, 0, 0);
-      return dDate.getTime() === normalizedDate.getTime();
-    })?.courses || [];
+  const anchorWeekOnPage = useCallback((page: number) => {
+    if (weekGeometry.pageContainsDate(page, date)) {
+      return;
+    }
+    handleDateChange(weekGeometry.dateOfDayIndex(weekGeometry.dayIndexOfPage(page)));
+  }, [weekGeometry, handleDateChange, date]);
 
-    return (
-      <CalendarDay
-        dayDate={dayDate}
-        courses={dayCourses}
-        isRefreshing={manualRefreshing}
-        onRefresh={handleRefresh}
-        colors={colors}
-        insets={insets}
-        tabBarHeight={tabBarHeight}
-        transportInfo={account?.transport ?? undefined}
-        hasError={hasTimetableError}
-      />
-    );
-  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, insets, tabBarHeight, account, hasTimetableError]);
+  const handleWeekPageSettled = useCallback((page: number) => {
+    setSettledIndex(previous => (previous === page ? previous : page));
+    anchorWeekOnPage(page);
+  }, [anchorWeekOnPage]);
+
+  const handleListSettle = useCallback((index: number) => {
+    setSettledIndex(previous => (previous === index ? previous : index));
+  }, []);
+
+  const labelsOfPage = useCallback((pageIndex: number) => (
+    isWeekMode ? getWeekLabels(weekGeometry, pageIndex) : getDayLabels(getDateFromIndex(pageIndex))
+  ), [isWeekMode, weekGeometry, getDateFromIndex]);
+
+  const openIcals = useCallback(() => {
+    router.push({ pathname: "./calendar/icals", params: {} });
+  }, [router]);
 
   return (
     <>
@@ -257,7 +257,7 @@ function TabOneScreen() {
         <Stack.Toolbar placement="left" asChild>
           <AndroidHeaderButton
             icon="Calendar"
-            accessibilityLabel={dayLabel}
+            accessibilityLabel={toolbarLabel}
             onPress={() => calendarRef.current?.toggle()}
           />
         </Stack.Toolbar>
@@ -267,13 +267,13 @@ function TabOneScreen() {
             icon="calendar"
             onPress={() => calendarRef.current?.toggle()}
           >
-            {dayLabel}
+            {toolbarLabel}
           </Stack.Toolbar.Button>
         </Stack.Toolbar>
       )}
 
       <Stack.Title asChild>
-        <View style={[styles.titleContainer, { width: screenWidth - (Platform.OS === "android" ? 72 : 140) }]}>
+        <View style={[styles.titleContainer, { width: (contentWidth ?? screenWidth) - (Platform.OS === "android" ? 72 : 140) }]}>
           {TITLE_LAYER_OFFSETS.map(offset => {
             const pageIndex = settledIndex + offset;
             return (
@@ -281,8 +281,8 @@ function TabOneScreen() {
                 key={pageIndex}
                 page={scrollPage}
                 pageIndex={pageIndex}
-                labels={getDayLabels(getDateFromIndex(pageIndex))}
-                slideDistance={screenWidth * TITLE_SLIDE_RATIO}
+                labels={labelsOfPage(pageIndex)}
+                slideDistance={(contentWidth ?? screenWidth) * TITLE_SLIDE_RATIO}
               />
             );
           })}
@@ -293,19 +293,57 @@ function TabOneScreen() {
         <Stack.Toolbar placement="right" asChild>
           <AndroidHeaderMenu
             icon="Dots"
-            accessibilityLabel={t('Tab_Calendar_Icals')}
-            actions={[{ id: "icals", title: t('Tab_Calendar_Icals'), papicon: "Calendar" }]}
-            onPressAction={() => router.push({ pathname: "./calendar/icals", params: {} })}
+            accessibilityLabel={t('Tab_Calendar_View_Mode')}
+            actions={[
+              {
+                id: "mode:list",
+                title: t('Tab_Calendar_View_List'),
+                papicon: "List",
+                state: isWeekMode ? "off" : "on",
+              },
+              {
+                id: "mode:week",
+                title: t('Tab_Calendar_View_Week'),
+                subtitle: t('Tab_Calendar_View_Beta'),
+                papicon: "Grid",
+                state: isWeekMode ? "on" : "off",
+              },
+              { id: "icals", title: t('Tab_Calendar_Icals'), papicon: "Calendar" },
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              if (nativeEvent.event === "icals") {
+                openIcals();
+                return;
+              }
+              setViewMode(nativeEvent.event === "mode:week" ? "week" : "list");
+            }}
           />
         </Stack.Toolbar>
       ) : (
         <Stack.Toolbar placement="right">
           <Stack.Toolbar.Menu>
             <Stack.Toolbar.Icon sf="ellipsis" />
-            <Stack.Toolbar.Label>{t('Tab_Calendar_Icals')}</Stack.Toolbar.Label>
+            <Stack.Toolbar.Label>{t('Tab_Calendar_View_Mode')}</Stack.Toolbar.Label>
+            <Stack.Toolbar.Menu inline title={t('Tab_Calendar_View_Mode')}>
+              <Stack.Toolbar.MenuAction
+                icon="list.bullet"
+                isOn={!isWeekMode}
+                onPress={() => setViewMode("list")}
+              >
+                {t('Tab_Calendar_View_List')}
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                icon="calendar.day.timeline.left"
+                isOn={isWeekMode}
+                subtitle={t('Tab_Calendar_View_Beta')}
+                onPress={() => setViewMode("week")}
+              >
+                {t('Tab_Calendar_View_Week')}
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
             <Stack.Toolbar.MenuAction
               icon="calendar"
-              onPress={() => router.push({ pathname: "./calendar/icals", params: {} })}
+              onPress={openIcals}
             >
               {t('Tab_Calendar_Icals')}
             </Stack.Toolbar.MenuAction>
@@ -313,32 +351,38 @@ function TabOneScreen() {
         </Stack.Toolbar>
       )}
 
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Reanimated.FlatList
-          ref={flatListRef}
-          data={Array.from({ length: 20001 })}
-          horizontal
-          pagingEnabled={false}
-          showsHorizontalScrollIndicator={false}
-          initialScrollIndex={INITIAL_INDEX}
-          getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
-          renderItem={renderDay}
-          keyExtractor={(_, index) => "renderDay:" + String(index)}
-          onScroll={scrollHandler}
-          decelerationRate={Platform.OS === 'ios' ? 0.98 : undefined}
-          disableIntervalMomentum={true}
-          scrollEventThrottle={16}
-          onMomentumScrollEnd={handleMomentumScrollEnd}
-          onScrollEndDrag={handleScrollEndDrag}
-          snapToInterval={windowWidth}
-          bounces={false}
-          windowSize={4}
-          maxToRenderPerBatch={3}
-          initialNumToRender={3}
-          showsVerticalScrollIndicator={false}
-          removeClippedSubviews
-          extraData={{ manualRefreshing, colors, timetable }}
-        />
+      <View style={styles.content} onLayout={handleContentLayout}>
+        {contentWidth === null ? null : isWeekMode ? (
+          <WeekView
+            // Both the page width and the days a page holds define the pager's
+            // scroll space. Remounting on either re-anchors it on the day on
+            // screen instead of reading a stale offset back as a page years away.
+            key={`${weekGeometry.columns}:${Math.round(weekGeometry.pageWidth)}`}
+            date={date}
+            timetable={timetable}
+            geometry={weekGeometry}
+            isRefreshing={manualRefreshing}
+            onRefresh={handleRefresh}
+            hasError={hasTimetableError}
+            scrollPage={scrollPage}
+            onPageCrossed={anchorWeekOnPage}
+            onPageSettled={handleWeekPageSettled}
+            topInset={runsIOS26 ? headerHeight : 0}
+            bottomInset={insets.bottom}
+          />
+        ) : (
+          <DayPager
+            calendar={calendar}
+            timetable={timetable}
+            isRefreshing={manualRefreshing}
+            onRefresh={handleRefresh}
+            hasError={hasTimetableError}
+            transportInfo={account?.transport ?? undefined}
+            settledIndex={settledIndex}
+            onSettle={handleListSettle}
+            scrollPage={scrollPage}
+          />
+        )}
       </View>
     </>
   );
@@ -353,11 +397,9 @@ const CalendarScreenWithBoundary = () => (
 export default CalendarScreenWithBoundary;
 
 const styles = StyleSheet.create({
-  container: {
+  content: {
     flex: 1,
   },
-  // Fixed size, so the header title view never re-measures when the labels swap
-  // or the subtitle comes and goes. Every layer fills this same box.
   titleContainer: {
     height: 44,
   },
@@ -367,7 +409,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    // Android headers align their title to the leading edge; iOS centers it.
     alignItems: Platform.OS === "android" ? "flex-start" : "center",
     paddingHorizontal: Platform.OS === "android" ? 10 : 0,
     justifyContent: "center",

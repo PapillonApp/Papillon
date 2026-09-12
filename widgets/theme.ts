@@ -9,10 +9,6 @@ export type WidgetPalette = {
   chip: string;
 };
 
-/**
- * Both schemes are resolved up front: WidgetKit re-renders a widget when the
- * system appearance changes, and the app is not running to recompute them.
- */
 export type WidgetTheme = {
   light: WidgetPalette;
   dark: WidgetPalette;
@@ -25,9 +21,6 @@ export type WidgetFonts = {
   bold: string;
 };
 
-// Every tone is the accent pushed towards the surface it sits on. The steps are
-// picked so the small text clears 4.5:1 against that surface for all six app
-// colours — the accent used as-is only reaches about 2.5:1 on its own tint.
 const LIGHT = {
   surface: 0.9,
   chip: 0.78,

@@ -27,9 +27,14 @@ export interface Wallpaper {
   credit?: string;
 }
 
+export type CalendarViewMode = "list" | "week";
+
 export interface Personalization {
   fontFamily?: AppFontFamily;
   gradesDisplayScale?: "20" | "10" | "5" | "percentage";
+  calendarViewMode?: CalendarViewMode;
+  /** Height of one hour in the weekly calendar grid, set by pinching it. */
+  calendarHourHeight?: number;
   colorSelected?: Colors;
   theme?: "light" | "dark" | "auto";
   useMaterialYou?: boolean;
@@ -40,6 +45,8 @@ export interface Personalization {
   showAlertAtLogin?: boolean;
   showDevMode?: boolean;
   mockDataEnabled?: boolean;
+  liveActivityTestMode?: boolean;
+  liveActivitiesEnabled?: boolean;
   magicModelURL?: string;
   language?: string | null;
   wallpaper?: Wallpaper;

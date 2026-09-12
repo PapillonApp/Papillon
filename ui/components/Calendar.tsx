@@ -1,6 +1,17 @@
 import DateTimePicker from "@expo/ui/community/datetime-picker";
-import { DatePicker, Host, Popover, ProgressView, Rectangle, VStack } from "@expo/ui/swift-ui";
-import { datePickerStyle, frame, onGeometryChange, opacity, padding } from "@expo/ui/swift-ui/modifiers";
+import { Button, DatePicker, Divider, Host, Popover, ProgressView, Rectangle, VStack } from "@expo/ui/swift-ui";
+import {
+  buttonStyle,
+  contentShape,
+  datePickerStyle,
+  fixedSize,
+  frame,
+  onGeometryChange,
+  opacity,
+  padding,
+  shapes,
+} from "@expo/ui/swift-ui/modifiers";
+import { t } from "i18next";
 import React from "react";
 import { InteractionManager, Platform, StyleSheet, View } from "react-native";
 
@@ -10,11 +21,13 @@ const PICKER_WIDTH = 320;
 
 const PICKER_PADDING = { horizontal: 8, vertical: 4 } as const;
 
-// The graphical picker always lays out to the same size, so measuring it once is
-// enough for every popover afterwards, including on a later mount of this
-// screen. Kept at module scope for exactly that reason. Null until the picker
-// has been built once, and no estimate stands in for it: a placeholder at the
-// wrong height would present the popover at the wrong height.
+const TODAY_PADDING = { horizontal: 8, vertical: 14 } as const;
+
+// The popover's contents always lay out to the same size, so measuring them
+// once is enough for every popover afterwards, including on a later mount of
+// this screen. Kept at module scope for exactly that reason. Null until they
+// have been built once, and no estimate stands in: a placeholder at the wrong
+// height would present the popover at the wrong height.
 let measuredPickerSize: { width: number; height: number } | null = null;
 
 // Long enough for the dismiss animation to finish, so tearing the picker back
@@ -97,6 +110,13 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
     onDateChange?.(picked);
   }, [onDateChange]);
 
+  // Jumping to today is a "take me there" action rather than browsing, so it
+  // also puts the popover away: what the caller wants to look at is behind it.
+  const handleToday = React.useCallback(() => {
+    onDateChange?.(new Date());
+    setVisible(false);
+  }, [onDateChange, setVisible]);
+
   // SwiftUI only builds the popover's body at presentation, and building
   // UICalendarView is slow enough to be felt as a delay between the tap and the
   // popover appearing. So the popover opens on a placeholder, which costs
@@ -126,7 +146,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
     [anchorWidth]
   );
 
-  // The picker reports its own frame, read after padding, so it is the size the
+  // The content reports its own frame, read after padding, so it is the size the
   // popover actually takes.
   const [pickerSize, setPickerSize] = React.useState(measuredPickerSize);
   const handlePickerGeometry = React.useCallback((measured: { width: number; height: number }) => {
@@ -147,15 +167,38 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
     datePickerStyle("graphical"),
     frame({ width: PICKER_WIDTH }),
     padding(PICKER_PADDING),
-    onGeometryChange(handlePickerGeometry),
-  ], [handlePickerGeometry]);
+  ], []);
+
+  // Measured on the whole content rather than on the picker alone, so the
+  // placeholder stands in for the button's row too and the popover does not
+  // resize as the real content takes over.
+  //
+  // A graphical date picker is vertically flexible and grows to whatever height
+  // it is offered — the width is already pinned for the same reason. Measured
+  // inside the roomy prewarm host it would otherwise report that host's height,
+  // and the popover would open on a placeholder far taller than the picker,
+  // until a real presentation measured it properly and corrected the record.
+  // Taking the ideal height instead makes the first measurement the right one.
+  const contentModifiers = React.useMemo(
+    () => [fixedSize({ vertical: true }), onGeometryChange(handlePickerGeometry)],
+    [handlePickerGeometry]
+  );
+
+  // Padded before it is framed, and given a hit shape, so the whole row is the
+  // button rather than just the few points the word itself covers.
+  const todayModifiers = React.useMemo(() => [
+    buttonStyle("borderless"),
+    padding(TODAY_PADDING),
+    frame({ width: PICKER_WIDTH }),
+    contentShape(shapes.rectangle()),
+  ], []);
 
   const placeholderModifiers = React.useMemo(
     () => (pickerSize ? [frame({ width: pickerSize.width, height: pickerSize.height })] : []),
     [pickerSize]
   );
 
-  // Falls back to mounting the picker straight away if the tap beats the
+  // Falls back to mounting the content straight away if the tap beats the
   // prewarm, since a placeholder with no measurement would present at the wrong
   // height.
   const showPicker = pickerMounted || pickerSize === null;
@@ -180,13 +223,17 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
   // picker's props too, right when the main thread is busy building
   // UICalendarView.
   const pickerContent = React.useMemo(() => (
-    <DatePicker
-      selection={date}
-      displayedComponents={["date"]}
-      onDateChange={handleDateChange}
-      modifiers={pickerModifiers}
-    />
-  ), [date, handleDateChange, pickerModifiers]);
+    <VStack spacing={0} modifiers={contentModifiers}>
+      <DatePicker
+        selection={date}
+        displayedComponents={["date"]}
+        onDateChange={handleDateChange}
+        modifiers={pickerModifiers}
+      />
+      <Divider />
+      <Button label={t("Today")} onPress={handleToday} modifiers={todayModifiers} />
+    </VStack>
+  ), [date, handleDateChange, handleToday, pickerModifiers, contentModifiers, todayModifiers]);
 
   const prewarm = pickerSize === null && prewarmReady ? (
     <View pointerEvents="none" style={styles.prewarm}>
@@ -278,6 +325,8 @@ const styles = StyleSheet.create({
   },
   prewarmHost: {
     width: PICKER_WIDTH + PICKER_PADDING.horizontal * 2,
-    height: 500,
+    // Roomier than the content needs, so the proposed size never squeezes it
+    // into reporting a height it would not actually use.
+    height: 600,
   },
 });

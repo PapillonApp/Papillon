@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
-import { FlatList, RefreshControl, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { TransportStorage } from "@/stores/account/types";
@@ -14,6 +14,12 @@ import { getCourseRouteId } from '@/database/useTimetable';
 
 interface CalendarDayProps {
   dayDate: Date;
+  /**
+   * Width of one page of the pager. Handed down rather than read off the window:
+   * on iPad the tab bar becomes a sidebar, so the screen is narrower than the
+   * window it sits in.
+   */
+  width: number;
   courses: SharedCourse[];
   isRefreshing: boolean;
   onRefresh: () => void;
@@ -47,8 +53,7 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
   return true;
 }
 
-export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, insets, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
-  const { width: windowWidth } = useWindowDimensions();
+export const CalendarDay = React.memo(({ dayDate, width, courses, isRefreshing, onRefresh, colors, insets, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
 
@@ -113,7 +118,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
   const isEmpty = enrichedEvents.length === 0;
 
   return (
-    <View style={{ width: windowWidth, flex: 1 }}>
+    <View style={{ width, flex: 1 }}>
       <FlatList
         data={enrichedEvents}
         style={[styles.container, insets.left > 0 ? { marginLeft: insets.left } : null]}
@@ -181,6 +186,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
 }, (prevProps, nextProps) => {
   return (
     prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
+    prevProps.width === nextProps.width &&
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.hasError === nextProps.hasError &&
     prevProps.onRefresh === nextProps.onRefresh &&
