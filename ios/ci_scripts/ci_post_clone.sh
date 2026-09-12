@@ -6,11 +6,13 @@ brew install cocoapods
 echo "===== Installing Node.js ====="
 brew install node@22
 brew link --overwrite --force node@22
+echo "===== Installing Bun ====="
+brew install bun
 
 # Install dependencies
-echo "===== Running npm install ====="
+echo "===== Running bun install ====="
 cd ../..
-npm install --legacy-peer-deps
+bun install
 echo "===== Logging package.json ====="
 cat package.json
 echo "===== Adding secrets ====="
