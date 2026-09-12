@@ -123,16 +123,6 @@
     "typescript": "~6.0.3"
   },
   "private": true,
-<<<<<<< HEAD
-=======
-  "trustedDependencies": [
-    "@shopify/react-native-skia"
-  ],
-  "overrides": {
-    "react-native-screens": "^4.27.0",
-    "@expo/ui": "57.0.11"
-  },
->>>>>>> 02ff43493d66026734a0b0e4f4e2b65c001b38c8
   "reanimated": {
     "staticFeatureFlags": {
       "ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS": true,
