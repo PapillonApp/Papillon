@@ -140,7 +140,7 @@ const present = (
  */
 export const syncCourseLiveActivity = async (
   courses: SharedCourse[],
-  options: { at?: Date; testMode?: boolean } = {}
+  options: { at?: Date; testMode?: boolean; enabled?: boolean } = {}
 ): Promise<void> => {
   const at = options.at ?? new Date();
 
@@ -157,7 +157,10 @@ export const syncCourseLiveActivity = async (
       await present(null, { preview: false, at });
     }
 
-    const course = selectLiveActivityCourse(courses, at);
+    // Turned off in the settings, the sync still runs: it is what takes down
+    // the activity that was already on screen when the switch was flipped.
+    const course =
+      options.enabled === false ? null : selectLiveActivityCourse(courses, at);
 
     await present(
       course ? buildCourseLiveActivityProps(course, currentFonts(), at) : null,

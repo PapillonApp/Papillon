@@ -51,7 +51,13 @@ export default function CourseModal() {
   const liveActivityTestMode = useSettingsStore(
     state => state.personalization.liveActivityTestMode ?? false
   );
-  const canTriggerLiveActivity = COURSE_LIVE_ACTIVITY_SUPPORTED && liveActivityTestMode;
+  const liveActivitiesEnabled = useSettingsStore(
+    state => state.personalization.liveActivitiesEnabled ?? true
+  );
+  // The settings switch is the master one: with the feature off there is
+  // nothing for the trigger to produce that the next sync would not take down.
+  const canTriggerLiveActivity =
+    COURSE_LIVE_ACTIVITY_SUPPORTED && liveActivityTestMode && liveActivitiesEnabled;
 
   useEffect(() => {
     let cancelled = false;

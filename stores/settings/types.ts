@@ -46,6 +46,7 @@ export interface Personalization {
   showDevMode?: boolean;
   mockDataEnabled?: boolean;
   liveActivityTestMode?: boolean;
+  liveActivitiesEnabled?: boolean;
   magicModelURL?: string;
   language?: string | null;
   wallpaper?: Wallpaper;

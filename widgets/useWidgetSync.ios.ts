@@ -98,6 +98,9 @@ const MAX_TRANSITION_DELAY_MS = 30 * 60 * 1000;
  * within a quarter of an hour, starting, or ending.
  */
 const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
+  const enabled = useSettingsStore(
+    (state) => state.personalization.liveActivitiesEnabled ?? true
+  );
   const testMode = useSettingsStore(
     (state) => state.personalization.liveActivityTestMode ?? false
   );
@@ -118,9 +121,11 @@ const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
 
     const at = new Date();
     // Never rejects — it reports its own failures.
-    syncCourseLiveActivity(courses, { at, testMode });
+    syncCourseLiveActivity(courses, { at, testMode, enabled });
 
-    const next = nextLiveActivityTransition(courses, at);
+    // Nothing to wait for when the feature is off: the sync above has already
+    // taken down whatever was on screen.
+    const next = enabled ? nextLiveActivityTransition(courses, at) : null;
     if (next === null) {
       return;
     }
@@ -131,7 +136,16 @@ const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
     timeout.current = setTimeout(() => setTransitionTick((value) => value + 1), delay);
 
     return () => clearTimeout(timeout.current);
-  }, [courses, loading, testMode, fontFamily, i18n.language, foregroundTick, transitionTick]);
+  }, [
+    courses,
+    loading,
+    enabled,
+    testMode,
+    fontFamily,
+    i18n.language,
+    foregroundTick,
+    transitionTick
+  ]);
 };
 
 /**
