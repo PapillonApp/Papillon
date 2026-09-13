@@ -708,6 +708,12 @@ export class AccountManager {
       return new module.Pronote(service.id);
     }
 
+    if (service.serviceId === Services.CAHIER_DE_PREPA) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/cahierDePrepa/index");
+      return new module.CahierDePrepa(service.id);
+    }
+
     if (service.serviceId === Services.SKOLENGO) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/skolengo/index");
