@@ -1002,13 +1002,43 @@ def get_lesson_content(
             if target is not None:
                 break
         if target is None and req.subject:
-            want = str(req.subject).lower().strip()
+            import unicodedata as _ud
+            def _norm_subj(s):
+                try:
+                    s = _ud.normalize("NFD", str(s or ""))
+                    s = "".join(ch for ch in s if _ud.category(ch) != "Mn")
+                    import re as _re
+                    return _re.sub(r"[^a-z0-9]+", " ", s.lower()).strip()
+                except Exception:
+                    return str(s or "").lower().strip()
+            def _subj_match(want_n, got_n):
+                if not want_n or not got_n:
+                    return True
+                if want_n in got_n or got_n in want_n:
+                    return True
+                import re as _re2
+                w = _re2.sub(r"[^a-z0-9]", "", want_n)
+                g = _re2.sub(r"[^a-z0-9]", "", got_n)
+                if w and g:
+                    if w == g:
+                        return True
+                    n = 0
+                    while n < len(w) and n < len(g) and w[n] == g[n]:
+                        n += 1
+                    if n >= 4:
+                        return True
+                for a in want_n.split():
+                    for b in got_n.split():
+                        if len(a) >= 3 and (b.startswith(a) or a.startswith(b)):
+                            return True
+                return False
+            want = _norm_subj(req.subject)
             for pv in pivots:
                 for l in (lessons or []):
                     try:
                         ls = getattr(l, "start", None)
                         subj = getattr(getattr(l, "subject", None), "name", "") or ""
-                        if ls and abs((ls.replace(tzinfo=None) - pv).total_seconds()) < 5400 and want in str(subj).lower():
+                        if ls and abs((ls.replace(tzinfo=None) - pv).total_seconds()) < 5400 and _subj_match(want, _norm_subj(subj)):
                             target = l
                             break
                     except Exception:

@@ -116,7 +116,11 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
             return { week, targetDate, key };
           });
 
-        const toFetch = candidates.filter(c => !fetchedWeeksRef.current.includes(c.key));
+        // forceRefresh (pull-to-refresh) doit réellement refetcher, pas être
+        // filtré par fetchedWeeksRef (sinon refresh = no-op -> EDT vide figé).
+        const toFetch = forceRefresh
+          ? candidates
+          : candidates.filter(c => !fetchedWeeksRef.current.includes(c.key));
 
         if (toFetch.length > 0) {
           if (fetchIdRef.current !== myId) return;
@@ -124,17 +128,29 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
           // qui se ressuscitent mutuellement dans addCourseDayToDatabase.
           // Enfant snapshoté avant la boucle : pas de mélange si switch entre 2 semaines.
           const fetchKid = selectedChild;
+          const succeededKeys: string[] = [];
           for (const c of toFetch) {
             if (fetchIdRef.current !== myId) return;
-            await (manager as NonNullable<typeof manager>).getWeeklyTimetable(c.week, c.targetDate, fetchKid);
+            try {
+              const days = await (manager as NonNullable<typeof manager>).getWeeklyTimetable(c.week, c.targetDate, fetchKid);
+              // Ne marque comme fetchée que si le réseau a répondu (même vide
+              // légitime : ex. vacances). En cas d'exception, on laisse la clé
+              // hors du cache pour permettre un retry au prochain swipe/refresh.
+              // getWeeklyTimetable a un fallback cache : un retour tableau
+              // (même vide) = pas d'exception -> on marque.
+              if (Array.isArray(days)) succeededKeys.push(c.key);
+            } catch {
+              // Échec réseau/auth : pas de marquage -> retry possible.
+              continue;
+            }
           }
 
           if (fetchIdRef.current !== myId) return;
-          fetchedWeeksRef.current = [
-            ...fetchedWeeksRef.current,
-            ...toFetch.map(c => c.key),
-          ];
-          setFetchedWeeks(fetchedWeeksRef.current);
+          if (succeededKeys.length > 0) {
+            const merged = Array.from(new Set([...fetchedWeeksRef.current, ...succeededKeys]));
+            fetchedWeeksRef.current = merged;
+            setFetchedWeeks(merged);
+          }
           setRefresh(prev => prev + 1);
         }
       } catch (error) {
@@ -147,7 +163,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
         fetchTimeoutRef.current = null;
       }
     }, 100);
-  }, [safeDateMs]);
+  }, [safeDateMs, selectedChild]);
 
   useEffect(() => {
     fetchWeeklyTimetable(weekNumber);

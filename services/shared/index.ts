@@ -739,7 +739,15 @@ export class AccountManager {
         (client as any).getTimetablePdf ? await (client as any).getTimetablePdf(day, portrait, overflow) : null,
       { multiple: true }
     );
-    return (out as any) ?? null;
+    // fetchData(multiple:true) renvoie un tableau (un résultat par client).
+    // Le callback est scalaire (string|null) : on extrait la 1ère URL non vide.
+    if (Array.isArray(out)) {
+      for (const v of out) {
+        if (typeof v === "string" && v.trim().length > 0) return v;
+      }
+      return null;
+    }
+    return (typeof out === "string" && (out as string).trim().length > 0 ? (out as string) : null) ?? null;
   }
 
   async getCanteenBalances(): Promise<Balance[]> {

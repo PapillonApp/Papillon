@@ -426,7 +426,32 @@ export class Pronote implements SchoolServicePlugin {
       return course.content;
     }
     try {
-      const fresh = await fetchPronoteCourseResources(this.getAuthToken(), course);
+      let fresh = await fetchPronoteCourseResources(this.getAuthToken(), course);
+      // Fallback batch : le POST unitaire peut rater (id tournant, matière
+      // abrégée) alors que le batch ±1j matche en heure+matière tolérante.
+      if (!Array.isArray(fresh) || fresh.length === 0) {
+        try {
+          const fromD = course.from instanceof Date ? course.from : new Date(course.from as any);
+          if (fromD && !isNaN(fromD.getTime())) {
+            const from = new Date(fromD.getTime() - 86400000);
+            const to = new Date(fromD.getTime() + 86400000);
+            const batch = await fetchPronoteWeekContents(
+              this.getAuthToken(),
+              this.accountId,
+              from,
+              to,
+              this.getSelectedChildName()
+            );
+            if (Array.isArray(batch) && batch.length > 0) {
+              const { matchContentForCourse } = await import("@/services/pronote/timetable");
+              const matched = matchContentForCourse(batch, course);
+              if (Array.isArray(matched) && matched.length > 0) fresh = matched;
+            }
+          }
+        } catch {
+          // best-effort fallback only
+        }
+      }
       if (fresh.length > 0) {
         // Persiste pour le widget LessonContent / l'ouverture hors-ligne.
         try {

@@ -104,7 +104,26 @@ export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, dat
       };
       fetchTimetable();
     });
-    return () => subscription.unsubscribe();
+    // Les writes EDT (addCourseDayToDatabase / saveCourseContentRaw) ne
+    // changeaient jamais `database` ni `refresh` : le widget accueil restait
+    // vide après le fetch. On observe aussi `courses` pour recharger.
+    let courseSub: { unsubscribe: () => void } | null = null;
+    try {
+      const courseQuery = database.get('courses').query();
+      courseSub = courseQuery.observe().subscribe(() => {
+        const fetchTimetable = async () => {
+          const timetableFetched = await getCoursesFromCache(weeks, isoYearOf(date));
+          setTimetable(timetableFetched);
+        };
+        fetchTimetable();
+      });
+    } catch {
+      courseSub = null;
+    }
+    return () => {
+      subscription.unsubscribe();
+      try { courseSub?.unsubscribe(); } catch { /* best-effort */ }
+    };
   }, [database, weeksKey, isoYear]);
 
   return timetable;

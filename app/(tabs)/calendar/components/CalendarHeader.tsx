@@ -36,11 +36,16 @@ export const CalendarHeader = React.memo(({ date, onDateChange, onHeaderHeightCh
     setExporting(true);
     try {
       const manager = getManager();
-      const url = await manager?.getTimetablePdf(date);
-      if (!url) {
-        throw new Error("PDF indisponible");
+      if (!manager) {
+        throw new Error("Compte non initialisé (réessaie après synchro)");
       }
-      await WebBrowser.openBrowserAsync(url, {
+      const raw = await manager?.getTimetablePdf(date);
+      // Compat : anciennes versions renvoyaient un tableau (fetchData multiple).
+      const url = Array.isArray(raw) ? raw.find(v => typeof v === "string" && v.trim().length > 0) : raw;
+      if (!url || typeof url !== "string" || !/^https?:\/\//.test(url.trim())) {
+        throw new Error("PDF indisponible (URL vide)");
+      }
+      await WebBrowser.openBrowserAsync(url.trim(), {
         presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
       });
     } catch (e) {

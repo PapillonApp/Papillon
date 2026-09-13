@@ -53,8 +53,67 @@ function mapRawContent(c: any, accountId: string): CourseResource | null {
   return (mapped.title || mapped.description || (mapped.attachments?.length ?? 0) > 0) ? mapped : null;
 }
 
+/** Matières équivalentes : "Maths" (EDT) vs "MATHEMATIQUES" (cahier),
+ *  "FR" vs "Français", "H-G" vs "Histoire-Géographie", etc. */
+function subjectsMatch(wantRaw: string, gotRaw: string): boolean {
+  const want = wantRaw.trim();
+  const got = gotRaw.trim();
+  if (!want || !got) return true;
+  if (got.includes(want) || want.includes(got)) return true;
+  const compact = (s: string) => s.replace(/[^a-z0-9]/g, "");
+  const w = compact(want);
+  const g = compact(got);
+  if (!w || !g) return true;
+  if (w === g) return true;
+  // Préfixe long commun (>= 4) : maths/mathematiques, philo/philosophie…
+  let common = 0;
+  while (common < w.length && common < g.length && w[common] === g[common]) common++;
+  if (common >= 4) return true;
+  // Tokens : "hist geo" vs "histoire geographie", "eps" vs "e p s"…
+  const wt = want.split(" ").filter(Boolean);
+  const gt = got.split(" ").filter(Boolean);
+  for (const a of wt) {
+    for (const b of gt) {
+      if (a.length >= 3 && (b.startsWith(a) || a.startsWith(b))) return true;
+      if (a.length >= 4 && b.length >= 4 && a.slice(0, 4) === b.slice(0, 4)) return true;
+    }
+  }
+  // Alias courts usuels.
+  const aliases: Record<string, string[]> = {
+    maths: ["mathematiques"], math: ["mathematiques"],
+    francais: ["fr", "lettres"], fr: ["francais", "lettres"],
+    histoire: ["hg", "hist", "geographie"], geographie: ["hg", "geo", "histoire"],
+    physique: ["pc", "chimie", "scphys"], chimie: ["pc", "physique"],
+    svt: ["svt", "sciences"], eps: ["eps", "sport"],
+    anglais: ["ang", "lv1"], espagnol: ["esp", "lv2"], allemand: ["all", "lv2"],
+    philo: ["philosophie"], eco: ["ses", "economie"], ses: ["eco", "economie"],
+    techno: ["technologie"], arts: ["plastiques"], musique: ["education"],
+  };
+  const expand = (s: string): Set<string> => {
+    const out = new Set<string>([s, w === s ? s : "", g === s ? s : ""].filter(Boolean));
+    out.add(s);
+    for (const tok of s.split(" ").filter(Boolean)) {
+      out.add(tok);
+      out.add(compact(tok));
+      const al = aliases[compact(tok)];
+      if (al) for (const x of al) out.add(x);
+    }
+    const full = compact(s);
+    const alFull = aliases[full];
+    if (alFull) for (const x of alFull) out.add(x);
+    return out;
+  };
+  const wSet = expand(want);
+  const gSet = expand(got);
+  for (const x of wSet) {
+    if (x && gSet.has(x)) return true;
+  }
+  return false;
+}
+
 /** Rattache un contenu batché à un cours : même matière (insensible casse,
- *  inclusion) + débuts à moins de 5 min (instants, même référentiel mur). */
+ *  accents, abréviations) + débuts à moins de 5 min (instants, même
+ *  référentiel mur). Fallback : matière seule dans ±90 min (DST/arrondis). */
 export function matchContentForCourse(
   contents: WeekLessonContent[] | undefined,
   course: Pick<Course, "from" | "subject">
@@ -63,21 +122,35 @@ export function matchContentForCourse(
   const fromMs = toTimeSafe(course.from);
   if (!Number.isFinite(fromMs)) return null;
   const want = normSubject(course.subject);
+  // Passe 1 : heure exacte (±5 min) + matière.
   for (const c of contents) {
     if (!c || c.lessonStart === null) continue;
     const startMs = toTimeSafe(c.lessonStart);
     if (!Number.isFinite(startMs)) continue;
     if (Math.abs(startMs - fromMs) > 5 * 60 * 1000) continue;
     const got = normSubject(c.subject);
-    if (want && got && (got.includes(want) || want.includes(got))) {
-      return c.resources.length > 0 ? c.resources : null;
-    }
-    // Sans matière fiable des deux côtés, l'heure seule suffit si unique.
-    if (!want || !got) {
+    if (subjectsMatch(want, got)) {
       return c.resources.length > 0 ? c.resources : null;
     }
   }
-  return null;
+  // Passe 2 : matière + proximité ±90 min (couvre DST, secondes tronquées,
+  // créneaux décalés). Prend le plus proche.
+  let best: WeekLessonContent | null = null;
+  let bestDist = 90 * 60 * 1000;
+  for (const c of contents) {
+    if (!c || c.lessonStart === null) continue;
+    const startMs = toTimeSafe(c.lessonStart);
+    if (!Number.isFinite(startMs)) continue;
+    const dist = Math.abs(startMs - fromMs);
+    if (dist > bestDist) continue;
+    const got = normSubject(c.subject);
+    if (!want || !got || subjectsMatch(want, got)) {
+      if (!Array.isArray(c.resources) || c.resources.length === 0) continue;
+      best = c;
+      bestDist = dist;
+    }
+  }
+  return best && Array.isArray(best.resources) && best.resources.length > 0 ? best.resources : null;
 }
 
 export async function fetchPronoteWeekTimetable(
@@ -191,11 +264,19 @@ export async function fetchPronoteCourseResources(
     const dateStr = fromWall.split("T")[0];
     const childName = (course as { kidName?: string }).kidName;
     const resourceId = (course as { resourceId?: string }).resourceId;
-    // `course.id` en cache = routeId (hash), pas l'id Pronote (qui tourne
-    // à chaque session) : on ne l'envoie que si ça ressemble à un id brut.
-    const looksLikeRouteId = typeof course.id === "string" && course.id.length >= 20 && !/^\d+$/.test(course.id);
+    // `course.id` en cache = routeId stable ("id-…", generateId), pas l'id
+    // Pronote brut (numérique, qui tourne à chaque session). On envoie en
+    // priorité le resourceId persisté (id Pronote frais au fetch EDT), sinon
+    // l'id brut si course.id n'est pas un routeId. Jamais de hash "id-…"
+    // au backend (il ne serait jamais retrouvé dans PageCahierDeTexte).
+    const isRouteId = (v: unknown): boolean =>
+      typeof v === "string" && (v.startsWith("id-") || (v.length >= 20 && !/^\d+$/.test(v)));
+    const rawLessonId =
+      typeof resourceId === "string" && resourceId.trim().length > 0 && !isRouteId(resourceId)
+        ? resourceId.trim()
+        : (typeof course.id === "string" && !isRouteId(course.id) ? course.id : undefined);
     const response = await PronoteApiClient.getLessonContent(authToken, {
-      lessonId: resourceId && !looksLikeRouteId ? resourceId : (looksLikeRouteId ? undefined : course.id),
+      lessonId: rawLessonId,
       lessonStart: fromWall,
       subject: course.subject,
       date: dateStr,
