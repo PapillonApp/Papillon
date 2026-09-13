@@ -6,6 +6,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import { useFont } from '@/utils/theme/fonts';
 import { FlatList, Platform, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import i18n from '@/utils/i18n';
+import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
 import { useSettingsStore } from '@/stores/settings';
 import { getGradeDisplayScale, formatScoreForDisplay } from '@/utils/grades/scale';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from '@/utils/services/periods';
@@ -77,6 +78,13 @@ const GradesView = () => {
   const loading = loadingPeriods || loadingGrades;
   const failure = gradesFailures[0] ?? periodsFailures[0];
   const hasError = Boolean(gradesError || periodsError || failure);
+
+  useLoadErrorAlert({
+    subject: "tes notes",
+    error: gradesError ?? periodsError,
+    failures: gradesFailures.length > 0 ? gradesFailures : periodsFailures,
+    hasData: subjects.length > 0,
+  });
 
   const [sortMethod, setSortMethod] = useState<SortMethod>('date');
   const [searchText, setSearchText] = useState('');

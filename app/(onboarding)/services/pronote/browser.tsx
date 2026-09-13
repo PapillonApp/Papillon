@@ -4,8 +4,12 @@ import * as Device from "expo-device"
 import {
   AccountKind,
   createSessionHandle,
+  DoubleAuthMode,
+  finishLoginManually,
   loginToken,
+  RefreshInformation,
   SecurityError,
+  securitySave,
   securitySource,
   SessionHandle,
 } from "@blockshub/pawnote-lts";
@@ -237,11 +241,13 @@ export default function PronoteENTLogin() {
       }
       setReceived(true);
 
-      console.log(message.data.login, message.data.mdp);
       console.log("Creating session handle...");
       const session = createSessionHandle(customFetcher);
+
+      let refresh: RefreshInformation | undefined;
+
       try {
-        const refresh = await loginToken(
+        refresh = await loginToken(
           session,
           {
             url: url,
@@ -251,11 +257,44 @@ export default function PronoteENTLogin() {
             deviceUUID,
           },
         );
+      } catch (error) {
+        if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
+          if (error.handle.shouldEnterSource && !error.handle.shouldEnterPIN) {
+            const mode: DoubleAuthMode = DoubleAuthMode.MGDA_NotificationSeulement;
+            const source = deviceName.length > 30 ? "Pronote" : deviceName;
+            await securitySource(session, source);
+            await securitySave(session, error.handle, { mode, deviceName: source });
 
-        if (!refresh) {
-          throw new Error("Erreur lors de la connexion");
+            const context = error.handle.context;
+            refresh = await finishLoginManually(
+              session,
+              context.authentication,
+              context.identity,
+              context.initialUsername,
+            );
+          } else {
+            setDoubleAuthError(error);
+            setDoubleAuthSession(session);
+            setDeviceId(deviceUUID);
+            setChallengeModalVisible(true);
+            return;
+          }
+        } else {
+          console.error("Error during login:", error);
+          setReceived(false);
+          Alert.alert("Erreur", "Une erreur est survenue lors de la connexion à Pronote. Veuillez réessayer.");
+          return;
         }
+      }
 
+      if (!refresh) {
+        console.error("No refresh information after login");
+        setReceived(false);
+        Alert.alert("Erreur", "Une erreur est survenue lors de la connexion à Pronote. Veuillez réessayer.");
+        return;
+      }
+
+      try {
         console.log("Login successful, adding account to store...");
         const schoolName = session.user.resources[0].establishmentName;
         const className = session.user.resources[0].className;
@@ -308,7 +347,7 @@ export default function PronoteENTLogin() {
         const parent = navigation.getParent();
         if (parent) {
           parent.goBack();
-          
+
           const parentsParent = parent.getParent();
           if (parentsParent) {
             parentsParent.goBack();
@@ -318,20 +357,10 @@ export default function PronoteENTLogin() {
         router.back();
         return router.replace('/');
       } catch (error) {
-        if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          if (error.handle.shouldEnterSource && !error.handle.shouldEnterPIN) {
-            securitySource(session, deviceName.length > 30 ? "Pronote" : deviceName);
-            return router.replace("/");
-          }
-          setDoubleAuthError(error)
-          setDoubleAuthSession(session)
-          setDeviceId(deviceUUID)
-          setChallengeModalVisible(true)
-        } else {
-          console.error("Error during login:", error);
-          Alert.alert("Erreur", "Une erreur est survenue lors de la connexion à Pronote. Veuillez réessayer.");
-          throw error;
-        }
+        console.error("Error while creating account:", error);
+        setReceived(false);
+        Alert.alert("Erreur", "Une erreur est survenue lors de la création du compte. Veuillez réessayer.");
+        return;
       }
     }
   };

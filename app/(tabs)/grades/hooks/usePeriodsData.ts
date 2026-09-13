@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
+import { useManagerSubscription } from "@/hooks/useManagerSubscription";
 import type { AccountManager } from "@/services/shared";
-import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import { getManager } from "@/services/shared";
 import { Period } from "@/services/shared/grade";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
 import { useSettingsStore } from "@/stores/settings";
@@ -91,13 +92,19 @@ export function usePeriodsData(): UsePeriodsDataResult {
     }
   }, [savedPeriodName]);
 
-  useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate(manager => {
-      fetchPeriods(manager);
-    });
-
-    return unsubscribe;
+  const handleManager = useCallback((manager: AccountManager) => {
+    fetchPeriods(manager);
   }, [fetchPeriods]);
+
+  // Nothing else ever ends the load if no manager turns up, so the spinner
+  // would stay on screen indefinitely.
+  const handleManagerUnavailable = useCallback(() => {
+    setLoading(false);
+    setRefreshing(false);
+    setError(new Error("Account manager unavailable"));
+  }, []);
+
+  useManagerSubscription(handleManager, handleManagerUnavailable);
 
   const setCurrentPeriod = useCallback((period: Period) => {
     hasUserSelection.current = true;
@@ -110,7 +117,12 @@ export function usePeriodsData(): UsePeriodsDataResult {
 
   const refresh = useCallback(async () => {
     const manager = getManager();
-    if (!manager) { return; }
+    if (!manager) {
+      // A pull-to-refresh has to end in something the user can see.
+      setRefreshing(false);
+      setError(new Error("Account manager unavailable"));
+      return;
+    }
     await fetchPeriods(manager, true);
   }, [fetchPeriods]);
 

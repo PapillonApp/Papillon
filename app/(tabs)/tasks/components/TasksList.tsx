@@ -29,6 +29,8 @@ interface TasksListProps {
   sortMethod: string;
   setAsDone: (item: Homework, done: boolean) => void;
   isLoaded?: boolean;
+  /** The homework could not be loaded: an empty week means "unknown", not "free". */
+  hasError?: boolean;
   /**
    * Rows animate in only on the page the screen opened with. Every other page
    * is mounted off-screen by the week pager, where a couple of dozen entering
@@ -47,6 +49,7 @@ const TasksList: React.FC<TasksListProps> = ({
   sortMethod,
   setAsDone,
   isLoaded = true,
+  hasError = false,
   animateItems = true,
 }) => {
   const { colors } = useTheme();
@@ -105,7 +108,9 @@ const TasksList: React.FC<TasksListProps> = ({
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
       ListEmptyComponent={
-        isLoaded ? <EmptyState isSearching={searchTerm.length > 0} /> : null
+        isLoaded || hasError ? (
+          <EmptyState isSearching={searchTerm.length > 0} hasError={hasError} />
+        ) : null
       }
       refreshControl={
         <RefreshControl

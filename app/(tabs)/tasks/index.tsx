@@ -170,7 +170,11 @@ const TasksView: React.FC = () => {
     refreshingWeek,
     handleRefresh,
     setAsDone,
+    error: homeworkError,
+    failures: homeworkFailures,
   } = useHomeworkData(weeksToLoad, alert);
+
+  const hasHomeworkError = Boolean(homeworkError) || homeworkFailures.length > 0;
 
   const {
     searchTerm,
@@ -407,6 +411,7 @@ const TasksView: React.FC = () => {
                     isRefreshing={refreshingWeek === week}
                     onRefresh={handleRefresh}
                     setAsDone={setAsDone}
+                    hasError={hasHomeworkError}
                   />
                 </View>
               );

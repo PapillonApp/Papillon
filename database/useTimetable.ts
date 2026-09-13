@@ -170,6 +170,14 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   );
 }
 
+// Courses are grouped on the day they fall on in the device's timezone: grouping
+// on the UTC date would file evening courses under the previous day west of UTC.
+function startOfLocalDay(date: Date): number {
+  const day = new Date(date);
+  day.setHours(0, 0, 0, 0);
+  return day.getTime();
+}
+
 export async function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
@@ -188,9 +196,9 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
       .query(Q.where('from', Q.between(minStart.getTime(), maxEnd.getTime())))
       .fetch();
 
-    const dayMap: Record<string, SharedCourse[]> = {};
+    const dayMap: Record<number, SharedCourse[]> = {};
     for (const course of courses) {
-      const dayKey = new Date(course.from).toISOString().split("T")[0];
+      const dayKey = startOfLocalDay(new Date(course.from));
       dayMap[dayKey] = dayMap[dayKey] || [];
       dayMap[dayKey].push(mapCourseToShared(course));
     }
@@ -198,7 +206,7 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
     try {
       const icalEvents = await getICalEventsForWeek(minStart, maxEnd);
       for (const event of icalEvents) {
-        const dayKey = new Date(event.from).toISOString().split("T")[0];
+        const dayKey = startOfLocalDay(event.from);
         dayMap[dayKey] = dayMap[dayKey] || [];
         dayMap[dayKey].push(event);
       }
@@ -209,9 +217,9 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
     for (const day in dayMap) {
       dayMap[day].sort((a, b) => a.from.getTime() - b.from.getTime());
     }
-		
+
     return Object.entries(dayMap).map(([day, courses]) => ({
-      date: new Date(day),
+      date: new Date(Number(day)),
       courses
     }));
   } catch (e) {
