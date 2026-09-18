@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "index.js",
-  "version": "8.5.4",
+  "version": "8.5.5",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -123,13 +123,6 @@
     "typescript": "~6.0.3"
   },
   "private": true,
-  "trustedDependencies": [
-    "@shopify/react-native-skia"
-  ],
-  "overrides": {
-    "react-native-screens": "^4.27.0",
-    "@expo/ui": "57.0.11"
-  },
   "reanimated": {
     "staticFeatureFlags": {
       "ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS": true,
