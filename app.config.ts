@@ -100,7 +100,13 @@ export default {
     },
     web: {
       bundler: "metro",
-      output: "static",
+      // "single": plain client-rendered SPA bundle, no Node-side static
+      // pre-rendering pass. Desktop (Electron) doesn't need per-route SSR/SEO,
+      // and several native-only libraries (native tab bar, WatermelonDB, the
+      // Magic model) only break when evaluated in that Node pre-render step —
+      // not in an actual browser. Real web hosting can still opt back into
+      // "static" later once/if those are individually made SSR-safe.
+      output: process.env.PAPILLON_TARGET === "electron" ? "single" : "static",
       favicon: "./assets/images/favicon.png",
     },
     plugins: [

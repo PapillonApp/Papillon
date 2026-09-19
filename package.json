@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "index.js",
-  "version": "8.5.5",
+  "version": "8.5.4",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -30,6 +30,7 @@
     "@expo/ui": "~57.0.18",
     "@getpapillon/papicons": "^0.2.3",
     "@legendapp/list": "^2.0.15",
+    "@lottiefiles/dotlottie-react": "^0.19.16",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "9.1.0",

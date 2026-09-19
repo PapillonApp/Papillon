@@ -133,7 +133,7 @@ export default function PronoteLoginMethod() {
         style={{ flex: 1 }}
         animated
       >
-        {cities.length === 0 && !loading && (
+        {cities.length === 0 && !loading && Platform.OS !== 'web' && (
           <List.Item animated onPress={() => navigation.navigate("qrcode")}>
             <List.Leading>
               <Icon><Papicons name="qrcode" /></Icon>
