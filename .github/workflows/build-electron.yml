@@ -30,7 +30,7 @@ jobs:
           node-version: 24
 
       - name: Install app dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Export web bundle
         run: npx expo export --platform web
