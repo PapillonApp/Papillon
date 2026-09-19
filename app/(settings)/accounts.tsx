@@ -211,6 +211,7 @@ export default function AccountsView() {
           onPress={() =>
             router.navigate({
               pathname: "/(onboarding)/restaurants/method",
+              params: { action: "addService" },
             })
           }
         >

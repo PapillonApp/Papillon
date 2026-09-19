@@ -135,6 +135,7 @@ export default function PronoteLoginWithQR() {
             accessToken: refresh.token,
             refreshToken: refresh.token,
             additionals: {
+              ...refresh,
               instanceURL: refresh.url,
               kind: refresh.kind,
               username: refresh.username,
