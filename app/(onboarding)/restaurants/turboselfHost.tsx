@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Pressable, TextInput, Keyboard, View, FlatList } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
+import LottieView from "@/components/lottie/LottieView";
 
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';

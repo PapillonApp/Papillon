@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import LottieView from "lottie-react-native";
+import LottieView from "@/components/lottie/LottieView";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,

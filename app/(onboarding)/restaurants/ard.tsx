@@ -2,7 +2,7 @@
 import { useTheme } from "expo-router/react-navigation";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { t } from "i18next";
-import LottieView from "lottie-react-native";
+import LottieView from "@/components/lottie/LottieView";
 import { Authenticator } from "@blockshub/blocksrd";
 import React, { useEffect, useMemo, useState } from "react";
 import { Alert, Keyboard, KeyboardAvoidingView, ScrollView, View } from "react-native";
