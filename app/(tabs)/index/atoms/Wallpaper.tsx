@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { File, Paths } from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { useSettingsStore } from '@/stores/settings';
 

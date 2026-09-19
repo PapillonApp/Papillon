@@ -2,7 +2,7 @@ import { Dimensions, View, ViewProps } from "react-native";
 import Reanimated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { useTheme } from "expo-router/react-navigation";
 import { useEffect, useMemo } from "react";
-import LinearGradient from "react-native-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 
 export interface SkeletonViewProps extends ViewProps {
 }

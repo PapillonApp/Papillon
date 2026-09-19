@@ -4,7 +4,7 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useState } from "react";
 import { Platform, View } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
 import ActivityIndicator from "@/ui/components/ActivityIndicator";

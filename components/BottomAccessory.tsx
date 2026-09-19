@@ -14,7 +14,7 @@ import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import React from 'react';
 import { ActivityIndicator, Platform, Pressable } from 'react-native';
 import { View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 import { getCourseRouteId } from '@/database/useTimetable';
 

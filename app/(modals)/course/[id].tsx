@@ -6,7 +6,7 @@ import * as DateLocale from 'date-fns/locale';
 import i18n, { t } from "i18next";
 import React, { useEffect, useState } from "react";
 import { Platform, View } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 
 import ModalOverhead from "@/components/ModalOverhead";
 import { getCourseById } from "@/database/useTimetable";

@@ -9,7 +9,7 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import AppColorsSelector from "@/components/AppColorsSelector";
 import { AppColors } from "@/utils/colors";
-import LinearGradient from "react-native-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
 import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from "@/stores/settings";
