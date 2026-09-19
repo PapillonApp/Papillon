@@ -1,4 +1,5 @@
 import { createMMKV } from 'react-native-mmkv'
+import { Platform } from 'react-native'
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { PersistStorage } from 'zustand/middleware'
 
@@ -10,7 +11,11 @@ classRegistry.set('Skolengo', SkolengoSession);
 export const createMMKVStorage = <T>(id: string, encryptionKey?: string): PersistStorage<T> => {
   const mmkv = createMMKV({
     id: id,
-    encryptionKey: encryptionKey
+    // react-native-mmkv's web build (backed by localStorage) throws if
+    // `encryptionKey` is present at all, even set to undefined explicitly
+    // wouldn't help — it has to be entirely absent from the config object.
+    // There is no at-rest encryption on web/Electron either way.
+    ...(Platform.OS !== 'web' && encryptionKey ? { encryptionKey } : {}),
   });
 
   return {
