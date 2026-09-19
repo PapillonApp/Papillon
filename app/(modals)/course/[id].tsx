@@ -5,7 +5,7 @@ import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
 import * as DateLocale from 'date-fns/locale';
 import i18n, { t } from "i18next";
 import React, { useEffect, useState } from "react";
-import { Platform, View } from "react-native";
+import { Alert, Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead from "@/components/ModalOverhead";
@@ -19,6 +19,13 @@ import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeH
 import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
+import { useSettingsStore } from "@/stores/settings";
+import {
+  COURSE_LIVE_ACTIVITY_SUPPORTED,
+  type CourseLiveActivityPreviewMode,
+  previewCourseLiveActivity,
+  stopCourseLiveActivity
+} from "@/widgets/course";
 
 import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,6 +48,16 @@ export default function CourseModal() {
   });
   const [course, setCourse] = useState<SharedCourse>();
   const [loading, setLoading] = useState(true);
+  const liveActivityTestMode = useSettingsStore(
+    state => state.personalization.liveActivityTestMode ?? false
+  );
+  const liveActivitiesEnabled = useSettingsStore(
+    state => state.personalization.liveActivitiesEnabled ?? true
+  );
+  // The settings switch is the master one: with the feature off there is
+  // nothing for the trigger to produce that the next sync would not take down.
+  const canTriggerLiveActivity =
+    COURSE_LIVE_ACTIVITY_SUPPORTED && liveActivityTestMode && liveActivitiesEnabled;
 
   useEffect(() => {
     let cancelled = false;
@@ -71,6 +88,14 @@ export default function CourseModal() {
     emoji: getSubjectEmoji(course.subject),
     color: getSubjectColor(course.subject),
   };
+  const triggerLiveActivity = async (mode: CourseLiveActivityPreviewMode) => {
+    try {
+      await previewCourseLiveActivity(course, mode);
+    } catch (cause) {
+      Alert.alert("Live Activity", `Impossible de la démarrer : ${String(cause)}`);
+    }
+  };
+
   const item = course;
   const startTime = Math.floor(course.from.getTime() / 1000);
   const endTime = Math.floor(course.to.getTime() / 1000);
@@ -239,6 +264,47 @@ export default function CourseModal() {
             </Typography>
           </List.Item>
         </List.Section>
+
+        {canTriggerLiveActivity && (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>Live Activity (dev)</List.Label>
+            </List.SectionTitle>
+
+            <List.Item onPress={() => triggerLiveActivity("upcoming")}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Clock" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">Déclencher — bientôt</Typography>
+              <Typography variant="body1" color="textSecondary">
+                Ce cours commence dans 15 minutes.
+              </Typography>
+            </List.Item>
+
+            <List.Item onPress={() => triggerLiveActivity("ongoing")}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Clock" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">Déclencher — en cours</Typography>
+              <Typography variant="body1" color="textSecondary">
+                Ce cours a commencé il y a 5 minutes.
+              </Typography>
+            </List.Item>
+
+            <List.Item onPress={() => stopCourseLiveActivity()}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Cross" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">Arrêter la Live Activity</Typography>
+            </List.Item>
+          </List.Section>
+        )}
       </List>
     </View>
   );

@@ -23,6 +23,8 @@ const defaultPersonalization: Personalization = {
   showAlertAtLogin: false,
   showDevMode: false,
   mockDataEnabled: false,
+  liveActivityTestMode: false,
+  liveActivitiesEnabled: true,
   magicModelURL: MAGIC_URL,
   gradesDisplayScale: "20",
   welcomeModalSeen: false,

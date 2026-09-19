@@ -1,23 +1,33 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { FlatList, useWindowDimensions } from 'react-native';
+import { FlatList } from 'react-native';
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
 
 const INITIAL_INDEX = 10000;
 
-export function useCalendarState() {
+export type CalendarState = ReturnType<typeof useCalendarState>;
+
+/**
+ * `viewportWidth` is the width the pager actually has, measured rather than read
+ * off the window: on iPad the tab bar becomes a sidebar, so the screen is
+ * narrower than the window it sits in, and a page is narrower with it.
+ */
+export function useCalendarState(viewportWidth: number) {
   const [date, setDate] = useState(new Date());
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
   const [currentIndex, setCurrentIndex] = useState(INITIAL_INDEX);
   const lastTrackedDateKey = useRef<string>("");
   const flatListRef = useRef<FlatList<any>>(null);
   const referenceDate = useRef(new Date());
-  const { width: windowWidth } = useWindowDimensions();
+  const windowWidth = viewportWidth;
   // Set while the pager is being re-laid out after a window resize. Scroll
   // offsets are meaningless until the correction scroll lands, so they must not
   // be turned into a new date.
   const isResizingRef = useRef(false);
+  // Last index `onScroll` reported. Also realigned whenever the date is set from
+  // outside the pager, so the next crossing is never mistaken for a no-op.
+  const lastEmittedIndex = useRef(INITIAL_INDEX);
 
   useEffect(() => {
     referenceDate.current.setHours(0, 0, 0, 0);
@@ -66,6 +76,7 @@ export function useCalendarState() {
 
     if (newIndex !== currentIndex) {
       setCurrentIndex(newIndex);
+      lastEmittedIndex.current = newIndex;
       if (flatListRef.current) {
         try {
           flatListRef.current.scrollToIndex({
@@ -92,8 +103,6 @@ export function useCalendarState() {
       setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
     }
   }, [windowWidth, currentIndex, getDateFromIndex]);
-
-  const lastEmittedIndex = useRef(currentIndex);
 
   const onScroll = useCallback((e: any) => {
     if (isResizingRef.current) {return;}
