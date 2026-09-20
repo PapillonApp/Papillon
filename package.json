@@ -9,6 +9,7 @@
     "ios:native:restore": "node scripts/ios-native-files.js restore",
     "ios:native:snapshot": "node scripts/ios-native-files.js snapshot",
     "web": "expo start --web",
+    "tauri": "tauri",
     "test": "jest --watchAll",
     "lint": "eslint --fix",
     "check:widgets": "node scripts/check-widgets.js",
@@ -115,6 +116,7 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2",
     "@types/react": "~19.2.10",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unused-imports": "^4.3.0",
