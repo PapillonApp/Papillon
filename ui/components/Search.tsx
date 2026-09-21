@@ -1,4 +1,4 @@
-import { isLiquidGlassSupported } from "./liquid-glass/LiquidGlass";
+import { isLiquidGlassSupported } from "../utils/LiquidGlassCompat";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';

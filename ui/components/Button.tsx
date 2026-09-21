@@ -9,7 +9,9 @@ import Typography from "./Typography";
 import * as ExpoHaptics from "expo-haptics";
 import { runsIOS26 } from "../utils/IsLiquidGlass";
 
-import { LiquidGlassView } from "./liquid-glass/LiquidGlass";
+import {
+  LiquidGlassView
+} from '../utils/LiquidGlassCompat';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
