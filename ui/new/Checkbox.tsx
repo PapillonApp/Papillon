@@ -34,8 +34,8 @@ const Checkbox = ({ checked, onChange }: { checked: boolean; onChange: (checked:
               alignItems: "center",
               justifyContent: "center",
             }}
-            entering={ZoomIn.springify().duration(200)}
-            exiting={ZoomOut.springify().duration(200)}
+            entering={ZoomIn.duration(200)}
+            exiting={ZoomOut.duration(200)}
           >
             {checked &&
               <Papicons color="white" name='check' size={20} />

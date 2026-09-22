@@ -166,8 +166,8 @@ export default function EDLoginWithCredentials() {
   function questionComponent({ item, index }: { item: unknown; index: number }) {
     return (
       <Reanimated.View
-        entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
-        exiting={FadeOutUp.springify().duration(400).delay(index * 80 + 150)}
+        entering={FadeInDown.duration(400).delay(index * 80 + 150)}
+        exiting={FadeOutUp.duration(400).delay(index * 80 + 150)}
       >
         <PlatformPressable
           onPress={() => {

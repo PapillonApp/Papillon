@@ -40,6 +40,9 @@ jobs:
       - name: Check source for unsafe web ExpoUI imports
         run: npm run check:web-native-imports
 
+      - name: Check Web animations for unsupported springify usage
+        run: npm run check:web-animations
+
       - name: Check exported web bundle for ExpoUI native module
         run: node scripts/check-web-bundle.js
 

@@ -103,7 +103,7 @@ export default function AppschoInstancesList() {
 
         return (
           <Reanimated.View
-            entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
+            entering={FadeInDown.duration(400).delay(index * 80 + 150)}
           >
             <AnimatedPressable
               onPress={() => {

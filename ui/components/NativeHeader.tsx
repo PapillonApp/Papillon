@@ -281,7 +281,7 @@ const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
 
   return (
     <LayoutAnimationConfig skipEntering>
-      <Reanimated.View style={viewStyle} {...props} layout={LinearTransition.springify()}>
+      <Reanimated.View style={viewStyle} {...props} layout={LinearTransition.duration(250)}>
         {typeof children === 'string' ? (
           <AnimatedNumber variant={variant} style={{ color: adjustedColor }}>
             {children}

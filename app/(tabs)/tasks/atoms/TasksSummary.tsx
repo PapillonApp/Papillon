@@ -33,7 +33,7 @@ const TasksSummary: React.FC<TasksSummaryProps> = ({
     <Reanimated.View
       entering={PapillonAppearIn}
       exiting={PapillonAppearOut}
-      layout={LinearTransition}
+      layout={Platform.OS === "web" ? undefined : LinearTransition}
       style={{
         marginTop:
           headerHeight + (Platform.OS === "android" ? 10 : -insets.top + 10),

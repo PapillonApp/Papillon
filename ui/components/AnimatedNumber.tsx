@@ -95,7 +95,7 @@ function AnimatedNumber({
     return (
       <AnimatedView
         // Parent view layout for digit count/position changes
-        layout={disableMoveAnimation ? undefined : LinearTransition.springify()}
+        layout={disableMoveAnimation ? undefined : LinearTransition.duration(250)}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -112,7 +112,7 @@ function AnimatedNumber({
               // when the value or position of a digit changes
               key={`animated-number-${digit}-${index}`}
               // **Optimization:** Removed inner 'layout' prop to rely only on controlled entering/exiting
-              layout={(digit == "." || digit == ",") ? LinearTransition.springify() : undefined}
+              layout={(digit == "." || digit == ",") ? LinearTransition.duration(250) : undefined}
               entering={getNumberEntering(changedIndex, unchanged)}
               exiting={getNumberExiting(changedIndex, unchanged)}
             >

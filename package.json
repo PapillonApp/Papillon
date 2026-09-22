@@ -17,7 +17,8 @@
     "format:check": "prettier --check .",
     "postinstall": "patch-package",
     "check:web-native-imports": "node scripts/check-web-native-imports.js",
-    "check:web-bundle": "node scripts/check-web-bundle.js"
+    "check:web-bundle": "node scripts/check-web-bundle.js",
+    "check:web-animations": "node scripts/check-web-animations.js"
   },
   "jest": {
     "preset": "jest-expo"
