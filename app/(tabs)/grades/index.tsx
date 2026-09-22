@@ -315,7 +315,7 @@ const GradesView = () => {
                     href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }}
                   >
                     <View style={{ flex: 1, flexDirection: 'column', gap: 1 }}>
-                      <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description ?? 'No description'}</Typography>
+                      <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description || t("Grade_NoDescription", { subject: getSubjectName(subject.name) })}</Typography>
                       {grade.givenAt && (
                         <Typography numberOfLines={1} variant="subtitle" color="textSecondary">
                           {grade.givenAt.toLocaleDateString(i18n.language, {

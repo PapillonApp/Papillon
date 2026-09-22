@@ -1,16 +1,13 @@
-import React, { useMemo, useState } from "react";
-import { Platform, Pressable, View } from "react-native";
-import Icon from "@/ui/components/Icon";
+import { useMemo } from "react";
+import { Platform, View } from "react-native";
 import GlassContainer from "@/ui/new/GlassContainer";
-import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 
-import { formatDate, formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
 import * as DateLocale from 'date-fns/locale';
 
 import { Grade, Period, Subject } from '@/services/shared/grade';
-
-import Reanimated, { useAnimatedStyle, withSpring, ZoomIn, ZoomOut } from "react-native-reanimated";
+import { t } from 'i18next';
 import Typography from "./Typography";
 
 import { getSubjectName } from '@/utils/subjects/name';
@@ -19,7 +16,6 @@ import { getSubjectColor } from '@/utils/subjects/colors';
 import { LinearGradient } from "expo-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
-import { Link } from "expo-router";
 import { useSettingsStore } from "@/stores/settings";
 import { formatGradeScoreForDisplay, getGradeDisplayScale } from "@/utils/grades/scale";
 
@@ -117,7 +113,7 @@ const CompactGrade = ({
           paddingHorizontal: 14,
         }}>
           <Typography color={tintedTextColor} variant="title" numberOfLines={1}>
-            {grade.description || 'No description'}
+            {grade.description || t("Grade_NoDescription", { subject: getSubjectName(subject.name) })}  
           </Typography>
           <Typography variant="body1" color={tintedTextColorSecondary} numberOfLines={1}>
             {grade.givenAt ? formatDistanceToNowStrict(new Date(grade.givenAt), { addSuffix: true, locale: DateLocale[i18n.language as keyof typeof DateLocale] }) : 'No date'}
