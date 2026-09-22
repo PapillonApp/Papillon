@@ -231,6 +231,7 @@ const Typography = React.memo(({
               color;
 
   const secondaryOpacity = color === "secondary" ? { opacity: 0.5 } : undefined;
+  const variantStyles = VARIANTS[variant] ?? VARIANTS.body1;
   const variantFont = (variantStyles.fontFamily as string) || FONT_FAMILIES.medium;
   const resolvedFont = weight ? font(weight) : font(variantFont);
 
