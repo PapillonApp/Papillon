@@ -44,24 +44,34 @@ export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, dat
   const weeksKey = weeks.join(',');
 
   useEffect(() => {
-    const fetchTimetable = async () => {
-      const timetableFetched = await getCoursesFromCache(weeks, date.getFullYear());
-      setTimetable(timetableFetched);
-    };
-    fetchTimetable();
-  }, [refresh, database, weeksKey, date.getFullYear()]);
+    let cancelled = false;
+    let requestId = 0;
+    const year = date.getFullYear();
 
-  useEffect(() => {
-    const icalQuery = database.get('icals').query();
-    const subscription = icalQuery.observe().subscribe(() => {
-      const fetchTimetable = async () => {
-        const timetableFetched = await getCoursesFromCache(weeks, date.getFullYear());
+    const fetchTimetable = async () => {
+      const currentRequest = ++requestId;
+      const timetableFetched = await getCoursesFromCache(weeks, year);
+      if (!cancelled && currentRequest === requestId) {
         setTimetable(timetableFetched);
-      };
-      fetchTimetable();
-    });
-    return () => subscription.unsubscribe();
-  }, [database, weeksKey, date.getFullYear()]);
+      }
+    };
+
+    // Courses written by a sync (e.g. right after adding an account) must show up
+    // without the caller having to bump `refresh`.
+    const { start, end } = getWeeksRange(weeks, year);
+    const courseSubscription = database
+      .get('courses')
+      .query(Q.where('from', Q.between(start.getTime(), end.getTime())))
+      .observe()
+      .subscribe(fetchTimetable);
+    const icalSubscription = database.get('icals').query().observe().subscribe(fetchTimetable);
+
+    return () => {
+      cancelled = true;
+      courseSubscription.unsubscribe();
+      icalSubscription.unsubscribe();
+    };
+  }, [refresh, database, weeksKey, date.getFullYear()]);
 
   return timetable;
 }
@@ -178,18 +188,23 @@ function startOfLocalDay(date: Date): number {
   return day.getTime();
 }
 
+function getWeeksRange(weeks: number[], year: number): { start: Date; end: Date } {
+  let start = new Date(8640000000000000);
+  let end = new Date(-8640000000000000);
+
+  for (const w of weeks) {
+    const range = getDateRangeOfWeek(w, year);
+    if (range.start < start) {start = range.start;}
+    if (range.end > end) {end = range.end;}
+  }
+
+  return { start, end };
+}
+
 export async function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
-    
-    let minStart = new Date(8640000000000000);
-    let maxEnd = new Date(-8640000000000000);
-    
-    for (const w of weeks) {
-      const { start, end } = getDateRangeOfWeek(w, year);
-      if (start < minStart) {minStart = start;}
-      if (end > maxEnd) {maxEnd = end;}
-    }
+    const { start: minStart, end: maxEnd } = getWeeksRange(weeks, year);
 
     const courses = await database
       .get<Course>('courses')

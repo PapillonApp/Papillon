@@ -45,7 +45,7 @@ const HomeTimeTableWidget = React.memo(() => {
     <FlatList
       scrollEnabled={false}
       data={courses.slice(0, 3)}
-      style={{ width: '100%', paddingHorizontal: 10 }}
+      style={{ width: '100%', paddingHorizontal: 10, paddingBottom: 4 }}
       renderItem={({ item }) => (
         <Link
           href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(item) } }}

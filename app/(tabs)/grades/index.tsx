@@ -137,6 +137,7 @@ const GradesView = () => {
         onFocus={() => setIsSearchbarFocused(true)}
         onBlur={() => setIsSearchbarFocused(false)}
         autoCapitalize="none"
+        hideWhenScrolling={true}
       />
 
       {isAndroid ? (
