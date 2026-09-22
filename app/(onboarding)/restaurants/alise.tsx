@@ -19,11 +19,13 @@ import { useTheme } from "expo-router/react-navigation";
 import { Alise } from "@/services/alise";
 import { authenticateWithCredentials } from "alise-api";
 import { initializeAccountManager } from "@/services/shared";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const ANIMATION_DURATION = 100;
 
 export default function AliseLoginWithCredentials() {
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(20);
   const theme = useTheme();
 
   const [username, setUsername] = useState<string>("");
@@ -124,6 +126,7 @@ export default function AliseLoginWithCredentials() {
         borderBottomLeftRadius: 42,
         borderBottomRightRadius: 42,
         padding: 20,
+        ...safePadding,
         paddingTop: insets.top + 20,
         paddingBottom: 34,
         borderCurve: "continuous",
@@ -164,7 +167,7 @@ export default function AliseLoginWithCredentials() {
           </Typography>
         </Reanimated.View>
       </View>
-      <Stack padding={20} gap={10}>
+      <Stack padding={20} gap={10} style={safePadding}>
         <OnboardingInput
           icon={"Link"}
           placeholder={t("INPUT_ETABID")}

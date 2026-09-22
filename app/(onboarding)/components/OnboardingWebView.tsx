@@ -8,9 +8,11 @@ import WebView from "react-native-webview";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Typography from "@/ui/new/Typography";
 import AndroidBackButton from "@/utils/theme/AndroidBackButton";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function OnboardingWebView({ webViewRef, ...props }: React.ComponentProps<typeof WebView>) {
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(16);
   const { colors } = useTheme();
 
   const [currentUrl, setCurrentUrl] = React.useState<string>(props.source.uri || "");
@@ -44,7 +46,7 @@ export default function OnboardingWebView({ webViewRef, ...props }: React.Compon
     >
       {Platform.OS === 'android' && (<View style={{
         position: "absolute",
-        left: 16,
+        left: safePadding.paddingLeft,
         top: finalHeaderHeight + 11,
         zIndex: 200000,
       }}>
@@ -109,6 +111,7 @@ export default function OnboardingWebView({ webViewRef, ...props }: React.Compon
         )}
       </View>
 
+      <View style={{ flex: 1, paddingLeft: insets.left, paddingRight: insets.right }}>
       <WebView
         style={{
           flex: 1,
@@ -142,6 +145,7 @@ export default function OnboardingWebView({ webViewRef, ...props }: React.Compon
         }}
         ref={webViewRef}
       />
+      </View>
     </View>
   )
 }

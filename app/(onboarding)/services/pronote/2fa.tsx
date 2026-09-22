@@ -21,12 +21,15 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 import { PlatformPressable } from "../ed/credentials";
 
 export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId, relinkAccountId, relinkServiceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string, relinkAccountId?: string, relinkServiceId?: string }) {
   const { t } = useTranslation();
   const { colors, dark } = useTheme();
+  const headerSafePadding = useSafeHorizontalPadding(20);
+  const pinSafePadding = useSafeHorizontalPadding(50);
   const alert = useAlert();
 
   const [pinCode, setPinCode] = useState<string>("");
@@ -227,6 +230,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
           borderBottomLeftRadius: 42,
           borderBottomRightRadius: 42,
           padding: 20,
+          ...headerSafePadding,
           paddingBottom: 34,
           backgroundColor: "#E50052",
         }}
@@ -253,7 +257,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         </Stack>
       </View>
       <ScrollView>
-        <Stack flex direction="horizontal" style={{ paddingHorizontal: 50, paddingVertical: 30 }}>
+        <Stack flex direction="horizontal" style={{ ...pinSafePadding, paddingVertical: 30 }}>
           <Stack
             flex
             direction="horizontal"
@@ -285,7 +289,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
           renderItem={renderItem}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
-            paddingHorizontal: 50,
+            ...pinSafePadding,
             gap: 15
           }}
           columnWrapperStyle={{

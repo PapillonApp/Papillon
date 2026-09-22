@@ -101,7 +101,6 @@ const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
             }}
           >
             <Link asChild href={item.redirect ?? "/(features)/soon"}>
-              <Link.AppleZoom>
                 <ListTouchable>
                   <Stack
                     direction="horizontal"
@@ -117,7 +116,6 @@ const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
                     </Icon>
                   </Stack>
                 </ListTouchable>
-              </Link.AppleZoom>
             </Link>
           </Stack>
         )}

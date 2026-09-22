@@ -30,6 +30,7 @@ import { ListTouchable } from "@/ui/new/List";
 import { LegendList, LegendListRef } from "@legendapp/list";
 import { FlashList } from "@shopify/flash-list";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const EmojiItem = memo(({ item, onPress, isSelected }: {item: string, onPress: (emoji: string) => void, isSelected: boolean}) => {
   const theme = useTheme();
@@ -266,6 +267,8 @@ function EmojiPicker({
 export default function EditSubject() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(16);
+  const headerSafePadding = useSafeHorizontalPadding(15);
 
   const params = useLocalSearchParams();
 
@@ -295,7 +298,7 @@ export default function EditSubject() {
     >
       <Stack
         padding={15}
-        style={{ justifyContent: "space-between", alignItems: "center" }}
+        style={{ justifyContent: "space-between", alignItems: "center", ...headerSafePadding }}
         direction={"horizontal"}
       >
         <AnimatedPressable
@@ -355,12 +358,12 @@ export default function EditSubject() {
           gap={5}
           direction={"horizontal"}
           hAlign={"center"}
-          style={{ paddingHorizontal: 16, marginTop: 20 }}
+          style={{ ...safePadding, marginTop: 20 }}
         >
           <Papicons name={"Font"} color={colors.text + "7F"} size={18} />
           <Typography color="secondary">Nom de la matière</Typography>
         </Stack>
-        <Stack style={{ paddingHorizontal: 16 }}>
+        <Stack style={safePadding}>
           <OnboardingInput
             placeholder={"Nom de la matière"}
             text={selectedName}
@@ -373,7 +376,7 @@ export default function EditSubject() {
           gap={5}
           direction={"horizontal"}
           hAlign={"center"}
-          style={{ paddingHorizontal: 16 }}
+          style={safePadding}
         >
           <Papicons name={"Palette"} color={colors.text + "7F"} size={18} />
           <Typography color="secondary">Couleur</Typography>
@@ -384,7 +387,7 @@ export default function EditSubject() {
             gap: 10,
             height: 50,
             alignItems: "center",
-            paddingHorizontal: 16,
+            ...safePadding,
           }}
           showsHorizontalScrollIndicator={false}
         >
@@ -419,7 +422,7 @@ export default function EditSubject() {
           gap={5}
           direction={"horizontal"}
           hAlign={"center"}
-          style={{ paddingHorizontal: 16 }}
+          style={safePadding}
         >
           <Papicons name={"Emoji"} color={colors.text + "7F"} size={18} />
           <Typography color="secondary">Emoji</Typography>
@@ -431,7 +434,7 @@ export default function EditSubject() {
             gap: 10,
             height: 60,
             alignItems: "center",
-            paddingHorizontal: 16,
+            ...safePadding,
           }}
           showsHorizontalScrollIndicator={false}
         >

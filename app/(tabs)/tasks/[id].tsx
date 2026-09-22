@@ -19,11 +19,12 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { Platform } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { Homework } from "@/services/shared/homework";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { View } from "react-native";
 
 const Task = () => {
@@ -71,6 +72,7 @@ const Task = () => {
   }
 
   const insets = useSafeAreaInsets();
+  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0
@@ -114,7 +116,6 @@ const Task = () => {
         </View>
       )}
 
-<SafeAreaView style={{ flex: 1 }} edges={["left", "right"]}>
       <List
         contentInsetAdjustmentBehavior="automatic"
         ListHeaderComponent={
@@ -135,6 +136,8 @@ const Task = () => {
         }}
         contentContainerStyle={{
           padding: 16,
+          paddingLeft: contentPaddingLeft,
+          paddingRight: contentPaddingRight,
         }}
       >
         <List.Section>
@@ -213,7 +216,6 @@ const Task = () => {
           </List.Section>
         )}
       </List>
-      </SafeAreaView>
     </>
   );
 };

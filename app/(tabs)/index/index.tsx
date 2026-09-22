@@ -58,13 +58,21 @@ const HomeScreen = () => {
     }
   }, [account, accounts.length, router, store]);
 
+  const consentPrompted = React.useRef(false);
+
   React.useEffect(() => {
+    // Only ask for consent once the user lands on home with an account (i.e. after onboarding)
+    if (!focused || accounts.length === 0 || consentPrompted.current) {
+      return;
+    }
+
+    consentPrompted.current = true;
     checkConsent().then(consent => {
       if (!consent.given) {
         router.push("../consent");
       }
     });
-  }, []);
+  }, [focused, accounts.length, router]);
 
   React.useEffect(() => {
     if (!account?.id || countedTeamModalAccount.current === account.id) {

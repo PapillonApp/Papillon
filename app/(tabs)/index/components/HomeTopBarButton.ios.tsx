@@ -24,7 +24,6 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route, onPres
       }}
     >
       <Link asChild href={route ?? "/(features)/soon"}>
-      <Link.AppleZoom>
       <Pressable
         style={{
           width: '100%',
@@ -37,7 +36,6 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route, onPres
           <Papicons name={icon} />
         </Icon>
       </Pressable>
-      </Link.AppleZoom>
       </Link>
     </LiquidGlassView>
   );

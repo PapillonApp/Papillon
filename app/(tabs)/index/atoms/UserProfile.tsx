@@ -52,7 +52,6 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
             }}
           >
         <Link asChild href="/(modals)/profile">
-        <Link.AppleZoom>
           <Pressable>
             <Avatar
               size={40}
@@ -60,7 +59,6 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
               imageUrl={profilePicture}
             />
         </Pressable>
-        </Link.AppleZoom>
         </Link>
           </UserProfileItemContainer>
 

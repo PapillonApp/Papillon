@@ -19,6 +19,7 @@ import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeH
 import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,6 +36,7 @@ export default function CourseModal() {
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0
@@ -127,7 +129,7 @@ export default function CourseModal() {
           />
         }
         style={{ backgroundColor: "transparent", zIndex: 2 }}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{ padding: 16, paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}
       >
         {getStatusText(course.status) ? (
           <List.Section>

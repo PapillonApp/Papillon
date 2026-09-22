@@ -21,10 +21,10 @@ import Averages from './atoms/Averages';
 import GradesEmptyState from './atoms/GradesEmptyState';
 import GradesLoading from './atoms/GradesLoading';
 import List from '@/ui/new/List';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import useResizable from '@/ui/utils/Resizable';
 import CompactGrade from '@/ui/new/CompactGrade';
 import { AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const isAndroid = Platform.OS === 'android';
 
@@ -68,7 +68,7 @@ const sortSubjects = (subjects: Subject[], method: SortMethod): Subject[] => {
 const GradesView = () => {
   const papillonFont = useFont();
   const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
-  const insets = useSafeAreaInsets();
+  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const theme = useTheme();
   const resize = useResizable();
 
@@ -218,10 +218,10 @@ const GradesView = () => {
         </Stack.Toolbar>
       )}
 
-      <SafeAreaView edges={['left', 'right']} style={{ flex: 1, backgroundColor: Platform.OS === 'ios' ? theme.colors.overground : theme.colors.background }}>
+      <View style={{ flex: 1, backgroundColor: Platform.OS === 'ios' ? theme.colors.overground : theme.colors.background }}>
         <List
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 16 }}
+          contentContainerStyle={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}
           contentInsetAdjustmentBehavior="automatic"
           refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
           numColumns={resize.isLarge ? 2 : 1}
@@ -242,9 +242,10 @@ const GradesView = () => {
                 style={{
                   paddingVertical: 16,
                   gap: 12,
-                  marginHorizontal: -16,
+                  marginLeft: -contentPaddingLeft,
+                  marginRight: -contentPaddingRight,
                 }}>
-                <View style={{ paddingHorizontal: 16 }}>
+                <View style={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}>
                   <Averages history={history} realAverage={isAverageServiceProvided ? averages.student?.value : undefined} color={theme.colors.primary} displayScale={displayScale} />
                 </View>
 
@@ -268,7 +269,7 @@ const GradesView = () => {
                   showsHorizontalScrollIndicator={false}
                   ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
                   horizontal
-                  contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 24, overflow: 'visible' }}
+                  contentContainerStyle={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight, paddingVertical: 24, overflow: 'visible' }}
                   style={{ overflow: 'visible', marginVertical: -24 }}
                 />
               </View>
@@ -346,7 +347,7 @@ const GradesView = () => {
             );
           })}
         </List>
-      </SafeAreaView>
+      </View>
     </>
   );
 };

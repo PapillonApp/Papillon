@@ -15,6 +15,7 @@ import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { GeographicSearchCities } from "@/utils/native/georeverse";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const convertPostalCode
 = (postalCode: string) => {
@@ -69,6 +70,7 @@ export default function PronoteLoginMethod() {
   const headerHeight = useHeaderHeight();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(16);
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -125,6 +127,7 @@ export default function PronoteLoginMethod() {
         ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} t={t} />}
         contentContainerStyle={{
           padding: 16,
+          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,
