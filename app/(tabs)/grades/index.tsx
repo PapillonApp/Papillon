@@ -8,7 +8,7 @@ import { FlatList, Platform, Pressable, RefreshControl, ScrollView, View } from 
 import i18n from '@/utils/i18n';
 import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
 import { useSettingsStore } from '@/stores/settings';
-import { getGradeDisplayScale, formatScoreForDisplay } from '@/utils/grades/scale';
+import { getGradeDisplayScale, formatScoreForDisplay, formatGradeScoreForDisplay } from '@/utils/grades/scale';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from '@/utils/services/periods';
 import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
@@ -275,7 +275,10 @@ const GradesView = () => {
             )
           )}
         >
-          {filteredSubjects.map(subject => (
+          {filteredSubjects.map(subject => {
+            const subjectAverage = formatGradeScoreForDisplay(subject.studentAverage, subject.outOf, displayScale);
+
+            return (
             <List.Section key={subject.id} id={subject.id}>
               <List.SectionTitle id={`${subject.id}-title`}>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 2 }}>
@@ -287,11 +290,13 @@ const GradesView = () => {
 
                   <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
                     <Typography variant="h5" weight='semibold' color="textSecondary">
-                      {subject.studentAverage?.value.toFixed(2) ?? 'N/A'}
+                      {subjectAverage.value}
                     </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      /{subject.studentAverage?.outOf ?? 'N/A'}
-                    </Typography>
+                    {subjectAverage.denominator !== '' && (
+                      <Typography variant="caption" color="textSecondary">
+                        {subjectAverage.denominator}
+                      </Typography>
+                    )}
                   </View>
                 </View>
               </List.SectionTitle>
@@ -310,7 +315,7 @@ const GradesView = () => {
                     href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }}
                   >
                     <View style={{ flex: 1, flexDirection: 'column', gap: 1 }}>
-                      <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description ?? 'No description'}</Typography>
+                      <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description || t("Grade_NoDescription", { subject: getSubjectName(subject.name) })}</Typography>
                       {grade.givenAt && (
                         <Typography numberOfLines={1} variant="subtitle" color="textSecondary">
                           {grade.givenAt.toLocaleDateString(i18n.language, {
@@ -338,7 +343,8 @@ const GradesView = () => {
                 );
               })}
             </List.Section>
-          ))}
+            );
+          })}
         </List>
       </SafeAreaView>
     </>
