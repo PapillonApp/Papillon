@@ -20,6 +20,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
 import { Link } from "expo-router";
+import { useSettingsStore } from "@/stores/settings";
+import { formatGradeScoreForDisplay, getGradeDisplayScale } from "@/utils/grades/scale";
 
 const CompactGrade = ({
   grade,
@@ -29,6 +31,12 @@ const CompactGrade = ({
   subject: Subject;
 }) => {
   const theme = useTheme();
+
+  const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
+  const score = useMemo(
+    () => formatGradeScoreForDisplay(grade.studentScore, grade.outOf, displayScale),
+    [grade.studentScore, grade.outOf, displayScale]
+  );
 
   const subjectName = useMemo(() => {
     if (subject?.name) {
@@ -122,11 +130,13 @@ const CompactGrade = ({
           alignItems: 'flex-end',
         }}>
           <Typography variant="h3" numberOfLines={2} color={tintedTextColor}>
-            {grade.studentScore?.disabled ? grade.studentScore.status || 'N/A' : grade.studentScore?.value.toFixed(2) || 'N/A'}
+            {score.value}
           </Typography>
-          <Typography variant="body1" color={tintedTextColorSecondary} numberOfLines={1}>
-            /{grade.studentScore?.outOf || 'N/A'}
-          </Typography>
+          {score.denominator !== '' && (
+            <Typography variant="body1" color={tintedTextColorSecondary} numberOfLines={1}>
+              {score.denominator}
+            </Typography>
+          )}
         </View> 
       </View>
     </GlassContainer>
