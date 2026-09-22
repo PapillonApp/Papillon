@@ -15,8 +15,10 @@ import {
 import Stack from "@/ui/components/Stack";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function SubjectPersonalization() {
+  const safePadding = useSafeHorizontalPadding(16);
   const { colors } = useTheme();
 
   const accounts = useAccountStore(state => state.accounts);
@@ -111,8 +113,8 @@ export default function SubjectPersonalization() {
 
       <List
         style={{ flex: 1, backgroundColor: colors.overground }}
-        contentContainerStyle={{ padding: 16 }}
-        contentInsetAdjustmentBehavior="always"
+        contentContainerStyle={{ padding: 16, ...safePadding }}
+        contentInsetAdjustmentBehavior="automatic"
       >
         {subjects.length > 0 ? (
           subjects.map(item =>

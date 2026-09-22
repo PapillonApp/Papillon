@@ -14,6 +14,7 @@ import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 
 export interface School {
@@ -59,6 +60,7 @@ export default function PronoteLoginSelectEtab() {
   const headerHeight = useHeaderHeight();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(16);
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -91,6 +93,7 @@ export default function PronoteLoginSelectEtab() {
         ListHeaderComponent={<PronoteSearchHeader search={search} setSearch={setSearch} loading={loading} t={t} />}
         contentContainerStyle={{
           padding: 16,
+          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,

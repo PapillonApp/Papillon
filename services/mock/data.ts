@@ -293,10 +293,10 @@ export function generateMockGrades(
       return {
         id: subjectId,
         name,
-        studentAverage: { value: adjustedAverage, outOf: 20 },
-        classAverage: { value: classAverage, outOf: 20 },
-        maximum: { value: 19, outOf: 20 },
-        minimum: { value: 7.5, outOf: 20 },
+        studentAverage: { value: adjustedAverage },
+        classAverage: { value: classAverage },
+        maximum: { value: 19 },
+        minimum: { value: 7.5 },
         outOf: { value: 20 },
         grades: [0, 1, 2].map(gradeIndex => ({
           id: `mock-grade-${periodIndex}-${subjectIndex}-${gradeIndex}`,
@@ -315,11 +315,10 @@ export function generateMockGrades(
           outOf: { value: 20 },
           studentScore: {
             value: Math.max(8, adjustedAverage + gradeIndex - 1),
-            outOf: 20,
           },
-          averageScore: { value: classAverage, outOf: 20 },
-          minScore: { value: 6.5, outOf: 20 },
-          maxScore: { value: 19.5, outOf: 20 },
+          averageScore: { value: classAverage },
+          minScore: { value: 6.5 },
+          maxScore: { value: 19.5 },
           createdByAccount: accountId,
         })),
       };
@@ -327,9 +326,9 @@ export function generateMockGrades(
   );
 
   return {
-    studentOverall: { value: 15.2 - (periodIndex - 1) * 0.2, outOf: 20 },
-    classAverage: { value: 13.3, outOf: 20 },
-    rank: { value: 6, outOf: 7 },
+    studentOverall: { value: 15.2 - (periodIndex - 1) * 0.2 },
+    classAverage: { value: 13.3 },
+    rank: { value: 6 },
     subjects,
     createdByAccount: accountId,
   };

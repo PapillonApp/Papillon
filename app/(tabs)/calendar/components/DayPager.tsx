@@ -135,13 +135,12 @@ export function DayPager({
         isRefreshing={isRefreshing}
         onRefresh={onRefresh}
         colors={dayColors}
-        insets={insets}
         tabBarHeight={tabBarHeight}
         transportInfo={transportInfo}
         hasError={hasError}
       />
     );
-  }, [getDateFromIndex, windowWidth, timetable, isRefreshing, onRefresh, dayColors, insets, tabBarHeight, transportInfo, hasError]);
+  }, [getDateFromIndex, windowWidth, timetable, isRefreshing, onRefresh, dayColors, tabBarHeight, transportInfo, hasError]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

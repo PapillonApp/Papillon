@@ -10,10 +10,12 @@ import Icon from "@/ui/components/Icon";
 import { useMemo } from "react";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 import Picker from "@/ui/components/Picker";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { useTheme } from "expo-router/react-navigation";
 import { COURSE_LIVE_ACTIVITY_SUPPORTED } from "@/widgets/course";
 
 export default function SettingsFeatures() {
+  const safePadding = useSafeHorizontalPadding(16);
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -50,8 +52,8 @@ export default function SettingsFeatures() {
 
   return (
     <List
-      contentInsetAdjustmentBehavior="always"
-      contentContainerStyle={{ padding: 16 }}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding: 16, ...safePadding }}
       style={{ flex: 1, backgroundColor: colors.overground }}
     >
       <List.Section>

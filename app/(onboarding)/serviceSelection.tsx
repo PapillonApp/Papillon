@@ -15,6 +15,7 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 import { GetSupportedServices } from './utils/constants';
 
@@ -23,6 +24,8 @@ export default function ServiceSelection() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(20);
+  const listSafePadding = useSafeHorizontalPadding(16);
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -69,6 +72,7 @@ export default function ServiceSelection() {
       <ScrollView
         contentContainerStyle={{
           padding: 20,
+          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 32,
@@ -115,6 +119,7 @@ export default function ServiceSelection() {
         )}
         contentContainerStyle={{
           padding: 16,
+          ...listSafePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,
@@ -168,6 +173,7 @@ export default function ServiceSelection() {
       <View
         style={{
           padding: 20,
+          ...safePadding,
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
           borderTopWidth: 1,

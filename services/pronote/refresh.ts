@@ -1,5 +1,6 @@
 import {
   AccountKind,
+  AuthenticateError,
   BusyPageError,
   createSessionHandle,
   loginToken,
@@ -42,6 +43,29 @@ const readStoredAuth = (serviceId: string, fallback: Auth): Auth => {
   return fallback;
 };
 
+const buildTokenParams = (stored: Auth, deviceUUID: string): TokenAuthenticationParams => {
+  const url = String(
+    stored.additionals?.["url"] || stored.additionals?.["instanceURL"] || ""
+  );
+  const token = String(stored.additionals?.["token"] || stored.accessToken || "");
+  const username = String(stored.additionals?.["username"] || "");
+
+  if (!url || !token || !username) {
+    throw new AuthenticateError(
+      "Stored PRONOTE credentials are incomplete, the account has to be linked again."
+    );
+  }
+
+  return {
+    ...stored.additionals,
+    url,
+    token,
+    username,
+    kind: (stored.additionals?.["kind"] as AccountKind) || AccountKind.STUDENT,
+    deviceUUID,
+  } as TokenAuthenticationParams;
+};
+
 export async function refreshPronoteAccount(
   accountId: string,
   credentials: Auth
@@ -60,21 +84,17 @@ export async function refreshPronoteAccount(
     const handle = createSessionHandle(customFetcher);
     const stored = attempt === 0 ? credentials : readStoredAuth(accountId, credentials);
     const deviceUUID = String(stored.additionals?.["deviceUUID"] || "");
-
-    const loginParams = {
-      ...stored.additionals,
-      kind: (stored.additionals?.["kind"] as AccountKind) || AccountKind.STUDENT,
-      deviceUUID,
-    };
+    const loginParams = buildTokenParams(stored, deviceUUID);
 
     try {
-      const refresh = await loginToken(handle, loginParams as TokenAuthenticationParams);
+      const refresh = await loginToken(handle, loginParams);
 
       const auth: Auth = {
         accessToken: refresh.token,
         refreshToken: refresh.token,
         additionals: {
           ...refresh,
+          instanceURL: refresh.url,
           deviceUUID,
         },
       };

@@ -28,12 +28,14 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { useFont } from "@/utils/theme/fonts";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const NewsPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [news, setNews] = useState<News>();
   const [loading, setLoading] = useState(true);
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(20);
   const router = useRouter()
   const { colors } = useTheme();
   const font = useFont();
@@ -128,7 +130,7 @@ const NewsPage = () => {
       contentInsetAdjustmentBehavior="automatic"
       style={{ flex: 1 }}
       contentContainerStyle={{
-        paddingHorizontal: 20,
+        ...safePadding,
         paddingTop: 20,
         paddingBottom: 20 + insets.bottom,
         gap: 24

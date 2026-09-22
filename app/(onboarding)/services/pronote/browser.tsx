@@ -35,9 +35,11 @@ import uuid from "@/utils/uuid/uuid";
 import OnboardingWebView from "../../components/OnboardingWebView";
 import { Pronote2FAModal } from "./2fa";
 import Button from "@/ui/new/Button";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function PronoteENTLogin() {
   const { colors } = useTheme();
+  const safePadding = useSafeHorizontalPadding(20);
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { params } = useRoute();
@@ -415,7 +417,7 @@ export default function PronoteENTLogin() {
           entering={FadeIn.duration(130)}
           exiting={FadeOut.duration(130)}
         >
-          <Stack vAlign="center" hAlign="center" width={"100%"} gap={3} padding={20}>
+          <Stack vAlign="center" hAlign="center" width={"100%"} gap={3} padding={20} style={safePadding}>
             <ActivityIndicator />
             <Divider height={12} ghost />
             <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? formatSchoolName(school.name) : t("ONBOARDING_YOUR_SCHOOL")}</Typography>

@@ -8,9 +8,11 @@ import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import NativeSwitch from "@/ui/native/NativeSwitch";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { useTheme } from "expo-router/react-navigation";
 
 const SettingsTabs = () => {
+  const safePadding = useSafeHorizontalPadding(16);
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -72,8 +74,8 @@ const SettingsTabs = () => {
 
   return (
     <List
-      contentInsetAdjustmentBehavior="always"
-      contentContainerStyle={{ padding: 16 }}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding: 16, ...safePadding }}
       style={{ flex: 1, backgroundColor: colors.overground }}
     >
       {tabs.map(tab => (

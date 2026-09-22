@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform, Pressable, View } from 'react-native';
 import { Stack, useRouter } from "expo-router";
+import { HeaderBackButton } from "expo-router/react-navigation";
 
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
@@ -30,9 +31,20 @@ export default function OnboardingLayout() {
         />
         <Stack.Screen
           name="ageSelection"
-          options={{
+          options={({ route }) => ({
             ...newScreenOptions,
             title: t("ONBOARDING_HEADER_ABOUTYOU"),
+            ...((route.params as { action?: string } | undefined)?.action === "addService" && {
+              unstable_headerLeftItems: () => [{
+                type: "button" as const,
+                label: "",
+                icon: { type: "sfSymbol" as const, name: "chevron.left" as const },
+                onPress: () => router.back(),
+              }],
+              headerLeft: ({ tintColor }: { tintColor?: string }) => (
+                <HeaderBackButton tintColor={tintColor} onPress={() => router.back()} />
+              ),
+            }),
             headerRight: 1==1
               ? () => (
                   <Pressable
@@ -46,7 +58,7 @@ export default function OnboardingLayout() {
                   </Pressable>
                 )
               : undefined,
-          }}
+          })}
         />
         <Stack.Screen
           name="offlineAccount"

@@ -94,6 +94,8 @@ interface AveragesProps {
   realAverage?: number | null;
   color?: ColorValue;
   displayScale?: GradeDisplayScale;
+  // Home widget layout: graph on the left, a smaller readout on the right.
+  compact?: boolean;
 }
 
 const Averages = ({
@@ -101,6 +103,7 @@ const Averages = ({
   realAverage,
   color,
   displayScale = "20",
+  compact = false,
 }: AveragesProps) => {
   try {
     const theme = useTheme();
@@ -193,13 +196,13 @@ const Averages = ({
         enablePanGesture
         onPointSelected={handleGestureUpdate}
         onGestureEnd={handleGestureEnd}
-        verticalPadding={24}
+        verticalPadding={compact ? 16 : 24}
         horizontalPadding={32}
         lineThickness={4}
         panGestureDelay={0}
         indicatorPulsating
         enableIndicator
-        style={{ height: "100%", marginLeft: -36, marginRight: -10 }}
+        style={{ height: "100%", marginLeft: -36, marginRight: compact ? -24 : -10 }}
       />
     ) : null;
 
@@ -270,6 +273,125 @@ const Averages = ({
       )
     }
 
+    const renderAverage = () => (
+      Platform.OS === "ios" ? (
+        <SwiftUIHost style={{ width: "100%", height: compact ? 30 : 38 }}>
+          <SwiftUIHStack
+            alignment="firstTextBaseline"
+            spacing={1}
+            modifiers={[animation(Animation.default, shownAverage)]}
+          >
+            <SwiftUIText
+              modifiers={[
+                font({ family: papillonFont("semibold"), size: compact ? 26 : 36 }),
+                contentTransition("numericText"),
+                animation(Animation.default, shownAverage),
+                foregroundStyle(adjustedColor),
+              ]}
+            >
+              {shownAverage ? shownAverage.toFixed(2) : "0.00"}
+            </SwiftUIText>
+            <SwiftUIText
+              modifiers={[
+                font({ family: papillonFont("medium"), size: compact ? 15 : 20 }),
+                padding({ top: 1 }),
+                animation(Animation.default, shownAverage),
+                foregroundStyle(adjustedColor),
+              ]}
+            >
+              {getDisplayDenominator(displayScale)}
+            </SwiftUIText>
+            <SwiftUISpacer />
+          </SwiftUIHStack>
+        </SwiftUIHost>
+      ) : (
+        <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 2, marginBottom: -2 }}>
+          <Typography
+            variant={compact ? "h3" : "h1"}
+            weight="bold"
+            style={{ color: adjustedColor }}
+          >
+            {shownAverage.toFixed(2)}
+          </Typography>
+          <Typography
+            variant="body1"
+            weight="medium"
+            style={{ paddingBottom: 2, color: adjustedColor }}
+          >
+            {getDisplayDenominator(displayScale)}
+          </Typography>
+        </View>
+      )
+    );
+
+    const renderLabel = () => (
+      <>
+        <TouchableOpacity onPress={() => setAlgorithmSheetPresented(true)} style={{ alignSelf: "flex-start" }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+            <Typography variant={compact ? "body1" : "title"} weight="semibold" numberOfLines={1}>
+              {algorithm.label}
+            </Typography>
+
+            <Icon size={compact ? 14 : 16} opacity={0.5}>
+              <Papicons name="chevronDown" />
+            </Icon>
+          </View>
+        </TouchableOpacity>
+
+        <Typography
+          variant={compact ? "caption" : "body1"}
+          color="textSecondary"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          align="left"
+        >
+          {isRealAverage
+            ? "par l'établissement"
+            : "estimée au " +
+              (shownDate instanceof Date &&
+              !isNaN(shownDate.getTime())
+                ? shownDate.toLocaleDateString(undefined, {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : "Unknown Date")}
+        </Typography>
+      </>
+    );
+
+    const sheet = (
+      <BottomSheet
+        isPresented={algorithmSheetPresented}
+        onDismiss={() => setAlgorithmSheetPresented(false)}
+      >
+        <RNHostView matchContents>
+          {algorithmPicker()}
+        </RNHostView>
+      </BottomSheet>
+    );
+
+    if (compact) {
+      return (
+        <View style={{ backgroundColor: theme.colors.item, borderRadius: 24, overflow: "hidden" }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ width: '40%', height: 96 }}>
+              {graph}
+            </View>
+
+            <View style={{ flex: 1, paddingVertical: 14, paddingRight: 16, paddingLeft: 12, gap: 1 }}>
+              {renderAverage()}
+              {renderLabel()}
+            </View>
+          </View>
+
+          {/* Kept out of the row: as a row child the sheet's host gets no
+              width, so its content lays out off-centre. */}
+          {sheet}
+        </View>
+      );
+    }
+
     return (
       <View style={{ backgroundColor: theme.colors.item, borderRadius: 24, overflow: "hidden" }}>
         <View style={{ height: 140, marginBottom: -16 }}>
@@ -292,97 +414,12 @@ const Averages = ({
         </View>
 
         <View style={{ padding: 18, paddingTop: 0, width: '100%', gap: 1 }}>
-          {Platform.OS === "ios" ? (
-            <SwiftUIHost style={{ width: "100%", height: 38 }}>
-              <SwiftUIHStack
-                alignment="firstTextBaseline"
-                spacing={1}
-                modifiers={[animation(Animation.default, shownAverage)]}
-              >
-                <SwiftUIText
-                  modifiers={[
-                    font({ family: papillonFont("semibold"), size: 36 }),
-                    contentTransition("numericText"),
-                    animation(Animation.default, shownAverage),
-                    foregroundStyle(adjustedColor),
-                  ]}
-                >
-                  {shownAverage ? shownAverage.toFixed(2) : "0.00"}
-                </SwiftUIText>
-                <SwiftUIText
-                  modifiers={[
-                    font({ family: papillonFont("medium"), size: 20 }),
-                    padding({ top: 1 }),
-                    animation(Animation.default, shownAverage),
-                    foregroundStyle(adjustedColor),
-                  ]}
-                >
-                  {getDisplayDenominator(displayScale)}
-                </SwiftUIText>
-                <SwiftUISpacer />
-              </SwiftUIHStack>
-            </SwiftUIHost>
-          ) : (
-            <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 2, marginBottom: -2 }}>
-              <Typography
-                variant="h1"
-                weight="bold"
-                style={{ color: adjustedColor }}
-              >
-                {shownAverage.toFixed(2)}
-              </Typography>
-              <Typography
-                variant="body1"
-                weight="medium"
-                style={{ paddingBottom: 2, color: adjustedColor }}
-              >
-                {getDisplayDenominator(displayScale)}
-              </Typography>
-            </View>
-          )}
-          
+          {renderAverage()}
 
-          <TouchableOpacity onPress={() => setAlgorithmSheetPresented(true)} style={{ alignSelf: "flex-start" }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
-              <Typography variant="title" weight="semibold">
-                {algorithm.label}
-              </Typography>
-
-              <Icon size={16} opacity={0.5}>
-                <Papicons name="chevronDown" />
-              </Icon>
-            </View>
-          </TouchableOpacity>
-
-          <Typography
-            variant={ "body1"}
-            color="textSecondary"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            align="left"
-          >
-            {isRealAverage
-              ? "par l'établissement"
-              : "estimée au " +
-                (shownDate instanceof Date &&
-                !isNaN(shownDate.getTime())
-                  ? shownDate.toLocaleDateString(undefined, {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })
-                  : "Unknown Date")}
-          </Typography>
+          {renderLabel()}
         </View>
 
-         <BottomSheet
-          isPresented={algorithmSheetPresented}
-          onDismiss={() => setAlgorithmSheetPresented(false)}
-        >
-          <RNHostView matchContents>
-            {algorithmPicker()}
-          </RNHostView>
-        </BottomSheet>
+        {sheet}
       </View>
     );
   } catch (e) {

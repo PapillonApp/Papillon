@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -10,6 +11,7 @@ const OnboardingBackButton = (props: {
 }) => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(16);
 
   return (
     <AnimatedPressable
@@ -23,7 +25,7 @@ const OnboardingBackButton = (props: {
         padding: 10,
         borderRadius: 100,
         },
-        props.position === 'right' ? { right: 16 } : { left: 16 }
+        props.position === 'right' ? { right: safePadding.paddingRight } : { left: safePadding.paddingLeft }
       ]}
     >
       <Papicons name={props.icon ?? "ArrowLeft"} size={26} fill={"#fff"}/>

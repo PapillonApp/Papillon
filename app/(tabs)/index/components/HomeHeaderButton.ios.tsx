@@ -57,7 +57,6 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
         params: item.params,
       }}
     >
-    <Link.AppleZoom>
       <Pressable
         style={styles.headerBtn}
       >
@@ -91,7 +90,6 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           <Typography nowrap variant="title" color={colors.text + "75"} style={{ lineHeight: 0 }}>{item.description}</Typography>
         </View>
       </Pressable>
-      </Link.AppleZoom>
     </Link>
     </LiquidGlassView >
   );

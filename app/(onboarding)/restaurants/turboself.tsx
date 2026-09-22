@@ -127,7 +127,8 @@ export default function TurboSelfLoginWithCredentials() {
         params: {
           siblings: JSON.stringify(global),
           username: submittedUsername,
-          password: submittedPassword
+          password: submittedPassword,
+          action
         }
       });
     } catch (error) {

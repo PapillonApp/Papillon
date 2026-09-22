@@ -9,6 +9,7 @@ import Stack from "@/ui/components/Stack";
 import Button from "@/ui/new/Button";
 import Divider from "@/ui/new/Divider";
 import Typography from "@/ui/new/Typography";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 import HighSchoolIllustration from "./components/ageSelection/illustrations/highSchool";
 import MiddleSchoolIllustration from "./components/ageSelection/illustrations/middleSchool";
@@ -63,6 +64,7 @@ export default function AgeSelection() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(20);
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -103,6 +105,7 @@ export default function AgeSelection() {
         )}
         contentContainerStyle={{
           padding: 20,
+          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,
@@ -119,6 +122,7 @@ export default function AgeSelection() {
       <View
         style={{
           padding: 20,
+          ...safePadding,
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
           borderTopWidth: 1,

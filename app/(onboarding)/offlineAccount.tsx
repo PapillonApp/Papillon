@@ -17,10 +17,12 @@ import Button from "@/ui/new/Button";
 import TextInput from "@/ui/new/TextInput";
 import Typography from "@/ui/new/Typography";
 import uuid from "@/utils/uuid/uuid";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function OfflineAccount() {
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(20);
   const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
@@ -72,6 +74,7 @@ export default function OfflineAccount() {
         contentContainerStyle={{
           flexGrow: 1,
           padding: 20,
+          ...safePadding,
           paddingTop: headerHeight + 32,
           paddingBottom: 20,
         }}
@@ -112,6 +115,7 @@ export default function OfflineAccount() {
       <View
         style={{
           padding: 20,
+          ...safePadding,
           paddingBottom: insets.bottom + 20,
           borderTopColor: theme.colors.border,
           borderTopWidth: 1,

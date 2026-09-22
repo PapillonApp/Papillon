@@ -9,8 +9,10 @@ import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { resources } from "@/utils/i18n";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const LanguagePersonalization = () => {
+  const safePadding = useSafeHorizontalPadding(16);
   const { i18n } = useTranslation();
   const { colors } = useTheme();
 
@@ -44,8 +46,8 @@ const LanguagePersonalization = () => {
   return (
     <List
       style={{ flex: 1, backgroundColor: colors.overground }}
-      contentContainerStyle={{ padding: 16 }}
-      contentInsetAdjustmentBehavior="always"
+      contentContainerStyle={{ padding: 16, ...safePadding }}
+      contentInsetAdjustmentBehavior="automatic"
     >
       {languages.map(lang => {
         const isSelected = i18n.language === lang.id;

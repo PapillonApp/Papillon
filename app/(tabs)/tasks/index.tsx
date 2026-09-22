@@ -1,9 +1,10 @@
 import { Stack } from 'expo-router';
-import { useHeaderHeight } from 'expo-router/react-navigation';
+import { useHeaderHeight, useTheme } from 'expo-router/react-navigation';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Reanimated, {
   cancelAnimation,
   runOnJS,
@@ -159,6 +160,7 @@ const TasksView: React.FC = () => {
     windowWidth,
     INITIAL_INDEX,
   } = useWeekSelection();
+  const { colors } = useTheme();
 
   const weeksToLoad = useMemo(
     () => PAGE_OFFSETS.map(offset => selectedWeek + offset),
@@ -400,19 +402,21 @@ const TasksView: React.FC = () => {
                     { width: windowWidth, left: (index - INITIAL_INDEX) * windowWidth },
                   ]}
                 >
-                  <TasksWeekPage
-                    week={week}
-                    homeworks={homeworkByWeek[week]}
-                    animateItems={index === INITIAL_INDEX}
-                    searchTerm={searchTerm}
-                    sortMethod={sortMethod}
-                    collapsedGroups={collapsedGroups}
-                    toggleGroup={toggleGroup}
-                    isRefreshing={refreshingWeek === week}
-                    onRefresh={handleRefresh}
-                    setAsDone={setAsDone}
-                    hasError={hasHomeworkError}
-                  />
+                  <SafeAreaView edges={['left', 'right']} style={{ flex: 1, backgroundColor: colors.overground }}>
+                    <TasksWeekPage
+                      week={week}
+                      homeworks={homeworkByWeek[week]}
+                      animateItems={index === INITIAL_INDEX}
+                      searchTerm={searchTerm}
+                      sortMethod={sortMethod}
+                      collapsedGroups={collapsedGroups}
+                      toggleGroup={toggleGroup}
+                      isRefreshing={refreshingWeek === week}
+                      onRefresh={handleRefresh}
+                      setAsDone={setAsDone}
+                      hasError={hasHomeworkError}
+                    />
+                  </SafeAreaView>
                 </View>
               );
             })}
