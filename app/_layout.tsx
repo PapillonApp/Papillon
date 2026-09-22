@@ -16,6 +16,7 @@ import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
 import { useWidgetSync } from '@/widgets';
 import { LogBox } from 'react-native';
+import { appFetch, isTauriDesktop } from "@/utils/network/fetch";
 
 // Polyfill Buffer
 global.Buffer = Buffer;
@@ -82,7 +83,9 @@ export default function RootLayout() {
         useNetworkStore.getState().addRequest(request, id);
       } catch { }
 
-      const response = await originalFetch(...args);
+      const response = isTauriDesktop()
+        ? await appFetch(request, args[1])
+        : await originalFetch(...args);
 
       try {
         useNetworkStore.getState().addResponse(response.clone(), id);

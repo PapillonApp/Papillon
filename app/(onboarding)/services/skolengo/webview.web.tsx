@@ -21,7 +21,7 @@ export default function SkolengoWebViewWeb() {
         <Typography variant="h4" align="center">
           {t("ONBOARDING_SKOLENGO_UNAVAILABLE_WEB_TITLE", "Indisponible sur PC pour l'instant")}
         </Typography>
-        <Typography variant="body" color="textSecondary" align="center">
+        <Typography variant="body1" color="textSecondary" align="center">
           {t(
             "ONBOARDING_SKOLENGO_UNAVAILABLE_WEB_DESCRIPTION",
             "La connexion à Skolengo nécessite pour l'instant l'application mobile."

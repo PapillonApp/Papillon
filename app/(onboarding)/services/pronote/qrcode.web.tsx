@@ -29,7 +29,7 @@ export default function PronoteLoginWithQRWeb() {
         <Typography variant="h4" align="center">
           {t("ONBOARDING_PRONOTE_QRCODE_UNAVAILABLE_WEB_TITLE", "Indisponible sur PC")}
         </Typography>
-        <Typography variant="body" color="textSecondary" align="center">
+        <Typography variant="body1" color="textSecondary" align="center">
           {t(
             "ONBOARDING_PRONOTE_QRCODE_UNAVAILABLE_WEB_DESCRIPTION",
             "La connexion par QR code nécessite l'appareil photo d'un téléphone. Utilise plutôt l'adresse de ton établissement pour te connecter."

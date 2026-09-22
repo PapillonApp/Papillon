@@ -3,6 +3,7 @@
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_http::init())
         .run(tauri::generate_context!())
         .expect("erreur au lancement de Scola");
 }

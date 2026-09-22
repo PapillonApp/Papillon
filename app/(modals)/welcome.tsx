@@ -136,7 +136,7 @@ const WelcomeModal: React.FC = () => {
         <Dynamic animated>
           {step === "photo" && (
             <Stack entering={FadeInRight.duration(300)} exiting={FadeOutLeft.duration(300)} animated hAlign="center" gap={12}>
-              <Typography variant="body" align="center" color="textSecondary">
+              <Typography variant="body1" align="center" color="textSecondary">
                 {t("Welcome_ProfilePicture_Description")}
               </Typography>
 
@@ -162,7 +162,7 @@ const WelcomeModal: React.FC = () => {
 
           {step === "color" && (
             <Stack entering={FadeInRight.duration(300)} exiting={FadeOutLeft.duration(300)} animated hAlign="center" gap={12}>
-              <Typography variant="body" align="center" color="textSecondary">
+              <Typography variant="body1" align="center" color="textSecondary">
                 {t("Welcome_Color_Description")}
               </Typography>
 

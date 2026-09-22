@@ -122,7 +122,7 @@ export const f = (font: FontAlias | string, selectedFontFamily?: AppFontFamily) 
   }
 
   const family = selectedFontFamily ?? useSettingsStore.getState().personalization.fontFamily ?? "sn-pro";
-  const familyMap = FONT_ALIAS_MAP[family];
+  const familyMap = FONT_ALIAS_MAP[family] ?? FONT_ALIAS_MAP["sn-pro"];
 
   return familyMap[font];
 };

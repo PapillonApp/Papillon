@@ -56,7 +56,7 @@ const PronoteSearchHeader = memo(({
           <ActivityIndicator />
           <Divider height={12} ghost />
           <Typography align="center" variant="h5">{t("ONBOARDING_SCHOOLS_SEARCHING")}</Typography>
-          <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+          <Typography align="center" variant="body1" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
         </Stack>
       </Dynamic>
     }
@@ -139,7 +139,7 @@ export default function PronoteLoginMethod() {
               <Icon><Papicons name="qrcode" /></Icon>
             </List.Leading>
             <Typography variant='title'>{t("ONBOARDING_PRONOTE_LOGIN_QRCODE")}</Typography>
-            <Typography variant='body' color="textSecondary">
+            <Typography variant='body1' color="textSecondary">
               {t("ONBOARDING_PRONOTE_LOGIN_QRCODE_DESCRIPTION")}
             </Typography>
           </List.Item>

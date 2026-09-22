@@ -24,7 +24,7 @@ export default function PronoteENTLoginWeb() {
         <Typography variant="h4" align="center">
           {t("ONBOARDING_PRONOTE_ENT_UNAVAILABLE_WEB_TITLE", "Indisponible sur PC pour l'instant")}
         </Typography>
-        <Typography variant="body" color="textSecondary" align="center">
+        <Typography variant="body1" color="textSecondary" align="center">
           {t(
             "ONBOARDING_PRONOTE_ENT_UNAVAILABLE_WEB_DESCRIPTION",
             "La connexion via l'ENT de ton établissement nécessite pour l'instant l'application mobile. Si ton établissement accepte une connexion directe à PRONOTE, utilise plutôt cette méthode."

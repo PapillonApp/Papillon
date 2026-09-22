@@ -1,0 +1,14 @@
+{
+  "identifier": "default",
+  "description": "Permissions for the Scola desktop window",
+  "local": true,
+  "permissions": [
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://*/*" },
+        { "url": "http://*/*" }
+      ]
+    }
+  ]
+}

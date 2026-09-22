@@ -44,6 +44,9 @@ jobs:
       - name: Check Web animations for unsupported springify usage
         run: npm run check:web-animations
 
+      - name: Check Web/Tauri compatibility
+        run: npm run check:web-compat
+
       - name: Check exported web bundle for ExpoUI native module
         run: node scripts/check-web-bundle.js
 
