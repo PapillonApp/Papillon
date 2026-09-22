@@ -15,7 +15,9 @@
     "check:widgets": "node scripts/check-widgets.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "check:web-native-imports": "node scripts/check-web-native-imports.js",
+    "check:web-bundle": "node scripts/check-web-bundle.js"
   },
   "jest": {
     "preset": "jest-expo"

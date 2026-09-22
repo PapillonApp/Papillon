@@ -38,6 +38,12 @@ jobs:
         env:
           PAPILLON_TARGET: electron
 
+      - name: Check source for unsafe web ExpoUI imports
+        run: npm run check:web-native-imports
+
+      - name: Check exported web bundle for ExpoUI native module
+        run: node scripts/check-web-bundle.js
+
       - name: Build Scola
         uses: tauri-apps/tauri-action@v0
         env:

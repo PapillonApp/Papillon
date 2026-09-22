@@ -37,6 +37,12 @@ jobs:
         env:
           PAPILLON_TARGET: electron
 
+      - name: Check source for unsafe web ExpoUI imports
+        run: npm run check:web-native-imports
+
+      - name: Check exported web bundle for ExpoUI native module
+        run: node scripts/check-web-bundle.js
+
       - name: Install Electron app dependencies
         working-directory: electron
         run: npm install
