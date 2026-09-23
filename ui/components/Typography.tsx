@@ -100,7 +100,7 @@ const WEIGHT_STYLES = StyleSheet.create({
   bold: {},
 });
 
-const STATIC_COLORS = {
+export const STATIC_COLORS = {
   light: "#FFFFFF",
   danger: "#DC1400",
 } as const;
