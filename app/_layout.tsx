@@ -69,6 +69,22 @@ export default function RootLayout() {
 
   useEffect(() => {
     const originalFetch = window.fetch;
+    let nativeFetchInProgress = false;
+
+    const shouldUseTauriTransport = (url: string) => {
+      try {
+        const hostname = new URL(url).hostname.toLowerCase();
+        return (
+          hostname === "api.ecoledirecte.com" ||
+          hostname.endsWith(".ecoledirecte.com") ||
+          hostname === "data.geopf.fr" ||
+          hostname.endsWith(".pronote.com") ||
+          hostname.endsWith(".index-education.com")
+        );
+      } catch {
+        return false;
+      }
+    };
 
     window.fetch = async (...args) => {
       const id = uuid();
@@ -83,16 +99,29 @@ export default function RootLayout() {
         useNetworkStore.getState().addRequest(request, id);
       } catch { }
 
-      const response = isTauriDesktop()
-        ? await appFetch(request, args[1])
-        : await originalFetch(...args);
+      const useNative =
+        isTauriDesktop() &&
+        !nativeFetchInProgress &&
+        shouldUseTauriTransport(request.url);
+
+      let response: Response;
+      if (useNative) {
+        nativeFetchInProgress = true;
+        try {
+          response = await appFetch(request, args[1]);
+        } finally {
+          nativeFetchInProgress = false;
+        }
+      } else {
+        response = await originalFetch(...args);
+      }
 
       try {
         useNetworkStore.getState().addResponse(response.clone(), id);
       } catch { }
 
       return response;
-    }
+    };
 
     return () => {
       window.fetch = originalFetch;

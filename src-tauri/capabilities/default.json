@@ -23,6 +23,9 @@
         },
         {
           "url": "https://*.index-education.com/**"
+        },
+        {
+          "url": "https://data.geopf.fr/**"
         }
       ]
     }

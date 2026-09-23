@@ -1,4 +1,5 @@
 import { error } from "../logger/logger";
+import { appFetch } from "@/utils/network/fetch";
 
 export async function GeographicReverse(lat: number, lon: number): Promise<GeoInfo> {
   try {
@@ -6,7 +7,7 @@ export async function GeographicReverse(lat: number, lon: number): Promise<GeoIn
     let res: Response = new Response();
 
     while (retries > 0) {
-      res = await fetch(
+      res = await appFetch(
         `https://data.geopf.fr/geocodage/reverse?lat=${lat}&lon=${lon}&limit=1&index=parcel,poi,address`
       );
 
@@ -57,7 +58,7 @@ export async function GeographicQuerying(q: string, retry = 3): Promise<GeoInfo>
     let res: Response = new Response();
 
     while (retries > 0) {
-      res = await fetch(
+      res = await appFetch(
         `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(q)}`
       );
 
@@ -102,7 +103,7 @@ export async function GeographicSearchCities(q: string, retry = 3): Promise<GeoS
     let res: Response = new Response();
 
     while (retries > 0) {
-      res = await fetch(
+      res = await appFetch(
         `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(q)}`
       );
 
