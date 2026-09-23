@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/stores/settings"
 import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
 import Stack from "@/ui/components/Stack"
-import Typography from "@/ui/components/Typography"
+import Typography, { STATIC_COLORS } from "@/ui/components/Typography"
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation"
 import React, { useEffect, useState } from "react"
 import { FlatList, Image, Platform, Pressable, RefreshControl, View } from "react-native"
@@ -130,6 +130,10 @@ const WallpaperModal = () => {
     })
   }
 
+  const clearWallpaper = () => {
+    mutateProperty("personalization", { wallpaper: undefined });
+  }
+
   const uploadCustomWallpaper = () => {
     try {
       ImagePicker.launchImageLibraryAsync({
@@ -221,6 +225,33 @@ const WallpaperModal = () => {
           </View>
         )}
         contentInsetAdjustmentBehavior="automatic"
+        ListHeaderComponent={
+          Platform.OS !== "android" ? null : (
+            <Pressable onPress={clearWallpaper} style={{ paddingHorizontal: 12, paddingTop: 16, alignSelf: "flex-start" }}>
+              <Stack
+                hAlign="center"
+                vAlign="center"
+                gap={6}
+                style={{
+                  width: 160,
+                  height: 104,
+                  borderRadius: 16,
+                  borderCurve: "continuous",
+                  borderWidth: 2,
+                  borderColor: STATIC_COLORS.danger + "40",
+                  backgroundColor: colors.card,
+                }}
+              >
+                <Icon size={26} fill={STATIC_COLORS.danger} opacity={0.9}>
+                  <Papicons name="Trash" />
+                </Icon>
+                <Typography variant="body2" color="danger">
+                  {t("Modal_Wallpaper_Clear")}
+                </Typography>
+              </Stack>
+            </Pressable>
+          )
+        }
       />
 
       <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + (hasCustomWallpaper ? "true" : "false")}>
@@ -288,14 +319,10 @@ const WallpaperModal = () => {
             const action = nativeEvent.event;
             if (action === "downloads:clear") {
               wallpaperDirectory.delete();
-              mutateProperty("personalization", {
-                wallpaper: undefined
-              })
+              clearWallpaper();
             }
             if (action === "background:clear") {
-              mutateProperty("personalization", {
-                wallpaper: undefined
-              })
+              clearWallpaper();
             }
           }}
         >
