@@ -1,7 +1,7 @@
 import { Period } from "@/services/shared/grade";
-import { error, warn } from "@/utils/logger/logger";
+import { warn } from "@/utils/logger/logger";
 
-export function getCurrentPeriod(periods: Period[]): Period {
+export function getCurrentPeriod(periods: Period[]): Period | undefined {
   const now = new Date().getTime();
   const excludedNames = [
     "Bac blanc",
@@ -19,7 +19,13 @@ export function getCurrentPeriod(periods: Period[]): Period {
   ];
 
   periods = periods
-    .filter(period => !excludedNames.includes(period.name))
+    .filter(period =>
+      period.start instanceof Date
+      && period.end instanceof Date
+      && !Number.isNaN(period.start.getTime())
+      && !Number.isNaN(period.end.getTime())
+      && !excludedNames.includes(period.name)
+    )
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
   for (const period of periods) {
@@ -35,6 +41,6 @@ export function getCurrentPeriod(periods: Period[]): Period {
     return periods[0];
   }
 
-  error("Unable to find the current period and unable to fallback...");
-  return periods[0];
+  warn("Unable to find the current period and unable to fallback...");
+  return undefined;
 }

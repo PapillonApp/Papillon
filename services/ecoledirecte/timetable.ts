@@ -9,7 +9,9 @@ export async function fetchEDTimetable(session: Client, accountId: string, weekN
   try {
     const { start, end } = getDateRangeOfWeek(weekNumber);
 
-    const timetable = (await session.timetable.getTimetableBetweenDates(start, end, false)).filter(course => course.codeMatiere !== "");
+    const timetable = normalizeTimetable(
+      await session.timetable.getTimetableBetweenDates(start, end, false)
+    ).filter(course => course.codeMatiere !== "");
     const mappedCourses = mapEcoleDirecteCourses(timetable, accountId);
     const dayMap: Record<string, Course[]> = {};
 
@@ -33,20 +35,49 @@ export async function fetchEDTimetable(session: Client, accountId: string, weekN
   }
 }
 
+function normalizeTimetable(data: unknown): TimetableCourse[] {
+  if (Array.isArray(data)) {
+    return data as TimetableCourse[];
+  }
+
+  if (data && typeof data === "object") {
+    return Object.values(data as Record<string, unknown>).flatMap(value => {
+      if (Array.isArray(value)) {
+        return value as TimetableCourse[];
+      }
+      if (value && typeof value === "object" && "start_date" in value) {
+        return [value as TimetableCourse];
+      }
+      return [];
+    });
+  }
+
+  return [];
+}
+
 function mapEcoleDirecteCourses(data: TimetableCourse[], accountId: string): Course[] {
-  return data.map(item => ({
-    createdByAccount: accountId,
-    subject: item.matiere,
-    id: String(item.id),
-    type: mapCourseKind(item.typeCours),
-    from: new Date(item.start_date),
-    to: new Date(item.end_date),
-    additionalInfo: item.text,
-    room: item.salle,
-    teacher: item.prof,
-    backgroundColor: item.color,
-    status: item.isAnnule ? CourseStatus.CANCELED : undefined
-  }))
+  return data.flatMap(item => {
+    const from = new Date(item.start_date);
+    const to = new Date(item.end_date);
+
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
+      return [];
+    }
+
+    return [{
+      createdByAccount: accountId,
+      subject: item.matiere,
+      id: String(item.id),
+      type: mapCourseKind(item.typeCours),
+      from,
+      to,
+      additionalInfo: item.text,
+      room: item.salle,
+      teacher: item.prof,
+      backgroundColor: item.color,
+      status: item.isAnnule ? CourseStatus.CANCELED : undefined
+    }];
+  })
 }
 
 function mapCourseKind(kind: TimetableCourseType): CourseType {

@@ -8,13 +8,33 @@ import { Grade, GradeScore, Period, PeriodGrades, Subject, } from "../shared/gra
 import { SkillChipLevel } from "@/ui/components/SkillChip";
 import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
 
+function asArray<T>(value: unknown): T[] {
+  if (Array.isArray(value)) {
+    return value as T[];
+  }
+
+  if (value && typeof value === "object") {
+    const values = Object.values(value as Record<string, unknown>);
+    if (values.length > 0 && values.every(item => item !== null && typeof item === "object")) {
+      return values as T[];
+    }
+  }
+
+  return [];
+}
+
 export async function fetchEDGradePeriods(
   session: Client,
   accountId: string
 ): Promise<Period[]> {
   try {
     const overview = await session.marks.getMark();
-    return overview.periodes.map(period => ({
+    return asArray<{
+      periode: string;
+      codePeriode: string;
+      dateDebut: string;
+      dateFin: string;
+    }>(overview?.periodes).map(period => ({
       name: period.periode,
       id: period.codePeriode,
       start: new Date(period.dateDebut),
@@ -33,10 +53,41 @@ export async function fetchEDGrades(
 ): Promise<PeriodGrades> {
   try {
     const overview = await session.marks.getMark();
-    const periodReport = overview.periodes.find(
+    const periodReport = asArray<{
+      codePeriode?: string;
+      idPeriode?: string;
+      ensembleMatieres?: {
+        disciplines?: Array<{
+          codeMatiere: string;
+          discipline: string;
+          moyenne: string;
+          moyenneClasse: string;
+          moyenneMax: string;
+          moyenneMin: string;
+        }>;
+        moyenneGenerale?: string;
+        moyenneClasse?: string;
+      };
+    }>(overview?.periodes).find(
       item => item.codePeriode === period.id || item.idPeriode === period.id
     );
-    const grades = getGradesForPeriod(overview.notes, period);
+    const grades = getGradesForPeriod(asArray<{
+      id: number;
+      devoir?: string;
+      commentaire?: string;
+      date?: string;
+      codePeriode?: string;
+      codeMatiere: string;
+      libelleMatiere: string;
+      nonSignificatif?: boolean;
+      noteSur?: string;
+      coef?: string;
+      valeur?: string;
+      moyenneClasse?: string;
+      minClasse?: string;
+      maxClasse?: string;
+      elementsProgramme?: unknown;
+    }>(overview?.notes), period);
 
     if (!periodReport) {
       warn("Invalid grades data structure or period not found");
@@ -45,10 +96,10 @@ export async function fetchEDGrades(
 
     const subjects: Record<string, Subject> = {};
     const skillColors = {
-      insufficient: overview.parametrage.couleurEval1,
-      weak: overview.parametrage.couleurEval2,
-      almostProficient: overview.parametrage.couleurEval3,
-      satisfactory: overview.parametrage.couleurEval4,
+      insufficient: overview.parametrage?.couleurEval1,
+      weak: overview.parametrage?.couleurEval2,
+      almostProficient: overview.parametrage?.couleurEval3,
+      satisfactory: overview.parametrage?.couleurEval4,
     };
     const allMappedGrades: Grade[] = grades.map(g => ({
         id: String(g.id),
@@ -67,7 +118,11 @@ export async function fetchEDGrades(
         minScore: parseGradeValue(g.minClasse),
         maxScore: parseGradeValue(g.maxClasse),
         createdByAccount: accountId,
-        skills: g.elementsProgramme.map(s => ({
+        skills: asArray<{
+          libelleCompetence: string;
+          descriptif: string;
+          valeur: string;
+        }>(g.elementsProgramme).map(s => ({
           name: s.libelleCompetence,
           description: s.descriptif,
           score: parseSkillLevel(parseInt(s.valeur), skillColors),
@@ -130,7 +185,7 @@ function emptyPeriodGrades(accountId: string): PeriodGrades {
   }
 }
 
-function parseSkillLevel(value: number, colors: {insufficient: string, weak: string, almostProficient: string, satisfactory: string}): string | SkillChipLevel {
+function parseSkillLevel(value: number, colors: {insufficient?: string, weak?: string, almostProficient?: string, satisfactory?: string}): string | SkillChipLevel {
   switch (value) {
     case 1:
       return parseColor(colors.insufficient);
@@ -187,7 +242,11 @@ function componentToHex(c: number) {
   return hex.length == 1 ? "0" + hex : hex;
 }
 
-function parseColor(hex: string): string {
+function parseColor(hex?: string): string {
+  if (!hex) {
+    return "";
+  }
+
   const color: { r: number; g: number; b: number } | undefined = hexToRgb(hex);
 
   if (!color) return hex;
@@ -217,14 +276,15 @@ function parseColor(hex: string): string {
 
 
 
-function getGradesForPeriod<T extends { codePeriode?: string; date?: string }>(grades: T[], period: Period): T[] {
-  const directMatches = grades.filter(grade => grade.codePeriode === period.id)
+function getGradesForPeriod<T extends { codePeriode?: string; date?: string }>(grades: T[] | undefined, period: Period): T[] {
+  const list = asArray<T>(grades);
+  const directMatches = list.filter(grade => grade.codePeriode === period.id)
 
   if (directMatches.length > 0) {
     return directMatches
   }
 
-  return grades.filter(grade => isGradeInPeriod(grade, period))
+  return list.filter(grade => isGradeInPeriod(grade, period))
 }
 
 function parseNumericValue(value?: string | number | null, fallback?: number): number | undefined {
