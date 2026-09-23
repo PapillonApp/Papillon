@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { Alert, Switch, View } from "react-native";
+import { Alert, Platform, Switch, View } from "react-native";
 import { router } from "expo-router";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { Papicons } from "@getpapillon/papicons";
+import * as PapillonKit from "papillonkit";
+import type { CoursePreview, HomeworkPreview, JSONSchema } from "papillonkit";
 
 import { useLogStore, useNetworkStore } from "@/stores/logs";
 import List from "@/ui/new/List";
@@ -23,7 +25,9 @@ import ModelManager from "@/utils/magic/ModelManager";
 import { MAGIC_URL } from "@/utils/endpoints";
 import { initializeTransport } from "@/utils/transport";
 import LogIcon from "@/components/Log/LogIcon";
+import { attachMockDataToCurrentAccount } from "@/services/mock/account";
 import { getManager, initializeAccountManager } from "@/services/shared";
+import { fillStoreFromServices } from "@/utils/devmode/fillStore";
 import { warn } from "@/utils/logger/logger";
 
 const HOSTS: Record<string, { title: string; icon: string }> = {
@@ -35,6 +39,59 @@ const HOSTS: Record<string, { title: string; icon: string }> = {
   "geopf.fr": { title: "Localisation", icon: "MapPin" },
   "raw.githubusercontent.com": { title: "GitHub", icon: "Code" }
 };
+
+const INTELLIGENCE_LABELS: Record<string, string> = {
+  available: "Disponible",
+  deviceNotEligible: "Appareil non compatible",
+  appleIntelligenceNotEnabled: "Désactivé dans Réglages",
+  modelNotReady: "Modèle en téléchargement",
+  unknown: "Inconnu",
+  unsupported: "Non supporté",
+};
+
+const SAMPLE_SCHEMA: JSONSchema = {
+  type: "object",
+  properties: {
+    title: { type: "string", description: "Titre court de la tâche" },
+    priority: { type: "string", enum: ["basse", "moyenne", "haute"] },
+    steps: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 4 },
+    minutes: { type: "integer", minimum: 5, maximum: 180 },
+  },
+  required: ["title", "priority", "steps", "minutes"],
+};
+
+const formatDate = (value: number) =>
+  new Date(value).toLocaleString(undefined, {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+const formatCourse = (course: CoursePreview) =>
+  [
+    `${course.emoji} ${course.title}${course.isCanceled ? " (annulé)" : ""}`,
+    `  ${formatDate(course.from)}`,
+    course.room ? `  Salle ${course.room}` : null,
+    course.teacher ? `  ${course.teacher}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+const formatHomework = (homework: HomeworkPreview) =>
+  [
+    `${homework.emoji} ${homework.title}${homework.isDone ? " (terminé)" : ""}`,
+    `  pour le ${formatDate(homework.dueDate)}`,
+    homework.classification
+      ? `  ${homework.classification.categoryLabel} · ~${homework.classification.estimatedMinutes} min · ${homework.classification.summary}`
+      : null,
+    homework.content ? `  ${homework.content.slice(0, 80)}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+const yesNo = (value: boolean | undefined) => (value ? "Oui" : "Non");
 
 export default function DevMode() {
   const theme = useTheme();
@@ -147,6 +204,181 @@ export default function DevMode() {
       Alert.alert("Erreur", `Erreur lors du reset: ${String(error)}`);
     }
   }
+
+  const runPapillonKit = async (task: () => Promise<void>) => {
+    try {
+      await task();
+    } catch (error) {
+      const code = (error as { code?: string }).code;
+      Alert.alert("Erreur", `${code ? `${code}\n\n` : ""}${String((error as Error).message ?? error)}`);
+    }
+  };
+
+  const loadSnapshot = async () => {
+    const snapshot = await PapillonKit.getDebugSnapshot();
+    if (!snapshot) {
+      throw new Error("PapillonKit n'est pas lié à cette build (iOS 27 requis).");
+    }
+    return snapshot;
+  };
+
+  function AttachMockData() {
+    const { accounts, lastUsedAccount } = useAccountStore.getState();
+    const account = accounts.find(item => item.id === lastUsedAccount);
+
+    if (!account) {
+      Alert.alert("Aucun compte actif", "Crée d'abord un compte, puis reviens attacher Mock Data.");
+      return;
+    }
+    if (account.services.some(service => service.serviceId === Services.MOCK_DATA)) {
+      Alert.alert("Déjà attaché", "Mock Data est déjà sur ce compte. Utilise « Remplir la base ».");
+      return;
+    }
+
+    Alert.alert("Attacher Mock Data", `Ajoute le service fictif à « ${account.firstName} ${account.lastName} ».`, [
+      { text: "Annuler", style: "cancel" },
+      {
+        text: "Attacher",
+        onPress: () => {
+          attachMockDataToCurrentAccount().catch(cause =>
+            Alert.alert("Erreur", `Impossible d'attacher Mock Data : ${String(cause)}`)
+          );
+        },
+      },
+    ]);
+  }
+
+  async function FillStore() {
+    const report = await fillStoreFromServices();
+    Alert.alert(
+      report.failures.length > 0 ? "Remplissage incomplet" : "Base remplie",
+      [
+        report.account ? `Compte : ${report.account.name} — ${report.account.serviceCount} service(s)` : null,
+        report.lines.join("\n") || null,
+        report.skipped.length ? `Non exposé par le service :\n${report.skipped.join(", ")}` : null,
+        report.failures.length ? `Échecs :\n${report.failures.join("\n")}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n\n") || "Rien à récupérer."
+    );
+  }
+
+  const ShowPapillonKitState = () =>
+    runPapillonKit(async () => {
+      const snapshot = await loadSnapshot();
+      const refresh = snapshot.lastRefresh;
+      const accounts = (snapshot.accounts ?? [])
+        .map(account => `${account.isCurrent ? "▸ " : ""}${account.name} (${account.serviceCount})`)
+        .join(", ");
+
+      Alert.alert(
+        "État PapillonKit",
+        [
+          `iOS ${snapshot.osVersion}`,
+          `App Group stockage : ${snapshot.appGroups.storage.identifier} (${yesNo(snapshot.appGroups.storage.reachable)})`,
+          `App Group base : ${snapshot.appGroups.database.identifier} (${yesNo(snapshot.appGroups.database.reachable)})`,
+          `Base présente : ${yesNo(snapshot.database.exists)}`,
+          snapshot.database.error
+            ? `Lecture base : ${snapshot.database.error}`
+            : `Cours : ${snapshot.database.courseCount} · Devoirs : ${snapshot.database.homeworkCount}`,
+          snapshot.accountsError ? `Comptes : ${snapshot.accountsError}` : `Comptes : ${accounts || "aucun"}`,
+          `Apple Intelligence : ${INTELLIGENCE_LABELS[snapshot.intelligence.status] ?? snapshot.intelligence.status}`,
+          `Devoirs classifiés : ${snapshot.intelligence.classificationCount}`,
+          `Snapshot widgets : ${snapshot.widgets.snapshotDate ? formatDate(snapshot.widgets.snapshotDate) : "jamais écrit"}`,
+          ...(["Calendar", "Tasks"] as const).map(kind => {
+            const entry = snapshot.widgets.diagnostics[kind];
+            if (!entry) return `Widget ${kind} : jamais affiché`;
+            return `Widget ${kind} : ${formatDate(entry.date)}, ${entry.itemCount} élément(s)${entry.accountId ? "" : ", aucun compte"}${entry.error ? `, ${entry.error}` : ""}`;
+          }),
+          refresh
+            ? `Dernier rafraîchissement : ${formatDate(refresh.date)}${refresh.errors.length ? `\n${refresh.errors.join("\n")}` : ""}`
+            : "Pas encore rafraîchi",
+        ].join("\n")
+      );
+    });
+
+  const ShowSiriAnswers = () =>
+    runPapillonKit(async () => {
+      const snapshot = await loadSnapshot();
+      Alert.alert(
+        "Réponses de Siri",
+        [
+          "Prochain cours :",
+          snapshot.nextCourse ? formatCourse(snapshot.nextCourse) : "  aucun",
+          "",
+          "Prochain devoir :",
+          snapshot.nextHomework ? formatHomework(snapshot.nextHomework) : "  aucun",
+        ].join("\n")
+      );
+    });
+
+  const ShowIndexableContent = () =>
+    runPapillonKit(async () => {
+      const snapshot = await loadSnapshot();
+      const courses = snapshot.upcomingCourses ?? [];
+      const homework = snapshot.upcomingHomework ?? [];
+      Alert.alert(
+        `${courses.length} cours · ${homework.length} devoir(s) cette semaine`,
+        [...courses.map(formatCourse), ...homework.map(formatHomework)].join("\n\n") || "Rien à afficher."
+      );
+    });
+
+  const RefreshPapillonKit = () =>
+    runPapillonKit(async () => {
+      const report = await PapillonKit.refresh();
+      if (!report) {
+        throw new Error("PapillonKit n'est pas disponible.");
+      }
+      Alert.alert(
+        "Rafraîchissement terminé",
+        [
+          report.index
+            ? `${report.index.indexedCourses} cours et ${report.index.indexedHomework} devoir(s) indexés, ${report.index.removed} retiré(s).`
+            : "Index non mis à jour.",
+          report.classification
+            ? `${report.classification.classified} devoir(s) classifié(s), ${report.classification.failed} échec(s).`
+            : null,
+          ...report.errors,
+        ]
+          .filter(Boolean)
+          .join("\n\n")
+      );
+    });
+
+  const ClassifyHomework = () =>
+    runPapillonKit(async () => {
+      const report = await PapillonKit.intelligence.classifyHomework();
+      Alert.alert(
+        "Classification terminée",
+        `${report.classified} classifié(s), ${report.failed} échec(s), ${report.skipped} reporté(s).`
+      );
+    });
+
+  const TestGenerateObject = () =>
+    runPapillonKit(async () => {
+      const result = await PapillonKit.intelligence.generateObject(
+        "Je dois réviser le chapitre 4 de physique sur l'électricité pour un contrôle vendredi.",
+        { instructions: "Tu aides un élève à organiser son travail.", schema: SAMPLE_SCHEMA }
+      );
+      Alert.alert("generateObject()", JSON.stringify(result, null, 2));
+    });
+
+  const ResetClassifications = () =>
+    runPapillonKit(async () => {
+      await PapillonKit.intelligence.resetHomeworkClassifications();
+      Alert.alert("Classifications effacées", "Elles seront régénérées au prochain rafraîchissement.");
+    });
+
+  function ReloadWidgets() {
+    PapillonKit.widgets.reload();
+    Alert.alert("Widgets rechargés", "WidgetKit relit la base et redessine Emploi du temps et Tâches.");
+  }
+
+  const ClearSiriIndex = () =>
+    runPapillonKit(async () => {
+      await PapillonKit.clearIndex();
+      Alert.alert("Index vidé", "Plus aucun cours ni devoir dans Spotlight et Siri.");
+    });
 
   const handlePress = async (action: () => void) => {
     await action();
@@ -275,6 +507,152 @@ export default function DevMode() {
             </List.Trailing>
           </List.Item>
         </List.Section>
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="ArrowDownBox" color={String(colors.text) + "88"} />
+            <List.Label>Remplissage des données</List.Label>
+          </List.SectionTitle>
+          <List.Item onPress={AttachMockData}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Plus" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Attacher Mock Data au compte actif</Typography>
+            <Typography variant="body2" color="textSecondary">
+              Donne un service fictif au compte actif.
+            </Typography>
+          </List.Item>
+          <List.Item onPress={FillStore}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="ArrowDownBox" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Remplir la base</Typography>
+            <Typography variant="body2" color="textSecondary">
+              Récupère toutes les données du compte actif d'un coup.
+            </Typography>
+          </List.Item>
+        </List.Section>
+        {Platform.OS === "ios" && (
+          <List.Section>
+            <List.SectionTitle>
+              <Papicons name="Sparkles" color={String(colors.text) + "88"} />
+              <List.Label>PapillonKit</List.Label>
+            </List.SectionTitle>
+            <List.Item>
+              <Typography variant="action">Apple Intelligence</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {PapillonKit.isSupported ? "iPhone 15 Pro ou plus récent requis." : "Module natif absent de cette build."}
+              </Typography>
+              <List.Trailing>
+                <Typography color="textSecondary" variant="action">
+                  {INTELLIGENCE_LABELS[PapillonKit.intelligence.getAvailability().status]}
+                </Typography>
+              </List.Trailing>
+            </List.Item>
+            <List.Item onPress={ShowPapillonKitState}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Info" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">État</Typography>
+              <Typography variant="body2" color="textSecondary">
+                App Groups, base partagée, comptes et dernier rafraîchissement.
+              </Typography>
+            </List.Item>
+            <List.Item onPress={ShowSiriAnswers}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Search" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Réponses de Siri</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Ce que Siri répond à « prochain cours » et « prochain devoir ».
+              </Typography>
+            </List.Item>
+            <List.Item onPress={ShowIndexableContent}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Calendar" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Contenu indexable</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Cours et devoirs des 7 prochains jours.
+              </Typography>
+            </List.Item>
+            <List.Item onPress={RefreshPapillonKit}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="ArrowDownBox" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Rafraîchir maintenant</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Réindexe Spotlight, classifie les nouveaux devoirs et recharge les widgets.
+              </Typography>
+            </List.Item>
+            <List.Item onPress={ReloadWidgets}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Grid" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Recharger les widgets</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Relit la base et redessine les widgets de l'écran d'accueil.
+              </Typography>
+            </List.Item>
+            <List.Item onPress={ClassifyHomework}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Tasks" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Classifier les devoirs</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Lance Foundation Models sur les devoirs à venir.
+              </Typography>
+            </List.Item>
+            <List.Item onPress={TestGenerateObject}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Code" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Tester generateObject()</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Génère un JSON conforme à un schéma d'exemple.
+              </Typography>
+            </List.Item>
+            <List.Item onPress={ResetClassifications}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Trash" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Effacer les classifications</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Supprime le cache des devoirs classifiés.
+              </Typography>
+            </List.Item>
+            <List.Item onPress={ClearSiriIndex}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Trash" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Vider l'index Siri</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Retire tous les cours et devoirs de Spotlight.
+              </Typography>
+            </List.Item>
+          </List.Section>
+        )}
         <List.Section>
           <List.SectionTitle>
             <Papicons name="Code" color={colors.text + 88} />
