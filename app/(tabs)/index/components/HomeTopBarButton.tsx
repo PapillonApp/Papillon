@@ -1,10 +1,7 @@
 import React from 'react';
-import { Pressable, TouchableNativeFeedback, View } from 'react-native';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { Pressable, View } from 'react-native';
 import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Stack from '@/ui/components/Stack';
 
 interface HomeTopBarButtonProps {
   icon: string;
@@ -13,9 +10,19 @@ interface HomeTopBarButtonProps {
 
 const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) => {
   return (
-    <TouchableNativeFeedback
-      useForeground
+    <Pressable
       onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => ({
+        width: 42,
+        height: 42,
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFFF28',
+        overflow: 'hidden',
+        opacity: pressed ? 0.72 : 1,
+      })}
     >
       <View
         style={{
@@ -24,15 +31,13 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) =>
           borderRadius: 30,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#FFFFFF28',
-          overflow: 'hidden',
         }}
       >
         <Icon size={26} fill='white'>
           <Papicons name={icon} />
         </Icon>
       </View>
-    </TouchableNativeFeedback>
+    </Pressable>
   );
 };
 

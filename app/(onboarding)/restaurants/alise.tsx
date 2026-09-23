@@ -102,10 +102,8 @@ export default function AliseLoginWithCredentials() {
         updatedAt: (new Date()).toISOString(),
       });
       store.setLastUsedAccount(accountId);
-      return router.push({
-        pathname: "../end/color",
-        params: { accountId },
-      });
+      router.dismissAll();
+      return router.push("/");
     } catch (error) {
       alert.showAlert({
         title: t("Alert_Auth_Error"),

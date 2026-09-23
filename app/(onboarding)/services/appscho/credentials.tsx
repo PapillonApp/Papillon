@@ -128,12 +128,8 @@ export default function AppSchoCredentials() {
 
       store.setLastUsedAccount(id);
 
-      return router.push({
-        pathname: "/(onboarding)/end/color",
-        params: {
-          accountId: id,
-        },
-      });
+      router.dismissAll();
+      return router.push("/");
     } catch (error) {
       alert.showAlert({
         title: t("Alert_Auth_Error"),

@@ -25,6 +25,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import { useAccountStore } from "@/stores/account";
+import { initializeAccountManager } from "@/services/shared";
 import { Account, Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
@@ -122,12 +123,18 @@ export default function EDLoginWithCredentials() {
         store.addAccount(account);
         store.setLastUsedAccount(device);
 
-        queueMicrotask(() => {
-          router.push({
-            pathname: "../end/color",
-            params: { accountId: device },
-          });
-        });
+        // The old flow pointed to ../end/color, but that route is not present
+        // in this project.  That left the Tauri app on an error screen until a
+        // restart loaded the persisted account. Initialize the service manager
+        // now, then explicitly return to the main app.
+        try {
+          await initializeAccountManager(device);
+        } catch (managerError) {
+          console.warn("ÉcoleDirecte: initial manager refresh failed", managerError);
+        }
+
+        router.dismissAll();
+        router.push("/");
       }
     } catch (e) {
       setIsLoggingIn(false);

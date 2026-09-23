@@ -58,12 +58,8 @@ export default function AppschoWebView() {
         
         store.setLastUsedAccount(id);
 
-        return router.push({
-          pathname: "/(onboarding)/end/color",
-          params: {
-            accountId: id,
-          },
-        });
+        router.dismissAll();
+        return router.push("/");
       } catch (error) {
         Error(`OAuth login error: ${error}`);
         alert.showAlert({

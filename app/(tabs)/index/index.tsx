@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useIsFocused } from "expo-router/react-navigation";
+import { useIsFocused, useTheme } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
@@ -235,23 +235,24 @@ HomeEmptyState.displayName = "HomeEmptyState";
 
 const HomeViewContainer = ({ children }) => {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
   return (
     <MaskedView
       maskElement={
         <View style={{ flex: 1, backgroundColor: 'transparent' }}>
           <LinearGradient
-            colors={['#ff000022', 'white']}
-            locations={[0.5, 1]}
+            colors={[theme.colors.background, theme.colors.background]}
+            locations={[0, 1]}
             style={{ height: insets.top + 68 }}
           />
-          <View style={{ flex: 1, backgroundColor: 'white' }} />
+          <View style={{ flex: 1, backgroundColor: theme.colors.background }} />
         </View>
       }
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
     >
-      <SafeAreaView style={{ flex: 1 }} edges={["left", "right"]}>
-      {children}
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={["left", "right"]}>
+        {children}
       </SafeAreaView>
     </MaskedView>
   )
