@@ -8,15 +8,17 @@ import Item from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function SettingsServices() {
+  const safePadding = useSafeHorizontalPadding(16);
   const accountStore = useAccountStore();
   const { t } = useTranslation();
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: 16 }}
-      contentInsetAdjustmentBehavior="always"
+      contentContainerStyle={{ padding: 16, ...safePadding }}
+      contentInsetAdjustmentBehavior="automatic"
       style={{ width: '100%', height: '100%' }}
     >
       {accountStore.lastUsedAccount && (

@@ -36,9 +36,11 @@ import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import ChipButton from "@/ui/components/ChipButton";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import NativeSwitch from "@/ui/native/NativeSwitch";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
+  const safePadding = useSafeHorizontalPadding(15);
   const search = useLocalSearchParams();
   const serviceName = String(search.serviceName);
   const service = Number(search.service) as Services;
@@ -182,7 +184,7 @@ export default function QRCodeAndCardsPage() {
       />
 
       <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ paddingTop: headerHeight - 12 }}>
-        <View style={{ padding: 15, flex: 1, gap: 20 }}>
+        <View style={{ padding: 15, ...safePadding, flex: 1, gap: 20 }}>
           <Card index={0} service={service} wallet={wallet} disabled inSpecificView />
 
           {qrcode && (

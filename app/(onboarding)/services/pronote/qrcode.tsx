@@ -30,11 +30,15 @@ import { URLToBase64 } from "@/utils/attachments/helper";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import * as Device from "expo-device";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  // Modals render outside the screen's SafeAreaView, so they pad themselves.
+  const safePadding = useSafeHorizontalPadding(16);
+  const headerSafePadding = useSafeHorizontalPadding(20);
 
   const { colors } = theme;
   const [permission, requestPermission] = useCameraPermissions();
@@ -246,7 +250,7 @@ export default function PronoteLoginWithQR() {
           <View
             style={{
               width: "100%",
-              paddingHorizontal: 16,
+              ...safePadding,
               paddingBottom: insets.bottom,
               gap: 8,
             }}
@@ -284,7 +288,7 @@ export default function PronoteLoginWithQR() {
               alignItems: "center",
               marginBottom: 24,
               paddingVertical: 16,
-              paddingHorizontal: 20,
+              ...headerSafePadding,
               borderBottomColor: colors.border,
               borderBottomWidth: 0.5,
             }}
@@ -360,7 +364,7 @@ export default function PronoteLoginWithQR() {
           <View
             style={{
               width: "100%",
-              paddingHorizontal: 16,
+              ...safePadding,
               paddingBottom: insets.bottom + 16,
               gap: 8,
             }}

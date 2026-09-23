@@ -1,7 +1,8 @@
 import { Link } from "expo-router";
 import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
-import { FlatList, RefreshControl, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, useWindowDimensions } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { TransportStorage } from "@/stores/account/types";
@@ -18,7 +19,6 @@ interface CalendarDayProps {
   isRefreshing: boolean;
   onRefresh: () => void;
   colors: { primary: string, background: string };
-  insets: any;
   tabBarHeight: number;
   transportInfo?: TransportStorage;
   /** The timetable could not be loaded: an empty day means "unknown", not "free". */
@@ -47,8 +47,9 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
   return true;
 }
 
-export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, insets, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
+export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
   const { width: windowWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
 
@@ -113,14 +114,16 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
   const isEmpty = enrichedEvents.length === 0;
 
   return (
-    <View style={{ width: windowWidth, flex: 1 }}>
+    <SafeAreaView edges={['left', 'right']} style={{ width: windowWidth, flex: 1 }}>
       <FlatList
         data={enrichedEvents}
-        style={[styles.container, insets.left > 0 ? { marginLeft: insets.left } : null]}
+        style={styles.container}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
-          paddingHorizontal: 12,
+          paddingLeft: 12,
+          // A large right inset (landscape notch) already gives enough breathing room.
+          paddingRight: insets.right > 10 ? 0 : 12,
           paddingVertical: 12,
           gap: 4,
           paddingBottom: tabBarHeight + 6,
@@ -176,7 +179,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
           );
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }, (prevProps, nextProps) => {
   return (
@@ -184,7 +187,6 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.hasError === nextProps.hasError &&
     prevProps.onRefresh === nextProps.onRefresh &&
-    prevProps.insets.left === nextProps.insets.left &&
     areCoursesEquivalent(prevProps.courses, nextProps.courses)
   );
 });

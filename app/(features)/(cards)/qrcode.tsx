@@ -19,6 +19,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function QRCodePage() {
 
@@ -28,6 +29,7 @@ export default function QRCodePage() {
   const service = Number(search.service || Services.TURBOSELF);
 
   const { t } = useTranslation();
+  const safePadding = useSafeHorizontalPadding(20);
 
   const translationY = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -75,6 +77,7 @@ export default function QRCodePage() {
             transform: [{ translateY: translationY }, { scale: scale }],
             opacity: opacity,
             padding: 20,
+            ...safePadding,
           }}
         >
           <Reanimated.View

@@ -27,6 +27,7 @@ import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { useTranslation } from 'react-i18next';
 import { initializeAccountManager } from '@/services/shared';
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -76,6 +77,8 @@ const staticStyles = StyleSheet.create({
 
 export default function TurboSelfSelectHost() {
   const insets = useSafeAreaInsets();
+  const headerSafePadding = useSafeHorizontalPadding(32);
+  const inputSafePadding = useSafeHorizontalPadding(21);
   const animation = React.useRef<LottieView>(null);
 
   const search = useLocalSearchParams();
@@ -171,7 +174,7 @@ export default function TurboSelfSelectHost() {
             padding={32}
             backgroundColor={'#E70026'}
             gap={20}
-            style={staticStyles.stackContainer}
+            style={[staticStyles.stackContainer, headerSafePadding]}
           >
             <Reanimated.View style={AnimatedLottieContainerStyle}>
               <LottieView
@@ -211,7 +214,7 @@ export default function TurboSelfSelectHost() {
           </Stack>
         </Reanimated.View>
 
-        <Reanimated.View style={[AnimatedInputContainerStyle, { gap: 10 }]}>
+        <Reanimated.View style={[AnimatedInputContainerStyle, { gap: 10, ...inputSafePadding }]}>
           <FlatList
             scrollEnabled={false}
             data={siblings}

@@ -11,6 +11,7 @@ import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import Typography from "@/ui/components/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import {
   getServiceBackground,
   getServiceLogo,
@@ -26,6 +27,7 @@ import { ScrollView } from "react-native-gesture-handler";
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);
+  const safePadding = useSafeHorizontalPadding(20);
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
 
@@ -77,7 +79,7 @@ export default function QRCodeAndCardsPage() {
       />
 
       {wallets?.length === 0 ? (
-        <Stack flex hAlign={"center"} vAlign={"center"} height={"100%"} padding={20}>
+        <Stack flex hAlign={"center"} vAlign={"center"} height={"100%"} padding={20} style={safePadding}>
           <Dynamic
             animated
             entering={PapillonAppearIn}
@@ -109,7 +111,7 @@ export default function QRCodeAndCardsPage() {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={{ flex: 1, paddingTop: headerHeight - 16 }}
-          contentContainerStyle={{ padding: 20, gap: 16 }}
+          contentContainerStyle={{ padding: 20, ...safePadding, gap: 16 }}
         >
           {wallets.map((c, i) => {
             return (

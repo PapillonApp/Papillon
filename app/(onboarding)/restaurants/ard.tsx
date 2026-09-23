@@ -24,12 +24,14 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { detectMealPrice } from "@/utils/restaurant/detect-price";
 import uuid from "@/utils/uuid/uuid";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import LoginView from "../components/LoginView";
 
 const ANIMATION_DURATION = 100;
 
 export default function TurboSelfLoginWithCredentials() {
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(20);
   const theme = useTheme();
   const navigation = useNavigation();
 
@@ -197,6 +199,7 @@ export default function TurboSelfLoginWithCredentials() {
           borderBottomLeftRadius: 42,
           borderBottomRightRadius: 42,
           padding: 20,
+          ...safePadding,
           paddingTop: insets.top + 20,
           paddingBottom: 34,
           borderCurve: "continuous",
@@ -255,6 +258,7 @@ export default function TurboSelfLoginWithCredentials() {
       </View>
       <Stack padding={20}
         gap={10}
+        style={safePadding}
       >
         <OnboardingInput
           icon={"Link"}

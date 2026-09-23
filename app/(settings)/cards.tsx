@@ -18,8 +18,10 @@ import { useTranslation } from "react-i18next";
 import { removeBalanceFromDatabase } from "@/database/useBalance";
 import { getManager } from "@/services/shared";
 import i18n from "@/utils/i18n";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function CardView() {
+  const safePadding = useSafeHorizontalPadding(20);
   const router = useRouter();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
@@ -40,7 +42,7 @@ export default function CardView() {
   return (
     <ScrollView
       contentContainerStyle={{
-        padding: 20, gap: 15, paddingTop: 82,
+        padding: 20, ...safePadding, gap: 15, paddingTop: 82,
       }}
     >
       <SettingsHeader

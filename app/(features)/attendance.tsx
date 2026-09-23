@@ -24,6 +24,7 @@ import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import List from "@/ui/new/List";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Typography from "@/ui/new/Typography";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { formatDate, formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
 import * as DateLocale from 'date-fns/locale';
 
@@ -100,6 +101,7 @@ export default function AttendanceView() {
 
     const [headerHeight, setHeaderHeight] = useState(0);
     const insets = useSafeAreaInsets();
+    const safePadding = useSafeHorizontalPadding(16);
 
     const dangerColor = adjust("#C50000", theme.dark ? 0.4 : -0.1);
     const dangerBg = adjust("#C50000", theme.dark ? -0.65 : 0.85);
@@ -166,6 +168,7 @@ export default function AttendanceView() {
           style={{ flex: 1, backgroundColor: colors.overground }}
           contentContainerStyle={{
             padding: 16,
+            ...safePadding,
             paddingTop: headerHeight,
             paddingBottom: insets.bottom + 16,
           }}

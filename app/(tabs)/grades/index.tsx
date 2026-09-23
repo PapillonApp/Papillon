@@ -8,7 +8,7 @@ import { FlatList, Platform, Pressable, RefreshControl, ScrollView, View } from 
 import i18n from '@/utils/i18n';
 import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
 import { useSettingsStore } from '@/stores/settings';
-import { getGradeDisplayScale, formatScoreForDisplay } from '@/utils/grades/scale';
+import { getGradeDisplayScale, formatScoreForDisplay, formatGradeScoreForDisplay } from '@/utils/grades/scale';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from '@/utils/services/periods';
 import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
@@ -21,10 +21,10 @@ import Averages from './atoms/Averages';
 import GradesEmptyState from './atoms/GradesEmptyState';
 import GradesLoading from './atoms/GradesLoading';
 import List from '@/ui/new/List';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import useResizable from '@/ui/utils/Resizable';
 import CompactGrade from '@/ui/new/CompactGrade';
 import { AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const isAndroid = Platform.OS === 'android';
 
@@ -68,7 +68,7 @@ const sortSubjects = (subjects: Subject[], method: SortMethod): Subject[] => {
 const GradesView = () => {
   const papillonFont = useFont();
   const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
-  const insets = useSafeAreaInsets();
+  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const theme = useTheme();
   const resize = useResizable();
 
@@ -137,6 +137,7 @@ const GradesView = () => {
         onFocus={() => setIsSearchbarFocused(true)}
         onBlur={() => setIsSearchbarFocused(false)}
         autoCapitalize="none"
+        hideWhenScrolling={true}
       />
 
       {isAndroid ? (
@@ -218,10 +219,10 @@ const GradesView = () => {
         </Stack.Toolbar>
       )}
 
-      <SafeAreaView edges={['left', 'right']} style={{ flex: 1, backgroundColor: Platform.OS === 'ios' ? theme.colors.overground : theme.colors.background }}>
+      <View style={{ flex: 1, backgroundColor: Platform.OS === 'ios' ? theme.colors.overground : theme.colors.background }}>
         <List
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 16 }}
+          contentContainerStyle={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}
           contentInsetAdjustmentBehavior="automatic"
           refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
           numColumns={resize.isLarge ? 2 : 1}
@@ -242,9 +243,10 @@ const GradesView = () => {
                 style={{
                   paddingVertical: 16,
                   gap: 12,
-                  marginHorizontal: -16,
+                  marginLeft: -contentPaddingLeft,
+                  marginRight: -contentPaddingRight,
                 }}>
-                <View style={{ paddingHorizontal: 16 }}>
+                <View style={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}>
                   <Averages history={history} realAverage={isAverageServiceProvided ? averages.student?.value : undefined} color={theme.colors.primary} displayScale={displayScale} />
                 </View>
 
@@ -268,14 +270,17 @@ const GradesView = () => {
                   showsHorizontalScrollIndicator={false}
                   ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
                   horizontal
-                  contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 24, overflow: 'visible' }}
+                  contentContainerStyle={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight, paddingVertical: 24, overflow: 'visible' }}
                   style={{ overflow: 'visible', marginVertical: -24 }}
                 />
               </View>
             )
           )}
         >
-          {filteredSubjects.map(subject => (
+          {filteredSubjects.map(subject => {
+            const subjectAverage = formatGradeScoreForDisplay(subject.studentAverage, subject.outOf, displayScale);
+
+            return (
             <List.Section key={subject.id} id={subject.id}>
               <List.SectionTitle id={`${subject.id}-title`}>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 2 }}>
@@ -287,11 +292,13 @@ const GradesView = () => {
 
                   <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
                     <Typography variant="h5" weight='semibold' color="textSecondary">
-                      {subject.studentAverage?.value.toFixed(2) ?? 'N/A'}
+                      {subjectAverage.value}
                     </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      /{subject.studentAverage?.outOf ?? 'N/A'}
-                    </Typography>
+                    {subjectAverage.denominator !== '' && (
+                      <Typography variant="caption" color="textSecondary">
+                        {subjectAverage.denominator}
+                      </Typography>
+                    )}
                   </View>
                 </View>
               </List.SectionTitle>
@@ -310,7 +317,7 @@ const GradesView = () => {
                     href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }}
                   >
                     <View style={{ flex: 1, flexDirection: 'column', gap: 1 }}>
-                      <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description ?? 'No description'}</Typography>
+                      <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description || t("Grade_NoDescription", { subject: getSubjectName(subject.name) })}</Typography>
                       {grade.givenAt && (
                         <Typography numberOfLines={1} variant="subtitle" color="textSecondary">
                           {grade.givenAt.toLocaleDateString(i18n.language, {
@@ -338,9 +345,10 @@ const GradesView = () => {
                 );
               })}
             </List.Section>
-          ))}
+            );
+          })}
         </List>
-      </SafeAreaView>
+      </View>
     </>
   );
 };

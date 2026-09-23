@@ -235,13 +235,12 @@ function TabOneScreen() {
         isRefreshing={manualRefreshing}
         onRefresh={handleRefresh}
         colors={colors}
-        insets={insets}
         tabBarHeight={tabBarHeight}
         transportInfo={account?.transport ?? undefined}
         hasError={hasTimetableError}
       />
     );
-  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, insets, tabBarHeight, account, hasTimetableError]);
+  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, tabBarHeight, account, hasTimetableError]);
 
   return (
     <>

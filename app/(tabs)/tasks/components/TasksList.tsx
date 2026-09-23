@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { RefreshControl, StyleSheet } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Homework } from "@/services/shared/homework";
 import List from "@/ui/new/List";
@@ -11,6 +10,7 @@ import DateHeader from "../atoms/DateHeader";
 import EmptyState from "../atoms/EmptyState";
 import TaskItem from "./TaskItem";
 import { useTheme } from "expo-router/react-navigation";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface HomeworkSection {
   id: string;
@@ -100,9 +100,10 @@ const TasksList: React.FC<TasksListProps> = ({
       maintainVisibleContentPosition={{ disabled: true }}
       style={[styles.list, { backgroundColor: colors.overground }]}
       contentContainerStyle={{
-        paddingHorizontal: 16,
+        paddingLeft: 16,
+        // A large right inset (landscape notch) already gives enough breathing room.
+        paddingRight: insets.right > 10 ? 0 : 16,
         paddingBottom: 16,
-        paddingLeft: insets.left + 16,
       }}
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}

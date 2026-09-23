@@ -21,6 +21,7 @@ import List from "@/ui/new/List";
 import NativeSwitch from "@/ui/native/NativeSwitch";
 import Picker from "@/ui/components/Picker";
 import { trackOptionalEvent } from "@/utils/logger/analytics";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const FONT_OPTIONS = [
   { label: "SN Pro", value: "sn-pro" as const },
@@ -31,6 +32,7 @@ const FONT_OPTIONS = [
 ];
 
 const PersonalizationSettings = () => {
+  const safePadding = useSafeHorizontalPadding(16);
   const theme = useTheme();
   const { t } = useTranslation()
 
@@ -76,8 +78,8 @@ const PersonalizationSettings = () => {
         />
       </Dynamic>
       <List
-        contentContainerStyle={{ padding: 16 }}
-        contentInsetAdjustmentBehavior="always"
+        contentContainerStyle={{ padding: 16, ...safePadding }}
+        contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0, backgroundColor: theme.colors.overground }}
       >
         {!useMaterialYou &&

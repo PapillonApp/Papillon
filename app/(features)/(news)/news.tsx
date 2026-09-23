@@ -25,11 +25,13 @@ import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary'
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const NewsView = () => {
   const theme = useTheme()
   const colors = theme.colors
   const insets = useSafeAreaInsets()
+  const safePadding = useSafeHorizontalPadding(16)
 
   const [headerHeight, setHeaderHeight] = useState(0)
   const bottomTabBarHeight = insets.bottom + 16;
@@ -109,9 +111,8 @@ const NewsView = () => {
           contentContainerStyle={{
             paddingTop: headerHeight,
             paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
-            paddingHorizontal: 16,
+            ...safePadding,
             gap: 9,
-            paddingLeft: insets.left + 16,
           }}
           refreshControl={
             <RefreshControl

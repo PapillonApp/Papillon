@@ -11,6 +11,7 @@ import Button from "@/ui/new/Button";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const PronoteSearchHeader = memo(({
 }: {
@@ -45,6 +46,7 @@ export default function PronoteLoginURL() {
   const headerHeight = useHeaderHeight();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const safePadding = useSafeHorizontalPadding(16);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior="padding" keyboardVerticalOffset={20}>
@@ -52,6 +54,7 @@ export default function PronoteLoginURL() {
         ListHeaderComponent={<PronoteSearchHeader />}
         contentContainerStyle={{
           padding: 16,
+          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,

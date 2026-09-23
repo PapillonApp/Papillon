@@ -48,7 +48,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
         style={{
           height: height,
           position: "absolute",
-          top: insets.top,
+          top: insets.top + (insets.right > 10 ? 10 : 0),
           left: insets.left,
           right: insets.right,
           paddingHorizontal: 16,

@@ -16,6 +16,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
 const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, color, step, totalSteps, elements, renderItem }: {
@@ -29,6 +30,8 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
   renderItem: (info: ListRenderItemInfo<unknown>) => React.JSX.Element
 }) => {
   const insets = useSafeAreaInsets();
+  const headerSafePadding = useSafeHorizontalPadding(32);
+  const safePadding = useSafeHorizontalPadding(16);
   const animation = React.useRef<LottieView>(null);
 
   const scrollY = React.useRef(useSharedValue(0)).current;
@@ -112,6 +115,7 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
             paddingBottom: 34,
             borderCurve: "continuous",
             height: "100%",
+            ...headerSafePadding,
           }}
         >
           <Reanimated.View style={AnimatedLottieContainerStyle}>
@@ -168,7 +172,7 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
         }}
         contentContainerStyle={{
           paddingTop: height + 16,
-          paddingHorizontal: 16,
+          ...safePadding,
           gap: 10,
           paddingBottom: insets.bottom + 16,
         }}

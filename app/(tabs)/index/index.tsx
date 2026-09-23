@@ -21,6 +21,8 @@ import { useTimetableWidgetData } from './hooks/useTimetableWidgetData';
 import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
 import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
+import { usePeriodsData } from '../grades/hooks/usePeriodsData';
+import { useGradesData } from '../grades/hooks/useGradesData';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
@@ -58,13 +60,21 @@ const HomeScreen = () => {
     }
   }, [account, accounts.length, router, store]);
 
+  const consentPrompted = React.useRef(false);
+
   React.useEffect(() => {
+    // Only ask for consent once the user lands on home with an account (i.e. after onboarding)
+    if (!focused || accounts.length === 0 || consentPrompted.current) {
+      return;
+    }
+
+    consentPrompted.current = true;
     checkConsent().then(consent => {
       if (!consent.given) {
         router.push("../consent");
       }
     });
-  }, []);
+  }, [focused, accounts.length, router]);
 
   React.useEffect(() => {
     if (!account?.id || countedTeamModalAccount.current === account.id) {
@@ -81,12 +91,14 @@ const HomeScreen = () => {
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
 
-  const [gradesWidgetHidden, setGradesWidgetHidden] = React.useState(true);
+  const { currentPeriod } = usePeriodsData();
+  const { grades, history, averages } = useGradesData(currentPeriod);
+  const gradesWidgetHidden = grades.length === 0;
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
   const renderGrades = React.useCallback(
-    () => <GradesWidget onEmptyStateChange={setGradesWidgetHidden} />,
-    []
+    () => <GradesWidget history={history} averages={averages} />,
+    [history, averages]
   );
   const renderTeam = React.useCallback(
     () => (

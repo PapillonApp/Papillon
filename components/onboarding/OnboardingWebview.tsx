@@ -11,6 +11,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webViewRef }: {
   title: string
@@ -21,6 +22,8 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
   webViewRef?: React.RefObject<WebView<{}> | null>
 }) => {
   const insets = useSafeAreaInsets();
+  const headerSafePadding = useSafeHorizontalPadding(32);
+  const safePadding = useSafeHorizontalPadding(20);
   const { colors } = useTheme();
   const [totallyLoaded, setTotallyLoaded] = React.useState(false);
 
@@ -57,7 +60,7 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
         <Stack flex
           direction="horizontal"
           height={40}
-          style={{ position: "absolute", left: 75, top: insets.top + 7, zIndex: 2 }}
+          style={{ position: "absolute", left: insets.left + 75, top: insets.top + 7, zIndex: 2 }}
           hAlign={"center"}
         >
           <Typography
@@ -76,6 +79,7 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
         <Animated.View
           style={{
             padding: 32,
+            ...headerSafePadding,
             backgroundColor: color,
             gap: 20,
             alignItems: "center",
@@ -97,7 +101,7 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
             </Typography>
           </Animated.View>
         </Animated.View>
-        <View style={{ flex: 1, padding: 20, paddingBottom: insets.bottom + 20 }}>
+        <View style={{ flex: 1, padding: 20, ...safePadding, paddingBottom: insets.bottom + 20 }}>
           <View
             style={{
               width: "100%",
