@@ -176,7 +176,7 @@ export default {
           },
         },
       ],
-      "papillonkit",
+      "@getpapillon/papillonkit",
       "./plugins/with-ios-native-files",
       "./plugins/with-android-gradle-properties-newline",
     ],

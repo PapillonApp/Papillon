@@ -70,5 +70,5 @@ target 'Papillon' do
 end
 
 target 'PapillonWidgets' do
-  pod 'PapillonKit/Widgets', :path => '../node_modules/papillonkit/ios'
+  pod 'PapillonKit/Widgets', :path => '../node_modules/@getpapillon/papillonkit/ios'
 end

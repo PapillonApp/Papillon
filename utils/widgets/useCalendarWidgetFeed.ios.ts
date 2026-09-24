@@ -1,4 +1,4 @@
-import * as PapillonKit from "papillonkit";
+import * as PapillonKit from "@getpapillon/papillonkit";
 import { useEffect, useMemo } from "react";
 
 import { useTimetableWidgetData } from "@/app/(tabs)/index/hooks/useTimetableWidgetData";

@@ -3,8 +3,8 @@ import { Alert, Platform, Switch, View } from "react-native";
 import { router } from "expo-router";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { Papicons } from "@getpapillon/papicons";
-import * as PapillonKit from "papillonkit";
-import type { CoursePreview, HomeworkPreview, JSONSchema } from "papillonkit";
+import * as PapillonKit from "@getpapillon/papillonkit";
+import type { CoursePreview, HomeworkPreview, JSONSchema } from "@getpapillon/papillonkit";
 
 import { useLogStore, useNetworkStore } from "@/stores/logs";
 import List from "@/ui/new/List";
