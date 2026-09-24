@@ -18,7 +18,7 @@ export default function Layout() {
     headerTransparent: runsIOS26,
     headerShadowVisible: false,
     ...androidHeaderProps,
-    headerBackVisible: Platform.OS === "ios",
+    headerBackVisible: Platform.OS === "android" ? false : true,
   }), [screenOptions, androidHeaderProps]);
 
   return (
@@ -99,6 +99,24 @@ export default function Layout() {
           name="subject_personalization"
           options={{
             headerTitle: t("Settings_SubjectPersonalization_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="homework_subjects"
+          options={{
+            headerTitle: "Matières des devoirs",
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="notifications"
+          options={{
+            headerTitle: "Notifications",
             headerBackButtonDisplayMode: "minimal",
             headerTransparent: false,
             headerLargeTitle: false,

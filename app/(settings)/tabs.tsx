@@ -26,6 +26,7 @@ const SettingsTabs = () => {
     : settingsStore?.disabledTabs) || [];
 
   const tabs = [
+    { id: "home", name: t("Tab_Home"), icon: "Home", enabled: !disabledTabs.includes("home") },
     {
       id: "calendar",
       name: t("Tab_Calendar"),
@@ -44,6 +45,7 @@ const SettingsTabs = () => {
       icon: "grades",
       enabled: !disabledTabs.includes("grades"),
     },
+    { id: "search", name: t("Tab_Search", "Rechercher"), icon: "Search", enabled: !disabledTabs.includes("search") },
   ];
 
   const toggleTab = (tabId: string) => {

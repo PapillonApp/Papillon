@@ -1,6 +1,6 @@
 import type { MenuAction, NativeActionEvent } from "@react-native-menu/menu";
 import { useTheme } from "expo-router/react-navigation";
-import React from "react";
+import React, { type ReactNode } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { Papicons } from "@getpapillon/papicons";
@@ -27,7 +27,7 @@ export function AndroidHeaderButton({
   onPress,
   accessibilityLabel,
 }: {
-  icon: string;
+  icon: string | ReactNode;
   onPress: () => void;
   accessibilityLabel?: string;
 }) {
@@ -42,7 +42,7 @@ export function AndroidHeaderButton({
       android_ripple={{ color: `${tint}22`, borderless: true, radius: ITEM_SIZE / 2 }}
       style={styles.item}
     >
-      <Papicons name={icon} size={24} color={tint} />
+      {typeof icon === "string" ? <Papicons name={icon} size={24} color={tint} /> : icon}
     </Pressable>
   );
 }

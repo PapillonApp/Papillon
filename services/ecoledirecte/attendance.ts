@@ -6,6 +6,7 @@ import { Absence, Attendance, Delay, Punishment } from "../shared/attendance";
 import { Period } from "../shared/grade";
 import { durationToMinutes } from "../skolengo/attendance";
 import { fetchEDGradePeriods } from "./grades";
+import { getResponseArray } from "./response";
 
 const FRENCH_MONTHS: Record<string, number> = {
   janvier: 0,
@@ -28,8 +29,14 @@ export async function fetchEDAttendance(session: Client, accountId: string, peri
     const selectedPeriod = periodName
       ? await getSelectedPeriod(session, accountId, periodName)
       : undefined;
-    const schoolLifeItems = filterAttendanceItemsByPeriod(attendance.absencesRetards, selectedPeriod);
-    const conductItems = filterConductItemsByPeriod(attendance.sanctionsEncouragements, selectedPeriod);
+    const schoolLifeItems = filterAttendanceItemsByPeriod(
+      getResponseArray<SchoolLifeAttendanceItem>(attendance, ["absencesRetards", "data", "result"]),
+      selectedPeriod
+    );
+    const conductItems = filterConductItemsByPeriod(
+      getResponseArray<SchoolLifeConductItem>(attendance, ["sanctionsEncouragements", "data", "result"]),
+      selectedPeriod
+    );
 
     return {
       absences: mapEcoleDirecteAbsences(schoolLifeItems, accountId),
@@ -53,7 +60,7 @@ export async function fetchEDAttendance(session: Client, accountId: string, peri
 export async function fetchEDAttendancePeriods(session: Client, accountId: string): Promise<Period[]> {
   const periods = await fetchEDGradePeriods(session, accountId);
 
-  return periods.filter(period => {
+  return (Array.isArray(periods) ? periods : []).filter(period => {
     const normalized = normalizeLabel(period.name);
     return normalized.length > 0
       && !normalized.startsWith("releve")

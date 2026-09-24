@@ -261,6 +261,30 @@ const PersonalizationSettings = () => {
           <List.SectionTitle>
             <List.Label>Options de l'application</List.Label>
           </List.SectionTitle>
+          {Platform.OS === "web" && (
+            <List.Item>
+              <List.Leading><Icon><Papicons name="PapillonApp" /></Icon></List.Leading>
+              <Typography variant="title">Position de la barre</Typography>
+              <Typography variant="body1" color="textSecondary">Choisis où afficher les onglets sur ton ordinateur.</Typography>
+              <List.Trailing>
+                <Stack direction="horizontal" gap={6}>
+                  {(["bottom", "top", "left", "right"] as const).map(position => (
+                    <AnimatedPressable
+                      key={position}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Barre ${position === "bottom" ? "en bas" : position === "top" ? "en haut" : position === "left" ? "à gauche" : "à droite"}`}
+                      onPress={() => mutateProperty("personalization", { desktopTabBarPosition: position })}
+                      style={{ paddingHorizontal: 10, paddingVertical: 8, borderRadius: 12, backgroundColor: (settingsStore.desktopTabBarPosition ?? "bottom") === position ? theme.colors.primary : theme.colors.card }}
+                    >
+                      <Typography variant="caption" color={(settingsStore.desktopTabBarPosition ?? "bottom") === position ? "white" : "textPrimary"}>
+                        {position === "bottom" ? "Bas" : position === "top" ? "Haut" : position === "left" ? "Gauche" : "Droite"}
+                      </Typography>
+                    </AnimatedPressable>
+                  ))}
+                </Stack>
+              </List.Trailing>
+            </List.Item>
+          )}
           <List.Item
             onPress={() => {
               router.push("/(settings)/tabs");
@@ -280,6 +304,18 @@ const PersonalizationSettings = () => {
                 <Papicons name="ChevronRight" opacity={0.7} />
               </Icon>
             </List.Trailing>
+          </List.Item>
+          <List.Item onPress={() => router.push("/(settings)/notifications")}>
+            <List.Leading><Icon><Papicons name="Clock" /></Icon></List.Leading>
+            <Typography variant="title">Notifications</Typography>
+            <Typography variant="body1" color="textSecondary">Choisir les alertes pour les cours, devoirs, notes et actualités.</Typography>
+            <List.Trailing><Icon><Papicons name="ChevronRight" opacity={0.7} /></Icon></List.Trailing>
+          </List.Item>
+          <List.Item onPress={() => router.push("/(settings)/homework_subjects")}>
+            <List.Leading><Icon><Papicons name="List" /></Icon></List.Leading>
+            <Typography variant="title">Matières de mes devoirs</Typography>
+            <Typography variant="body1" color="textSecondary">Gérer les matières proposées pour tes devoirs personnels.</Typography>
+            <List.Trailing><Icon><Papicons name="ChevronRight" opacity={0.7} /></Icon></List.Trailing>
           </List.Item>
           <List.Item
             onPress={() => {

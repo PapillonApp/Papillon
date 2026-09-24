@@ -35,6 +35,14 @@ export default function Layout() {
           ...androidHeaderProps,
         }}
       />
+      <Stack.Screen
+        name="new"
+        options={{
+          headerTitle: "Ajouter un devoir",
+          headerLargeTitle: false,
+          ...androidHeaderProps,
+        }}
+      />
     </Stack>
   );
 }

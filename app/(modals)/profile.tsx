@@ -69,7 +69,8 @@ export default function CustomProfileScreen() {
   }
 
   const handleWebProfileFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const input = event.currentTarget;
+    const file = input.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -78,7 +79,7 @@ export default function CustomProfileScreen() {
       if (!b64) return;
       setProfilePictureUrl(dataUrl);
       store.setAccountProfilePicture(lastUsedAccount, b64);
-      event.currentTarget.value = "";
+      input.value = "";
     };
     reader.readAsDataURL(file);
   };

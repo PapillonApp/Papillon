@@ -7,6 +7,7 @@ import { warn } from "@/utils/logger/logger";
 import { Grade, GradeScore, Period, PeriodGrades, Subject, } from "../shared/grade";
 import { SkillChipLevel } from "@/ui/components/SkillChip";
 import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
+import { getResponseArray } from "./response";
 
 export async function fetchEDGradePeriods(
   session: Client,
@@ -14,7 +15,7 @@ export async function fetchEDGradePeriods(
 ): Promise<Period[]> {
   try {
     const overview = await session.marks.getMark();
-    return overview.periodes.map(period => ({
+    return getResponseArray<any>(overview, ["periodes", "data", "result"]).map(period => ({
       name: period.periode,
       id: period.codePeriode,
       start: new Date(period.dateDebut),
@@ -33,10 +34,11 @@ export async function fetchEDGrades(
 ): Promise<PeriodGrades> {
   try {
     const overview = await session.marks.getMark();
-    const periodReport = overview.periodes.find(
+    const periods = getResponseArray<any>(overview, ["periodes", "data", "result"]);
+    const periodReport = periods.find(
       item => item.codePeriode === period.id || item.idPeriode === period.id
     );
-    const grades = getGradesForPeriod(overview.notes, period);
+    const grades = getGradesForPeriod(getResponseArray<any>(overview, ["notes", "data", "result"]), period);
 
     if (!periodReport) {
       warn("Invalid grades data structure or period not found");
@@ -44,11 +46,12 @@ export async function fetchEDGrades(
     }
 
     const subjects: Record<string, Subject> = {};
+    const skillParameters = overview.parametrage ?? {};
     const skillColors = {
-      insufficient: overview.parametrage.couleurEval1,
-      weak: overview.parametrage.couleurEval2,
-      almostProficient: overview.parametrage.couleurEval3,
-      satisfactory: overview.parametrage.couleurEval4,
+      insufficient: skillParameters.couleurEval1 ?? "#E53935",
+      weak: skillParameters.couleurEval2 ?? "#FB8C00",
+      almostProficient: skillParameters.couleurEval3 ?? "#FDD835",
+      satisfactory: skillParameters.couleurEval4 ?? "#43A047",
     };
     const allMappedGrades: Grade[] = grades.map(g => ({
         id: String(g.id),
@@ -67,14 +70,14 @@ export async function fetchEDGrades(
         minScore: parseGradeValue(g.minClasse),
         maxScore: parseGradeValue(g.maxClasse),
         createdByAccount: accountId,
-        skills: g.elementsProgramme.map(s => ({
+        skills: getResponseArray<any>(g, ["elementsProgramme"]).map(s => ({
           name: s.libelleCompetence,
           description: s.descriptif,
           score: parseSkillLevel(parseInt(s.valeur), skillColors),
         })),
     }))
 
-    for (const subject of periodReport.ensembleMatieres?.disciplines ?? []) {
+    for (const subject of getResponseArray<any>(periodReport.ensembleMatieres, ["disciplines"])) {
       const parsedAverage = parseGradeValue(subject.moyenne)
       const parsedClassAverage = parseGradeValue(subject.moyenneClasse)
       const parsedMaximum = parseGradeValue(subject.moyenneMax)

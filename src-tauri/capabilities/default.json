@@ -4,6 +4,7 @@
   "local": true,
   "permissions": [
     "core:default",
+    "notification:default",
     "http:allow-fetch",
     "http:allow-fetch-send",
     "http:allow-fetch-read-body",

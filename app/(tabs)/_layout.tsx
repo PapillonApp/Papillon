@@ -8,7 +8,7 @@ import { useTheme } from "expo-router/react-navigation";
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Platform, DynamicColorIOS } from 'react-native';
+import { Platform, DynamicColorIOS, useWindowDimensions } from 'react-native';
 import { useFont } from '@/utils/theme/fonts';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
@@ -87,32 +87,45 @@ function DesktopTabLayout() {
   const theme = useTheme();
   const font = useFont();
   const { t } = useTranslation();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
   const personalization = useSettingsStore(state => state.personalization);
   const disabledTabs = (lastUsedAccount
     ? personalization?.disabledTabsByAccount?.[lastUsedAccount]
     : personalization?.disabledTabs) || [];
+  const position = personalization?.desktopTabBarPosition ?? 'bottom';
+  const vertical = position === 'left' || position === 'right';
+  const horizontalBarWidth = Math.max(0, Math.min(760, windowWidth - 32));
+  const horizontalBarHeight = windowWidth < 520 ? 96 : windowWidth < 700 ? 84 : 76;
+  const verticalBarHeight = Math.max(320, Math.min(680, windowHeight - 32));
 
   return (
     <Tabs
       screenOptions={{
+        tabBarPosition: position,
+        tabBarVariant: vertical ? 'material' : undefined,
+        tabBarLabelPosition: vertical ? 'beside-icon' : 'below-icon',
         headerShown: false,
         tabBarActiveTintColor: theme.colors.tint,
         tabBarInactiveTintColor: theme.colors.text + '99',
-        tabBarLabelStyle: { fontFamily: font('medium'), fontSize: 13 },
+        tabBarLabelStyle: { fontFamily: font('medium'), fontSize: windowWidth < 600 ? 12 : 14, flexShrink: 1, flexWrap: 'wrap', textAlign: 'center' },
+        tabBarItemStyle: vertical
+          ? { minHeight: 60, justifyContent: 'center', paddingHorizontal: 10 }
+          : { minWidth: 0, flex: 1, paddingHorizontal: 3 },
         tabBarStyle: {
-          position: 'absolute',
-          bottom: 14,
-          alignSelf: 'center',
-          width: 420,
-          maxWidth: '90%',
-          height: 48,
-          borderRadius: 24,
+          ...(position === 'bottom' ? { marginBottom: 12 } : {}),
+          ...(position === 'top' ? { marginTop: 12 } : {}),
+          ...(position === 'left' ? { marginLeft: 12 } : {}),
+          ...(position === 'right' ? { marginRight: 12 } : {}),
+          ...(vertical
+            ? { width: 232, height: verticalBarHeight, borderRadius: 22 }
+            : { alignSelf: 'center', width: horizontalBarWidth, height: horizontalBarHeight, borderRadius: 28 }),
           borderTopWidth: 0,
           backgroundColor: theme.dark ? '#191919ee' : '#ffffffe8',
           shadowOpacity: 0.18,
           shadowRadius: 18,
           elevation: 10,
+          paddingVertical: vertical ? 10 : 4,
         },
       }}
     >
@@ -120,6 +133,7 @@ function DesktopTabLayout() {
       <Tabs.Screen name="calendar" options={{ title: t('Tab_Calendar'), href: disabledTabs.includes('calendar') ? null : undefined, tabBarIcon: ({ color }) => <PapiconTabIcon name="Calendar" color={color} /> }} />
       <Tabs.Screen name="tasks" options={{ title: t('Tab_Tasks'), href: disabledTabs.includes('tasks') ? null : undefined, tabBarIcon: ({ color }) => <PapiconTabIcon name="List" color={color} /> }} />
       <Tabs.Screen name="grades" options={{ title: t('Tab_Grades'), href: disabledTabs.includes('grades') ? null : undefined, tabBarIcon: ({ color }) => <PapiconTabIcon name="Grades" color={color} /> }} />
+      <Tabs.Screen name="search/index" options={{ title: t('Tab_Search', 'Rechercher'), href: disabledTabs.includes('search') ? null : undefined, tabBarIcon: ({ color }) => <PapiconTabIcon name="Search" color={color} /> }} />
     </Tabs>
   );
 }

@@ -91,16 +91,17 @@ function AnimatedPressable({
       maxDelayMs={0}
       onActivated={handleOnActivated}
     >
-      <ReanimatedPressable
-        {...props}
-        layout={props.layout || layoutAnim}
-        style={[style, animatedStyle]}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-      // onPress is now handled by the TapGestureHandler's onActivated prop
-      >
-        {children}
-      </ReanimatedPressable>
+      <Reanimated.View layout={props.layout || layoutAnim}>
+        <ReanimatedPressable
+          {...props}
+          style={[style, animatedStyle]}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          // onPress is now handled by the TapGestureHandler's onActivated prop
+        >
+          {children}
+        </ReanimatedPressable>
+      </Reanimated.View>
     </TapGestureHandler>
   );
 }

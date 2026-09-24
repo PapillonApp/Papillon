@@ -17,6 +17,7 @@ import uuid from '@/utils/uuid/uuid';
 import { useWidgetSync } from '@/widgets';
 import { LogBox } from 'react-native';
 import { appFetch, isTauriDesktop } from "@/utils/network/fetch";
+import { initializePendingSystemNotifications } from "@/utils/notifications";
 
 // Polyfill Buffer
 global.Buffer = Buffer;
@@ -40,6 +41,10 @@ export default function RootLayout() {
   const lastTrackedView = useRef<string | null>(null);
 
   useWidgetSync();
+
+  useEffect(() => {
+    initializePendingSystemNotifications();
+  }, []);
 
   const analyticsView = useMemo(() => {
     if (segments.length === 0) return null;

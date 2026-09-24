@@ -4,12 +4,21 @@ import { getDateRangeOfWeek } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 
 import { Course, CourseDay, CourseStatus, CourseType } from "../shared/timetable";
+import { getResponseArray } from "./response";
 
 export async function fetchEDTimetable(session: Client, accountId: string, weekNumber: number): Promise<CourseDay[]> {
   try {
     const { start, end } = getDateRangeOfWeek(weekNumber);
 
-    const timetable = (await session.timetable.getTimetableBetweenDates(start, end, false)).filter(course => course.codeMatiere !== "");
+    const response = await session.timetable.getTimetableBetweenDates(start, end, false);
+    const timetable = getResponseArray<TimetableCourse>(response, [
+      "cours",
+      "courses",
+      "timetable",
+      "emploiDuTemps",
+      "data",
+      "result",
+    ]).filter(course => course.codeMatiere !== "");
     const mappedCourses = mapEcoleDirecteCourses(timetable, accountId);
     const dayMap: Record<string, Course[]> = {};
 
@@ -34,19 +43,26 @@ export async function fetchEDTimetable(session: Client, accountId: string, weekN
 }
 
 function mapEcoleDirecteCourses(data: TimetableCourse[], accountId: string): Course[] {
-  return data.map(item => ({
-    createdByAccount: accountId,
-    subject: item.matiere,
-    id: String(item.id),
-    type: mapCourseKind(item.typeCours),
-    from: new Date(item.start_date),
-    to: new Date(item.end_date),
-    additionalInfo: item.text,
-    room: item.salle,
-    teacher: item.prof,
-    backgroundColor: item.color,
-    status: item.isAnnule ? CourseStatus.CANCELED : undefined
-  }))
+  return data.flatMap(item => {
+    if (!item) return [];
+    const from = new Date(item.start_date);
+    const to = new Date(item.end_date);
+    if (!Number.isFinite(from.getTime()) || !Number.isFinite(to.getTime())) return [];
+
+    return [{
+      createdByAccount: accountId,
+      subject: item.matiere ?? "Cours",
+      id: String(item.id ?? `${from.getTime()}-${to.getTime()}`),
+      type: mapCourseKind(item.typeCours),
+      from,
+      to,
+      additionalInfo: item.text,
+      room: item.salle,
+      teacher: item.prof,
+      backgroundColor: item.color,
+      status: item.isAnnule ? CourseStatus.CANCELED : undefined
+    }];
+  });
 }
 
 function mapCourseKind(kind: TimetableCourseType): CourseType {

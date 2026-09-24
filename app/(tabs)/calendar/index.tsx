@@ -4,6 +4,7 @@ import { t } from "i18next";
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { RefreshCw } from "lucide-react-native";
 
 import { CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
@@ -304,6 +305,18 @@ function TabOneScreen() {
           })}
         </View>
       </Stack.Title>
+
+      {isAndroid ? (
+        <Stack.Toolbar placement="right" asChild>
+          <AndroidHeaderButton icon={<RefreshCw size={22} color={String(colors.text)} />} accessibilityLabel="Synchroniser les agendas iCal" onPress={handleRefresh} />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Button icon="arrow.clockwise" onPress={handleRefresh}>
+            Synchroniser les iCal
+          </Stack.Toolbar.Button>
+        </Stack.Toolbar>
+      )}
 
       {isAndroid ? (
         <Stack.Toolbar placement="right" asChild>

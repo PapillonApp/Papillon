@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Platform, StyleSheet, TouchableNativeFeedback, View } from "react-native";
+import { Platform, Pressable, StyleSheet, TouchableNativeFeedback, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import Icon from "@/ui/components/Icon";
@@ -19,8 +19,16 @@ export const AndroidBackButtonStyles = StyleSheet.create({
 });
 
 const AndroidBackButton = () => {
-  if(Platform.OS !== "android") return null;
   const router = useRouter();
+
+  if (Platform.OS === "web") {
+    return (
+      <Pressable onPress={() => router.back()} style={AndroidBackButtonStyles.container} accessibilityRole="button" accessibilityLabel="Retour">
+        <Icon size={26}><Papicons name="arrowleft" /></Icon>
+      </Pressable>
+    );
+  }
+  if (Platform.OS !== "android") return null;
 
   return (
     <TouchableNativeFeedback

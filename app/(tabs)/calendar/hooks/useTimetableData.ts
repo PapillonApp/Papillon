@@ -8,6 +8,8 @@ import { getManager } from "@/services/shared";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
 import { useAccountStore } from '@/stores/account';
 import { debug, log } from "@/utils/logger/logger";
+import { useSettingsStore } from "@/stores/settings";
+import { cancelSystemNotification, getNextNotificationTime, scheduleSystemNotification } from "@/utils/notifications";
 
 export function useTimetableData(weekNumber: number, currentDate: Date = new Date()) {
   const safeDate = currentDate;
@@ -28,6 +30,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
   const account = accounts.find(item => item.id === lastUsedAccount);
+  const notificationPreferences = useSettingsStore(state => state.personalization.notificationPreferences);
   const services: string[] = useMemo(
     () => account?.services?.map((service: { id: string }) => service.id) ?? [],
     [account]
@@ -43,6 +46,34 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
       )
     })).filter(day => day.courses.length > 0);
   }, [rawTimetable, services]);
+
+  useEffect(() => {
+    const id = "courses-tomorrow";
+    if (!notificationPreferences?.enabled || !notificationPreferences.courses) {
+      void cancelSystemNotification(id);
+      return;
+    }
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const start = new Date(tomorrow);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    const courses = timetable.flatMap(day => day.courses)
+      .filter(course => course.from >= start && course.from < end)
+      .sort((a, b) => a.from.getTime() - b.from.getTime());
+    if (courses.length === 0) {
+      void cancelSystemNotification(id);
+      return;
+    }
+    const subjects = Array.from(new Set(courses.map(course => course.subject).filter(Boolean))).slice(0, 3).join(", ");
+    void scheduleSystemNotification("courses", {
+      id,
+      title: `Cours de demain · ${courses.length} cours`,
+      body: subjects || "Consulte ton emploi du temps pour demain.",
+      at: getNextNotificationTime(notificationPreferences.dailyTime || "19:00", 0),
+    });
+  }, [timetable, notificationPreferences?.enabled, notificationPreferences?.courses, notificationPreferences?.dailyTime]);
 
   const fetchWeeklyTimetable = useCallback(async (targetWeekNumber: number, forceRefresh = false) => {
     setIsLoading(true);

@@ -50,4 +50,38 @@ export interface Personalization {
   installedVersion?: string;
   releaseNotesSeenForVersion?: string;
   welcomeModalSeen?: boolean;
+  desktopTabBarPosition?: "bottom" | "top" | "left" | "right";
+  customHomeworkSubjects?: string[];
+  customHomeworks?: CustomHomeworkStorage[];
+  notificationPreferences?: NotificationPreferences;
+  notificationSeenGradeIds?: string[];
+  notificationSeenNewsIds?: string[];
+  pendingNotificationSchedules?: PendingSystemNotification[];
+}
+
+export interface CustomHomeworkStorage {
+  id: string;
+  subject: string;
+  content: string;
+  dueDate: string;
+  isDone: boolean;
+  createdByAccount: string;
+  reminderAt?: string;
+}
+
+export interface NotificationPreferences {
+  enabled: boolean;
+  courses: boolean;
+  homework: boolean;
+  grades: boolean;
+  news: boolean;
+  dailyTime: string;
+}
+
+export interface PendingSystemNotification {
+  id: string;
+  category: "courses" | "homework" | "grades" | "news";
+  title: string;
+  body: string;
+  at: string;
 }
