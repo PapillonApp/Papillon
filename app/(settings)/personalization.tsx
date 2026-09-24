@@ -78,7 +78,7 @@ const PersonalizationSettings = () => {
         />
       </Dynamic>
       <List
-        contentContainerStyle={{ padding: 16, ...safePadding }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 40, ...safePadding }}
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0, backgroundColor: theme.colors.overground }}
       >

@@ -331,6 +331,7 @@ export default function PronoteENTLogin() {
             className,
             customisation: {
               profilePicture: pp,
+              serviceProfilePicture: pp,
               subjects: {}
             },
             services: [{

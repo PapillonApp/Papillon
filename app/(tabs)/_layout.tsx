@@ -1,3 +1,4 @@
+import { Papicons } from '@getpapillon/papicons';
 import BottomAccessory, { useBottomAccessoryVisible } from '@/components/BottomAccessory';
 import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
@@ -5,6 +6,7 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import useResizable from "@/ui/utils/Resizable";
 import { useTheme } from "expo-router/react-navigation";
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Platform, DynamicColorIOS } from 'react-native';
 import { useFont } from '@/utils/theme/fonts';
@@ -81,10 +83,55 @@ function TabLayoutContent() {
   );
 }
 
+function DesktopTabLayout() {
+  const theme = useTheme();
+  const font = useFont();
+  const { t } = useTranslation();
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const personalization = useSettingsStore(state => state.personalization);
+  const disabledTabs = (lastUsedAccount
+    ? personalization?.disabledTabsByAccount?.[lastUsedAccount]
+    : personalization?.disabledTabs) || [];
+
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: theme.colors.tint,
+        tabBarInactiveTintColor: theme.colors.text + '99',
+        tabBarLabelStyle: { fontFamily: font('medium'), fontSize: 13 },
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 14,
+          alignSelf: 'center',
+          width: 420,
+          maxWidth: '90%',
+          height: 48,
+          borderRadius: 24,
+          borderTopWidth: 0,
+          backgroundColor: theme.dark ? '#191919ee' : '#ffffffe8',
+          shadowOpacity: 0.18,
+          shadowRadius: 18,
+          elevation: 10,
+        },
+      }}
+    >
+      <Tabs.Screen name="index" options={{ title: t('Tab_Home'), href: disabledTabs.includes('home') ? null : undefined, tabBarIcon: ({ color }) => <PapiconTabIcon name="Home" color={color} /> }} />
+      <Tabs.Screen name="calendar" options={{ title: t('Tab_Calendar'), href: disabledTabs.includes('calendar') ? null : undefined, tabBarIcon: ({ color }) => <PapiconTabIcon name="Calendar" color={color} /> }} />
+      <Tabs.Screen name="tasks" options={{ title: t('Tab_Tasks'), href: disabledTabs.includes('tasks') ? null : undefined, tabBarIcon: ({ color }) => <PapiconTabIcon name="List" color={color} /> }} />
+      <Tabs.Screen name="grades" options={{ title: t('Tab_Grades'), href: disabledTabs.includes('grades') ? null : undefined, tabBarIcon: ({ color }) => <PapiconTabIcon name="Grades" color={color} /> }} />
+    </Tabs>
+  );
+}
+
+function PapiconTabIcon({ name, color }: { name: string; color: string }) {
+  return <Papicons name={name as any} size={19} color={color} />;
+}
+
 export default function TabLayout() {
   return (
     <MainTabErrorBoundary>
-      <TabLayoutContent />
+      {Platform.OS === 'web' ? <DesktopTabLayout /> : <TabLayoutContent />}
     </MainTabErrorBoundary>
   );
 }

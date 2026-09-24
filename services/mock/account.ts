@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 
 import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import uuid from "@/utils/uuid/uuid";
 
@@ -87,6 +88,7 @@ export async function attachMockDataToCurrentAccount(): Promise<Account> {
 }
 
 export function openMockDataAccountChooser(): void {
+  useSettingsStore.getState().mutateProperty("personalization", { mockDataEnabled: true });
   const store = useAccountStore.getState();
   const currentAccount = store.accounts.find(
     account => account.id === store.lastUsedAccount

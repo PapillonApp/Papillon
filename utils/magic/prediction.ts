@@ -56,7 +56,30 @@ export async function predictHomework(label: string, magicEnabled: boolean = tru
     return "";
   }
 
+  const beautifyCategory = (category: string): string => {
+    const map: Record<string, string> = {
+      evaluation: "Évaluation",
+      finaltask: "Tâche finale",
+      homework: "Devoir Maison",
+      oral: "Présentation orale",
+      sheets: "Fiche",
+    };
+    return map[category.toLowerCase()] || category;
+  };
+
   const prediction = await ModelManager.predict(label);
+
+  if (!isModelPrediction(prediction)) {
+    for (const [category, regexList] of Object.entries(compiledPatterns)) {
+      if (regexList.some(rgx => rgx.test(label))) {
+        const finalFallback = beautifyCategory(category);
+        store.addHomework({ id: homeworkId, label: finalFallback });
+        return finalFallback;
+      }
+    }
+    store.addHomework({ id: homeworkId, label: "" });
+    return "";
+  }
 
   const beautifyLabel = (rawLabel: string): string => {
     const labelMap: Record<string, string> = {

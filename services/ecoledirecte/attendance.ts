@@ -28,8 +28,8 @@ export async function fetchEDAttendance(session: Client, accountId: string, peri
     const selectedPeriod = periodName
       ? await getSelectedPeriod(session, accountId, periodName)
       : undefined;
-    const schoolLifeItems = filterAttendanceItemsByPeriod(attendance.absencesRetards ?? [], selectedPeriod);
-    const conductItems = filterConductItemsByPeriod(attendance.sanctionsEncouragements ?? [], selectedPeriod);
+    const schoolLifeItems = filterAttendanceItemsByPeriod(attendance.absencesRetards, selectedPeriod);
+    const conductItems = filterConductItemsByPeriod(attendance.sanctionsEncouragements, selectedPeriod);
 
     return {
       absences: mapEcoleDirecteAbsences(schoolLifeItems, accountId),

@@ -104,8 +104,11 @@ class ModelManager {
     _text: string,
     _verbose: boolean = false
   ): Promise<ModelPrediction | { error: string; success: false }> {
+    // Desktop has no TFLite runtime, but prediction.ts provides a deterministic
+    // regex fallback. Return an explicit unavailable result so that fallback can
+    // classify common homework types instead of making Magic+ unusable on PC.
     return {
-      error: "Magic n'est pas disponible sur la version PC",
+      error: "MODELE_PC_INDISPONIBLE",
       success: false,
     };
   }

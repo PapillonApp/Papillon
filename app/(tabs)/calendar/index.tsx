@@ -2,7 +2,7 @@ import { Stack, useRouter } from "expo-router";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Platform, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CourseStatus } from "@/services/shared/timetable";
@@ -252,6 +252,23 @@ function TabOneScreen() {
         anchor={calendarAnchor}
       />
 
+      {Platform.OS === 'web' && (
+        <View style={styles.desktopDayBar}>
+          <Pressable style={styles.desktopDayButton} onPress={() => handlePickDate(new Date(date.getTime() - 86400000))}>
+            <Typography variant="body2">‹</Typography>
+          </Pressable>
+          <Pressable style={styles.desktopTodayButton} onPress={() => handlePickDate(new Date())}>
+            <Typography variant="body2" weight="semibold">Aujourd'hui</Typography>
+          </Pressable>
+          <Pressable style={styles.desktopDayButton} onPress={() => handlePickDate(new Date(date.getTime() + 86400000))}>
+            <Typography variant="body2">›</Typography>
+          </Pressable>
+          <Typography variant="body2" weight="semibold" numberOfLines={1} style={{ marginLeft: 8 }}>
+            {dayLabel}
+          </Typography>
+        </View>
+      )}
+
       {isAndroid ? (
         <Stack.Toolbar placement="left" asChild>
           <AndroidHeaderButton
@@ -352,6 +369,33 @@ const CalendarScreenWithBoundary = () => (
 export default CalendarScreenWithBoundary;
 
 const styles = StyleSheet.create({
+  desktopDayBar: {
+    height: 54,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: 'transparent',
+    zIndex: 5,
+  },
+  desktopDayButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(127,127,127,0.14)',
+  },
+  desktopTodayButton: {
+    minWidth: 110,
+    height: 36,
+    paddingHorizontal: 14,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(127,127,127,0.14)',
+  },
   container: {
     flex: 1,
   },
