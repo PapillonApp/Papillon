@@ -83,9 +83,6 @@ const formatHomework = (homework: HomeworkPreview) =>
   [
     `${homework.emoji} ${homework.title}${homework.isDone ? " (terminé)" : ""}`,
     `  pour le ${formatDate(homework.dueDate)}`,
-    homework.classification
-      ? `  ${homework.classification.categoryLabel} · ~${homework.classification.estimatedMinutes} min · ${homework.classification.summary}`
-      : null,
     homework.content ? `  ${homework.content.slice(0, 80)}` : null,
   ]
     .filter(Boolean)
@@ -283,7 +280,6 @@ export default function DevMode() {
             : `Cours : ${snapshot.database.courseCount} · Devoirs : ${snapshot.database.homeworkCount}`,
           snapshot.accountsError ? `Comptes : ${snapshot.accountsError}` : `Comptes : ${accounts || "aucun"}`,
           `Apple Intelligence : ${INTELLIGENCE_LABELS[snapshot.intelligence.status] ?? snapshot.intelligence.status}`,
-          `Devoirs classifiés : ${snapshot.intelligence.classificationCount}`,
           `Snapshot widgets : ${snapshot.widgets.snapshotDate ? formatDate(snapshot.widgets.snapshotDate) : "jamais écrit"}`,
           ...(["Calendar", "Tasks"] as const).map(kind => {
             const entry = snapshot.widgets.diagnostics[kind];
@@ -335,22 +331,10 @@ export default function DevMode() {
           report.index
             ? `${report.index.indexedCourses} cours et ${report.index.indexedHomework} devoir(s) indexés, ${report.index.removed} retiré(s).`
             : "Index non mis à jour.",
-          report.classification
-            ? `${report.classification.classified} devoir(s) classifié(s), ${report.classification.failed} échec(s).`
-            : null,
           ...report.errors,
         ]
           .filter(Boolean)
           .join("\n\n")
-      );
-    });
-
-  const ClassifyHomework = () =>
-    runPapillonKit(async () => {
-      const report = await PapillonKit.intelligence.classifyHomework();
-      Alert.alert(
-        "Classification terminée",
-        `${report.classified} classifié(s), ${report.failed} échec(s), ${report.skipped} reporté(s).`
       );
     });
 
@@ -361,12 +345,6 @@ export default function DevMode() {
         { instructions: "Tu aides un élève à organiser son travail.", schema: SAMPLE_SCHEMA }
       );
       Alert.alert("generateObject()", JSON.stringify(result, null, 2));
-    });
-
-  const ResetClassifications = () =>
-    runPapillonKit(async () => {
-      await PapillonKit.intelligence.resetHomeworkClassifications();
-      Alert.alert("Classifications effacées", "Elles seront régénérées au prochain rafraîchissement.");
     });
 
   function ReloadWidgets() {
@@ -593,7 +571,7 @@ export default function DevMode() {
               </List.Leading>
               <Typography variant="action">Rafraîchir maintenant</Typography>
               <Typography variant="body2" color="textSecondary">
-                Réindexe Spotlight, classifie les nouveaux devoirs et recharge les widgets.
+                Réindexe Spotlight et recharge les widgets.
               </Typography>
             </List.Item>
             <List.Item onPress={ReloadWidgets}>
@@ -607,17 +585,6 @@ export default function DevMode() {
                 Relit la base et redessine les widgets de l'écran d'accueil.
               </Typography>
             </List.Item>
-            <List.Item onPress={ClassifyHomework}>
-              <List.Leading>
-                <Icon>
-                  <Papicons name="Tasks" />
-                </Icon>
-              </List.Leading>
-              <Typography variant="action">Classifier les devoirs</Typography>
-              <Typography variant="body2" color="textSecondary">
-                Lance Foundation Models sur les devoirs à venir.
-              </Typography>
-            </List.Item>
             <List.Item onPress={TestGenerateObject}>
               <List.Leading>
                 <Icon>
@@ -627,17 +594,6 @@ export default function DevMode() {
               <Typography variant="action">Tester generateObject()</Typography>
               <Typography variant="body2" color="textSecondary">
                 Génère un JSON conforme à un schéma d'exemple.
-              </Typography>
-            </List.Item>
-            <List.Item onPress={ResetClassifications}>
-              <List.Leading>
-                <Icon>
-                  <Papicons name="Trash" />
-                </Icon>
-              </List.Leading>
-              <Typography variant="action">Effacer les classifications</Typography>
-              <Typography variant="body2" color="textSecondary">
-                Supprime le cache des devoirs classifiés.
               </Typography>
             </List.Item>
             <List.Item onPress={ClearSiriIndex}>
