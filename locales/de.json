@@ -371,23 +371,17 @@
   "Global_Recommended": "",
   "Welcome_Greeting": "Hallo, {{name}} !",
   "Welcome_Title": "Willkomen auf Papillon!",
-  "Welcome_ProfilePicture_Description": "Füg erstmal ein Profilbild hinzu, damit du direkt loslegen kannst.
-",
+  "Welcome_ProfilePicture_Description": "Füg erstmal ein Profilbild hinzu, damit du direkt loslegen kannst.",
   "Welcome_ProfilePicture_Action": "Profilbild hinzufügen",
-  "Welcome_Color_Description": "Nice! Such dir jetzt deine Lieblingsfarbe aus.
-",
-  "Welcome_Setup_Skip_Title": "Einrichtung überspringen
-",
+  "Welcome_Color_Description": "Nice! Such dir jetzt deine Lieblingsfarbe aus.",
+  "Welcome_Setup_Skip_Title": "Einrichtung überspringen",
   "Welcome_Setup_Skip_Description": "Möchtest du die Einrichtung wirklich überspringen? Dein Profil und das Aussehen der App kannst du später noch in den Einstellungen anpassen.",
   "Welcome_Setup_Skip_Action": "Ignorieren",
-  "Modal_Soon": "Kommt bald!
-",
+  "Modal_Soon": "Kommt bald!",
   "ONBOARDING_LOADING": "Lädt...",
-  "ONBOARDING_WELCOME_DESCRIPTION": "Die App, mit der du deinen Schulalltag easy im Griff hast.
-",
+  "ONBOARDING_WELCOME_DESCRIPTION": "Die App, mit der du deinen Schulalltag easy im Griff hast.",
   "ONBOARDING_WELCOME_LOGIN_WITH": "Sich anmelden mit",
-  "ONBOARDING_WELCOME_LEGAL": "Wenn du fortfährst, stimmst du den Nutzungsbedingungen und der Datenschutzerklärung zu.
-",
+  "ONBOARDING_WELCOME_LEGAL": "Wenn du fortfährst, stimmst du den Nutzungsbedingungen und der Datenschutzerklärung zu.",
   "ONBOARDING_AGE_TITLE": "Wer bist du?",
   "ONBOARDING_AGE_DESCRIPTION": "Wähle aus, was auf dich zutrifft.",
   "ONBOARDING_LEVEL_MIDDLE_SCHOOL": "Mittelstufenschüler",
