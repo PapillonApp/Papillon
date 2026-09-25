@@ -227,29 +227,35 @@ const WallpaperModal = () => {
         contentInsetAdjustmentBehavior="automatic"
         ListHeaderComponent={
           Platform.OS !== "android" ? null : (
-            <Pressable onPress={clearWallpaper} style={{ paddingHorizontal: 12, paddingTop: 16, alignSelf: "flex-start" }}>
-              <Stack
-                hAlign="center"
-                vAlign="center"
-                gap={6}
-                style={{
-                  width: 160,
-                  height: 104,
-                  borderRadius: 16,
-                  borderCurve: "continuous",
-                  borderWidth: 2,
-                  borderColor: STATIC_COLORS.danger + "40",
-                  backgroundColor: colors.card,
-                }}
-              >
-                <Icon size={26} fill={STATIC_COLORS.danger} opacity={0.9}>
-                  <Papicons name="Trash" />
-                </Icon>
-                <Typography variant="body2" color="danger">
-                  {t("Modal_Wallpaper_Clear")}
-                </Typography>
-              </Stack>
-            </Pressable>
+            <View style={{ paddingHorizontal: 12, gap: 18 }}>
+              <Typography variant="navigation" align="center">
+                {t("Modal_Wallpaper_Title")}
+              </Typography>
+              <Pressable onPress={clearWallpaper} style={{ alignSelf: "flex-start" }}>
+                <Stack
+                  hAlign="center"
+                  vAlign="center"
+                  gap={6}
+                  style={{
+                    minWidth: 160,
+                    height: 104,
+                    paddingHorizontal: 16,
+                    borderRadius: 16,
+                    borderCurve: "continuous",
+                    borderWidth: 2,
+                    borderColor: STATIC_COLORS.danger + "40",
+                    backgroundColor: colors.card,
+                  }}
+                >
+                  <Icon size={26} fill={STATIC_COLORS.danger} opacity={0.9}>
+                    <Papicons name="Trash" />
+                  </Icon>
+                  <Typography variant="body2" color="danger" align="center">
+                    {t("Modal_Wallpaper_Clear")}
+                  </Typography>
+                </Stack>
+              </Pressable>
+            </View>
           )
         }
       />
