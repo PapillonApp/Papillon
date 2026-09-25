@@ -28,7 +28,7 @@
     "@eslint/js": "^9.39.1",
     "@expo/ui": "~57.0.18",
     "@getpapillon/papicons": "^0.2.3",
-    "@getpapillon/papillonkit": "^1.0.0",
+    "@getpapillon/papillonkit": "^1.1.0",
     "@legendapp/list": "^2.0.15",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-async-storage/async-storage": "2.2.0",

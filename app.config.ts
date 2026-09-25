@@ -20,7 +20,8 @@ export default {
       bundleIdentifier: "xyz.getpapillon.ios",
       associatedDomains: ["applinks:getpapillon.xyz"],
       icon: "./assets/app.icon",
-      minimumOSVersion: "27.0",
+      minimumOSVersion: "17.6",
+      deploymentTarget: "17.6",
       infoPlist: {
         AppGroupIdentifier: "group.xyz.getpapillon",
         CFBundleURLTypes: [
