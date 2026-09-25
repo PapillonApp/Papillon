@@ -47,7 +47,7 @@ const PronoteSearchHeader = memo(({
           <ActivityIndicator />
           <Divider height={12} ghost />
           <Typography align="center" variant="h5">{t("ONBOARDING_SCHOOLS_SEARCHING")}</Typography>
-          <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+          <Typography align="center" variant="body2" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
         </Stack>
       </Dynamic>
     }
@@ -113,7 +113,7 @@ export default function PronoteLoginSelectEtab() {
             <Typography variant="title" numberOfLines={2}>
               {formatSchoolName(school.name)}
             </Typography>
-            <Typography variant="body" color="textSecondary" numberOfLines={1}>
+            <Typography variant="body2" color="textSecondary" numberOfLines={1}>
               {school.url}
             </Typography>
           </List.Item>

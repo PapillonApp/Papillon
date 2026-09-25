@@ -6,6 +6,9 @@ use embedded_webview::EmbeddedWebviews;
 pub fn run() {
     tauri::Builder::default()
         .manage(EmbeddedWebviews::default())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_autostart::Builder::new().build())
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

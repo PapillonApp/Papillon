@@ -421,7 +421,7 @@ export default function PronoteENTLogin() {
             <ActivityIndicator />
             <Divider height={12} ghost />
             <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? formatSchoolName(school.name) : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
-            <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+            <Typography align="center" variant="body2" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
 
             {hasLoadingBeenTooLong && (
               <Button label="Masquer" variant="text" onPress={() => setLoadingHidden(true)} />

@@ -5,7 +5,7 @@
   "identifier": "xyz.getpapillon.desktop",
   "build": {
     "frontendDist": "../dist",
-    "beforeBuildCommand": "npm run export:web",
+    "beforeBuildCommand": "",
     "devUrl": "http://localhost:8081",
     "beforeDevCommand": "npm run web"
   },

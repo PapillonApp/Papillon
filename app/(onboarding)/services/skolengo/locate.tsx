@@ -50,7 +50,7 @@ const PronoteSearchHeader = memo(({
           <ActivityIndicator />
           <Divider height={12} ghost />
           <Typography align="center" variant="h5">{t("ONBOARDING_SCHOOLS_SEARCHING")}</Typography>
-          <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+          <Typography align="center" variant="body2" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
         </Stack>
       </Dynamic>
     }
@@ -136,7 +136,7 @@ export default function PronoteLoginMethod() {
               <Icon><Papicons name="mappin" /></Icon>
             </List.Leading>
             <Typography variant="title">{school.name}</Typography>
-            <Typography variant="body" color="textSecondary">
+            <Typography variant="body2" color="textSecondary">
               {school.location.city} ({school.location.zipCode})
             </Typography>
           </List.Item>

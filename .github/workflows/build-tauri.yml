@@ -34,9 +34,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Export web bundle
-        run: npx expo export --platform web
-        env:
-          PAPILLON_TARGET: electron
+        run: npm run export:web
 
       - name: Check source for unsafe web ExpoUI imports
         run: npm run check:web-native-imports
@@ -50,7 +48,7 @@ jobs:
       - name: Check exported web bundle for ExpoUI native module
         run: node scripts/check-web-bundle.js
 
-      - name: Build Scola
+      - name: Build Papillon (Tauri)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
