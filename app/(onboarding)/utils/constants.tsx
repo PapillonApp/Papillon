@@ -4,7 +4,7 @@ import { useTheme } from "expo-router/react-navigation";
 import { RelativePathString, UnknownInputParams } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
 import { useSettingsStore } from '@/stores/settings';
@@ -56,7 +56,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       name: "ed",
       route: "ed",
       title: t("ONBOARDING_SERVICE_ED"),
-      type: ["school"],
+      type: ["school", "univ"],
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
         redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
@@ -259,10 +259,7 @@ export function GetLoginMethods(redirect: (path: { pathname: RelativePathString 
         redirect({ pathname: '../pronote/url' });
       }
     }
-    // "qrcode" method filtered out below on web: it needs a phone camera to
-    // scan a PRONOTE QR code, which this build intentionally doesn't do —
-    // map/search/url stay available as the other ways to connect.
-  ].filter((method) => !(Platform.OS === "web" && method.id === "qrcode"))
+  ]
 }
 
 export interface SupportedRestaurant {

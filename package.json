@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "index.js",
-  "version": "8.5.4",
+  "version": "8.5.5",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -9,17 +9,15 @@
     "ios:native:restore": "node scripts/ios-native-files.js restore",
     "ios:native:snapshot": "node scripts/ios-native-files.js snapshot",
     "web": "expo start --web",
-    "tauri": "tauri",
     "test": "jest --watchAll",
     "lint": "eslint --fix",
     "check:widgets": "node scripts/check-widgets.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "postinstall": "patch-package",
-    "check:web-native-imports": "node scripts/check-web-native-imports.js",
-    "check:web-bundle": "node scripts/check-web-bundle.js",
-    "check:web-animations": "node scripts/check-web-animations.js",
-    "check:web-compat": "node scripts/check-web-compat.js"
+    "export:web": "expo export --platform web --output-dir dist",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build"
   },
   "jest": {
     "preset": "jest-expo"
@@ -35,7 +33,7 @@
     "@expo/ui": "~57.0.18",
     "@getpapillon/papicons": "^0.2.3",
     "@legendapp/list": "^2.0.15",
-    "@lottiefiles/dotlottie-react": "^0.19.16",
+    "@lottiefiles/dotlottie-react": "^0.13.5",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "9.1.0",
@@ -117,14 +115,10 @@
     "skolengojs": "^1.2.2",
     "turboself-api": "^2.1.9",
     "typescript-eslint": "^8.49.0",
-    "zustand": "^5.0.9",
-    "@tauri-apps/plugin-http": "^2.6.1",
-    "@tauri-apps/plugin-notification": "^2",
-    "@tauri-apps/plugin-autostart": "^2",
-    "@tauri-apps/api": "^2"
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2",
+    "@tauri-apps/cli": "^2.11.5",
     "@types/react": "~19.2.10",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unused-imports": "^4.3.0",

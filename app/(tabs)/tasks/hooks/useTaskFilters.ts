@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { Homework } from "@/services/shared/homework";
 import { getSubjectName } from "@/utils/subjects/name";
 
-export type SortMethod = 'date' | 'subject' | 'done' | 'undone';
+export type SortMethod = 'date' | 'subject' | 'done';
 
 const normalize = (value: string) =>
   value
@@ -64,10 +64,7 @@ export const buildHomeworkSections = (
     });
   }
 
-  if (sortMethod === 'undone') {
-    data = data.filter(h => !h.isDone);
-    data.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  } else if (sortMethod === 'date') {
+  if (sortMethod === 'date') {
     data.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   } else if (sortMethod === 'subject') {
     data.sort((a, b) => a.subject.localeCompare(b.subject));

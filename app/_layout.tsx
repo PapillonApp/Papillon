@@ -16,9 +16,6 @@ import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
 import { useWidgetSync } from '@/widgets';
 import { LogBox } from 'react-native';
-import { appFetch, isTauriDesktop } from "@/utils/network/fetch";
-import { initializePendingSystemNotifications } from "@/utils/notifications";
-import { startDesktopBackground } from "@/utils/desktopBackground";
 
 // Polyfill Buffer
 global.Buffer = Buffer;
@@ -43,13 +40,8 @@ export default function RootLayout() {
 
   useWidgetSync();
 
-  useEffect(() => {
-    initializePendingSystemNotifications();
-    return startDesktopBackground();
-  }, []);
-
   const analyticsView = useMemo(() => {
-    if (!segments[0]) return null;
+    if (segments.length === 0) return null;
 
     const groupMatch = segments[0].match(/^\((.+)\)$/);
     if (groupMatch) {
@@ -76,22 +68,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     const originalFetch = window.fetch;
-    let nativeFetchInProgress = false;
-
-    const shouldUseTauriTransport = (url: string) => {
-      try {
-        const hostname = new URL(url).hostname.toLowerCase();
-        return (
-          hostname === "api.ecoledirecte.com" ||
-          hostname.endsWith(".ecoledirecte.com") ||
-          hostname === "data.geopf.fr" ||
-          hostname.endsWith(".pronote.com") ||
-          hostname.endsWith(".index-education.com")
-        );
-      } catch {
-        return false;
-      }
-    };
 
     window.fetch = async (...args) => {
       const id = uuid();
@@ -106,29 +82,14 @@ export default function RootLayout() {
         useNetworkStore.getState().addRequest(request, id);
       } catch { }
 
-      const useNative =
-        isTauriDesktop() &&
-        !nativeFetchInProgress &&
-        shouldUseTauriTransport(request.url);
-
-      let response: Response;
-      if (useNative) {
-        nativeFetchInProgress = true;
-        try {
-          response = await appFetch(request, args[1]);
-        } finally {
-          nativeFetchInProgress = false;
-        }
-      } else {
-        response = await originalFetch(...args);
-      }
+      const response = await originalFetch(...args);
 
       try {
         useNetworkStore.getState().addResponse(response.clone(), id);
       } catch { }
 
       return response;
-    };
+    }
 
     return () => {
       window.fetch = originalFetch;

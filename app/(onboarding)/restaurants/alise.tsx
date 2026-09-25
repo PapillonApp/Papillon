@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import LottieView from "@/components/lottie/LottieView";
+import LottieView from "lottie-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import Reanimated, { useSharedValue, withTiming } from "react-native-reanimated";
@@ -102,8 +102,10 @@ export default function AliseLoginWithCredentials() {
         updatedAt: (new Date()).toISOString(),
       });
       store.setLastUsedAccount(accountId);
-      router.dismissAll();
-      return router.push("/");
+      return router.push({
+        pathname: "../end/color",
+        params: { accountId },
+      });
     } catch (error) {
       alert.showAlert({
         title: t("Alert_Auth_Error"),

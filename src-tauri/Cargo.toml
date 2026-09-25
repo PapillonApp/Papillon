@@ -1,21 +1,34 @@
 [package]
-name = "scola"
-version = "1.0.0"
-description = "Scola — la version PC de Papillon"
+name = "papillon"
+version = "0.1.0"
+description = "Papillon — client de vie scolaire (build desktop)"
+authors = ["PapillonApp"]
+license = "GPL-3.0"
+repository = "https://github.com/PapillonApp/Papillon"
 edition = "2021"
+rust-version = "1.77.2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "papillon_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "2.6.3" }
 
 [dependencies]
-tauri = { version = "2", features = ["devtools", "tray-icon"] }
-tauri-plugin-http = { version = "2.6", features = ["unsafe-headers"] }
-tauri-plugin-notification = "2"
-tauri-plugin-autostart = "2"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-url = "2"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.11.6" }
+tauri-plugin-log = "2"
 
-[[bin]]
-name = "scola"
-path = "src/main.rs"
+# Build "release" optimisé (taille + vitesse) plutôt que les réglages par
+# défaut de Cargo — cohérent avec le "opti" demandé.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

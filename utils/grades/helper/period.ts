@@ -1,5 +1,7 @@
 import { Period } from "@/services/shared/grade";
-export function getCurrentPeriod(periods: Period[]): Period | undefined {
+import { error, warn } from "@/utils/logger/logger";
+
+export function getCurrentPeriod(periods: Period[]): Period {
   const now = new Date().getTime();
   const excludedNames = [
     "Bac blanc",
@@ -17,22 +19,22 @@ export function getCurrentPeriod(periods: Period[]): Period | undefined {
   ];
 
   periods = periods
-    .filter(period =>
-      !excludedNames.includes(period.name) &&
-      Number.isFinite(period.start?.getTime()) &&
-      Number.isFinite(period.end?.getTime()) &&
-      period.end.getTime() >= period.start.getTime()
-    )
+    .filter(period => !excludedNames.includes(period.name))
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
   for (const period of periods) {
-    if (period.start.getTime() <= now && period.end.getTime() >= now) {
+    if (period.start.getTime() < now && period.end.getTime() > now) {
       return period;
     }
   }
 
-  // During holidays and just before a new school year, none of the dates may
-  // contain today. Prefer the next period; after the school year, use the last
-  // one that ended. An empty or malformed response simply has no selection.
-  return periods.find(period => period.start.getTime() > now) ?? periods.at(-1);
+  if (periods.length > 0) {
+    warn(
+      "Current period not found. Falling back to the first period in the array."
+    );
+    return periods[0];
+  }
+
+  error("Unable to find the current period and unable to fallback...");
+  return periods[0];
 }

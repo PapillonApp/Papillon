@@ -14,7 +14,7 @@ import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import { GeographicSearchCities, GeoSearchCityInfo } from "@/utils/native/georeverse";
+import { GeographicSearchCities } from "@/utils/native/georeverse";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 const convertPostalCode
@@ -23,6 +23,12 @@ const convertPostalCode
     return "0" + postalCode;
   }
   return postalCode;
+}
+
+export interface School {
+  name: string,
+  distance: number,
+  url: string
 }
 
 const PronoteSearchHeader = memo(({
@@ -51,7 +57,7 @@ const PronoteSearchHeader = memo(({
           <ActivityIndicator />
           <Divider height={12} ghost />
           <Typography align="center" variant="h5">{t("ONBOARDING_SCHOOLS_SEARCHING")}</Typography>
-          <Typography align="center" variant="body1" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+          <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
         </Stack>
       </Dynamic>
     }
@@ -70,9 +76,8 @@ export default function PronoteLoginMethod() {
 
   const [city, setCity] = useState<string>("");
   const [debouncedCity, setDebouncedCity] = useState<string>("");
-  const [cities, setCities] = useState<GeoSearchCityInfo[]>([]);
+  const [cities, setCities] = useState<Array<School>>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchError, setSearchError] = useState("");
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -88,23 +93,16 @@ export default function PronoteLoginMethod() {
     if(!debouncedCity || debouncedCity.length < 3) {
       setCities([]);
       setLoading(false);
-      setSearchError("");
     } else {
       let canceled = false;
 
       setLoading(true);
-      setSearchError("");
       GeographicSearchCities(debouncedCity)
         .then((cities) => {
           if(canceled) {
             return;
           }
-          setCities((Array.isArray(cities) ? [...cities] : []).sort((a, b) => b.importance - a.importance).slice(0, 10));
-        })
-        .catch((error: unknown) => {
-          if(canceled) return;
-          setCities([]);
-          setSearchError(error instanceof Error ? error.message : "La recherche d’établissements a échoué.");
+          setCities(cities.sort((a, b) => b.importance - a.importance).splice(0, 10));
         })
         .finally(() => {
           if(canceled) {
@@ -119,19 +117,14 @@ export default function PronoteLoginMethod() {
     }
   }, [debouncedCity]);
 
-  const selectCity = (selectedCity: GeoSearchCityInfo) => {
-    (navigation as unknown as {
-      navigate: (routeName: string, params: { city: GeoSearchCityInfo }) => void;
-    }).navigate("select", { city: selectedCity });
+  const selectCity = (city: School) => {
+    navigation.navigate(`select`, { city: city });
   }
-  const navigateTo = (routeName: string) => (navigation as unknown as {
-    navigate: (routeName: string) => void;
-  }).navigate(routeName);
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.background }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
-    ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} t={t} />}
+        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} t={t} />}
         contentContainerStyle={{
           padding: 16,
           ...safePadding,
@@ -143,23 +136,20 @@ export default function PronoteLoginMethod() {
         style={{ flex: 1 }}
         animated
       >
-        {searchError.length > 0 && <List.Item>
-          <Typography variant="body1" color="textSecondary">{searchError}</Typography>
-        </List.Item>}
-        {cities.length === 0 && !loading && Platform.OS !== 'web' && (
-          <List.Item animated onPress={() => navigateTo("qrcode")}>
+        {cities.length === 0 && !loading && (
+          <List.Item animated onPress={() => navigation.navigate("qrcode")}>
             <List.Leading>
               <Icon><Papicons name="qrcode" /></Icon>
             </List.Leading>
             <Typography variant='title'>{t("ONBOARDING_PRONOTE_LOGIN_QRCODE")}</Typography>
-            <Typography variant='body1' color="textSecondary">
+            <Typography variant='body' color="textSecondary">
               {t("ONBOARDING_PRONOTE_LOGIN_QRCODE_DESCRIPTION")}
             </Typography>
           </List.Item>
         )}
 
         {cities.length === 0 && !loading && (
-          <List.Item animated onPress={() => navigateTo("url")}>
+          <List.Item animated onPress={() => navigation.navigate("url")}>
             <List.Leading>
               <Icon><Papicons name="link" /></Icon>
             </List.Leading>
@@ -183,14 +173,6 @@ export default function PronoteLoginMethod() {
             </List.Trailing>
           </List.Item>
         ))}
-
-        <List.Item animated onPress={() => navigateTo("uai") }>
-          <List.Leading>
-            <Icon><Papicons name="Search" /></Icon>
-          </List.Leading>
-          <Typography variant="title">Rechercher par code UAI</Typography>
-          <Typography variant="body1" color="textSecondary">Trouver ton établissement avec son identifiant officiel.</Typography>
-        </List.Item>
       </List>
     </KeyboardAvoidingView>
   )

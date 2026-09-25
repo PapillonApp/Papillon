@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Pressable, TextInput, Keyboard, View, FlatList } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LottieView from "@/components/lottie/LottieView";
+import LottieView from 'lottie-react-native';
 
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
@@ -259,8 +259,12 @@ export default function TurboSelfSelectHost() {
                 })
 
                 store.setLastUsedAccount(accountId)
-                router.dismissAll();
-                return router.push("/");
+                return router.push({
+                  pathname: "../end/color",
+                  params: {
+                    accountId
+                  }
+                });
               }}>
                 <Stack
                   hAlign="center"

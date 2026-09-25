@@ -112,7 +112,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             justifyContent: 'center',
           }}
         >
-          {showAndroidBackButton && (Platform.OS === 'android' || Platform.OS === 'web') && (
+          {showAndroidBackButton && Platform.OS === 'android' && (
             <View style={{
               marginTop: -2,
             }}>

@@ -90,7 +90,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteHomeworks(this.session, this.accountId, weekNumber);
     }
 
-    throw error("Session is not valid", "Pronote.getHomeworks");
+    error("Session is not valid", "Pronote.getHomeworks");
   }
 
   async getNews(): Promise<News[]> {
@@ -100,7 +100,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteNews(this.session, this.accountId);
     }
 
-    throw error("Session is not valid", "Pronote.getNews");
+    error("Session is not valid", "Pronote.getNews");
   }
 
   async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
@@ -110,7 +110,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteGrades(this.session, this.accountId, period);
     }
 
-    throw error("Session is not valid", "Pronote.getGradesForPeriod");
+    error("Session is not valid", "Pronote.getGradesForPeriod");
   }
 
   async getGradesPeriods(): Promise<Period[]> {
@@ -120,7 +120,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteGradePeriods(this.session, this.accountId);
     }
 
-    throw error("Session is not valid", "Pronote.getGradesPeriods");
+    error("Session is not valid", "Pronote.getGradesPeriods");
   }
 
   async getAttendanceForPeriod(period: string): Promise<Attendance> {
@@ -130,7 +130,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteAttendance(this.session, this.accountId, period);
     }
 
-    throw error("Session is not valid", "Pronote.getAttendanceForPeriod");
+    error("Session is not valid", "Pronote.getAttendanceForPeriod");
   }
 
   async getAttendancePeriods(): Promise<Period[]> {
@@ -140,7 +140,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteAttendancePeriods(this.session, this.accountId);
     }
 
-    throw error("Session is not valid", "Pronote.getAttendancePeriods");
+    error("Session is not valid", "Pronote.getAttendancePeriods");
   }
 
   async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
@@ -150,7 +150,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteCanteenMenu(this.session, this.accountId, startDate);
     }
 
-    throw error("Session is not valid", "Pronote.getWeeklyCanteenMenu");
+    error("Session is not valid", "Pronote.getWeeklyCanteenMenu");
   }
 
   async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
@@ -160,7 +160,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteWeekTimetable(this.session, this.accountId, weekNumber, date);
     }
 
-    throw error("Session is not valid", "Pronote.getWeeklyTimetable");
+    error("Session is not valid", "Pronote.getWeeklyTimetable");
   }
 
   async getCourseResources(course: Course): Promise<CourseResource[]> {
@@ -170,7 +170,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteCourseResources(this.session, course);
     }
 
-    throw error("Session is not valid", "Pronote.getWeeklyTimetable");
+    error("Session is not valid", "Pronote.getWeeklyTimetable");
   }
 
   async getChats(): Promise<Chat[]> {
@@ -180,7 +180,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteChats(this.session, this.accountId);
     }
 
-    throw error("Session is not valid", "Pronote.getChats");
+    error("Session is not valid", "Pronote.getChats");
   }
 
   async getChatRecipients(chat: Chat): Promise<Recipient[]> {
@@ -190,7 +190,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteChatRecipients(this.session, chat);
     }
 
-    throw error("Session is not valid", "Pronote.getChatRecipients");
+    error("Session is not valid", "Pronote.getChatRecipients");
   }
 
   async getChatMessages(chat: Chat): Promise<Message[]> {
@@ -200,7 +200,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteChatMessages(this.session, this.accountId, chat);
     }
 
-    throw error("Session is not valid", "Pronote.getChatMessages");
+    error("Session is not valid", "Pronote.getChatMessages");
   }
 
   async getRecipientsAvailableForNewChat(): Promise<Recipient[]> {
@@ -210,7 +210,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteRecipients(this.session);
     }
 
-    throw error("Session is not valid", "Pronote.getRecipientsAvailableForNewChat");
+    error("Session is not valid", "Pronote.getRecipientsAvailableForNewChat");
   }
 
   async sendMessageInChat(chat: Chat, content: string): Promise<void> {
@@ -218,10 +218,9 @@ export class Pronote implements SchoolServicePlugin {
 
     if (this.session) {
       await sendPronoteMessageInChat(this.session, chat, content);
-      return;
     }
 
-    throw error("Session is not valid", "Pronote.sendMessageInChat");
+    error("Session is not valid", "Pronote.sendMessageInChat");
   }
 
   async setNewsAsAcknowledged(news: News): Promise<News> {
@@ -231,7 +230,7 @@ export class Pronote implements SchoolServicePlugin {
       return setPronoteNewsAsAcknowledged(this.session, news);
     }
 
-    throw error("Session is not valid", "Pronote.setNewsAsAcknowledged");
+    error("Session is not valid", "Pronote.setNewsAsAcknowledged");
   }
 
   async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
@@ -240,7 +239,7 @@ export class Pronote implements SchoolServicePlugin {
     if (this.session) {
       return setPronoteHomeworkAsDone(this.session, homework, state)
     }
-    throw error("Session is not valid", "Pronote.setHomeworkCompletion")
+    error("Session is not valid", "Pronote.setHomeworkCompletion")
   }
 
   async createMail(subject: string, content: string, recipients: Recipient[]): Promise<Chat> {
@@ -250,6 +249,6 @@ export class Pronote implements SchoolServicePlugin {
       return createPronoteMail(this.session, this.accountId, subject, content, recipients)
     }
 
-    throw error("Session is not valid", "Skolengo.createMail")
+    error("Session is not valid", "Skolengo.createMail")
   }
 }

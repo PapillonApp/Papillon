@@ -2,6 +2,7 @@
 import { useTheme } from "expo-router/react-navigation";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { login, tokenize } from "ezly";
+import LottieView from "lottie-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {

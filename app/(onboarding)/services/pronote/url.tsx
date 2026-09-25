@@ -21,14 +21,11 @@ const PronoteSearchHeader = memo(({
   const [url, setUrl] = React.useState("");
 
   const submitURL = () => {
-    const normalizedURL = url.trim();
-    if (normalizedURL.length === 0) {return;}
-    (navigation as unknown as {
-      navigate: (routeName: string, params: { url: string }) => void;
-    }).navigate("browser", { url: normalizedURL });
+    if (url.trim().length === 0) {return;}
+    navigation.navigate("browser", { url });
   };
 
-  const urlValid = /^https?:\/\//i.test(url.trim());
+  const urlValid = url.trim().length > 0 && (url.startsWith("http://") || url.startsWith("https://"));
 
   return (
     <Stack padding={[4, 0]}>
@@ -52,7 +49,7 @@ export default function PronoteLoginURL() {
   const safePadding = useSafeHorizontalPadding(16);
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.background }} behavior="padding" keyboardVerticalOffset={20}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior="padding" keyboardVerticalOffset={20}>
       <List
         ListHeaderComponent={<PronoteSearchHeader />}
         contentContainerStyle={{
@@ -66,7 +63,6 @@ export default function PronoteLoginURL() {
         style={{ flex: 1 }}
         animated
       >
-        <></>
       </List>
     </KeyboardAvoidingView>
   )

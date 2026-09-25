@@ -6,11 +6,6 @@ import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
 import { useNews } from '@/database/useNews';
-import { useSettingsStore } from '@/stores/settings';
-import { showSystemNotification } from '@/utils/notifications';
-import { isTauriDesktop } from '@/utils/network/fetch';
-
-const EMPTY_NOTIFICATION_IDS: string[] = [];
 
 export const useHomeHeaderData = () => {
   const accounts = useAccountStore((state) => state.accounts);
@@ -34,33 +29,6 @@ export const useHomeHeaderData = () => {
   const attendancesPeriodsRef = useRef<Period[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const news = useNews();
-  const notificationPreferences = useSettingsStore(state => state.personalization.notificationPreferences);
-  const seenNewsIds = useSettingsStore(state => state.personalization.notificationSeenNewsIds ?? EMPTY_NOTIFICATION_IDS);
-  const mutateSettings = useSettingsStore(state => state.mutateProperty);
-
-  useEffect(() => {
-    if (isTauriDesktop()) return;
-    if (news.length === 0) return;
-    const ids = news.map(item => item.id);
-    if (seenNewsIds.length === 0) {
-      mutateSettings('personalization', { notificationSeenNewsIds: ids.slice(-500) });
-      return;
-    }
-    const known = new Set(seenNewsIds);
-    const unseen = news.filter(item => !known.has(item.id));
-    if (notificationPreferences?.enabled && notificationPreferences.news) {
-      for (const item of unseen.slice(-3)) {
-        void showSystemNotification('news', {
-          id: `news-${item.id}`,
-          title: item.title || 'Nouvelle actualité',
-          body: item.author ? `Par ${item.author}` : 'Une nouvelle actualité est disponible.',
-        });
-      }
-    }
-    if (unseen.length > 0) {
-      mutateSettings('personalization', { notificationSeenNewsIds: [...seenNewsIds, ...unseen.map(item => item.id)].slice(-500) });
-    }
-  }, [news, seenNewsIds, notificationPreferences?.enabled, notificationPreferences?.news, mutateSettings]);
 
   const absencesCount = useMemo(() => {
     if (!attendances) return 0;

@@ -1,10 +1,10 @@
 import MaskedView from '@react-native-masked-view/masked-view';
+import { File, Paths } from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 
 import { useSettingsStore } from '@/stores/settings';
-import { getWallpaperUri } from '@/utils/wallpaperStorage';
 
 const Wallpaper = ({ height = 400, dim = true }) => {
   try {
@@ -14,7 +14,17 @@ const Wallpaper = ({ height = 400, dim = true }) => {
     const [image, setImage] = useState<string | null>(null);
 
     useEffect(() => {
-      setImage(getWallpaperUri(currentWallpaper));
+      if (currentWallpaper?.path?.name) {
+        const file = new File(Paths.document, currentWallpaper.path.directory || '', currentWallpaper.path.name);
+        if (file.exists) {
+          setImage(file.uri);
+        } else {
+          setImage(null);
+        }
+      }
+      else {
+        setImage(null);
+      }
     }, [currentWallpaper]);
 
     return (

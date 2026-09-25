@@ -19,11 +19,11 @@ export async function fetchPronoteChats(
   accountId: string
 ): Promise<Chat[]> {
   if (!session) {
-    throw error("Session is undefined", "fetchPronoteChats");
+    error("Session is undefined", "fetchPronoteChats");
   }
 
   const chats = await discussions(session);
-  return (Array.isArray(chats?.items) ? chats.items : []).map(chat => ({
+  return chats.items.map(chat => ({
     id: chat.participantsMessageID,
     subject: chat.subject,
     creator: chat.creator,
@@ -39,24 +39,24 @@ export async function fetchPronoteChatRecipients(
   chat: Chat
 ): Promise<Recipient[]> {
   if (!session) {
-    throw error("Session is undefined", "fetchPronoteChatRecipients");
+    error("Session is undefined", "fetchPronoteChatRecipients");
   }
 
   const chatTab = session.user.resources[0].tabs.get(TabLocation.Discussions);
   if (!chatTab) {
-    throw error("Chat tab not found in session", "fetchPronoteChatRecipients");
+    error("Chat tab not found in session", "fetchPronoteChatRecipients");
   }
 
   if (!chat.ref) {
-    throw error("Chat reference is undefined", "fetchPronoteChatRecipients");
+    error("Chat reference is undefined", "fetchPronoteChatRecipients");
   }
 
   if (!('participantsMessageID' in chat.ref)) {
-    throw error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
+    error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
   }
 
   const recipients = await discussionRecipients(session, chat.ref);
-  return (Array.isArray(recipients) ? recipients : []).map((recipient) => {
+  return recipients.map((recipient) => {
     const [namePart, classPart] = recipient.name.split("(");
 
     return {
@@ -73,33 +73,33 @@ export async function fetchPronoteChatMessages(
   chat: Chat
 ): Promise<Message[]> {
   if (!session) {
-    throw error("Session is undefined", "fetchPronoteChatMessages");
+    error("Session is undefined", "fetchPronoteChatMessages");
   }
 
   const chatTab = session.user.resources[0].tabs.get(TabLocation.Discussions);
   if (!chatTab) {
-    throw error("Chat tab not found in session", "fetchPronoteChatMessages");
+    error("Chat tab not found in session", "fetchPronoteChatMessages");
   }
 
   if (!chat.ref) {
-    throw error("Chat reference is undefined", "fetchPronoteChatMessages");
+    error("Chat reference is undefined", "fetchPronoteChatMessages");
   }
 
   if (!('participantsMessageID' in chat.ref)) {
-    throw error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
+    error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
   }
 
   const messages = await discussionMessages(session, chat.ref, true)
   const studentName = session.user.resources[0].name;
 
-  return (Array.isArray(messages?.sents) ? messages.sents : []).map((message) => {
+  return messages.sents.map((message) => {
     return {
       id: message.id,
       subject: "",
       content: message.content,
       author: message.author?.name ?? studentName,
       date: message.creationDate,
-      attachments: (message.files ?? []).map((attachment) => ({
+      attachments: message.files.map((attachment) => ({
         type: attachment.kind,
         name: attachment.name,
         url: attachment.url,
@@ -115,20 +115,20 @@ export async function sendPronoteMessageInChat(
   content: string
 ): Promise<void> {
   if (!session) {
-    throw error("Session is undefined", "fetchPronoteChatMessages");
+    error("Session is undefined", "fetchPronoteChatMessages");
   }
 
   const chatTab = session.user.resources[0].tabs.get(TabLocation.Discussions);
   if (!chatTab) {
-    throw error("Chat tab not found in session", "fetchPronoteChatMessages");
+    error("Chat tab not found in session", "fetchPronoteChatMessages");
   }
 
   if (!chat.ref) {
-    throw error("Chat reference is undefined", "fetchPronoteChatMessages");
+    error("Chat reference is undefined", "fetchPronoteChatMessages");
   }
 
   if (!('participantsMessageID' in chat.ref)) {
-    throw error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
+    error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
   }
 
   await discussionSendMessage(session, chat.ref, content)
@@ -138,21 +138,24 @@ export async function fetchPronoteRecipients(
   session: SessionHandle,
 ): Promise<Recipient[]> {
   if (!session) {
-    throw error("Session is undefined", "fetchPronoteChatMessages");
+    error("Session is undefined", "fetchPronoteChatMessages");
   }
 
   const chatTab = session.user.resources[0].tabs.get(TabLocation.Discussions);
   if (!chatTab) {
-    throw error("Chat tab not found in session", "fetchPronoteChatMessages");
+    error("Chat tab not found in session", "fetchPronoteChatMessages");
   }
 
-  const recipientGroups = await Promise.all(
-    [EntityKind.Teacher, EntityKind.Personal].map(kind =>
-      newDiscussionRecipients(session, kind)
+  const alLRecipients = await Promise.all(
+    session.user.resources.flatMap(() =>
+      [
+        EntityKind.Teacher,
+        EntityKind.Personal
+      ].map(kind => newDiscussionRecipients(session, kind))
     )
   );
 
-  const recipients = recipientGroups.flatMap(group => Array.isArray(group) ? group : []);
+  const recipients = alLRecipients.flat();
 
   return recipients.map((recipient) => {
     const [namePart, classPart] = recipient.name.split("(");

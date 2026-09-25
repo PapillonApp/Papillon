@@ -1,5 +1,5 @@
 import { useFocusEffect } from "expo-router";
-import LottieView from "@/components/lottie/LottieView";
+import LottieView from "lottie-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, ListRenderItemInfo } from "react-native";

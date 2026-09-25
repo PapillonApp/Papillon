@@ -17,14 +17,14 @@ import { error } from "@/utils/logger/logger";
 export async function fetchPronoteNews(session: SessionHandle, accountId: string): Promise<News[]> {
   const result: News[] = [];
 
-  const response = await PawnoteNews(session) as unknown as { items?: unknown };
-  const news = Array.isArray(response?.items) ? response.items as NewsInformation[] : [];
+  const response = await PawnoteNews(session) as unknown as { items: NewsInformation[] };
+  const news = response.items;
   for (const item of news) {
     result.push({
       id: item.id,
       title: item.title,
       createdAt: item.creationDate,
-      acknowledged: item.acknowledged,
+      acknowledged: item.read,
       attachments: (item.attachments ?? []).map((attachment) => ({
         type: attachment.kind,
         name: attachment.name,
@@ -33,10 +33,10 @@ export async function fetchPronoteNews(session: SessionHandle, accountId: string
       })),
       content: item.content,
       author: item.author,
-      category: item.category?.name ?? "",
+      category: item.category.name,
       ref: item,
       createdByAccount: accountId,
-      question: Boolean(item.question)
+      question: item.question
     });
   }
   return result;

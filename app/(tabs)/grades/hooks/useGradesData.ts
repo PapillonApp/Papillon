@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useManagerSubscription } from "@/hooks/useManagerSubscription";
-import { useSettingsStore } from "@/stores/settings";
-import { showSystemNotification } from "@/utils/notifications";
-import { isTauriDesktop } from "@/utils/network/fetch";
 import type { AccountManager } from "@/services/shared";
 import { getManager } from "@/services/shared";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
@@ -15,8 +12,6 @@ import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonGradesAveragesOverTime from "@/utils/grades/algorithms/time";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { warn } from "@/utils/logger/logger";
-
-const EMPTY_NOTIFICATION_IDS: string[] = [];
 
 /** Average calculation methods available to build a "how did it evolve" history. */
 export type AverageMethodKey = "subject" | "weighted" | "median";
@@ -106,9 +101,6 @@ export function useGradesData(
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [failures, setFailures] = useState<ServiceFailure[]>([]);
-  const notificationPreferences = useSettingsStore(state => state.personalization.notificationPreferences);
-  const seenGradeIds = useSettingsStore(state => state.personalization.notificationSeenGradeIds ?? EMPTY_NOTIFICATION_IDS);
-  const mutateSettings = useSettingsStore(state => state.mutateProperty);
 
   // Avoids re-fetching a period that's already been loaded once.
   const cacheRef = useRef<Map<string, PeriodGrades>>(new Map());
@@ -215,31 +207,6 @@ export function useGradesData(
   }, [fetchGrades, period]);
 
   const grades = useMemo(() => sortGradesByDateDesc(subjects.flatMap(s => s.grades ?? [])), [subjects]);
-
-  useEffect(() => {
-    if (isTauriDesktop()) return;
-    if (!period || loading || grades.length === 0) return;
-    const periodKey = period.id ?? period.name;
-    const ids = grades.map(grade => `${periodKey}:${grade.subjectId}:${grade.id}`);
-    if (seenGradeIds.length === 0) {
-      mutateSettings("personalization", { notificationSeenGradeIds: ids.slice(-500) });
-      return;
-    }
-    const known = new Set(seenGradeIds);
-    const newGrades = grades.filter(grade => !known.has(`${periodKey}:${grade.subjectId}:${grade.id}`));
-    if (notificationPreferences?.enabled && notificationPreferences.grades && newGrades.length > 0) {
-      const subjects = Array.from(new Set(newGrades.map(grade => grade.subjectName))).slice(0, 3).join(", ");
-      void showSystemNotification("grades", {
-        id: `new-grades-${newGrades.map(grade => `${grade.subjectId}-${grade.id}`).sort().join("-")}`,
-        title: newGrades.length === 1 ? "Nouvelle note" : "Nouvelles notes",
-        body: subjects || `${newGrades.length} nouvelle${newGrades.length > 1 ? "s" : ""} note${newGrades.length > 1 ? "s" : ""} a été ajoutée${newGrades.length > 1 ? "s" : ""}.`,
-      });
-    }
-    const nextIds = [...new Set([...seenGradeIds, ...ids])].slice(-500);
-    if (nextIds.length !== seenGradeIds.length || ids.some(id => !known.has(id))) {
-      mutateSettings("personalization", { notificationSeenGradeIds: nextIds });
-    }
-  }, [period, loading, grades, seenGradeIds, notificationPreferences?.enabled, notificationPreferences?.grades, mutateSettings]);
 
   const getSubjectById = useCallback(
     (id: string) => subjects.find(subject => subject.id === id),

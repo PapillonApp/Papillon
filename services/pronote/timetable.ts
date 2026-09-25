@@ -20,7 +20,7 @@ export async function fetchPronoteWeekTimetable(
   date: Date
 ): Promise<CourseDay[]> {
   if (!session) {
-    throw error("Session is undefined", "fetchPronoteTimetable");
+    error("Session is undefined", "fetchPronoteTimetable");
   }
 
   const weekNumber = translateToWeekNumber(date, session.instance.firstMonday);
@@ -32,7 +32,7 @@ export async function fetchPronoteWeekTimetable(
     withPlannedClasses: true,
   });
 
-  const mappedCourses = mapCourses(accountId, Array.isArray(timetable.classes) ? timetable.classes : []);
+  const mappedCourses = mapCourses(accountId, timetable.classes);
   const dayMap: Record<string, Course[]> = {};
 
   for (const course of mappedCourses) {
@@ -71,12 +71,12 @@ const mapCourses = (
     }
     if (c.is === "lesson") {
       courseList.push({
-        subject: c.subject?.name ?? "Cours",
+        subject: c.subject!.name,
         id: c.id,
         type: CourseType.LESSON,
-        room: Array.isArray(c.classrooms) ? c.classrooms.join(", ") : "",
-        teacher: Array.isArray(c.teacherNames) ? c.teacherNames.join(", ") : "",
-        group: Array.isArray(c.groupNames) ? c.groupNames.join(", ") : "",
+        room: c.classrooms.join(", "),
+        teacher: c.teacherNames.join(", "),
+        group: c.groupNames.join(", "),
         status: mapCourseStatus(c),
         customStatus: c.status,
         resourceId: c.lessonResourceID,
@@ -87,7 +87,7 @@ const mapCourses = (
         id: c.id,
         type: CourseType.DETENTION,
         subject: c.title ?? "Detention",
-        room: Array.isArray(c.classrooms) ? c.classrooms.join(", ") : "",
+        room: c.classrooms.join(", "),
         ...baseCourse
       });
     } else if (c.is === "activity") {
@@ -108,32 +108,31 @@ export async function fetchPronoteCourseResources(
   course: Course
 ): Promise<CourseResource[]> {
   if (!session) {
-    throw error("Session is undefined", "fetchPronoteCourseResources");
+    error("Session is undefined", "fetchPronoteCourseResources");
   }
 
   const timetableTab = session.user.resources[0].tabs.get(
     TabLocation.Timetable
   );
   if (!timetableTab) {
-    throw error("Timetable tab not found in session", "fetchPronoteCourseResources");
+    error("Timetable tab not found in session", "fetchPronoteCourseResources");
   }
 
   if (!course.resourceId) {
-    throw error("Course resource ID is undefined", "fetchPronoteCourseResources");
+    error("Course resource ID is undefined", "fetchPronoteCourseResources");
   }
 
-  const response = await resource(session, course.resourceId!);
-  const resources = Array.isArray(response?.contents) ? response.contents : [];
+  const resources = (await resource(session, course.resourceId!)).contents;
 
   return resources.map(r => ({
     title: r.title,
     description: r.description,
     category: r.category,
-    attachments: (Array.isArray(r.files) ? r.files : []).map(a => ({
+    attachments: r.files.map(a => ({
       type: a.kind,
       name: a.name,
       url: a.url,
-      createdByAccount: course.createdByAccount
+      createdByAccount: session.user.resources[0].id
     }))
   }))
 }

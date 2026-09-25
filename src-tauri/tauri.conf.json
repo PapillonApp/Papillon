@@ -1,29 +1,38 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Scola",
-  "version": "1.0.0",
-  "identifier": "bzh.papillon.scola",
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Papillon",
+  "version": "0.1.0",
+  "identifier": "xyz.getpapillon.desktop",
   "build": {
-    "frontendDist": "../dist"
+    "frontendDist": "../dist",
+    "beforeBuildCommand": "npm run export:web",
+    "devUrl": "http://localhost:8081",
+    "beforeDevCommand": "npm run web"
   },
   "app": {
     "windows": [
       {
-        "title": "Scola",
-        "width": 1300,
-        "height": 860,
-        "minWidth": 980,
-        "minHeight": 640,
-        "visible": false
+        "title": "Papillon",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "dragDropEnabled": false
       }
     ],
     "security": {
       "csp": null
-    }
+    },
+    "withGlobalTauri": true
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "createUpdaterArtifacts": false,
+    "targets": [
+      "nsis"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -33,9 +42,15 @@
     "windows": {
       "nsis": {
         "installMode": "currentUser",
-        "installerIcon": "icons/icon.ico",
-        "headerImage": "icons/installerHeader.bmp",
-        "sidebarImage": "icons/installerSidebar.bmp"
+        "languages": [
+          "French",
+          "English"
+        ],
+        "displayLanguageSelector": false
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
       }
     }
   }

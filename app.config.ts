@@ -100,13 +100,16 @@ export default {
     },
     web: {
       bundler: "metro",
-      // "single": plain client-rendered SPA bundle, no Node-side static
-      // pre-rendering pass. Desktop (Electron) doesn't need per-route SSR/SEO,
-      // and several native-only libraries (native tab bar, WatermelonDB, the
-      // Magic model) only break when evaluated in that Node pre-render step —
-      // not in an actual browser. Real web hosting can still opt back into
-      // "static" later once/if those are individually made SSR-safe.
-      output: process.env.PAPILLON_TARGET === "electron" ? "single" : "static",
+      // Build desktop (Tauri) : l'app est chargée une seule fois depuis un
+      // fichier local puis routée entièrement côté client — pas besoin (et
+      // pas de sens) de pré-rendre 136 routes en autant de pages HTML
+      // statiques comme le ferait "static" (pensé pour un site public
+      // crawlable/servi route par route). "single" produit un vrai bundle
+      // SPA classique : plus rapide à builder, et ça évite complètement
+      // l'étape de rendu statique par route (c'est elle qui plantait avec
+      // "this.validatePath is not a function" pendant la génération du
+      // manifest de routes — non reproduit avec ce mode).
+      output: "single",
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
@@ -115,7 +118,6 @@ export default {
       "expo-status-bar",
       "expo-font",
       "expo-video",
-      "expo-notifications",
       [
         "expo-audio",
         {

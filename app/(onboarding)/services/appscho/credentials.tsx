@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import LottieView from "@/components/lottie/LottieView";
+import LottieView from "lottie-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -128,8 +128,12 @@ export default function AppSchoCredentials() {
 
       store.setLastUsedAccount(id);
 
-      router.dismissAll();
-      return router.push("/");
+      return router.push({
+        pathname: "/(onboarding)/end/color",
+        params: {
+          accountId: id,
+        },
+      });
     } catch (error) {
       alert.showAlert({
         title: t("Alert_Auth_Error"),

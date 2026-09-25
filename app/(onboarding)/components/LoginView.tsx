@@ -136,7 +136,7 @@ export default function LoginView({
         )}
       </View>
 
-      <Typography variant="body1" align="center" color="textSecondary">
+      <Typography variant="body" align="center" color="textSecondary">
         {t("ONBOARDING_LOGIN_TO_SERVICE")}
       </Typography>
 

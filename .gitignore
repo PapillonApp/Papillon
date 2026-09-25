@@ -60,9 +60,3 @@ secrets.json
 .claude/
 .codex/
 graphify-out/
-
-# Electron (Scola desktop)
-electron/node_modules/
-electron/release/
-electron/real-keys.json
-

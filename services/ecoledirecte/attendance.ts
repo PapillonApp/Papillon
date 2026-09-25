@@ -6,7 +6,6 @@ import { Absence, Attendance, Delay, Punishment } from "../shared/attendance";
 import { Period } from "../shared/grade";
 import { durationToMinutes } from "../skolengo/attendance";
 import { fetchEDGradePeriods } from "./grades";
-import { requireResponseArray } from "./response";
 
 const FRENCH_MONTHS: Record<string, number> = {
   janvier: 0,
@@ -29,14 +28,8 @@ export async function fetchEDAttendance(session: Client, accountId: string, peri
     const selectedPeriod = periodName
       ? await getSelectedPeriod(session, accountId, periodName)
       : undefined;
-    const schoolLifeItems = filterAttendanceItemsByPeriod(
-      requireResponseArray<SchoolLifeAttendanceItem>(attendance, ["absencesRetards", "data", "result"], "EcoleDirecte attendance"),
-      selectedPeriod
-    );
-    const conductItems = filterConductItemsByPeriod(
-      requireResponseArray<SchoolLifeConductItem>(attendance, ["sanctionsEncouragements", "data", "result"], "EcoleDirecte conduct records"),
-      selectedPeriod
-    );
+    const schoolLifeItems = filterAttendanceItemsByPeriod(attendance.absencesRetards, selectedPeriod);
+    const conductItems = filterConductItemsByPeriod(attendance.sanctionsEncouragements, selectedPeriod);
 
     return {
       absences: mapEcoleDirecteAbsences(schoolLifeItems, accountId),
@@ -47,14 +40,20 @@ export async function fetchEDAttendance(session: Client, accountId: string, peri
     };
   } catch (error) {
     warn(String(error));
-    throw error;
+    return {
+      absences: [],
+      punishments: [],
+      delays: [],
+      observations: [],
+      createdByAccount: accountId
+    };
   }
 }
 
 export async function fetchEDAttendancePeriods(session: Client, accountId: string): Promise<Period[]> {
   const periods = await fetchEDGradePeriods(session, accountId);
 
-  return (Array.isArray(periods) ? periods : []).filter(period => {
+  return periods.filter(period => {
     const normalized = normalizeLabel(period.name);
     return normalized.length > 0
       && !normalized.startsWith("releve")

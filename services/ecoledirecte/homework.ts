@@ -2,13 +2,6 @@
 import { Client } from "@blockshub/blocksdirecte";
 
 import { Homework } from "../shared/homework";
-import { getResponseArray } from "./response";
-
-type EDHomeworkSubject = {
-  matiere?: string;
-  entityLibelle?: string;
-  aFaire?: { contenu?: string; effectue?: boolean; idDevoir?: number | string };
-};
 
 export async function fetchEDHomeworks(
   session: Client,
@@ -16,25 +9,21 @@ export async function fetchEDHomeworks(
   weekNumber: number
 ): Promise<Homework[]> {
   const weekdays = weekNumberToDaysList(weekNumber);
-  const homeworks: Homework[] = [];
+  const response: Homework[] = [];
   for (const date of weekdays) {
     const formattedDate = formatDate(date);
 
-    const dayResponse = await session.homework.getHomeworksForDate(formattedDate);
-    const matieres = getResponseArray<EDHomeworkSubject>(dayResponse, ["matieres", "subjects", "data", "result"]);
+    const { matieres } = await session.homework.getHomeworksForDate(formattedDate);
 
     for (const subject of matieres) {
       const homework = subject.aFaire
-      if (!homework || (homework.idDevoir === undefined && !homework.contenu?.trim())) continue;
-      homeworks.push({
+      response.push({
         attachments: [],
-        content: homework.contenu ?? "",
-        isDone: homework.effectue ?? false,
+        content: homework?.contenu ?? "",
+        isDone: homework?.effectue ?? false,
         dueDate: date,
-        id: homework.idDevoir === undefined
-          ? `${formattedDate}-${subject.matiere?.trim() || subject.entityLibelle?.trim() || "Autre"}`
-          : String(homework.idDevoir),
-        subject: subject.matiere?.trim() || subject.entityLibelle?.trim() || "Autre",
+        id: String(homework?.idDevoir),
+        subject: subject.matiere.length > 0 ? subject.matiere : subject.entityLibelle,
         evaluation: false,
         custom: false,
         createdByAccount: accountId
@@ -42,15 +31,12 @@ export async function fetchEDHomeworks(
     }
   }
 
-  return homeworks
+  return response
 }
 
 export async function setEDHomeworkAsDone(session: Client, homework: Homework, state?: boolean): Promise<Homework> {
   const finalState = state ?? !homework.isDone
   const homeworkId = Number(homework.id)
-  if (!Number.isFinite(homeworkId)) {
-    throw new Error("Ce devoir EcoleDirecte n’a pas d’identifiant valide.");
-  }
   
   if (finalState) {
     await session.homework.markHomeworkAsDone(homeworkId)

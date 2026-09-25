@@ -2,7 +2,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
 import React, { useEffect, useState } from "react";
-import { Alert, Platform } from "react-native";
+import { Alert } from "react-native";
 
 import SettingsHeader from "@/components/SettingsHeader";
 import packageJson from "@/package.json";
@@ -163,7 +163,7 @@ export default function SettingsMagic() {
             <Typography variant="title">Statut du modèle</Typography>
             <List.Trailing>
               <Typography color="textSecondary">
-                {modelStatus?.modelType === "Indisponible sur PC" ? "Mode règles local" : modelStatus?.hasModel ? "Chargé" : "Non chargé"}
+                {modelStatus?.hasModel ? "Chargé" : "Non chargé"}
               </Typography>
             </List.Trailing>
           </List.Item>
@@ -232,7 +232,7 @@ export default function SettingsMagic() {
 
       <List.View style={{ marginTop: 20 }}>
         <Typography variant="caption" color="textSecondary">
-          {Platform.OS === "web" ? "Sur PC, Magic+ utilise son moteur de règles local pour détecter les devoirs importants. Aucun modèle distant n'est utilisé." : t("Settings_MagicPlus_ExplanationLocal")}
+          {t("Settings_MagicPlus_ExplanationLocal")}
         </Typography>
       </List.View>
     </List>

@@ -26,27 +26,6 @@ const defaultPersonalization: Personalization = {
   magicModelURL: MAGIC_URL,
   gradesDisplayScale: "20",
   welcomeModalSeen: false,
-  desktopTabBarPosition: "bottom",
-  customHomeworkSubjects: [],
-  customHomeworks: [],
-  notificationPreferences: {
-    enabled: false,
-    courses: true,
-    homework: true,
-    grades: false,
-    news: false,
-    dailyTime: "18:00",
-    courseLeadMinutes: 15,
-    serviceOverrides: {},
-    pauseUntil: null,
-    pauseIndefinitely: false,
-  },
-  notificationSeenServiceItemKeys: {},
-  notificationSeenGradeIds: [],
-  notificationSeenNewsIds: [],
-  pendingNotificationSchedules: [],
-  desktopStartWithWindows: false,
-  desktopBackgroundOnClose: false,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(

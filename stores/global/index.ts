@@ -1,5 +1,5 @@
-import { createMMKV } from 'react-native-mmkv'
 import { Platform } from 'react-native'
+import { createMMKV } from 'react-native-mmkv'
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { PersistStorage } from 'zustand/middleware'
 
@@ -11,10 +11,13 @@ classRegistry.set('Skolengo', SkolengoSession);
 export const createMMKVStorage = <T>(id: string, encryptionKey?: string): PersistStorage<T> => {
   const mmkv = createMMKV({
     id: id,
-    // react-native-mmkv's web build (backed by localStorage) throws if
-    // `encryptionKey` is present at all, even set to undefined explicitly
-    // wouldn't help — it has to be entirely absent from the config object.
-    // There is no at-rest encryption on web/Electron either way.
+    // react-native-mmkv ne supporte pas le chiffrement sur le web (son
+    // implémentation web repose sur localStorage) : passer une
+    // encryptionKey y lève une exception ("'encryptionKey' is not
+    // supported on Web!"). On ne l'applique donc que sur iOS/Android — la
+    // clé étant de toute façon codée en dur dans le bundle JS, ce n'est
+    // qu'une protection légère contre la lecture directe du fichier, pas
+    // un vrai chiffrement à clé secrète.
     ...(Platform.OS !== 'web' && encryptionKey ? { encryptionKey } : {}),
   });
 

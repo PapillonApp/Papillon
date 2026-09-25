@@ -5,7 +5,6 @@ import { Attachment } from "@/services/shared/attachment";
 import { Homework as SharedHomework } from "@/services/shared/homework";
 import { generateId } from "@/utils/generateId";
 import { warn } from "@/utils/logger/logger";
-import { useSettingsStore } from "@/stores/settings";
 
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import Homework from "./models/Homework";
@@ -38,26 +37,6 @@ export function getHomeworkRouteId(homework: SharedHomework): string {
 }
 
 export async function getHomeworkById(id: string): Promise<SharedHomework | undefined> {
-  const customHomework = (useSettingsStore.getState().personalization.customHomeworks ?? []).find(item => {
-    const dueDate = new Date(item.dueDate);
-    return generateId(item.subject + item.content + item.createdByAccount + dueDate.toDateString()) === id;
-  });
-  if (customHomework) {
-    const reminderAt = customHomework.reminderAt ? new Date(customHomework.reminderAt) : undefined;
-    return {
-      id: customHomework.id,
-      subject: customHomework.subject,
-      content: customHomework.content,
-      dueDate: new Date(customHomework.dueDate),
-      isDone: customHomework.isDone,
-      attachments: [],
-      evaluation: false,
-      custom: true,
-      createdByAccount: customHomework.createdByAccount,
-      reminderAt: reminderAt && Number.isFinite(reminderAt.getTime()) ? reminderAt : undefined,
-    };
-  }
-
   const database = getDatabaseInstance();
   const records = await database
     .get<Homework>("homework")

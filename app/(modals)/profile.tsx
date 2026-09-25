@@ -3,7 +3,7 @@ import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import * as ImagePicker from "expo-image-picker"
 import { router } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -35,7 +35,6 @@ export default function CustomProfileScreen() {
   const [firstName, setFirstName] = useState<string>(account?.firstName ?? "");
   const [lastName, setLastName] = useState<string>(account?.lastName ?? "");
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(account?.customisation?.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : null);
-  const profileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (account) {
@@ -48,50 +47,26 @@ export default function CustomProfileScreen() {
   const insets = useSafeAreaInsets()
 
   const updateProfilePictureFromLibrary = async () => {
-    if (Platform.OS === "web") {
-      profileInputRef.current?.click();
-      return;
-    }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.9,
+      aspect: [4, 3],
+      quality: 1,
       base64: true
     });
 
     if (!result.canceled) {
       const b64 = result.assets[0].base64 ?? "";
-      setProfilePictureUrl(b64 ? `data:image/png;base64,${b64}` : null);
       store.setAccountProfilePicture(lastUsedAccount, b64);
     }
   }
 
-  const handleWebProfileFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-    const file = input.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = typeof reader.result === "string" ? reader.result : "";
-      const b64 = dataUrl.split(",", 2)[1] ?? "";
-      if (!b64) return;
-      setProfilePictureUrl(dataUrl);
-      store.setAccountProfilePicture(lastUsedAccount, b64);
-      input.value = "";
-    };
-    reader.readAsDataURL(file);
-  };
-
   const updateProfilePictureFromService = async () => {
-    const servicePicture = account?.customisation?.serviceProfilePicture;
-    if (!servicePicture) {
-      Alert.alert("Photo du service", "Aucune photo de profil n'a été fournie par le service scolaire.");
-      return;
-    }
-    setProfilePictureUrl(`data:image/png;base64,${servicePicture}`);
-    store.setAccountProfilePicture(lastUsedAccount, servicePicture);
+    Alert.alert(
+      t("Feature_Soon"),
+      "Cette fonctionnalité n'est pas encore disponible, mais elle le sera dans une prochaine mise à jour.",
+      [{ text: "OK" }]
+    );
   }
 
   const { colors } = useTheme();
@@ -114,24 +89,7 @@ export default function CustomProfileScreen() {
             imageUrl={profilePictureUrl || undefined}
           />
 
-          {Platform.OS === "web" && (
-            <input
-              ref={profileInputRef as any}
-              type="file"
-              accept="image/*"
-              onChange={handleWebProfileFile}
-              style={{ display: "none" }}
-            />
-          )}
-
-          {Platform.OS === "web" ? (
-            <View style={{ gap: 8, alignItems: "center", width: "100%" }}>
-              <Button inline size="small" icon={<Papicons name="Camera" />} title={t("Button_Change_ProfilePicture")} onPress={updateProfilePictureFromLibrary} />
-              {!!account?.customisation?.serviceProfilePicture && (
-                <Button inline size="small" variant="ghost" title="Utiliser la photo du service" onPress={updateProfilePictureFromService} />
-              )}
-            </View>
-          ) : <ActionMenu
+          <ActionMenu
             actions={[
               {
                 id: 'photo_library',
@@ -185,7 +143,7 @@ export default function CustomProfileScreen() {
               icon={<Papicons name="Camera" />}
               title={t("Button_Change_ProfilePicture")}
             />
-          </ActionMenu>}
+          </ActionMenu>
         </View>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>

@@ -43,7 +43,6 @@ import {
   Booking,
   BookingDay,
   CanteenHistoryItem,
-  CanteenKind,
   CanteenMenu,
   QRCode,
 } from "@/services/shared/canteen";
@@ -248,18 +247,14 @@ export class AccountManager {
   ): Promise<PeriodGrades> {
     return await this.fetchData(
       Capabilities.GRADES,
-      async client => {
-        if (!client.getGradesForPeriod) throw error("Bad Implementation");
-        return await client.getGradesForPeriod(period, kid);
-      },
+      async client =>
+        client.getGradesForPeriod
+          ? await client.getGradesForPeriod(period, kid)
+          : error("Bad Implementation"),
       {
         multiple: false,
         clientId,
-        fallback: async () => {
-          const cached = await getGradePeriodsFromCache(period.name);
-          if (!cached) throw new Error("No cached grades are available for this period.");
-          return cached;
-        },
+        fallback: async () => getGradePeriodsFromCache(period.name),
         saveToCache: async (data: PeriodGrades) => {
           await addPeriodGradesToDatabase(data, period.name);
         },
@@ -296,10 +291,7 @@ export class AccountManager {
       },
       {
         multiple: true,
-        fallback: async () => {
-          const cached = await getAttendanceFromCache(period);
-          return cached ? [cached] : [];
-        },
+        fallback: async () => [await getAttendanceFromCache(period)],
         saveToCache: async (data: Attendance[]) => {
           await addAttendanceToDatabase(data, period);
         },
@@ -519,10 +511,10 @@ export class AccountManager {
   async getCanteenQRCodes(clientId: string): Promise<QRCode> {
     return await this.fetchData(
       Capabilities.CANTEEN_QRCODE,
-      async client => {
-        if (!client.getCanteenQRCodes) throw error("getCanteenQRCodes not found");
-        return await client.getCanteenQRCodes();
-      },
+      async client =>
+        client.getCanteenQRCodes
+          ? await client.getCanteenQRCodes()
+          : error("getCanteenQRCodes not found"),
       {
         multiple: false,
         clientId,
@@ -570,34 +562,9 @@ export class AccountManager {
     );
   }
 
-  getServiceClients(): Array<{
-    id: string;
-    service: Services;
-    displayName: string;
-    capabilities: Capabilities[];
-    plugin: SchoolServicePlugin;
-  }> {
-    return this.account.services.flatMap(serviceAccount => {
-      const plugin = this.clients[serviceAccount.id];
-      if (!plugin) return [];
-      return [{
-        id: serviceAccount.id,
-        service: plugin.service,
-        displayName: plugin.displayName,
-        capabilities: [...plugin.capabilities],
-        plugin,
-      }];
-    });
-  }
-
   private async hasInternet(): Promise<boolean> {
-    try {
-      const networkState = await Network.getNetworkStateAsync();
-      return networkState.isInternetReachable ?? networkState.isConnected ?? true;
-    } catch {
-      // Let a service try its request when the platform cannot report connectivity.
-      return true;
-    }
+    const networkState = await Network.getNetworkStateAsync();
+    return networkState.isInternetReachable ?? false;
   }
 
   private async fetchData<T>(
@@ -647,10 +614,10 @@ export class AccountManager {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
         if (!client) {
-          throw error("Client ID missing");
+          error("Client ID missing");
         }
         if (!client.capabilities.includes(capability)) {
-          throw error(
+          error(
             "Capability " +
               capability +
               " not supported by client " +
@@ -696,7 +663,7 @@ export class AccountManager {
         throw new Error(`No clients available for capability: ${capability}`);
       }
 
-        if (options?.multiple) {
+      if (options?.multiple) {
         const settled = await Promise.allSettled(
           availableClients.map(client => callback(client) as Promise<T[]>)
         );
@@ -715,22 +682,9 @@ export class AccountManager {
           await options.saveToCache(combinedResult);
         }
 
-          return combinedResult;
-        }
-
-        for (const client of availableClients) {
-          try {
-            const result = await callback(client) as T;
-            if (options?.saveToCache) await options.saveToCache(result);
-            return result;
-          } catch (clientError) {
-            noteFailure(client, clientError);
-          }
-        }
-
-        if (options?.fallback) return await callFallback() as T;
-        throw new Error(`No clients succeeded for capability: ${capability}`);
-      } catch (e) {
+        return combinedResult;
+      }
+    } catch (e) {
       warn(`capability ${capability} failed: ${String(e)}`, "fetchData");
       if (options?.fallback) {
         return await callFallback();
@@ -740,7 +694,9 @@ export class AccountManager {
       this.failures.set(capability, failures);
     }
 
-    throw error("An error occurred while fetching data for capability: " + capability);
+    error(
+      "An error occurred while fetching data for capability: " + capability
+    );
   }
 
   private getServicePluginForAccount(
@@ -806,7 +762,7 @@ export class AccountManager {
       return new module.MockData(service.id);
     }
 
-    throw error(
+    error(
       "We're not able to find a plugin for service: " +
         service.serviceId +
         ". Please review your implementation",
@@ -889,14 +845,11 @@ export const initializeAccountManager = async (
   }
 };
 
-export function getManager(silent: true): AccountManager | null;
-export function getManager(silent?: false): AccountManager;
-export function getManager(silent = false): AccountManager | null {
-  if (!globalManager) {
-    const message = "Account manager not initialized. Call initializeAccountManager first.";
-    if (silent) return null;
-    warn(message);
-    throw error(message, "getManager");
+export const getManager = (silent = false): AccountManager => {
+  if (!globalManager && !silent) {
+    warn(
+      "Account manager not initialized. Call initializeAccountManager first."
+    );
   }
   return globalManager;
-}
+};

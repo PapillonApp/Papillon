@@ -42,7 +42,7 @@ const ColorSelector = React.memo<ColorSelectorProps>(function ColorSelector({
   const containerStyle = useMemo(() => ({
     width: itemWidth,
     height: itemWidth * 0.95,
-    margin: 4,
+    margin: 6,
     alignItems: "center" as const,
     justifyContent: "center" as const,
     backgroundColor,
@@ -56,7 +56,7 @@ const ColorSelector = React.memo<ColorSelectorProps>(function ColorSelector({
   }), [selected, backgroundColor, mainColor, theme.colors.text, itemWidth]);
 
   const circleStyle = useMemo(() => {
-    const circleSize = Math.min(itemWidth * 0.28, 42);
+    const circleSize = Math.min(itemWidth * 0.4, 50);
     return {
       width: circleSize,
       height: circleSize,
@@ -99,7 +99,7 @@ const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsS
 
   const itemWidth = useMemo(() => {
     if (containerWidth === 0) return 100;
-    return Math.min(180, (containerWidth - 24) / 3);
+    return (containerWidth - 36) / 3;
   }, [containerWidth]);
 
   useEffect(() => {
@@ -142,7 +142,7 @@ const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsS
         alignItems: "center",
       }}
       columnWrapperStyle={{
-        justifyContent: "center",
+        justifyContent: "space-between",
         alignItems: "center",
       }}
       style={{

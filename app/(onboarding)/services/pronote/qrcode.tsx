@@ -131,7 +131,6 @@ export default function PronoteLoginWithQR() {
         className,
         customisation: {
           profilePicture: pp,
-          serviceProfilePicture: pp,
           subjects: {}
         },
         services: [{

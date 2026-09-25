@@ -1,5 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useIsFocused, useTheme } from "expo-router/react-navigation";
+import { useIsFocused } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
@@ -8,8 +8,6 @@ import Reanimated, { LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
-import { useAlert } from '@/ui/components/AlertProvider';
-import { getWeekNumberFromDate } from '@/database/useHomework';
 import { useSettingsStore } from '@/stores/settings';
 import { checkConsent } from '@/utils/logger/consent';
 import { Animation } from '@/ui/utils/Animation';
@@ -22,13 +20,11 @@ import { useHomeData } from './hooks/useHomeData';
 import { useTimetableWidgetData } from './hooks/useTimetableWidgetData';
 import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
 import HomeTimeTableWidget from './widgets/timetable';
-import HomeHomeworkWidget from './widgets/homework';
-import { useHomeworkData } from '../tasks/hooks/useHomeworkData';
 import GradesWidget from './widgets/Grades';
 import { usePeriodsData } from '../grades/hooks/usePeriodsData';
 import { useGradesData } from '../grades/hooks/useGradesData';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 import { Dynamic } from '@/ui/components/Dynamic';
 import Stack from '@/ui/components/Stack';
@@ -39,8 +35,7 @@ import { ListTouchable } from '@/ui/new/List';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const bottomTabBarHeight = insets.bottom + 76;
-  const alert = useAlert();
+  const bottomTabBarHeight = insets.bottom + 16;
   const focused = useIsFocused();
 
   // Account
@@ -95,23 +90,6 @@ const HomeScreen = () => {
   useHomeData();
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
-
-  const currentHomeworkWeek = getWeekNumberFromDate(new Date());
-  const { homeworkByWeek, setAsDone: setHomeworkAsDone } = useHomeworkData([currentHomeworkWeek], alert);
-  const urgentHomeworks = React.useMemo(() => {
-    const now = Date.now();
-    const endOfWeek = new Date();
-    endOfWeek.setHours(23, 59, 59, 999);
-    endOfWeek.setDate(endOfWeek.getDate() + (7 - (endOfWeek.getDay() || 7)));
-    return (homeworkByWeek[currentHomeworkWeek] ?? [])
-      .filter(homework => !homework.isDone)
-      .filter(homework => {
-        const due = new Date(homework.dueDate).getTime();
-        return due >= now && due <= endOfWeek.getTime();
-      })
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-      .slice(0, 4);
-  }, [homeworkByWeek, currentHomeworkWeek]);
 
   const { currentPeriod } = usePeriodsData();
   const { grades, history, averages } = useGradesData(currentPeriod);
@@ -178,20 +156,13 @@ const HomeScreen = () => {
       render: renderTimeTable
     },
     {
-      icon: <Papicons name={"List"} />,
-      title: "Devoirs à faire cette semaine",
-      redirect: "(tabs)/tasks",
-      hidden: urgentHomeworks.length === 0,
-      render: () => <HomeHomeworkWidget homeworks={urgentHomeworks} setAsDone={setHomeworkAsDone} />
-    },
-    {
       icon: <Papicons name={"Grades"} />,
       title: t("Home_Widget_Grades_Average"),
       redirect: "(tabs)/grades",
       hidden: gradesWidgetHidden,
       render: renderGrades
     }
-  ], [account, courses.length, dismissTeamWidget, gradesWidgetHidden, renderGrades, renderTeam, renderTimeTable, timetableTitle, urgentHomeworks, setHomeworkAsDone]);
+  ], [account, courses.length, dismissTeamWidget, gradesWidgetHidden, renderGrades, renderTeam, renderTimeTable, timetableTitle]);
 
   const visibleWidgets = React.useMemo(
     () => data.filter(item => !item.hidden && (!item.dev || __DEV__)),
@@ -263,11 +234,27 @@ const HomeEmptyState = React.memo(() => (
 HomeEmptyState.displayName = "HomeEmptyState";
 
 const HomeViewContainer = ({ children }) => {
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={["left", "right"]}>
+    <MaskedView
+      maskElement={
+        <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+          <LinearGradient
+            colors={['#ff000022', 'white']}
+            locations={[0.5, 1]}
+            style={{ height: insets.top + 68 }}
+          />
+          <View style={{ flex: 1, backgroundColor: 'white' }} />
+        </View>
+      }
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1 }} edges={["left", "right"]}>
       {children}
-    </SafeAreaView>
-  );
+      </SafeAreaView>
+    </MaskedView>
+  )
 }
 
 const HomeScreenWithBoundary = () => (

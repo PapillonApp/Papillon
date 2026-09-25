@@ -59,16 +59,14 @@ export const Dynamic = React.memo<DynamicProps>(({
 
   return (
     <Reanimated.View
+      entering={animated ? entering : undefined}
+      exiting={animated ? exiting : undefined}
       layout={animated && (layout ?? layoutProp)}
       // @ts-expect-error - Reanimated types are not fully compatible with React Native types
       style={computedStyle}
       {...rest}
     >
-      {animated ? (
-        <Reanimated.View entering={entering} exiting={exiting} style={{ flex: 1 }}>
-          {children}
-        </Reanimated.View>
-      ) : children}
+      {children}
     </Reanimated.View>
   );
 });

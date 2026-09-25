@@ -68,7 +68,7 @@ export default function QRCodePage() {
         tint={"dark"}
       >
         <Reanimated.View
-          entering={ZoomInDown.duration(300)}
+          entering={ZoomInDown.springify()}
           style={{
             flex: 1,
             justifyContent: "center",
@@ -93,7 +93,7 @@ export default function QRCodePage() {
               shadowOpacity: 0.3,
               borderRadius: 25,
             }}
-            entering={FlipInEasyX.duration(300).delay(100)}
+            entering={FlipInEasyX.springify().delay(100)}
           >
             {type === "QR" ? (
               <QRCode

@@ -32,10 +32,6 @@ export default function OnboardingLayout() {
           options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_SCHOOLS") }}
         />
         <Stack.Screen
-          name="uai"
-          options={{ ...newScreenOptions, title: "Recherche par UAI" }}
-        />
-        <Stack.Screen
           name="url"
           options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_SCHOOL_URL") }}
         />

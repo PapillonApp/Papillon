@@ -6,6 +6,7 @@ import Typography from '@/ui/new/Typography';
 import { useTheme } from "expo-router/react-navigation";
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Stack from '@/ui/components/Stack';
+import { TouchableNativeFeedback } from 'react-native';
 
 export interface HomeHeaderButtonItem {
   title: string;
@@ -30,13 +31,10 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
         flex: 1,
       }}
     >
-    <Pressable
-      style={({ pressed }) => [
-        styles.headerBtn,
-        { opacity: pressed ? 0.82 : 1 },
-      ]}
+    <TouchableNativeFeedback
+      useForeground
+      style={styles.headerBtn}
       onPress={item.onPress}
-      disabled={!item.onPress}
     >
       <View
         style={{
@@ -69,7 +67,7 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           <Typography nowrap inline variant="body1" color='textSecondary'>{item.description}</Typography>
         </View>
       </View>
-    </Pressable>
+    </TouchableNativeFeedback>
     </View>
   );
 };

@@ -3,7 +3,7 @@ import { useAccountStore } from "@/stores/account";
 import type { AccountManager } from "@/services/shared";
 import { getManager } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
-import { getDateRangeOfWeek, useHomeworkForWeeks, updateHomeworkIsDone } from "@/database/useHomework";
+import { useHomeworkForWeeks, updateHomeworkIsDone } from "@/database/useHomework";
 import { useLoadErrorAlert } from "@/hooks/useLoadErrorAlert";
 import { useManagerSubscription } from "@/hooks/useManagerSubscription";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
@@ -11,9 +11,6 @@ import { generateId } from "@/utils/generateId";
 import { error } from '@/utils/logger/logger';
 import { trackAdvancedEvent } from '@/utils/logger/analytics';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
-import { useSettingsStore } from "@/stores/settings";
-import { cancelSystemNotification, getNextNotificationTime, scheduleSystemNotification } from "@/utils/notifications";
-import { isTauriDesktop } from "@/utils/network/fetch";
 
 // Cache reads are coalesced over this window: fetching five weeks would
 // otherwise re-query every one of them five times over.
@@ -40,7 +37,6 @@ const isSameHomework = (a: Homework, b: Homework) =>
   a.evaluation === b.evaluation &&
   a.returnFormat === b.returnFormat &&
   a.fromCache === b.fromCache &&
-  a.reminderAt?.getTime() === b.reminderAt?.getTime() &&
   a.attachments.length === b.attachments.length &&
   new Date(a.dueDate).getTime() === new Date(b.dueDate).getTime();
 
@@ -63,10 +59,6 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   // filter below would keep matching the previous account and hide every task.
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
-  const storedCustomHomeworks = useSettingsStore(state => state.personalization.customHomeworks);
-  const customHomeworks = useMemo(() => storedCustomHomeworks ?? [], [storedCustomHomeworks]);
-  const notificationPreferences = useSettingsStore(state => state.personalization.notificationPreferences);
-  const mutateSettings = useSettingsStore(state => state.mutateProperty);
   const account = accounts.find(acc => acc.id === lastUsedAccount);
   type Service = { id: string };
   const services = useMemo(() => account?.services?.map((s: Service) => s.id) ?? [], [account]);
@@ -87,27 +79,8 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
 
     for (const [key, list] of Object.entries(cacheByWeek)) {
       const week = Number(key);
-      const { start, end } = getDateRangeOfWeek(week);
-      const customForWeek: Homework[] = customHomeworks.flatMap(stored => {
-        const dueDate = new Date(stored.dueDate);
-        if (!Number.isFinite(dueDate.getTime()) || dueDate < start || dueDate > end) return [];
-        const reminderAt = stored.reminderAt ? new Date(stored.reminderAt) : undefined;
-        return [{
-          id: stored.id,
-          subject: stored.subject,
-          content: stored.content,
-          dueDate,
-          isDone: stored.isDone,
-          attachments: [],
-          evaluation: false,
-          custom: true,
-          createdByAccount: stored.createdByAccount,
-          reminderAt: reminderAt && Number.isFinite(reminderAt.getTime()) ? reminderAt : undefined,
-        }];
-      });
-
-      const items = [...list, ...customForWeek]
-        .filter(h => h.custom || services.includes(h.createdByAccount))
+      const items = list
+        .filter(h => services.includes(h.createdByAccount))
         .map(cached => {
           const merged = (cached.id ? homework[cached.id] : undefined) ?? cached;
           const id = merged.id ?? homeworkKey(merged);
@@ -124,7 +97,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     itemCache.current = nextItems;
     weekCache.current = nextWeeks;
     return nextWeeks;
-  }, [cacheByWeek, homework, services, customHomeworks]);
+  }, [cacheByWeek, homework, services]);
 
   // A week is fetched from the service once per session; `inFlightWeeks` keeps a
   // swipe back and forth from queueing the same request twice.
@@ -230,26 +203,6 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
       const id = homeworkKey(item);
 
       try {
-        if (item.custom) {
-          const current = useSettingsStore.getState().personalization.customHomeworks ?? [];
-          mutateSettings("personalization", {
-            customHomeworks: current.map(homework => homework.id === item.id ? { ...homework, isDone: done } : homework),
-          });
-          if (done || !item.reminderAt) {
-            await cancelSystemNotification(`custom-homework-${item.id}`);
-          } else {
-            await scheduleSystemNotification("homework", {
-              id: `custom-homework-${item.id}`,
-              title: `Rappel : ${item.subject}`,
-              body: item.content.replace(/<[^>]*>/g, "").slice(0, 180),
-              at: item.reminderAt,
-            });
-          }
-          if (done) notificationAsync(NotificationFeedbackType.Success);
-          trackAdvancedEvent(done ? "task_ticked" : "task_unticked");
-          return;
-        }
-
         const manager = getManager();
         await manager.setHomeworkCompletion(item, done)
 
@@ -292,70 +245,8 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
         scheduleRefresh();
       }
     },
-    [alert, mutateSettings, scheduleRefresh]
+    [alert, scheduleRefresh]
   );
-
-  const tomorrowHomework = useMemo(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const start = new Date(tomorrow);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
-    const seen = new Set<string>();
-
-    return Object.values(homeworkByWeek)
-      .flat()
-      .filter(item => {
-        const id = item.id ?? homeworkKey(item);
-        const dueDate = new Date(item.dueDate);
-        if (seen.has(id) || item.isDone || (item.custom && item.reminderAt)) return false;
-        seen.add(id);
-        return dueDate >= start && dueDate < end;
-      });
-  }, [homeworkByWeek]);
-
-  useEffect(() => {
-    if (isTauriDesktop()) return;
-    const activeIds = new Set<string>();
-    if (notificationPreferences?.enabled && notificationPreferences.homework) {
-      for (const item of customHomeworks) {
-        if (item.isDone || !item.reminderAt) continue;
-        const reminderAt = new Date(item.reminderAt);
-        if (!Number.isFinite(reminderAt.getTime())) continue;
-        const id = `custom-homework-${item.id}`;
-        activeIds.add(id);
-        void scheduleSystemNotification("homework", {
-          id,
-          title: `Rappel : ${item.subject}`,
-          body: item.content.replace(/<[^>]*>/g, "").slice(0, 180),
-          at: reminderAt,
-        });
-      }
-    }
-    for (const item of customHomeworks) {
-      const id = `custom-homework-${item.id}`;
-      if (!activeIds.has(id)) void cancelSystemNotification(id);
-    }
-  }, [customHomeworks, notificationPreferences?.enabled, notificationPreferences?.homework]);
-
-  useEffect(() => {
-    if (isTauriDesktop()) return;
-    const id = "homework-tomorrow";
-    if (!notificationPreferences?.enabled || !notificationPreferences.homework || tomorrowHomework.length === 0) {
-      void cancelSystemNotification(id);
-      return;
-    }
-
-    const subjects = Array.from(new Set(tomorrowHomework.map(item => item.subject))).slice(0, 3).join(", ");
-    const extraCount = Math.max(0, tomorrowHomework.length - 3);
-    void scheduleSystemNotification("homework", {
-      id,
-      title: "Devoirs pour demain",
-      body: `${tomorrowHomework.length} devoir${tomorrowHomework.length > 1 ? "s" : ""}${subjects ? ` : ${subjects}` : ""}${extraCount ? ` et ${extraCount} autre${extraCount > 1 ? "s" : ""}` : ""}`,
-      at: getNextNotificationTime(notificationPreferences.dailyTime || "18:00", 0),
-    });
-  }, [tomorrowHomework, notificationPreferences?.enabled, notificationPreferences?.homework, notificationPreferences?.dailyTime]);
 
   const hasData = Object.values(homeworkByWeek).some(list => list.length > 0);
   useLoadErrorAlert({

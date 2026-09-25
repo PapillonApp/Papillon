@@ -11,7 +11,7 @@ import { runsIOS26 } from "../utils/IsLiquidGlass";
 
 import {
   LiquidGlassView
-} from '../utils/LiquidGlassCompat';
+} from '@callstack/liquid-glass';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 

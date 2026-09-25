@@ -1,11 +1,4 @@
 import { error } from "../logger/logger";
-import { appFetch } from "@/utils/network/fetch";
-
-function extractCityName(value: unknown): string {
-  if (typeof value === "string") return value.trim();
-  if (Array.isArray(value) && typeof value[0] === "string") return value[0].trim();
-  return "";
-}
 
 export async function GeographicReverse(lat: number, lon: number): Promise<GeoInfo> {
   try {
@@ -13,7 +6,7 @@ export async function GeographicReverse(lat: number, lon: number): Promise<GeoIn
     let res: Response = new Response();
 
     while (retries > 0) {
-      res = await appFetch(
+      res = await fetch(
         `https://data.geopf.fr/geocodage/reverse?lat=${lat}&lon=${lon}&limit=1&index=parcel,poi,address`
       );
 
@@ -42,20 +35,19 @@ export async function GeographicReverse(lat: number, lon: number): Promise<GeoIn
     const response = await res.json();
 
     const feature = response?.features?.[0];
-    const city = extractCityName(feature?.properties?.city);
-    if (!city || !feature?.properties?.postcode) {
+    if (!feature?.properties?.city || !feature?.properties?.postcode) {
       throw new Error(JSON.stringify(feature));
     }
 
     return {
-      city,
+      city: feature.properties.city[0],
       postalCode: Number(feature.properties.postcode),
       longitude: feature.geometry.coordinates[0],
       latitude: feature.geometry.coordinates[1]
     };
 
   } catch (err) {
-    throw error(String(err), "GeographicReverse");
+    error(String(err))
   }
 }
 
@@ -65,7 +57,7 @@ export async function GeographicQuerying(q: string, retry = 3): Promise<GeoInfo>
     let res: Response = new Response();
 
     while (retries > 0) {
-      res = await appFetch(
+      res = await fetch(
         `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(q)}`
       );
 
@@ -88,20 +80,19 @@ export async function GeographicQuerying(q: string, retry = 3): Promise<GeoInfo>
     const response = await res.json();
 
     const feature = response?.features?.[0];
-    const city = extractCityName(feature?.properties?.city);
-    if (!city || !feature?.properties?.postcode) {
+    if (!feature?.properties?.city || !feature?.properties?.postcode) {
       throw new Error(JSON.stringify(feature));
     }
 
     return {
-      city,
+      city: feature.properties.city[0],
       postalCode: Number(feature.properties.postcode),
       longitude: feature.geometry.coordinates[0],
       latitude: feature.geometry.coordinates[1]
     };
 
   } catch (err) {
-    throw error(String(err), "GeographicQuerying");
+    error(String(err))
   }
 }
 
@@ -111,7 +102,7 @@ export async function GeographicSearchCities(q: string, retry = 3): Promise<GeoS
     let res: Response = new Response();
 
     while (retries > 0) {
-      res = await appFetch(
+      res = await fetch(
         `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(q)}`
       );
 
@@ -131,34 +122,21 @@ export async function GeographicSearchCities(q: string, retry = 3): Promise<GeoS
       }
     }
 
-    const response: unknown = await res.json();
-    const features = (response as { features?: unknown } | null)?.features;
-    if (!Array.isArray(features)) return [];
+    const response = await res.json();
 
-    return features.flatMap((rawFeature: any) => {
-      const properties = rawFeature?.properties;
-      const coordinates = rawFeature?.geometry?.coordinates;
-      const city = extractCityName(properties?.city);
-      const postalCode = Number(properties?.postcode);
-      const longitude = Number(coordinates?.[0]);
-      const latitude = Number(coordinates?.[1]);
-      if (!city || !Number.isFinite(postalCode) || !Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-        return [];
-      }
+    const resp = response?.features.map((feature: any) => ({
+      id: feature.properties.banId,
+      city: feature.properties.city,
+      context: feature.properties.context,
+      importance: feature.properties.score,
+      postalCode: Number(feature.properties.postcode),
+      longitude: feature.geometry.coordinates[0],
+      latitude: feature.geometry.coordinates[1]
+    })) ?? [];
 
-      return [{
-        id: String(properties?.banId ?? properties?.citycode ?? `${city}-${postalCode}`),
-        city,
-        citycode: String(properties?.citycode ?? ""),
-        context: String(properties?.context ?? ""),
-        importance: Number(properties?.score) || 0,
-        postalCode,
-        longitude,
-        latitude,
-      }];
-    });
+    return resp;
   } catch (err) {
-    throw error(String(err), "GeographicSearchCities");
+    error(String(err))
   }
 }
 

@@ -26,8 +26,6 @@ import { Homework } from "@/services/shared/homework";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { View } from "react-native";
-import { useSettingsStore } from "@/stores/settings";
-import { cancelSystemNotification, scheduleSystemNotification } from "@/utils/notifications";
 
 const Task = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -65,27 +63,11 @@ const Task = () => {
   }
 
   const setAsDone = async (done: boolean) => {
+    const manager = getManager();
     if (!task) return;
-    if (task.custom) {
-      const current = useSettingsStore.getState().personalization.customHomeworks ?? [];
-      useSettingsStore.getState().mutateProperty("personalization", {
-        customHomeworks: current.map(item => item.id === task.id ? { ...item, isDone: done } : item),
-      });
-      if (done) {
-        await cancelSystemNotification(`custom-homework-${task.id}`);
-      } else if (task.reminderAt) {
-        await scheduleSystemNotification("homework", {
-          id: `custom-homework-${task.id}`,
-          title: `Rappel : ${task.subject}`,
-          body: task.content.replace(/<[^>]*>/g, "").slice(0, 180),
-          at: task.reminderAt,
-        });
-      }
-    } else {
-      const manager = getManager();
-      await manager?.setHomeworkCompletion(task, done);
-      updateHomeworkIsDone(id, done);
-    }
+    await manager?.setHomeworkCompletion(task, done);
+
+    updateHomeworkIsDone(id, done);
     setIsDone(done);
   }
 

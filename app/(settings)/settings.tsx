@@ -10,7 +10,6 @@ import { Alert, Image, Platform, Pressable, View } from "react-native";
 
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import { useAccountStore } from "@/stores/account";
-import { openMockDataAccountChooser } from "@/services/mock/account";
 import { useSettingsStore } from "@/stores/settings";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Avatar from "@/ui/components/Avatar";
@@ -90,20 +89,6 @@ export default function SettingsIndex() {
           color: "#000",
           onPress: () => router.navigate("/(settings)/transport"),
         },*/
-        {
-          title: "Données fictives",
-          description: "Tester Papillon avec un emploi du temps, des devoirs et des notes de démonstration",
-          papicon: <Papicons name={"List"} />,
-          color: "#7C3AED",
-          onPress: openMockDataAccountChooser,
-        },
-        {
-          title: "Transport et adresses",
-          description: "Définir les adresses maison et établissement pour les trajets",
-          papicon: <Papicons name={"Bus"} />,
-          color: "#E8901C",
-          onPress: () => router.navigate("/(settings)/transport"),
-        },
         {
           title: t("Settings_Features_Title"),
           description: t("Settings_Features_Description"),

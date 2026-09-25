@@ -27,7 +27,6 @@ export interface Homework extends GenericInterface{
   evaluation: boolean;
   custom: boolean;
   progress?: number;
-	reminderAt?: Date;
 	ref?: Assignment;
 }
 

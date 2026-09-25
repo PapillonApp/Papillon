@@ -175,7 +175,7 @@ const Typography = React.memo(({
   const font = useFont();
 
   if (skeleton) {
-    const variantStyles = VARIANTS[variant] ?? VARIANTS.body1;
+    const variantStyles = VARIANTS[variant];
     const fontSize = variantStyles.fontSize;
     const lineHeight = variantStyles.lineHeight;
     const spacer = (lineHeight - fontSize) / 2;
@@ -231,8 +231,7 @@ const Typography = React.memo(({
               color;
 
   const secondaryOpacity = color === "secondary" ? { opacity: 0.5 } : undefined;
-  const variantStyles = VARIANTS[variant] ?? VARIANTS.body1;
-  const variantFont = (variantStyles.fontFamily as string) || FONT_FAMILIES.medium;
+  const variantFont = (VARIANTS[variant].fontFamily as string) || FONT_FAMILIES.medium;
   const resolvedFont = weight ? font(weight) : font(variantFont);
 
   const combinedStyle = [

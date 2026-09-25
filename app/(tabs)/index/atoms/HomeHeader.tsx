@@ -119,7 +119,7 @@ const HomeHeader = () => {
   ], [availableCanteenCards, absencesCount, news, currentAttendancePeriod, attendancesPeriods, attendances, t]);
 
   return (
-    <View style={{ paddingHorizontal: 0, width: "100%", flexGrow: 0, overflow: "visible" }}>
+    <View style={{ paddingHorizontal: 0, width: "100%", flex: 1, overflow: "visible" }}>
       <View style={{ height: insets.top + 56 + (insets.right > 10 ? 10 : 0) }} />
       <LiquidGlassContainer spacing={8} style={{ overflow: "visible" }}>
         <Stack inline flex width={"100%"} style={{ overflow: "visible" }}>

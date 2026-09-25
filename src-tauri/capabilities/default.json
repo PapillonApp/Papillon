@@ -1,56 +1,11 @@
 {
-  "identifier": "default",
-  "description": "Permissions for the Scola desktop window",
-  "local": true,
-  "permissions": [
-    "core:default",
-    "notification:default",
-    "autostart:allow-enable",
-    "autostart:allow-disable",
-    "autostart:allow-is-enabled",
-    "http:allow-fetch",
-    "http:allow-fetch-send",
-    "http:allow-fetch-read-body",
-    "http:allow-fetch-cancel",
-    "http:allow-fetch-cancel-body",
-    {
-      "identifier": "http:default",
-      "allow": [
-        {
-          "url": "http://*"
-        },
-        {
-          "url": "https://*"
-        },
-        {
-          "url": "http://*:*"
-        },
-        {
-          "url": "https://*:*"
-        },
-        {
-          "url": "https://api.ecoledirecte.com/**"
-        },
-        {
-          "url": "https://*.ecoledirecte.com/**"
-        },
-        {
-          "url": "https://*.pronote.com/**"
-        },
-        {
-          "url": "https://*.index-education.com/**"
-        },
-        {
-          "url": "https://data.geopf.fr/**"
-        },
-        {
-          "url": "https://data.education.gouv.fr/**"
-        }
-      ]
-    }
-  ],
   "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
   "windows": [
     "main"
+  ],
+  "permissions": [
+    "core:default"
   ]
 }

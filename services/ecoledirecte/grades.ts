@@ -7,7 +7,6 @@ import { warn } from "@/utils/logger/logger";
 import { Grade, GradeScore, Period, PeriodGrades, Subject, } from "../shared/grade";
 import { SkillChipLevel } from "@/ui/components/SkillChip";
 import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
-import { getResponseArray, requireResponseArray } from "./response";
 
 export async function fetchEDGradePeriods(
   session: Client,
@@ -15,16 +14,15 @@ export async function fetchEDGradePeriods(
 ): Promise<Period[]> {
   try {
     const overview = await session.marks.getMark();
-    return requireResponseArray<any>(overview, ["periodes", "data", "result"], "EcoleDirecte grade periods").map(period => ({
+    return overview.periodes.map(period => ({
       name: period.periode,
       id: period.codePeriode,
       start: new Date(period.dateDebut),
       end: new Date(period.dateFin),
       createdByAccount: accountId,
     }));
-  } catch (error) {
-    warn(`ED grade periods failed: ${String(error)}`);
-    throw error;
+  } catch {
+    return [];
   }
 }
 
@@ -35,23 +33,22 @@ export async function fetchEDGrades(
 ): Promise<PeriodGrades> {
   try {
     const overview = await session.marks.getMark();
-    const periods = requireResponseArray<any>(overview, ["periodes", "data", "result"], "EcoleDirecte grade periods");
-    const periodReport = periods.find(
+    const periodReport = overview.periodes.find(
       item => item.codePeriode === period.id || item.idPeriode === period.id
     );
-    const grades = getGradesForPeriod(requireResponseArray<any>(overview, ["notes", "data", "result"], "EcoleDirecte grades"), period);
+    const grades = getGradesForPeriod(overview.notes, period);
 
     if (!periodReport) {
-      throw new Error("The requested EcoleDirecte grade period was not returned.");
+      warn("Invalid grades data structure or period not found");
+      return emptyPeriodGrades(accountId);
     }
 
     const subjects: Record<string, Subject> = {};
-    const skillParameters = overview.parametrage ?? {};
     const skillColors = {
-      insufficient: skillParameters.couleurEval1 ?? "#E53935",
-      weak: skillParameters.couleurEval2 ?? "#FB8C00",
-      almostProficient: skillParameters.couleurEval3 ?? "#FDD835",
-      satisfactory: skillParameters.couleurEval4 ?? "#43A047",
+      insufficient: overview.parametrage.couleurEval1,
+      weak: overview.parametrage.couleurEval2,
+      almostProficient: overview.parametrage.couleurEval3,
+      satisfactory: overview.parametrage.couleurEval4,
     };
     const allMappedGrades: Grade[] = grades.map(g => ({
         id: String(g.id),
@@ -70,14 +67,14 @@ export async function fetchEDGrades(
         minScore: parseGradeValue(g.minClasse),
         maxScore: parseGradeValue(g.maxClasse),
         createdByAccount: accountId,
-        skills: getResponseArray<any>(g, ["elementsProgramme"]).map(s => ({
+        skills: g.elementsProgramme.map(s => ({
           name: s.libelleCompetence,
           description: s.descriptif,
           score: parseSkillLevel(parseInt(s.valeur), skillColors),
         })),
     }))
 
-    for (const subject of getResponseArray<any>(periodReport.ensembleMatieres, ["disciplines"])) {
+    for (const subject of periodReport.ensembleMatieres?.disciplines ?? []) {
       const parsedAverage = parseGradeValue(subject.moyenne)
       const parsedClassAverage = parseGradeValue(subject.moyenneClasse)
       const parsedMaximum = parseGradeValue(subject.moyenneMax)
@@ -120,7 +117,16 @@ export async function fetchEDGrades(
     }
   } catch (error) {
     warn(String(error));
-    throw error;
+    return emptyPeriodGrades(accountId)
+  }
+}
+
+function emptyPeriodGrades(accountId: string): PeriodGrades {
+  return {
+    createdByAccount: accountId,
+    classAverage: { value: 16.66, disabled: true },
+    studentOverall: { value: 16.66, disabled: true },
+    subjects: []
   }
 }
 
@@ -292,7 +298,7 @@ function getAverageScore(
 
   const validValues = subjects
     .map(subject => subject[key])
-    .filter((score): score is GradeScore => score !== undefined && score !== null && !score.disabled && Number.isFinite(score.value))
+    .filter(score => !score.disabled && Number.isFinite(score.value))
     .map(score => score.value)
 
   if (validValues.length === 0) {

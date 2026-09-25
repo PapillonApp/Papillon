@@ -52,16 +52,6 @@ export const useHomeData = () => {
     }
   }, []);
 
-  const fetchNews = useCallback(async () => {
-    const manager = getManager();
-    if (!manager) return;
-    try {
-      await manager.getNews();
-    } catch (error) {
-      warn(`Unable to refresh news: ${String(error)}`, "useHomeData");
-    }
-  }, []);
-
   const initialize = useCallback(async () => {
     if (!lastUsedAccount) {
       return;
@@ -101,7 +91,7 @@ export const useHomeData = () => {
       await initializeAccountManager(lastUsedAccount);
       debug("Refreshed Manager received");
 
-      await Promise.all([fetchEDT(), fetchGrades(), fetchNews()]);
+      await Promise.all([fetchEDT(), fetchGrades()]);
       lastHomeSync.set(lastUsedAccount, Date.now());
 
       if (settingsstore.showAlertAtLogin) {
@@ -226,7 +216,7 @@ export const useHomeData = () => {
         });
       }
     }
-  }, [alert, fetchEDT, fetchGrades, fetchNews, settingsstore.showAlertAtLogin, lastUsedAccount, removeAccount]);
+  }, [alert, fetchEDT, fetchGrades, settingsstore.showAlertAtLogin, lastUsedAccount, removeAccount]);
 
   useEffect(() => {
     initialize();

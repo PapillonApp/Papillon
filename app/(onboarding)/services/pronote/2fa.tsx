@@ -101,8 +101,12 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
       store.addAccount(account)
       store.setLastUsedAccount(deviceId)
 
-      router.dismissAll();
-      router.push("/");
+      router.push({
+        pathname: "../end/color",
+        params: {
+          accountId: deviceId
+        }
+      });
     } catch (error) {
       return alert.showAlert({
         title: t("Alert_Auth_Error"),

@@ -1,4 +1,4 @@
-import { router, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useHeaderHeight, useTheme } from 'expo-router/react-navigation';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -92,7 +92,6 @@ const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol; papico
   { value: 'date', label: t('Tasks_Sorting_Methods_DueDate'), sf: 'calendar', papicon: 'Calendar' },
   { value: 'subject', label: t('Tasks_Sorting_Methods_Subject'), sf: 'character', papicon: 'List' },
   { value: 'done', label: t('Tasks_Sorting_Methods_Done'), sf: 'checkmark.circle', papicon: 'Check' },
-  { value: 'undone', label: t('Tasks_Sorting_Methods_Undone', 'Non terminés uniquement'), sf: 'circle', papicon: 'Circle' },
 ];
 
 // The pager addresses weeks as an offset from the week the screen opened in;
@@ -354,16 +353,6 @@ const TasksView: React.FC = () => {
           })}
         </View>
       </Stack.Title>
-
-      {isAndroid ? (
-        <Stack.Toolbar placement="right" asChild>
-          <AndroidHeaderButton icon="Add" accessibilityLabel="Ajouter un devoir personnel" onPress={() => router.push('/(tabs)/tasks/new')} />
-        </Stack.Toolbar>
-      ) : (
-        <Stack.Toolbar placement="right">
-          <Stack.Toolbar.Button icon="plus" onPress={() => router.push('/(tabs)/tasks/new')}>Ajouter un devoir</Stack.Toolbar.Button>
-        </Stack.Toolbar>
-      )}
 
       {isAndroid ? (
         <Stack.Toolbar placement="right" asChild>
