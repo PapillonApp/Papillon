@@ -54,9 +54,12 @@ export interface Personalization {
   customHomeworkSubjects?: string[];
   customHomeworks?: CustomHomeworkStorage[];
   notificationPreferences?: NotificationPreferences;
+  notificationSeenServiceItemKeys?: Record<string, string[]>;
   notificationSeenGradeIds?: string[];
   notificationSeenNewsIds?: string[];
   pendingNotificationSchedules?: PendingSystemNotification[];
+  desktopStartWithWindows?: boolean;
+  desktopBackgroundOnClose?: boolean;
 }
 
 export interface CustomHomeworkStorage {
@@ -76,6 +79,17 @@ export interface NotificationPreferences {
   grades: boolean;
   news: boolean;
   dailyTime: string;
+  courseLeadMinutes?: number;
+  serviceOverrides?: Record<string, Partial<NotificationCategories>>;
+  pauseUntil?: string | null;
+  pauseIndefinitely?: boolean;
+}
+
+export interface NotificationCategories {
+  courses: boolean;
+  homework: boolean;
+  grades: boolean;
+  news: boolean;
 }
 
 export interface PendingSystemNotification {
@@ -84,4 +98,5 @@ export interface PendingSystemNotification {
   title: string;
   body: string;
   at: string;
+  serviceId?: string;
 }

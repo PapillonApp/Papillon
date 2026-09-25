@@ -7,7 +7,7 @@ import { warn } from "@/utils/logger/logger";
 import { Grade, GradeScore, Period, PeriodGrades, Subject, } from "../shared/grade";
 import { SkillChipLevel } from "@/ui/components/SkillChip";
 import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
-import { getResponseArray } from "./response";
+import { getResponseArray, requireResponseArray } from "./response";
 
 export async function fetchEDGradePeriods(
   session: Client,
@@ -15,15 +15,16 @@ export async function fetchEDGradePeriods(
 ): Promise<Period[]> {
   try {
     const overview = await session.marks.getMark();
-    return getResponseArray<any>(overview, ["periodes", "data", "result"]).map(period => ({
+    return requireResponseArray<any>(overview, ["periodes", "data", "result"], "EcoleDirecte grade periods").map(period => ({
       name: period.periode,
       id: period.codePeriode,
       start: new Date(period.dateDebut),
       end: new Date(period.dateFin),
       createdByAccount: accountId,
     }));
-  } catch {
-    return [];
+  } catch (error) {
+    warn(`ED grade periods failed: ${String(error)}`);
+    throw error;
   }
 }
 
@@ -34,15 +35,14 @@ export async function fetchEDGrades(
 ): Promise<PeriodGrades> {
   try {
     const overview = await session.marks.getMark();
-    const periods = getResponseArray<any>(overview, ["periodes", "data", "result"]);
+    const periods = requireResponseArray<any>(overview, ["periodes", "data", "result"], "EcoleDirecte grade periods");
     const periodReport = periods.find(
       item => item.codePeriode === period.id || item.idPeriode === period.id
     );
-    const grades = getGradesForPeriod(getResponseArray<any>(overview, ["notes", "data", "result"]), period);
+    const grades = getGradesForPeriod(requireResponseArray<any>(overview, ["notes", "data", "result"], "EcoleDirecte grades"), period);
 
     if (!periodReport) {
-      warn("Invalid grades data structure or period not found");
-      return emptyPeriodGrades(accountId);
+      throw new Error("The requested EcoleDirecte grade period was not returned.");
     }
 
     const subjects: Record<string, Subject> = {};
@@ -120,16 +120,7 @@ export async function fetchEDGrades(
     }
   } catch (error) {
     warn(String(error));
-    return emptyPeriodGrades(accountId)
-  }
-}
-
-function emptyPeriodGrades(accountId: string): PeriodGrades {
-  return {
-    createdByAccount: accountId,
-    classAverage: { value: 16.66, disabled: true },
-    studentOverall: { value: 16.66, disabled: true },
-    subjects: []
+    throw error;
   }
 }
 
@@ -301,7 +292,7 @@ function getAverageScore(
 
   const validValues = subjects
     .map(subject => subject[key])
-    .filter(score => !score.disabled && Number.isFinite(score.value))
+    .filter((score): score is GradeScore => score !== undefined && score !== null && !score.disabled && Number.isFinite(score.value))
     .map(score => score.value)
 
   if (validValues.length === 0) {

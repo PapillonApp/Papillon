@@ -15,11 +15,11 @@ export async function fetchPronoteCanteenMenu(
   date: Date
 ): Promise<CanteenMenu[]> {
   if (!session) {
-    error("Session is undefined", "fetchPronoteAttendance");
+    throw error("Session is undefined", "fetchPronoteAttendance");
   }
 
   const weeklyMenu = await menus(session, date);
-  if (!weeklyMenu.days?.length) {
+  if (!Array.isArray(weeklyMenu.days) || weeklyMenu.days.length === 0) {
     return [];
   }
 
@@ -39,12 +39,12 @@ function mapCanteenMenu(menu: Menu): { lunch: Meal; dinner: Meal } {
 
 function mapMeal(meal: PawnoteMeal | undefined): Meal {
   return {
-    entry: mapFood([...meal?.entry ?? []]),
-    main: mapFood([...meal?.main ?? []]),
-    side: mapFood([...meal?.side ?? []]),
-    cheese: mapFood([...meal?.fromage ?? []]),
-    dessert: mapFood([...meal?.dessert ?? []]),
-    drink: mapFood([...meal?.drink ?? []]),
+    entry: mapFood(Array.isArray(meal?.entry) ? meal.entry : []),
+    main: mapFood(Array.isArray(meal?.main) ? meal.main : []),
+    side: mapFood(Array.isArray(meal?.side) ? meal.side : []),
+    cheese: mapFood(Array.isArray(meal?.fromage) ? meal.fromage : []),
+    dessert: mapFood(Array.isArray(meal?.dessert) ? meal.dessert : []),
+    drink: mapFood(Array.isArray(meal?.drink) ? meal.drink : []),
   };
 }
 

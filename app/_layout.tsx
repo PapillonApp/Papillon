@@ -18,6 +18,7 @@ import { useWidgetSync } from '@/widgets';
 import { LogBox } from 'react-native';
 import { appFetch, isTauriDesktop } from "@/utils/network/fetch";
 import { initializePendingSystemNotifications } from "@/utils/notifications";
+import { startDesktopBackground } from "@/utils/desktopBackground";
 
 // Polyfill Buffer
 global.Buffer = Buffer;
@@ -44,10 +45,11 @@ export default function RootLayout() {
 
   useEffect(() => {
     initializePendingSystemNotifications();
+    return startDesktopBackground();
   }, []);
 
   const analyticsView = useMemo(() => {
-    if (segments.length === 0) return null;
+    if (!segments[0]) return null;
 
     const groupMatch = segments[0].match(/^\((.+)\)$/);
     if (groupMatch) {

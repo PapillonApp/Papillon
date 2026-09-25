@@ -13,6 +13,7 @@ import { trackAdvancedEvent } from '@/utils/logger/analytics';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
 import { useSettingsStore } from "@/stores/settings";
 import { cancelSystemNotification, getNextNotificationTime, scheduleSystemNotification } from "@/utils/notifications";
+import { isTauriDesktop } from "@/utils/network/fetch";
 
 // Cache reads are coalesced over this window: fetching five weeks would
 // otherwise re-query every one of them five times over.
@@ -315,6 +316,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   }, [homeworkByWeek]);
 
   useEffect(() => {
+    if (isTauriDesktop()) return;
     const activeIds = new Set<string>();
     if (notificationPreferences?.enabled && notificationPreferences.homework) {
       for (const item of customHomeworks) {
@@ -338,6 +340,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   }, [customHomeworks, notificationPreferences?.enabled, notificationPreferences?.homework]);
 
   useEffect(() => {
+    if (isTauriDesktop()) return;
     const id = "homework-tomorrow";
     if (!notificationPreferences?.enabled || !notificationPreferences.homework || tomorrowHomework.length === 0) {
       void cancelSystemNotification(id);
@@ -350,7 +353,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
       id,
       title: "Devoirs pour demain",
       body: `${tomorrowHomework.length} devoir${tomorrowHomework.length > 1 ? "s" : ""}${subjects ? ` : ${subjects}` : ""}${extraCount ? ` et ${extraCount} autre${extraCount > 1 ? "s" : ""}` : ""}`,
-      at: getNextNotificationTime(notificationPreferences.dailyTime || "19:00", 0),
+      at: getNextNotificationTime(notificationPreferences.dailyTime || "18:00", 0),
     });
   }, [tomorrowHomework, notificationPreferences?.enabled, notificationPreferences?.homework, notificationPreferences?.dailyTime]);
 

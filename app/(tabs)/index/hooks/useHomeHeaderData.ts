@@ -8,6 +8,7 @@ import { Services } from '@/stores/account/types';
 import { useNews } from '@/database/useNews';
 import { useSettingsStore } from '@/stores/settings';
 import { showSystemNotification } from '@/utils/notifications';
+import { isTauriDesktop } from '@/utils/network/fetch';
 
 const EMPTY_NOTIFICATION_IDS: string[] = [];
 
@@ -38,6 +39,7 @@ export const useHomeHeaderData = () => {
   const mutateSettings = useSettingsStore(state => state.mutateProperty);
 
   useEffect(() => {
+    if (isTauriDesktop()) return;
     if (news.length === 0) return;
     const ids = news.map(item => item.id);
     if (seenNewsIds.length === 0) {

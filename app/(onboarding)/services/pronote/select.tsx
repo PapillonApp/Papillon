@@ -1,6 +1,6 @@
 import { useHeaderHeight, useRoute, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
-import { geolocation } from "@blockshub/pawnote-lts";
+import { geolocation, GeolocatedInstance } from "@blockshub/pawnote-lts";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, KeyboardAvoidingView, Platform } from "react-native";
@@ -15,13 +15,8 @@ import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import { GeoSearchCityInfo } from "@/utils/native/georeverse";
 
-
-export interface School {
-  name: string,
-  distance: number,
-  url: string
-}
 
 const PronoteSearchHeader = memo(({
   search,
@@ -65,29 +60,46 @@ export default function PronoteLoginSelectEtab() {
   const { t } = useTranslation();
 
   const { params } = useRoute();
-  const { city } = params;
+  const { city } = (params ?? {}) as { city?: GeoSearchCityInfo };
 
   const [search, setSearch] = useState<string>("");
-  const [schools, setSchools] = useState<Array<School>>([]);
+  const [schools, setSchools] = useState<GeolocatedInstance[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [searchError, setSearchError] = useState("");
 
   useEffect(() => {
-    if(!city) {return;}
+    if(!city) { setLoading(false); return; }
+    let canceled = false;
     navigation.setOptions({ headerTitle: t("ONBOARDING_SCHOOLS_IN_CITY", { city: city.city }) });
-    geolocation({ latitude: city?.latitude ?? 0, longitude: city?.longitude ?? 0 }).then((schoolsFound) => {
-      setSchools(schoolsFound);
-      setLoading(false);
-    });
+    setLoading(true);
+    setSearchError("");
+    geolocation({ latitude: city?.latitude ?? 0, longitude: city?.longitude ?? 0 })
+      .then((schoolsFound) => {
+        if (!canceled) setSchools(Array.isArray(schoolsFound) ? schoolsFound : []);
+      })
+      .catch((error: unknown) => {
+        if (!canceled) {
+          setSchools([]);
+          setSearchError(error instanceof Error ? error.message : "La recherche PRONOTE a échoué.");
+        }
+      })
+      .finally(() => { if (!canceled) setLoading(false); });
+    return () => { canceled = true; };
   }, [city, navigation, t]);
 
   const filteredSchools = schools.filter(school => school.name.toLowerCase().includes(search.toLowerCase()));
 
-  const selectSchool = (school: School) => {
-    navigation.navigate("browser", { url: school.url, school });
+  const selectSchool = (school: GeolocatedInstance) => {
+    (navigation as unknown as {
+      navigate: (routeName: string, params: { url: string; school: GeolocatedInstance }) => void;
+    }).navigate("browser", { url: school.url, school });
   }
+  const navigateToURL = () => (navigation as unknown as {
+    navigate: (routeName: string) => void;
+  }).navigate("url");
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.background }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
         animated
         ListHeaderComponent={<PronoteSearchHeader search={search} setSearch={setSearch} loading={loading} t={t} />}
@@ -118,6 +130,12 @@ export default function PronoteLoginSelectEtab() {
             </Typography>
           </List.Item>
         ))}
+        {!loading && searchError.length > 0 && <List.Item>
+          <Typography variant="body1" color="textSecondary">{searchError}</Typography>
+        </List.Item>}
+        {!loading && (searchError.length > 0 || filteredSchools.length === 0) && <List.Item onPress={navigateToURL}>
+          <Typography variant="title">Saisir l’adresse PRONOTE manuellement</Typography>
+        </List.Item>}
       </List>
     </KeyboardAvoidingView>
   )

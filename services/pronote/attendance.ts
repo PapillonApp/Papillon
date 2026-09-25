@@ -21,24 +21,24 @@ import { error } from "@/utils/logger/logger";
  */
 export async function fetchPronoteAttendance(session: SessionHandle, accountId: string, period: string): Promise<Attendance> {
   if (!session) {
-    error("Session is undefined", "fetchPronoteAttendance");
+    throw error("Session is undefined", "fetchPronoteAttendance");
   }
 
   const attendanceTab = session.user.resources[0].tabs.get(TabLocation.Notebook);
   if (!attendanceTab) {
-    error("Attendance tab not found in session", "fetchPronoteAttendance");
+    throw error("Attendance tab not found in session", "fetchPronoteAttendance");
   }
 
   const pawnotePeriod = attendanceTab.periods.find(p => p.name === period);
   if (!pawnotePeriod) {
-    error(`Period "${period}" not found in attendance tab`, "fetchPronoteGrades");
+    throw error(`Period "${period}" not found in attendance tab`, "fetchPronoteAttendance");
   }
 
   const attendance = await notebook(session, pawnotePeriod);
-  const delays = mapDelays(attendance.delays, accountId).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
-  const absences = mapAbsences(attendance.absences, accountId).sort((a, b) => a.from.getTime() - b.from.getTime());
-  const punishments = mapPunishments(attendance.punishments, accountId).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
-  const observations = mapObservations(attendance.observations).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
+  const delays = mapDelays(Array.isArray(attendance.delays) ? attendance.delays : [], accountId).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
+  const absences = mapAbsences(Array.isArray(attendance.absences) ? attendance.absences : [], accountId).sort((a, b) => a.from.getTime() - b.from.getTime());
+  const punishments = mapPunishments(Array.isArray(attendance.punishments) ? attendance.punishments : [], accountId).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
+  const observations = mapObservations(Array.isArray(attendance.observations) ? attendance.observations : []).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
 
   return {
     delays: delays,
@@ -58,10 +58,10 @@ export async function fetchPronoteAttendance(session: SessionHandle, accountId: 
 export async function fetchPronoteAttendancePeriods(session: SessionHandle, accountId: string): Promise<Period[]> {
   const attendanceTab = session.user.resources[0].tabs.get(TabLocation.Notebook);
   if (!attendanceTab) {
-    error("Attendance tab not found in session", "fetchPronotePeriods");
+    throw error("Attendance tab not found in session", "fetchPronotePeriods");
   }
 
-  return attendanceTab.periods.map(p => ({
+  return (Array.isArray(attendanceTab.periods) ? attendanceTab.periods : []).map(p => ({
     id: p.id,
     name: p.name,
     start: p.startDate,
@@ -131,7 +131,7 @@ function mapPunishments(punishments: NotebookPunishment[], accountId: string): P
     duringLesson: p.isDuringLesson,
     homework: {
       text: p.workToDo,
-      documents: p.workToDoDocuments.map((attachment) => ({
+      documents: (Array.isArray(p.workToDoDocuments) ? p.workToDoDocuments : []).map((attachment) => ({
         type: attachment.kind,
         name: attachment.name,
         url: attachment.url,
@@ -139,9 +139,9 @@ function mapPunishments(punishments: NotebookPunishment[], accountId: string): P
       }))
     },
     reason: {
-      text: p.reasons.join(", "),
+      text: (Array.isArray(p.reasons) ? p.reasons : []).join(", "),
       circumstances: p.circumstances,
-      documents: p.circumstancesDocuments.map((attachment) => ({
+      documents: (Array.isArray(p.circumstancesDocuments) ? p.circumstancesDocuments : []).map((attachment) => ({
         type: attachment.kind,
         name: attachment.name,
         url: attachment.url,

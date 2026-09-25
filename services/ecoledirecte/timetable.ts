@@ -4,21 +4,21 @@ import { getDateRangeOfWeek } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 
 import { Course, CourseDay, CourseStatus, CourseType } from "../shared/timetable";
-import { getResponseArray } from "./response";
+import { requireResponseArray } from "./response";
 
 export async function fetchEDTimetable(session: Client, accountId: string, weekNumber: number): Promise<CourseDay[]> {
   try {
     const { start, end } = getDateRangeOfWeek(weekNumber);
 
     const response = await session.timetable.getTimetableBetweenDates(start, end, false);
-    const timetable = getResponseArray<TimetableCourse>(response, [
+    const timetable = requireResponseArray<TimetableCourse>(response, [
       "cours",
       "courses",
       "timetable",
       "emploiDuTemps",
       "data",
       "result",
-    ]).filter(course => course.codeMatiere !== "");
+    ], "EcoleDirecte timetable").filter(course => course.codeMatiere !== "");
     const mappedCourses = mapEcoleDirecteCourses(timetable, accountId);
     const dayMap: Record<string, Course[]> = {};
 
@@ -38,7 +38,7 @@ export async function fetchEDTimetable(session: Client, accountId: string, weekN
     }));
   } catch(error) {
     warn(String(error))
-    return []
+    throw error
   }
 }
 

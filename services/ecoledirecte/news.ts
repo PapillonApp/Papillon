@@ -5,7 +5,7 @@ import { Client } from "@blockshub/blocksdirecte";
 import { warn } from "@/utils/logger/logger";
 
 import { News } from "../shared/news";
-import { getResponseArray } from "./response";
+import { requireResponseArray } from "./response";
 
 type EDTimelinePostit = {
   id: number | string;
@@ -21,10 +21,10 @@ type EDTimelinePostit = {
 export async function fetchEDNews(session: Client, accountId: string): Promise<News[]> {
   try {
     const timeline = await session.timeline.getPublicTimeline();
-    return mapEDNews(getResponseArray<EDTimelinePostit>(timeline, ["postits", "data", "result"]), accountId);
+    return mapEDNews(requireResponseArray<EDTimelinePostit>(timeline, ["postits", "data", "result"], "EcoleDirecte timeline"), accountId);
   } catch (error) {
     warn(`ED public timeline failed: ${String(error)}`);
-    return [];
+    throw error;
   }
 }
 

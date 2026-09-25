@@ -25,12 +25,15 @@ export async function fetchEDHomeworks(
 
     for (const subject of matieres) {
       const homework = subject.aFaire
+      if (!homework || (homework.idDevoir === undefined && !homework.contenu?.trim())) continue;
       homeworks.push({
         attachments: [],
-        content: homework?.contenu ?? "",
-        isDone: homework?.effectue ?? false,
+        content: homework.contenu ?? "",
+        isDone: homework.effectue ?? false,
         dueDate: date,
-        id: String(homework?.idDevoir),
+        id: homework.idDevoir === undefined
+          ? `${formattedDate}-${subject.matiere?.trim() || subject.entityLibelle?.trim() || "Autre"}`
+          : String(homework.idDevoir),
         subject: subject.matiere?.trim() || subject.entityLibelle?.trim() || "Autre",
         evaluation: false,
         custom: false,
@@ -45,6 +48,9 @@ export async function fetchEDHomeworks(
 export async function setEDHomeworkAsDone(session: Client, homework: Homework, state?: boolean): Promise<Homework> {
   const finalState = state ?? !homework.isDone
   const homeworkId = Number(homework.id)
+  if (!Number.isFinite(homeworkId)) {
+    throw new Error("Ce devoir EcoleDirecte n’a pas d’identifiant valide.");
+  }
   
   if (finalState) {
     await session.homework.markHomeworkAsDone(homeworkId)

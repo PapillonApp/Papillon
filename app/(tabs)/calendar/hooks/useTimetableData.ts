@@ -10,6 +10,7 @@ import { useAccountStore } from '@/stores/account';
 import { debug, log } from "@/utils/logger/logger";
 import { useSettingsStore } from "@/stores/settings";
 import { cancelSystemNotification, getNextNotificationTime, scheduleSystemNotification } from "@/utils/notifications";
+import { isTauriDesktop } from "@/utils/network/fetch";
 
 export function useTimetableData(weekNumber: number, currentDate: Date = new Date()) {
   const safeDate = currentDate;
@@ -48,6 +49,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
   }, [rawTimetable, services]);
 
   useEffect(() => {
+    if (isTauriDesktop()) return;
     const id = "courses-tomorrow";
     if (!notificationPreferences?.enabled || !notificationPreferences.courses) {
       void cancelSystemNotification(id);
@@ -71,7 +73,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
       id,
       title: `Cours de demain · ${courses.length} cours`,
       body: subjects || "Consulte ton emploi du temps pour demain.",
-      at: getNextNotificationTime(notificationPreferences.dailyTime || "19:00", 0),
+      at: getNextNotificationTime(notificationPreferences.dailyTime || "18:00", 0),
     });
   }, [timetable, notificationPreferences?.enabled, notificationPreferences?.courses, notificationPreferences?.dailyTime]);
 

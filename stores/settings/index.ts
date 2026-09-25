@@ -35,11 +35,18 @@ const defaultPersonalization: Personalization = {
     homework: true,
     grades: false,
     news: false,
-    dailyTime: "19:00",
+    dailyTime: "18:00",
+    courseLeadMinutes: 15,
+    serviceOverrides: {},
+    pauseUntil: null,
+    pauseIndefinitely: false,
   },
+  notificationSeenServiceItemKeys: {},
   notificationSeenGradeIds: [],
   notificationSeenNewsIds: [],
   pendingNotificationSchedules: [],
+  desktopStartWithWindows: false,
+  desktopBackgroundOnClose: false,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(

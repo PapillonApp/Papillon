@@ -20,17 +20,17 @@ import { error } from "@/utils/logger/logger";
  */
 export async function fetchPronoteGrades(session: SessionHandle, accountId: string, period: Period): Promise<PeriodGrades> {
   if (!session) {
-    error("Session is undefined", "fetchPronoteGrades");
+    throw error("Session is undefined", "fetchPronoteGrades");
   }
 
   const gradeTab = session.user.resources[0].tabs.get(TabLocation.Grades);
   if (!gradeTab) {
-    error("Grades tab not found in session", "fetchPronoteGrades");
+    throw error("Grades tab not found in session", "fetchPronoteGrades");
   }
 
   const pawnotePeriod = gradeTab.periods.find(p => p.name === period.name);
   if (!pawnotePeriod) {
-    error(`Period "${period}" not found in grades tab`, "fetchPronoteGrades");
+    throw error(`Period "${period.name}" not found in grades tab`, "fetchPronoteGrades");
   }
 
   const grades = await gradesOverview(session, pawnotePeriod);
@@ -52,10 +52,10 @@ export async function fetchPronoteGrades(session: SessionHandle, accountId: stri
 export async function fetchPronoteGradePeriods(session: SessionHandle, accountId: string): Promise<Period[]> {
   const accountTab = session.user.resources[0].tabs.get(TabLocation.Grades);
   if (!accountTab) {
-    error("Grades tab not found in session", "fetchPronotePeriods");
+    throw error("Grades tab not found in session", "fetchPronotePeriods");
   }
 
-  return accountTab.periods.map(p => ({
+  return (Array.isArray(accountTab.periods) ? accountTab.periods : []).map(p => ({
     id: p.id,
     name: p.name,
     start: p.startDate,
@@ -72,7 +72,7 @@ export async function fetchPronoteGradePeriods(session: SessionHandle, accountId
 function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] {
   const subjects: Subject[] = [];
   
-  const allMappedGrades: Grade[] = grades.grades.map(g => ({
+  const allMappedGrades: Grade[] = (Array.isArray(grades.grades) ? grades.grades : []).map(g => ({
     id: g.id,
     subjectId: g.subject.id,
     subjectName: g.subject.name,
@@ -99,7 +99,7 @@ function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] 
     createdByAccount: accountId
   }));
 
-  for (const average of grades.subjectsAverages) {
+  for (const average of Array.isArray(grades.subjectsAverages) ? grades.subjectsAverages : []) {
     const subjectId = average.subject.id;
 
     const subjectGrades = allMappedGrades.filter(g => g.subjectId === subjectId);

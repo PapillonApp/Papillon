@@ -6,7 +6,7 @@ import { Absence, Attendance, Delay, Punishment } from "../shared/attendance";
 import { Period } from "../shared/grade";
 import { durationToMinutes } from "../skolengo/attendance";
 import { fetchEDGradePeriods } from "./grades";
-import { getResponseArray } from "./response";
+import { requireResponseArray } from "./response";
 
 const FRENCH_MONTHS: Record<string, number> = {
   janvier: 0,
@@ -30,11 +30,11 @@ export async function fetchEDAttendance(session: Client, accountId: string, peri
       ? await getSelectedPeriod(session, accountId, periodName)
       : undefined;
     const schoolLifeItems = filterAttendanceItemsByPeriod(
-      getResponseArray<SchoolLifeAttendanceItem>(attendance, ["absencesRetards", "data", "result"]),
+      requireResponseArray<SchoolLifeAttendanceItem>(attendance, ["absencesRetards", "data", "result"], "EcoleDirecte attendance"),
       selectedPeriod
     );
     const conductItems = filterConductItemsByPeriod(
-      getResponseArray<SchoolLifeConductItem>(attendance, ["sanctionsEncouragements", "data", "result"]),
+      requireResponseArray<SchoolLifeConductItem>(attendance, ["sanctionsEncouragements", "data", "result"], "EcoleDirecte conduct records"),
       selectedPeriod
     );
 
@@ -47,13 +47,7 @@ export async function fetchEDAttendance(session: Client, accountId: string, peri
     };
   } catch (error) {
     warn(String(error));
-    return {
-      absences: [],
-      punishments: [],
-      delays: [],
-      observations: [],
-      createdByAccount: accountId
-    };
+    throw error;
   }
 }
 

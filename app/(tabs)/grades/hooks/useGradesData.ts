@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useManagerSubscription } from "@/hooks/useManagerSubscription";
 import { useSettingsStore } from "@/stores/settings";
 import { showSystemNotification } from "@/utils/notifications";
+import { isTauriDesktop } from "@/utils/network/fetch";
 import type { AccountManager } from "@/services/shared";
 import { getManager } from "@/services/shared";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
@@ -216,6 +217,7 @@ export function useGradesData(
   const grades = useMemo(() => sortGradesByDateDesc(subjects.flatMap(s => s.grades ?? [])), [subjects]);
 
   useEffect(() => {
+    if (isTauriDesktop()) return;
     if (!period || loading || grades.length === 0) return;
     const periodKey = period.id ?? period.name;
     const ids = grades.map(grade => `${periodKey}:${grade.subjectId}:${grade.id}`);
