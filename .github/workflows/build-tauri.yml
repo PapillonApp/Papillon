@@ -1,4 +1,4 @@
-name: Build Scola (Tauri)
+name: Build Papillon (Tauri)
 
 on:
   workflow_dispatch: {}
@@ -56,5 +56,5 @@ jobs:
       - name: Upload installer
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: Scola-Windows
+          name: Papillon-Windows
           path: src-tauri/target/release/bundle/nsis/*.exe

@@ -21,7 +21,8 @@
     "check:web-native-imports": "node scripts/check-web-native-imports.js",
     "check:web-bundle": "node scripts/check-web-bundle.js",
     "check:web-animations": "node scripts/check-web-animations.js",
-    "check:web-compat": "node scripts/check-web-compat.js"
+    "check:web-compat": "node scripts/check-web-compat.js",
+    "tauri": "tauri"
   },
   "jest": {
     "preset": "jest-expo"
