@@ -9,17 +9,10 @@
 //! pilotée depuis Rust, avec le même niveau d'accès que la WebView native
 //! sur mobile.
 //!
-//! ⚠️ Fichier le moins vérifié de tout le portage : pas de toolchain Rust
-//! disponible dans l'environnement où ce projet a été préparé, donc rien
-//! ici n'a été compilé ni testé contre un vrai flux de connexion Pronote.
-//! Les méthodes utilisées (on_navigation, on_page_load, initialization_script,
-//! on_ipc_handler, incognito, user_agent) sont des API Tauri 2.x réelles et
-//! documentées ; leur exacte disponibilité sur `WebviewWindowBuilder` (plutôt
-//! que sur le `WebviewBuilder` de plus bas niveau) est la seule zone
-//! d'incertitude. Si `cargo build` râle sur l'une d'elles, se référer à
-//! https://docs.rs/tauri/latest/tauri/webview/struct.WebviewWindowBuilder.html
-//! — la bascule vers `WebviewBuilder` + `window.add_child(...)` est la
-//! solution de repli documentée par Tauri pour le même besoin.
+//! Le pont de messages utilise une commande Tauri plutôt que `on_ipc_handler` :
+//! `WebviewWindowBuilder` expose les hooks de navigation/chargement, mais pas
+//! ce hook IPC. Le script d'initialisation appelle donc `embedded_webview_message`
+//! via l'API globale Tauri, puis Rust réémet le message vers le frontend.
 
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -50,16 +43,29 @@ struct NavPayload {
 /// à chaque navigation) : redonne vie à `window.ReactNativeWebView.postMessage`,
 /// exactement l'API que le code applicatif existant utilise déjà pour
 /// parler à une vraie react-native-webview.
-const BRIDGE_INIT_SCRIPT: &str = r#"
-(function () {
+fn bridge_init_script(session_id: &str) -> String {
+    let session_json = serde_json::to_string(session_id)
+        .unwrap_or_else(|_| "\"\"".to_string());
+    format!(
+        r#"
+(function () {{
   if (window.ReactNativeWebView) return;
-  window.ReactNativeWebView = {
-    postMessage: function (data) {
-      try { window.ipc.postMessage(String(data)); } catch (e) {}
-    }
-  };
-})();
-"#;
+  window.ReactNativeWebView = {{
+    postMessage: function (data) {{
+      try {{
+        if (window.__TAURI__ && window.__TAURI__.core) {{
+          void window.__TAURI__.core.invoke("embedded_webview_message", {{
+            sessionId: {session_json},
+            body: String(data)
+          }});
+        }}
+      }} catch (e) {{}}
+    }}
+  }};
+}})();
+"#
+    )
+}
 
 #[tauri::command]
 pub async fn embedded_webview_open(
@@ -81,7 +87,7 @@ pub async fn embedded_webview_open(
 
     let label = format!("embedded-{session_id}");
 
-    let mut combined_init = BRIDGE_INIT_SCRIPT.to_string();
+    let mut combined_init = bridge_init_script(&session_id);
     if let Some(extra) = init_script {
         if !extra.trim().is_empty() {
             combined_init.push_str("\n;(function(){\n");
@@ -94,8 +100,6 @@ pub async fn embedded_webview_open(
     let nav_session = session_id.clone();
     let load_app = app.clone();
     let load_session = session_id.clone();
-    let msg_app = app.clone();
-    let msg_session = session_id.clone();
 
     let mut builder = WebviewWindowBuilder::new(&app, &label, WebviewUrl::External(target))
         .title("Connexion — Papillon")
@@ -121,14 +125,7 @@ pub async fn embedded_webview_open(
                 LoadPayload { phase, url: Some(payload.url().to_string()) },
             );
         })
-        .on_ipc_handler(move |_webview, request| {
-            // Relaie tel quel au frontend : c'est ici qu'arrivent les
-            // window.ReactNativeWebView.postMessage(JSON.stringify(...))
-            // du script injecté par browser.tsx (état de connexion Pronote,
-            // erreurs, etc.)
-            let body = String::from_utf8_lossy(request.body()).to_string();
-            let _ = msg_app.emit(&format!("embedded-webview://{msg_session}/message"), body);
-        });
+        ;
 
     if let Some(ua) = user_agent {
         if !ua.trim().is_empty() {
@@ -153,6 +150,27 @@ pub async fn embedded_webview_open(
 /// Sert à la fois à l'API impérative `injectJavaScript` du shim JS et à ses
 /// équivalents `reload`/`goBack`/`goForward`/`stopLoading` (traduits côté JS
 /// en `location.reload()`, `history.back()`, etc.)
+#[tauri::command]
+pub fn embedded_webview_message(
+    app: AppHandle,
+    state: tauri::State<'_, EmbeddedWebviews>,
+    session_id: String,
+    body: String,
+) -> Result<(), String> {
+    let exists = state
+        .0
+        .lock()
+        .map_err(|_| "embedded_webview_message: registre verrouillé".to_string())?
+        .contains_key(&session_id);
+
+    if !exists {
+        return Err(format!("embedded_webview_message: session inconnue '{session_id}'"));
+    }
+
+    app.emit(&format!("embedded-webview://{session_id}/message"), body)
+        .map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 pub fn embedded_webview_eval(
     state: tauri::State<'_, EmbeddedWebviews>,

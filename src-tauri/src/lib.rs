@@ -21,6 +21,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             embedded_webview::embedded_webview_open,
+            embedded_webview::embedded_webview_message,
             embedded_webview::embedded_webview_eval,
             embedded_webview::embedded_webview_close,
         ])
