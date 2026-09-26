@@ -1,9 +1,10 @@
 import { Link } from "expo-router";
 import { t } from "i18next";
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CommuteCard } from "@/components/transport/CommuteCard";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { TransportStorage } from "@/stores/account/types";
 import Course from "@/ui/components/Course";
@@ -53,6 +54,15 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
 
+  const [commuteRefreshToken, setCommuteRefreshToken] = useState(0);
+  const wasRefreshing = useRef(isRefreshing);
+  useEffect(() => {
+    if (isRefreshing && !wasRefreshing.current) {
+      setCommuteRefreshToken(token => token + 1);
+    }
+    wasRefreshing.current = isRefreshing;
+  }, [isRefreshing]);
+
   // Shallow compare function
   function shallowEqual(objA: any, objB: any) {
     if (objA === objB) { return true; }
@@ -86,6 +96,11 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
   const enrichedEvents = useMemo(() => {
     if (!dayEvents || dayEvents.length === 0) {return dayEvents;}
     const result: any[] = [];
+    const showCommute = transportInfo?.enabled ?? false;
+
+    if (showCommute) {
+      result.push({ id: "commute-departure", type: "commute", direction: "departure" });
+    }
 
     // Add separator between events
     for (let i = 0; i < dayEvents.length; i++) {
@@ -108,14 +123,19 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
       }
     }
 
+    if (showCommute) {
+      result.push({ id: "commute-return", type: "commute", direction: "return" });
+    }
+
     return result;
-  }, [dayEvents]);
+  }, [dayEvents, transportInfo?.enabled]);
 
   const isEmpty = enrichedEvents.length === 0;
 
   return (
     <SafeAreaView edges={['left', 'right']} style={{ width: windowWidth, flex: 1 }}>
       <FlatList
+        extraData={commuteRefreshToken}
         data={enrichedEvents}
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -140,6 +160,17 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
         keyExtractor={item => item.id || `${item.type}-${item.from || item.targetTime}`}
         ListEmptyComponent={<EmptyCalendar hasError={hasError} />}
         renderItem={({ item }: { item: SharedCourse }) => {
+          if ((item as any).type === "commute") {
+            return (
+              <CommuteCard
+                day={dayDate}
+                courses={courses ?? []}
+                direction={(item as any).direction}
+                refreshToken={commuteRefreshToken}
+              />
+            );
+          }
+
           if ((item as any).type === "separator") {
             return (
               <Course
@@ -186,6 +217,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.hasError === nextProps.hasError &&
+    prevProps.transportInfo === nextProps.transportInfo &&
     prevProps.onRefresh === nextProps.onRefresh &&
     areCoursesEquivalent(prevProps.courses, nextProps.courses)
   );

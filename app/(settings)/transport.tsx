@@ -15,6 +15,7 @@ import { TransportAddress } from "@/stores/account/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import { margin, margins } from "@/services/transport/target";
 
 export default function TransportView() {
   const safePadding = useSafeHorizontalPadding(20);
@@ -24,6 +25,7 @@ export default function TransportView() {
   const { transport } = accounts.find(a => a.id === lastUsedAccount)!;
 
   const theme = useTheme();
+  const colors = theme.colors as unknown as { text: string; overground: string };
   const { t } = useTranslation();
 
   const [transportEnabled, setTransportEnabled] = React.useState(
@@ -60,7 +62,7 @@ export default function TransportView() {
 
   return (
     <List
-      style={{ flex: 1, backgroundColor: theme.colors.overground }}
+      style={{ flex: 1, backgroundColor: colors.overground }}
       contentContainerStyle={{
         padding: 20,
         ...safePadding,
@@ -95,7 +97,7 @@ export default function TransportView() {
           style={{ opacity: transportEnabled ? 1 : 0.5 }}
         >
           <List.Leading>
-            <Papicons name={"Home"} fill={theme.colors.text} opacity={0.7} />
+            <Papicons name={"Home"} fill={colors.text} opacity={0.7} />
           </List.Leading>
           <Typography numberOfLines={1}>
             {t("Settings_Transport_Address_Home_Title")}
@@ -106,7 +108,7 @@ export default function TransportView() {
           <List.Trailing>
             <Papicons
               name={"ChevronRight"}
-              fill={theme.colors.text}
+              fill={colors.text}
               opacity={0.5}
             />
           </List.Trailing>
@@ -120,7 +122,7 @@ export default function TransportView() {
           style={{ opacity: transportEnabled ? 1 : 0.5 }}
         >
           <List.Leading>
-            <Papicons name={"Grades"} fill={theme.colors.text} opacity={0.7} />
+            <Papicons name={"Grades"} fill={colors.text} opacity={0.7} />
           </List.Leading>
           <Typography numberOfLines={1}>
             {t("Settings_Transport_Address_School_Title")}
@@ -131,15 +133,49 @@ export default function TransportView() {
           <List.Trailing>
             <Papicons
               name={"ChevronRight"}
-              fill={theme.colors.text}
+              fill={colors.text}
               opacity={0.5}
             />
           </List.Trailing>
         </List.Item>
       </List.Section>
-      <List.View style={{ marginVertical: 10 }}>
+      <List.View style={{ marginVertical: 10, gap: 6 }}>
         <Typography variant={"caption"} color={"textSecondary"}>
           {t("Settings_Transport_Address_Description")}
+        </Typography>
+        <Typography variant={"caption"} color={"textSecondary"}>
+          {t("Settings_Transport_Privacy")}
+        </Typography>
+      </List.View>
+
+      <List.SectionTitle>
+        <List.Label>{t("Settings_Transport_Margin_Title")}</List.Label>
+      </List.SectionTitle>
+      <List.Section>
+        {margins().map(minutes => (
+          <List.Item
+            key={minutes}
+            onPress={() => {
+              if (transportEnabled) {
+                accountStore.setTransportMargin(minutes);
+              }
+            }}
+            style={{ opacity: transportEnabled ? 1 : 0.5 }}
+          >
+            {margin(transport) === minutes && (
+              <List.Trailing>
+                <Papicons name={"Check"} fill={"#E8901C"} />
+              </List.Trailing>
+            )}
+            <Typography numberOfLines={1} variant={"title"}>
+              {t("Settings_Transport_Margin_Option", { minutes })}
+            </Typography>
+          </List.Item>
+        ))}
+      </List.Section>
+      <List.View style={{ marginVertical: 10 }}>
+        <Typography variant={"caption"} color={"textSecondary"}>
+          {t("Settings_Transport_Margin_Description")}
         </Typography>
       </List.View>
 

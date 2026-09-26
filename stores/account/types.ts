@@ -35,6 +35,7 @@ export interface AccountsStorage {
   setTransportService: (id: string) => void;
   setTransportHomeAddress: (address: TransportAddress) => void;
   setTransportSchoolAddress: (address: TransportAddress) => void;
+  setTransportMargin: (minutes: number) => void;
   initializeTransport: (address: string | undefined) => void;
 }
 
@@ -72,7 +73,7 @@ export interface TeamModalStorage {
 }
 
 export interface CustomisableSubject {
-  id: string; color: string; emoji: string; name: string 
+  id: string; color: string; emoji: string; name: string
 }
 
 export interface CustomisationStorage {
@@ -93,6 +94,7 @@ export interface TransportStorage {
   homeAddress?: TransportAddress;
   schoolAddress?: TransportAddress;
   defaultApp: string;
+  marginMinutes?: number;
 }
 
 /**

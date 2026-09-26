@@ -113,6 +113,18 @@ function RootNavigatorContent() {
           }}
         />
         <Stack.Screen
+          name="(modals)/itinerary"
+          options={{
+            headerTitle: t("Transport_Itinerary_Title"),
+            headerLargeTitle: false,
+            headerTransparent: true,
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [1],
+            ...androidHeaderProps,
+          }}
+        />
+        <Stack.Screen
           name="(modals)/notifications"
           options={{
             headerShown: false,
