@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppState, type AppStateStatus } from "react-native";
 
-import { useTimetableWidgetData } from "@/app/(tabs)/index/hooks/useTimetableWidgetData";
+import {
+  useTimetableWidgetData,
+  type UpcomingCourseDay
+} from "@/app/(tabs)/index/hooks/useTimetableWidgetData";
 import { useUpcomingHomework } from "@/app/(tabs)/tasks/hooks/useUpcomingHomework";
 import { useSettingsStore } from "@/stores/settings";
 import { AppColors } from "@/utils/colors";
@@ -11,6 +14,8 @@ import { useFont } from "@/utils/theme/fonts";
 
 import { CalendarWidget } from "./calendar/CalendarWidget";
 import { buildCalendarTimeline } from "./calendar/data";
+import { nextLiveActivityTransition } from "./course/selection";
+import { syncCourseLiveActivity } from "./course/liveActivity";
 import { TasksWidget } from "./tasks/TasksWidget";
 import { buildTasksTimeline } from "./tasks/data";
 import { buildWidgetTheme, type WidgetFonts } from "./theme";
@@ -44,10 +49,6 @@ const useWidgetFonts = (): WidgetFonts => {
   );
 };
 
-/**
- * Bumps a counter every time the app comes back to the foreground, so the
- * widget timelines get rebuilt (with a fresh `new Date()`) on every focus.
- */
 const useForegroundTick = () => {
   const [tick, setTick] = useState(0);
 
@@ -78,21 +79,65 @@ const push = (name: string, update: () => void) => {
   }
 };
 
-/**
- * Keeps the home screen widgets in sync with the app's data. Mounted once at the
- * root, so widgets are refreshed on every launch and whenever the data they
- * display changes while the app is running.
- */
+const MAX_TRANSITION_DELAY_MS = 30 * 60 * 1000;
+
+// Live Activities cannot be scheduled ahead without a push, so the app starts,
+// updates and ends them itself: on foreground, on data change, and on a timer
+// set to the exact moment the selected course changes.
+const useCourseLiveActivity = (days: UpcomingCourseDay[], loading: boolean) => {
+  const enabled = useSettingsStore(
+    (state) => state.personalization.liveActivitiesEnabled ?? true
+  );
+  const testMode = useSettingsStore(
+    (state) => state.personalization.liveActivityTestMode ?? false
+  );
+  const { i18n } = useTranslation();
+  const fontFamily = useSettingsStore((state) => state.personalization.fontFamily);
+  const foregroundTick = useForegroundTick();
+  const [transitionTick, setTransitionTick] = useState(0);
+  const timeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const courses = useMemo(() => days.flatMap((day) => day.courses), [days]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    const at = new Date();
+    syncCourseLiveActivity(courses, { at, testMode, enabled });
+
+    const next = enabled ? nextLiveActivityTransition(courses, at) : null;
+    if (next === null) {
+      return;
+    }
+
+    const delay = Math.min(next - at.getTime() + 1000, MAX_TRANSITION_DELAY_MS);
+    timeout.current = setTimeout(() => setTransitionTick((value) => value + 1), delay);
+
+    return () => clearTimeout(timeout.current);
+  }, [
+    courses,
+    loading,
+    enabled,
+    testMode,
+    fontFamily,
+    i18n.language,
+    foregroundTick,
+    transitionTick
+  ]);
+};
+
 export const useWidgetSync = () => {
   const { upcomingDays, loading } = useTimetableWidgetData({ showCancelled: true });
   const homework = useUpcomingHomework();
   const accentColor = useAccentColor();
   const fonts = useWidgetFonts();
   const theme = useMemo(() => buildWidgetTheme(accentColor), [accentColor]);
-  // Widget labels are rendered by the app, so they have to be rebuilt when the
-  // user switches language.
   const { i18n } = useTranslation();
   const foregroundTick = useForegroundTick();
+
+  useCourseLiveActivity(upcomingDays, loading);
 
   useEffect(() => {
     if (loading) {

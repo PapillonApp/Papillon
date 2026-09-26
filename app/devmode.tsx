@@ -25,6 +25,10 @@ import { initializeTransport } from "@/utils/transport";
 import LogIcon from "@/components/Log/LogIcon";
 import { getManager, initializeAccountManager } from "@/services/shared";
 import { warn } from "@/utils/logger/logger";
+import {
+  COURSE_LIVE_ACTIVITY_SUPPORTED,
+  stopCourseLiveActivity
+} from "@/widgets/course";
 
 const HOSTS: Record<string, { title: string; icon: string }> = {
   "index-education": { title: "PRONOTE", icon: "Pronote" },
@@ -45,6 +49,9 @@ export default function DevMode() {
   const headerHeight = useHeaderHeight();
   const mockDataEnabled = useSettingsStore(
     state => state.personalization.mockDataEnabled ?? false
+  );
+  const liveActivityTestMode = useSettingsStore(
+    state => state.personalization.liveActivityTestMode ?? false
   );
 
   const entries = useMemo(() => {
@@ -215,6 +222,19 @@ export default function DevMode() {
     );
   };
 
+  // Handing the Live Activity over to the trigger also means the timetable
+  // stops taking it down, so whatever is on screen when the mode is turned off
+  // is ours to clean up.
+  const setLiveActivityTestMode = async (enabled: boolean) => {
+    useSettingsStore.getState().mutateProperty("personalization", {
+      liveActivityTestMode: enabled,
+    });
+
+    if (!enabled) {
+      await stopCourseLiveActivity();
+    }
+  };
+
   const forceAllTips = useTipsStore(state => state.forceAll);
 
   const triggerAllTips = async () => {
@@ -275,6 +295,24 @@ export default function DevMode() {
             </List.Trailing>
           </List.Item>
         </List.Section>
+        {COURSE_LIVE_ACTIVITY_SUPPORTED && (
+          <List.Section>
+            <List.SectionTitle>
+              <Papicons name="Clock" color={String(colors.text) + "88"} />
+              <List.Label>Live Activities</List.Label>
+            </List.SectionTitle>
+            <List.Item>
+              <Typography variant="action">Mode test des Live Activities</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Ajoute un déclencheur sur la fiche d'un cours et met en pause la
+                mise à jour automatique depuis l'emploi du temps.
+              </Typography>
+              <List.Trailing>
+                <Switch value={liveActivityTestMode} onValueChange={setLiveActivityTestMode} />
+              </List.Trailing>
+            </List.Item>
+          </List.Section>
+        )}
         <List.Section>
           <List.SectionTitle>
             <Papicons name="Code" color={colors.text + 88} />

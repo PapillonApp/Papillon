@@ -10,7 +10,6 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { formatRelativeDayLabel } from "../dates";
 import type { WidgetFonts, WidgetTheme } from "../theme";
 
-/** Enough tasks for the large family, which shows the most of them. */
 const MAX_TASKS = 5;
 
 const MAX_TIMELINE_ENTRIES = 14;
@@ -22,7 +21,6 @@ export type TasksWidgetTask = {
   subject: string;
   emoji: string;
   description: string;
-  /** Relative day this is due, e.g. "Tue 14" or "Tomorrow". */
   dayLabel: string;
 };
 
@@ -37,7 +35,6 @@ export type TasksWidgetProps = {
   countLabel: string;
   title: string;
   subtitle: string;
-  /** Share of this week's homework already done, for the ring. */
   progress: number;
   emptyLabel: string;
   tasks: TasksWidgetTask[];
@@ -72,10 +69,6 @@ const toTask = (homework: Homework): TasksWidgetTask => ({
   dayLabel: ""
 });
 
-// The list runs across days rather than stopping at the first one — a day with
-// a single piece of homework would otherwise leave the widget near-empty. Each
-// task carries its own day so the layout can head each group. The count beside
-// it stays the week's, the way the tasks screen summarises it.
 const buildProps = (
   scheduled: ScheduledTask[],
   weekRemaining: number,
@@ -96,18 +89,11 @@ const buildProps = (
     emptyLabel: t("Tasks_Nav_Completed"),
     tasks: pending.slice(0, MAX_TASKS).map((item) => ({
       ...item.task,
-      // Bare day, no "for" prefix: it sits at the end of the subject row where
-      // the preposition would only take width from the subject.
       dayLabel: capitalize(formatRelativeDayLabel(new Date(item.day), now, "EEE d"))
     }))
   };
 };
 
-/**
- * Task content only moves when the day rolls over: the day labels shift and
- * anything left from the previous day drops off. One entry per upcoming due day
- * is therefore all WidgetKit needs.
- */
 export const buildTasksTimeline = (
   { upcoming, weekDone, weekTotal }: UpcomingHomework,
   from: Date,

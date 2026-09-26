@@ -20,9 +20,8 @@ import { createWidget, type WidgetEnvironment } from "expo-widgets";
 
 import type { TasksWidgetProps } from "./data";
 
-// Everything this layout needs has to live inside the function: it is
-// serialized and re-evaluated by the widget extension, which has no access to
-// the app bundle.
+// Serialized and re-evaluated inside the widget extension, which cannot reach
+// the app bundle: anything referenced from outside this function throws.
 const TasksWidgetLayout = (props: TasksWidgetProps, environment: WidgetEnvironment) => {
   "widget";
 
@@ -36,15 +35,10 @@ const TasksWidgetLayout = (props: TasksWidgetProps, environment: WidgetEnvironme
   const tasks = compact ? [] : props.tasks.slice(0, large ? 5 : 3);
   const descriptionLines = large ? 2 : 1;
 
-  // A concrete height is what actually bounds the list: `maxHeight: infinity`
-  // reports the content's own height back up instead of clamping it, which
-  // grows the whole widget body. It has to stay *under* the content area of
-  // each family: overshoot it and the row re-centres, which costs the top
-  // padding.
+  // A concrete height is what bounds the list: `maxHeight: infinity` reports the
+  // content's own height back up and grows the whole widget body instead.
   const listHeight = large ? 330 : 138;
 
-  // No horizontal Spacer in here: on the medium layout this column sits in an
-  // HStack, and a greedy child would take the width the task list needs.
   const summary = (
     <VStack
       alignment="leading"
@@ -54,13 +48,10 @@ const TasksWidgetLayout = (props: TasksWidgetProps, environment: WidgetEnvironme
         padding({ top: 8, bottom: 2 })
       ]}
     >
+
       {/* An accessory gauge draws at its own ideal size and ignores a frame's
-          proposal, so fixedSize is needed first to lock in that ideal size.
-          scaleEffect then shrinks the ring visually around its center, which
-          leaves it inset from the left edge of its own (still full-size)
-          bounds — the following frame shrinks the reserved layout box to
-          match, but the ring is still inset within that smaller box too, so
-          offset pulls it back flush with the leading edge. */}
+          proposal: fixedSize locks that size in, scaleEffect shrinks the ring
+          around its center, and offset pulls it back flush with the leading edge. */}
       <Gauge
         value={props.progress}
         modifiers={[
@@ -173,10 +164,7 @@ const TasksWidgetLayout = (props: TasksWidgetProps, environment: WidgetEnvironme
                   </Text>
                 </HStack>
                 <Spacer />
-                {/* The day rides along the subject row rather than heading its
-                    own line: a line per task is the difference between two and
-                    three of them fitting. Shown only when the day changes, so
-                    a run due on the same day reads as one group. */}
+
                 {task.dayLabel !== tasks[index - 1]?.dayLabel && (
                   <Text
                     modifiers={[
