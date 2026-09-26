@@ -3,9 +3,7 @@ import type { TransportStorage } from "@/stores/account/types";
 
 import type { CommuteDirection, CommuteTarget } from "./types";
 
-export function margins(): number[] {
-  return [0, 5, 10, 15];
-}
+export const MARGINS = [0, 5, 10, 15];
 
 export function margin(transport: TransportStorage | undefined): number {
   return transport?.marginMinutes ?? 10;
