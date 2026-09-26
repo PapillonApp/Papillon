@@ -17,12 +17,7 @@
     "postinstall": "patch-package",
     "export:web": "expo export --platform web --output-dir dist",
     "desktop:dev": "tauri dev",
-    "desktop:build": "tauri build",
-    "check:web-native-imports": "node scripts/check-web-native-imports.js",
-    "check:web-bundle": "node scripts/check-web-bundle.js",
-    "check:web-animations": "node scripts/check-web-animations.js",
-    "check:web-compat": "node scripts/check-web-compat.js",
-    "tauri": "tauri"
+    "desktop:build": "tauri build"
   },
   "jest": {
     "preset": "jest-expo"
@@ -45,6 +40,10 @@
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
     "@sbaiahmed1/react-native-blur": "^6.0.0",
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-autostart": "^2.5.1",
+    "@tauri-apps/plugin-http": "^2.6.1",
+    "@tauri-apps/plugin-notification": "^2.4.0",
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.6.2",
     "alise-api": "^0.2.5",
@@ -120,11 +119,7 @@
     "skolengojs": "^1.2.2",
     "turboself-api": "^2.1.9",
     "typescript-eslint": "^8.49.0",
-    "zustand": "^5.0.9",
-    "@tauri-apps/api": "^2.10.1",
-    "@tauri-apps/plugin-http": "^2.5.7",
-    "@tauri-apps/plugin-notification": "^2.3.3",
-    "@tauri-apps/plugin-autostart": "^2.5.1"
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.5",
