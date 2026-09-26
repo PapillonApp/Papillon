@@ -13,9 +13,8 @@ import Typography from "@/ui/new/Typography";
 import { AddressModal } from "@/app/(modals)/address";
 import { TransportAddress } from "@/stores/account/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
-import { margin, margins } from "@/services/transport/target";
+import { margin, MARGINS } from "@/services/transport/target";
 
 export default function TransportView() {
   const safePadding = useSafeHorizontalPadding(20);
@@ -25,7 +24,6 @@ export default function TransportView() {
   const { transport } = accounts.find(a => a.id === lastUsedAccount)!;
 
   const theme = useTheme();
-  const colors = theme.colors as unknown as { text: string; overground: string };
   const { t } = useTranslation();
 
   const [transportEnabled, setTransportEnabled] = React.useState(
@@ -58,11 +56,9 @@ export default function TransportView() {
     [transportEnabled]
   );
 
-  const insets = useSafeAreaInsets();
-
   return (
     <List
-      style={{ flex: 1, backgroundColor: colors.overground }}
+      style={{ flex: 1, backgroundColor: theme.colors.overground }}
       contentContainerStyle={{
         padding: 20,
         ...safePadding,
@@ -97,7 +93,7 @@ export default function TransportView() {
           style={{ opacity: transportEnabled ? 1 : 0.5 }}
         >
           <List.Leading>
-            <Papicons name={"Home"} fill={colors.text} opacity={0.7} />
+            <Papicons name={"Home"} fill={theme.colors.text} opacity={0.7} />
           </List.Leading>
           <Typography numberOfLines={1}>
             {t("Settings_Transport_Address_Home_Title")}
@@ -108,7 +104,7 @@ export default function TransportView() {
           <List.Trailing>
             <Papicons
               name={"ChevronRight"}
-              fill={colors.text}
+              fill={theme.colors.text}
               opacity={0.5}
             />
           </List.Trailing>
@@ -122,7 +118,7 @@ export default function TransportView() {
           style={{ opacity: transportEnabled ? 1 : 0.5 }}
         >
           <List.Leading>
-            <Papicons name={"Grades"} fill={colors.text} opacity={0.7} />
+            <Papicons name={"Grades"} fill={theme.colors.text} opacity={0.7} />
           </List.Leading>
           <Typography numberOfLines={1}>
             {t("Settings_Transport_Address_School_Title")}
@@ -133,7 +129,7 @@ export default function TransportView() {
           <List.Trailing>
             <Papicons
               name={"ChevronRight"}
-              fill={colors.text}
+              fill={theme.colors.text}
               opacity={0.5}
             />
           </List.Trailing>
@@ -152,7 +148,7 @@ export default function TransportView() {
         <List.Label>{t("Settings_Transport_Margin_Title")}</List.Label>
       </List.SectionTitle>
       <List.Section>
-        {margins().map(minutes => (
+        {MARGINS.map(minutes => (
           <List.Item
             key={minutes}
             onPress={() => {
