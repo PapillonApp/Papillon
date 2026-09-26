@@ -13,8 +13,8 @@ import Typography from "@/ui/new/Typography";
 import { AddressModal } from "@/app/(modals)/address";
 import { TransportAddress } from "@/stores/account/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import { margin, MARGINS } from "@/services/transport/target";
 
 export default function TransportView() {
   const safePadding = useSafeHorizontalPadding(20);
@@ -55,8 +55,6 @@ export default function TransportView() {
     () => accountStore.setTransportEnabled(transportEnabled),
     [transportEnabled]
   );
-
-  const insets = useSafeAreaInsets();
 
   return (
     <List
@@ -137,9 +135,43 @@ export default function TransportView() {
           </List.Trailing>
         </List.Item>
       </List.Section>
-      <List.View style={{ marginVertical: 10 }}>
+      <List.View style={{ marginVertical: 10, gap: 6 }}>
         <Typography variant={"caption"} color={"textSecondary"}>
           {t("Settings_Transport_Address_Description")}
+        </Typography>
+        <Typography variant={"caption"} color={"textSecondary"}>
+          {t("Settings_Transport_Privacy")}
+        </Typography>
+      </List.View>
+
+      <List.SectionTitle>
+        <List.Label>{t("Settings_Transport_Margin_Title")}</List.Label>
+      </List.SectionTitle>
+      <List.Section>
+        {MARGINS.map(minutes => (
+          <List.Item
+            key={minutes}
+            onPress={() => {
+              if (transportEnabled) {
+                accountStore.setTransportMargin(minutes);
+              }
+            }}
+            style={{ opacity: transportEnabled ? 1 : 0.5 }}
+          >
+            {margin(transport) === minutes && (
+              <List.Trailing>
+                <Papicons name={"Check"} fill={"#E8901C"} />
+              </List.Trailing>
+            )}
+            <Typography numberOfLines={1} variant={"title"}>
+              {t("Settings_Transport_Margin_Option", { minutes })}
+            </Typography>
+          </List.Item>
+        ))}
+      </List.Section>
+      <List.View style={{ marginVertical: 10 }}>
+        <Typography variant={"caption"} color={"textSecondary"}>
+          {t("Settings_Transport_Margin_Description")}
         </Typography>
       </List.View>
 

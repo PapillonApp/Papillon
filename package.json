@@ -30,6 +30,7 @@
     "@expo/ui": "~57.0.18",
     "@getpapillon/papicons": "^0.2.3",
     "@legendapp/list": "^2.0.15",
+    "@maplibre/maplibre-react-native": "^11.4.0",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "9.1.0",
@@ -83,6 +84,7 @@
     "ical.js": "^2.2.1",
     "lottie-react-native": "^7.3.4",
     "lucide-react-native": "^0.511.0",
+    "papillon-transport": "^1.0.0",
     "patch-package": "^8.0.1",
     "posthog-react-native": "^4.63.2",
     "react": "19.2.3",
@@ -114,6 +116,7 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@types/geojson": "^7946.0.16",
     "@types/react": "~19.2.10",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unused-imports": "^4.3.0",

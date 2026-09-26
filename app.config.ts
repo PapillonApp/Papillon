@@ -218,6 +218,7 @@ export default {
           },
         },
       ],
+      "@maplibre/maplibre-react-native",
       "./plugins/with-widget-fonts",
       "./plugins/with-ios-native-files",
       "./plugins/with-android-gradle-properties-newline",

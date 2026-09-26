@@ -318,6 +318,21 @@ export const useAccountStore = create<AccountsStorage>()(
             return account;
           }),
         }),
+      setTransportMargin: (minutes: number) =>
+        set({
+          accounts: get().accounts.map(account => {
+            if (account.id === get().lastUsedAccount && account.transport) {
+              return {
+                ...account,
+                transport: {
+                  ...account.transport,
+                  marginMinutes: minutes,
+                },
+              };
+            }
+            return account;
+          }),
+        }),
       initializeTransport: async (address: string | undefined) => {
         const config = await initializeTransport(address);
         log(`Initialized transport at ${JSON.stringify(config.schoolAddress) ?? 'undefined'}`);
