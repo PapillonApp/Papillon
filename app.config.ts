@@ -21,6 +21,7 @@ export default {
       associatedDomains: ["applinks:getpapillon.xyz"],
       icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
+      deploymentTarget: "17.6",
       infoPlist: {
         AppGroupIdentifier: "group.xyz.getpapillon",
         CFBundleURLTypes: [
@@ -162,48 +163,6 @@ export default {
         },
       ],
       [
-        "expo-widgets",
-        {
-          "bundleIdentifier": "xyz.getpapillon.ios.widgets",
-          "groupIdentifier": "group.xyz.getpapillon.ios",
-          "enablePushNotifications": true,
-          "widgets": [
-            {
-              "name": "Calendar",
-              "displayName": "Emploi du temps",
-              "description": "Affiche tes prochains cours et événements",
-              "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium"]
-              }
-            },
-            {
-              "name": "Tasks",
-              "displayName": "Tâches",
-              "description": "Affiche tes tâches à faire",
-              "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
-              }
-            },
-            {
-              "name": "Notes",
-              "displayName": "Notes",
-              "description": "Affiche tes dernières notes",
-              "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
-              }
-            },
-            {
-              "name": "Averages",
-              "displayName": "Moyenne générale",
-              "description": "Affiche ta moyenne générale",
-              "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
-              }
-            }
-          ]
-        }
-      ],
-      [
         "expo-build-properties",
         {
           android: {
@@ -218,7 +177,7 @@ export default {
           },
         },
       ],
-      "./plugins/with-widget-fonts",
+      "@getpapillon/papillonkit",
       "./plugins/with-ios-native-files",
       "./plugins/with-android-gradle-properties-newline",
     ],

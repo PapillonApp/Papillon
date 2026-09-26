@@ -85,10 +85,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>ExpoWidgetsAppGroupIdentifier</key>
-	<string>group.xyz.getpapillon.ios</string>
-	<key>ExpoWidgets_EnablePushNotifications</key>
-	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -128,14 +124,12 @@
 	<string>Allow $(PRODUCT_NAME) to detect your current motion activity</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Papillon utilise ta galerie pour te permettre de personnaliser ta photo de profil</string>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
-	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
-	<false/>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
 	</array>
+	<key>PapillonKitDatabaseAppGroup</key>
+	<string>group.xyz.getpapillon.ios</string>
 	<key>RCTMetroPort</key>
 	<string>$(RCT_METRO_PORT)</string>
 	<key>RCTNewArchEnabled</key>
