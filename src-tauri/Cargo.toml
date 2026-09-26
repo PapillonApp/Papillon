@@ -21,11 +21,11 @@ tauri-build = { version = "2.6.3" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "2.11.6" }
+tauri = { version = "=2.10.1" }
 tauri-plugin-log = "2"
-tauri-plugin-http = { version = "2.6.0", features = ["unsafe-headers"] }
-tauri-plugin-notification = "2.4.0"
-tauri-plugin-autostart = "2.5.1"
+tauri-plugin-http = { version = "=2.5.7", features = ["unsafe-headers"] }
+tauri-plugin-notification = "=2.3.3"
+tauri-plugin-autostart = "=2.5.1"
 
 # Build "release" optimisé (taille + vitesse) plutôt que les réglages par
 # défaut de Cargo — cohérent avec le "opti" demandé.
