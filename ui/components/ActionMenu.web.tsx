@@ -33,8 +33,8 @@ type Props = {
 /**
  * Desktop/web ActionMenu.
  *
- * The native ActionMenu imports @expo/ui/swift-ui, which is not needed on
- * Tauri/Web and can pull native-only code into the web bundle. Keep the web
+ * The native ActionMenu implementation is not needed on Tauri/Web and can
+ * pull native-only code into the web bundle. Keep the web
  * implementation completely React Native/Web so profile, settings and photo
  * menus remain clickable on PC.
  */

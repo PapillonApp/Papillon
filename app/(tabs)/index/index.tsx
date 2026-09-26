@@ -8,6 +8,8 @@ import Reanimated, { LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
+import { useAlert } from '@/ui/components/AlertProvider';
+import { getWeekNumberFromDate } from '@/database/useHomework';
 import { useSettingsStore } from '@/stores/settings';
 import { checkConsent } from '@/utils/logger/consent';
 import { Animation } from '@/ui/utils/Animation';
@@ -20,6 +22,8 @@ import { useHomeData } from './hooks/useHomeData';
 import { useTimetableWidgetData } from './hooks/useTimetableWidgetData';
 import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
 import HomeTimeTableWidget from './widgets/timetable';
+import HomeHomeworkWidget from './widgets/homework';
+import { useHomeworkData } from '../tasks/hooks/useHomeworkData';
 import GradesWidget from './widgets/Grades';
 import { usePeriodsData } from '../grades/hooks/usePeriodsData';
 import { useGradesData } from '../grades/hooks/useGradesData';
@@ -35,7 +39,8 @@ import { ListTouchable } from '@/ui/new/List';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const bottomTabBarHeight = insets.bottom + 16;
+  const bottomTabBarHeight = insets.bottom + 76;
+  const alert = useAlert();
   const focused = useIsFocused();
 
   // Account
@@ -90,6 +95,23 @@ const HomeScreen = () => {
   useHomeData();
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
+
+  const currentHomeworkWeek = getWeekNumberFromDate(new Date());
+  const { homeworkByWeek, setAsDone: setHomeworkAsDone } = useHomeworkData([currentHomeworkWeek], alert);
+  const urgentHomeworks = React.useMemo(() => {
+    const now = Date.now();
+    const endOfWeek = new Date();
+    endOfWeek.setHours(23, 59, 59, 999);
+    endOfWeek.setDate(endOfWeek.getDate() + (7 - (endOfWeek.getDay() || 7)));
+    return (homeworkByWeek[currentHomeworkWeek] ?? [])
+      .filter(homework => !homework.isDone)
+      .filter(homework => {
+        const due = new Date(homework.dueDate).getTime();
+        return due >= now && due <= endOfWeek.getTime();
+      })
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      .slice(0, 4);
+  }, [homeworkByWeek, currentHomeworkWeek]);
 
   const { currentPeriod } = usePeriodsData();
   const { grades, history, averages } = useGradesData(currentPeriod);
@@ -156,13 +178,20 @@ const HomeScreen = () => {
       render: renderTimeTable
     },
     {
+      icon: <Papicons name={"List"} />,
+      title: "Devoirs à faire cette semaine",
+      redirect: "(tabs)/tasks",
+      hidden: urgentHomeworks.length === 0,
+      render: () => <HomeHomeworkWidget homeworks={urgentHomeworks} setAsDone={setHomeworkAsDone} />
+    },
+    {
       icon: <Papicons name={"Grades"} />,
       title: t("Home_Widget_Grades_Average"),
       redirect: "(tabs)/grades",
       hidden: gradesWidgetHidden,
       render: renderGrades
     }
-  ], [account, courses.length, dismissTeamWidget, gradesWidgetHidden, renderGrades, renderTeam, renderTimeTable, timetableTitle]);
+  ], [account, courses.length, dismissTeamWidget, gradesWidgetHidden, renderGrades, renderTeam, renderTimeTable, timetableTitle, urgentHomeworks, setHomeworkAsDone]);
 
   const visibleWidgets = React.useMemo(
     () => data.filter(item => !item.hidden && (!item.dev || __DEV__)),
@@ -234,28 +263,11 @@ const HomeEmptyState = React.memo(() => (
 HomeEmptyState.displayName = "HomeEmptyState";
 
 const HomeViewContainer = ({ children }) => {
-  const insets = useSafeAreaInsets();
-  const theme = useTheme();
-
   return (
-    <MaskedView
-      maskElement={
-        <View style={{ flex: 1, backgroundColor: 'transparent' }}>
-          <LinearGradient
-            colors={[theme.colors.background, theme.colors.background]}
-            locations={[0, 1]}
-            style={{ height: insets.top + 68 }}
-          />
-          <View style={{ flex: 1, backgroundColor: theme.colors.background }} />
-        </View>
-      }
-      style={{ flex: 1, backgroundColor: theme.colors.background }}
-    >
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={["left", "right"]}>
-        {children}
-      </SafeAreaView>
-    </MaskedView>
-  )
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={["left", "right"]}>
+      {children}
+    </SafeAreaView>
+  );
 }
 
 const HomeScreenWithBoundary = () => (

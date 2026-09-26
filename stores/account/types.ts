@@ -77,6 +77,8 @@ export interface CustomisableSubject {
 
 export interface CustomisationStorage {
   profilePicture: string;
+  serviceProfilePicture?: string;
+
   subjects: Record<string, CustomisableSubject>;
 }
 

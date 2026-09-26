@@ -92,6 +92,7 @@ const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol; papico
   { value: 'date', label: t('Tasks_Sorting_Methods_DueDate'), sf: 'calendar', papicon: 'Calendar' },
   { value: 'subject', label: t('Tasks_Sorting_Methods_Subject'), sf: 'character', papicon: 'List' },
   { value: 'done', label: t('Tasks_Sorting_Methods_Done'), sf: 'checkmark.circle', papicon: 'Check' },
+  { value: 'undone', label: 'Non faits uniquement', sf: 'circle', papicon: 'Circle' },
 ];
 
 // The pager addresses weeks as an offset from the week the screen opened in;
