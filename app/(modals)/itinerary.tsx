@@ -27,7 +27,6 @@ export default function ItineraryModal() {
     direction: CommuteDirection;
   }>();
   const { colors } = useTheme();
-  const overground = (colors as unknown as { overground: string }).overground;
   const { t, i18n } = useTranslation();
   const { height } = useWindowDimensions();
   const padding = useSafeHorizontalPadding(16);
@@ -48,7 +47,7 @@ export default function ItineraryModal() {
 
   if (!selected) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 32, backgroundColor: overground }}>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 32, backgroundColor: colors.overground }}>
         <Typography variant="body1" align="center">{t("Transport_Expired")}</Typography>
       </View>
     );
@@ -61,18 +60,13 @@ export default function ItineraryModal() {
     service && home && school
       ? () => {
         const isDeparture = direction === "departure";
-        const url = service.generateDeeplink(
-          isDeparture ? home : school,
-          isDeparture ? school : home,
-          isDeparture,
-          Math.floor((isDeparture ? selected.arrival : selected.departure).getTime() / 1000)
-        );
+        const url = service.generateDeeplink(isDeparture ? home : school, isDeparture ? school : home);
         Linking.openURL(url);
       }
       : undefined;
 
   return (
-    <View style={{ flex: 1, backgroundColor: overground }}>
+    <View style={{ flex: 1, backgroundColor: colors.overground }}>
       <ItineraryMap itinerary={selected} style={{ height: height * 0.4 }} />
       <ScrollView contentContainerStyle={{ padding: 16, ...padding, gap: 12 }}>
         <Typography variant="h5">
