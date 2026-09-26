@@ -6,6 +6,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { CommuteCard } from "@/components/transport/CommuteCard";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
+import type { CommuteDirection } from "@/services/transport/types";
 import { TransportStorage } from "@/stores/account/types";
 import Course from "@/ui/components/Course";
 import { Colors, getSubjectColor } from "@/utils/subjects/colors";
@@ -24,6 +25,20 @@ interface CalendarDayProps {
   transportInfo?: TransportStorage;
   /** The timetable could not be loaded: an empty day means "unknown", not "free". */
   hasError?: boolean;
+}
+
+interface CommuteItem {
+  id: string;
+  type: "commute";
+  direction: CommuteDirection;
+}
+
+function commuteItem(direction: CommuteDirection): CommuteItem {
+  return { id: `commute-${direction}`, type: "commute", direction };
+}
+
+function isCommuteItem(item: SharedCourse | CommuteItem): item is CommuteItem {
+  return item.type === "commute";
 }
 
 function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
@@ -99,7 +114,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     const showCommute = transportInfo?.enabled ?? false;
 
     if (showCommute) {
-      result.push({ id: "commute-departure", type: "commute", direction: "departure" });
+      result.push(commuteItem("departure"));
     }
 
     // Add separator between events
@@ -124,7 +139,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     }
 
     if (showCommute) {
-      result.push({ id: "commute-return", type: "commute", direction: "return" });
+      result.push(commuteItem("return"));
     }
 
     return result;
@@ -157,15 +172,15 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
             progressBackgroundColor={colors.background}
           />
         }
-        keyExtractor={item => item.id || `${item.type}-${item.from || item.targetTime}`}
+        keyExtractor={item => item.id}
         ListEmptyComponent={<EmptyCalendar hasError={hasError} />}
-        renderItem={({ item }: { item: SharedCourse }) => {
-          if ((item as any).type === "commute") {
+        renderItem={({ item }: { item: SharedCourse | CommuteItem }) => {
+          if (isCommuteItem(item)) {
             return (
               <CommuteCard
                 day={dayDate}
                 courses={courses ?? []}
-                direction={(item as any).direction}
+                direction={item.direction}
                 refreshToken={commuteRefreshToken}
               />
             );
