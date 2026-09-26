@@ -1,7 +1,9 @@
-const pending = new Map<string, Promise<unknown>>();
+import type { PlanResult } from "papillon-transport";
 
-export function dedupe<T>(key: string, run: () => Promise<T>): Promise<T> {
-  const existing = pending.get(key) as Promise<T> | undefined;
+const pending = new Map<string, Promise<PlanResult>>();
+
+export function dedupe(key: string, run: () => Promise<PlanResult>): Promise<PlanResult> {
+  const existing = pending.get(key);
   if (existing) {
     return existing;
   }

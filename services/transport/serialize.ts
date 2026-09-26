@@ -3,36 +3,26 @@ import type { Itinerary, Leg } from "papillon-transport";
 import type { SerializedItinerary, SerializedLeg } from "./types";
 
 export function serialize(itineraries: Itinerary[]): SerializedItinerary[] {
-  return itineraries.map((itinerary) => ({
+  return itineraries.map(itinerary => ({
     ...itinerary,
     departure: itinerary.departure.toISOString(),
     arrival: itinerary.arrival.toISOString(),
-    legs: itinerary.legs.map(
-      (leg) =>
-        ({
-          ...leg,
-          departure: leg.departure.toISOString(),
-          arrival: leg.arrival.toISOString(),
-          scheduledDeparture: leg.scheduledDeparture.toISOString(),
-          scheduledArrival: leg.scheduledArrival.toISOString(),
-        }) as SerializedLeg,
-    ),
+    legs: itinerary.legs.map(leg => ({
+      ...leg,
+      departure: leg.departure.toISOString(),
+      arrival: leg.arrival.toISOString(),
+      scheduledDeparture: leg.scheduledDeparture.toISOString(),
+      scheduledArrival: leg.scheduledArrival.toISOString(),
+    })),
   }));
 }
 
-function parse(value: unknown): Date | undefined {
-  if (typeof value !== "string") {
-    return undefined;
-  }
+function parse(value: string): Date | undefined {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
-function revive(raw: unknown): Leg | undefined {
-  if (typeof raw !== "object" || raw === null) {
-    return undefined;
-  }
-  const leg = raw as Record<string, unknown>;
+function revive(leg: SerializedLeg): Leg | undefined {
   const departure = parse(leg.departure);
   const arrival = parse(leg.arrival);
   const scheduledDeparture = parse(leg.scheduledDeparture);
@@ -40,33 +30,29 @@ function revive(raw: unknown): Leg | undefined {
   if (!departure || !arrival || !scheduledDeparture || !scheduledArrival) {
     return undefined;
   }
-  return { ...(leg as unknown as Leg), departure, arrival, scheduledDeparture, scheduledArrival };
+  return { ...leg, departure, arrival, scheduledDeparture, scheduledArrival };
 }
 
-export function deserialize(serialized: unknown): Itinerary[] | undefined {
-  if (!Array.isArray(serialized)) {
+export function deserialize(serialized: SerializedItinerary[] | undefined): Itinerary[] | undefined {
+  if (!serialized) {
     return undefined;
   }
   const result: Itinerary[] = [];
-  for (const raw of serialized) {
-    if (typeof raw !== "object" || raw === null) {
-      return undefined;
-    }
-    const itinerary = raw as Record<string, unknown>;
+  for (const itinerary of serialized) {
     const departure = parse(itinerary.departure);
     const arrival = parse(itinerary.arrival);
-    if (!departure || !arrival || !Array.isArray(itinerary.legs)) {
+    if (!departure || !arrival) {
       return undefined;
     }
     const legs: Leg[] = [];
-    for (const rawLeg of itinerary.legs) {
-      const leg = revive(rawLeg);
+    for (const serializedLeg of itinerary.legs) {
+      const leg = revive(serializedLeg);
       if (!leg) {
         return undefined;
       }
       legs.push(leg);
     }
-    result.push({ ...(itinerary as unknown as Itinerary), departure, arrival, legs });
+    result.push({ ...itinerary, departure, arrival, legs });
   }
   return result;
 }
