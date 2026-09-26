@@ -1,0 +1,38 @@
+appId: bzh.papillon.scola
+productName: Scola
+copyright: "Copyright © Papillon"
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - main.js
+  - preload.js
+  - package.json
+  - build/icon.png
+  - from: ../dist
+    to: dist
+    filter:
+      - "**/*"
+
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+  installerHeader: build/installerHeader.bmp
+  installerSidebar: build/installerSidebar.bmp
+  uninstallerSidebar: build/installerSidebar.bmp
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Scola

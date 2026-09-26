@@ -1,0 +1,370 @@
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+} from "react-native";
+import Reanimated, { LinearTransition } from "react-native-reanimated";
+
+import { Animation } from "../utils/Animation";
+
+const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
+
+import { useTheme } from "expo-router/react-navigation";
+import { useRouter } from "expo-router";
+
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
+import Typography from "../new/Typography";
+import { runsIOS26 } from "../utils/IsLiquidGlass";
+import { LiquidGlassView } from "@sbaiahmed1/react-native-blur";
+import { Papicons } from "@getpapillon/papicons";
+import Icon from "./Icon";
+import { FullWindowOverlay } from "react-native-screens";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { GlassView } from "expo-glass-effect";
+
+// Extend Alert type with unique ID for better performance
+export type Alert = {
+  id?: string;
+  title: string;
+  message?: string;
+  description?: string;
+  technical?: string;
+  icon?: string;
+  color?: string;
+  customButton?: {
+    label: string;
+    showCancelButton?: boolean;
+    onPress: () => void;
+  };
+  withoutNavbar?: boolean;
+  delay?: number;
+};
+
+type AlertContextType = {
+  showAlert: (alert: Alert) => void;
+  getCallback: (alertId: string) => (() => void) | undefined;
+  cleanupCallback: (alertId: string) => void;
+};
+
+const AlertContext = createContext<AlertContextType | undefined>(undefined);
+
+export const useAlert = () => {
+  const context = useContext(AlertContext);
+  if (!context) {
+    throw new Error("useAlert must be used within an AlertProvider");
+  }
+  return context;
+};
+
+export const AlertProvider = ({ children }: { children: ReactNode }) => {
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const timeoutRefs = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map()
+  );
+  const callbackRefs = useRef<Map<string, () => void>>(new Map());
+
+  // Memoized showAlert function to prevent re-renders
+  const showAlert = useCallback((alert: Alert) => {
+    const alertId = alert.id || `alert_${Date.now()}_${Math.random()}`;
+    const alertWithId = { ...alert, id: alertId };
+
+    if (alert.customButton?.onPress) {
+      callbackRefs.current.set(alertId, alert.customButton.onPress);
+    }
+
+    setAlerts(prevAlerts => [...prevAlerts, alertWithId]);
+
+    // Clear existing timeout if alert is updated
+    const existingTimeout = timeoutRefs.current.get(alertId);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+    }
+
+    // Automatically remove the alert after 5 seconds
+    const timeout = setTimeout(() => {
+      setAlerts(prevAlerts => prevAlerts.filter(a => a.id !== alertId));
+      timeoutRefs.current.delete(alertId);
+      callbackRefs.current.delete(alertId);
+    }, alert.delay || 5000);
+
+    timeoutRefs.current.set(alertId, timeout);
+  }, []);
+
+  // Memoized container style to prevent style recalculations
+  const containerStyle = useMemo(
+    () => ({
+      position: "absolute" as const,
+      bottom: insets.bottom,
+      left: 0,
+      right: 0,
+      padding: Platform.OS === "ios" ? 20 : 10,
+      paddingBottom: Platform.OS === "ios" ? 10 : 28,
+      zIndex: 1000,
+      gap: 10,
+    }),
+    [alerts]
+  );
+
+  const handleAlertPress = useCallback(
+    (alert: Alert, alertId: string) => {
+      const alertDataForParams = {
+        ...alert,
+        customButton: alert.customButton
+          ? {
+              ...alert.customButton,
+              onPress: undefined,
+            }
+          : undefined,
+      };
+
+      router.navigate({
+        pathname: "/alert",
+        params: {
+          data: JSON.stringify(alertDataForParams),
+          callbackId: alertId,
+        },
+      });
+      setAlerts(prevAlerts => prevAlerts.filter(a => a.id !== alertId));
+      const timeout = timeoutRefs.current.get(alertId);
+      if (timeout) {
+        clearTimeout(timeout);
+        timeoutRefs.current.delete(alertId);
+      }
+    },
+    [router]
+  );
+
+  const getCallback = useCallback((alertId: string) => {
+    return callbackRefs.current.get(alertId);
+  }, []);
+
+  const cleanupCallback = useCallback((alertId: string) => {
+    callbackRefs.current.delete(alertId);
+  }, []);
+
+  // Memoized context value to prevent provider re-renders
+  const contextValue = useMemo(
+    () => ({ showAlert, getCallback, cleanupCallback }),
+    [showAlert, getCallback, cleanupCallback]
+  );
+
+  // Cleanup timeouts on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      timeoutRefs.current.forEach(timeout => {
+        clearTimeout(timeout);
+      });
+      timeoutRefs.current.clear();
+    };
+  }, []);
+
+  return (
+    <AlertContext.Provider value={contextValue}>
+      {children}
+
+      <KeyboardAvoidingView
+        behavior={"height"}
+        style={[
+          {
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+          },
+          runsIOS26
+            ? {
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.1,
+                shadowRadius: 10,
+              }
+            : {},
+        ]}
+        pointerEvents={"box-none"}
+      >
+        <FullWindowOverlay>
+          {alerts.length > 0 && (
+            <Reanimated.View
+              layout={Animation(LinearTransition)}
+              style={containerStyle}
+            >
+              {alerts.map(alert => (
+                <AlertComponent
+                  alert={alert}
+                  key={alert.id}
+                  onPress={() => handleAlertPress(alert, alert.id!)}
+                />
+              ))}
+            </Reanimated.View>
+          )}
+        </FullWindowOverlay>
+      </KeyboardAvoidingView>
+    </AlertContext.Provider>
+  );
+};
+
+// Optimized Alert component with React.memo and useMemo
+const AlertComponent = React.memo(
+  ({ alert, onPress }: { alert: Alert; onPress?: () => void }) => {
+    const { colors } = useTheme();
+
+    // Memoized icon component to prevent re-renders
+    const IconComponent = useMemo(() => {
+      if (!alert.icon) {
+        return null;
+      }
+      return <Papicons name={alert.icon} />;
+    }, [alert.icon]);
+
+    // Memoized styles for better performance
+    const containerStyle = useMemo(
+      () => [
+        styles.alertContainer,
+        {
+          backgroundColor: colors.item,
+          borderColor: colors.text + "30",
+        },
+      ],
+      [colors.item, colors.text]
+    );
+
+    const iconColor = useMemo(
+      () => alert.color ?? colors.text,
+      [alert.color, colors.text]
+    );
+
+    const handlePress = useCallback(() => {
+      if (onPress) {
+        onPress();
+      }
+    }, [onPress]);
+
+    if (runsIOS26) {
+      // For iOS 26, return a simpler alert without animations for better performance
+      return (
+        <Reanimated.View
+          layout={Animation(LinearTransition)}
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
+        >
+          <GlassView
+            isInteractive={true}
+            style={{
+              borderRadius: 30,
+            }}
+          >
+            <Pressable
+              onPress={handlePress}
+              style={[
+                containerStyle,
+                {
+                  width: "100%",
+                  borderWidth: 0,
+                  shadowColor: "transparent",
+                  backgroundColor: "transparent",
+                },
+              ]}
+            >
+              {IconComponent && (
+                <Reanimated.View style={styles.iconContainer}>
+                  <Icon size={24} fill={iconColor}>
+                    {IconComponent}
+                  </Icon>
+                </Reanimated.View>
+              )}
+              <Reanimated.View style={styles.textContainer}>
+                <Typography variant="title" color="text">
+                  {alert.title}
+                </Typography>
+                {alert.message && (
+                  <Typography variant="body1" color="textSecondary">
+                    {alert.message}
+                  </Typography>
+                )}
+              </Reanimated.View>
+            </Pressable>
+          </GlassView>
+        </Reanimated.View>
+      );
+    }
+
+    return (
+      <AnimatedPressable
+        onPress={handlePress}
+        layout={Animation(LinearTransition)}
+        entering={PapillonAppearIn}
+        exiting={PapillonAppearOut}
+        style={containerStyle}
+      >
+        {IconComponent && (
+          <Reanimated.View style={styles.iconContainer}>
+            <Icon size={24} fill={iconColor}>
+              {IconComponent}
+            </Icon>
+          </Reanimated.View>
+        )}
+        <Reanimated.View style={styles.textContainer}>
+          <Typography variant="title">{alert.title}</Typography>
+          {alert.message && (
+            <Typography variant="body1" color="textSecondary">
+              {alert.message}
+            </Typography>
+          )}
+        </Reanimated.View>
+      </AnimatedPressable>
+    );
+  }
+);
+
+AlertComponent.displayName = "AlertComponent";
+
+// Export Alert for backwards compatibility
+export const Alert = AlertComponent;
+
+// Pre-calculated styles for maximum performance
+const styles = StyleSheet.create({
+  alertContainer: {
+    borderWidth: 0.5,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: Platform.OS === "ios" ? 0 : 14,
+    borderCurve: "continuous",
+    gap: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    // Add elevation for Android performance
+    elevation: 1,
+  },
+  iconContainer: {
+    // Empty for now, can be used for icon-specific optimizations
+  },
+  textContainer: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 0,
+  },
+});

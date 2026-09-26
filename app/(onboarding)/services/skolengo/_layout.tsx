@@ -1,0 +1,35 @@
+import React from 'react';
+import { useTranslation } from "react-i18next";
+
+import { Stack } from 'expo-router';
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
+import { Platform } from 'react-native';
+import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+
+export default function OnboardingLayout() {
+  const { t } = useTranslation();
+  const screenOptions = useScreenOptions();
+  const androidHeaderProps = useAndroidHeaderProps();
+  const newScreenOptions = React.useMemo(() => ({
+    ...screenOptions,
+    headerShown: true,
+    ...androidHeaderProps,
+    headerBackVisible: true,
+    headerTransparent: true,
+    headerBackButtonDisplayMode: "minimal",
+    headerLargeTitle: false,
+  }), [screenOptions, androidHeaderProps]);
+
+  return (
+    <Stack>
+      <Stack.Screen
+        name="locate"
+        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_HEADER_SKOLENGO_LOGIN") }}
+      />
+      <Stack.Screen
+        name="webview"
+        options={{ ...newScreenOptions, headerShown: false, presentation: "modal" }}
+      />
+    </Stack>
+  );
+}

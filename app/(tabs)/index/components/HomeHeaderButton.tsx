@@ -1,0 +1,85 @@
+import React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { Papicons } from '@getpapillon/papicons';
+import Typography from '@/ui/new/Typography';
+import { useTheme } from "expo-router/react-navigation";
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import Stack from '@/ui/components/Stack';
+
+export interface HomeHeaderButtonItem {
+  title: string;
+  icon: string;
+  color: string;
+  description: string;
+  onPress?: () => void;
+  route?: string;
+  params?: Record<string, string>;
+}
+
+interface HomeHeaderButtonProps {
+  item: HomeHeaderButtonItem;
+}
+
+const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
+  const { colors } = useTheme();
+
+  return (
+    <View
+      style={{
+        flex: 1,
+      }}
+    >
+    <Pressable
+      style={({ pressed }) => [
+        styles.headerBtn,
+        { opacity: pressed ? 0.82 : 1 },
+      ]}
+      onPress={item.onPress}
+      disabled={!item.onPress}
+    >
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          paddingHorizontal: 10,
+          paddingVertical: 13,
+          borderRadius: 22,
+          backgroundColor: colors.item,
+          elevation: 4,
+          overflow: 'hidden',
+        }}
+      >
+        <View
+          style={{
+            borderRadius: 50,
+            padding: 0,
+            paddingLeft: 4,
+          }}
+        >
+          <Papicons name={item.icon} color={item.color} size={32} />
+        </View>
+        <View style={{
+          flex: 1,
+          overflow: 'hidden'
+        }}>
+          <Typography nowrap inline variant="title">{item.title}</Typography>
+          <Typography nowrap inline variant="body1" color='textSecondary'>{item.description}</Typography>
+        </View>
+      </View>
+    </Pressable>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  headerBtn: {
+    flex: 1,
+    width: "100%",
+    flexDirection: "row",
+  }
+});
+
+export default HomeHeaderButton;

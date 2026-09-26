@@ -1,0 +1,68 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.idea/
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+ios/
+!ios/
+ios/*
+!ios/ci_scripts/
+ios/ci_scripts/*
+!ios/ci_scripts/ci_post_clone.sh
+android/**
+android/*
+!android/app/
+!android/app/src/
+!android/app/src/main/
+!android/app/src/main/AndroidManifest.xml
+
+bun.lock
+yarn.lock
+
+secrets.json
+.vscode/
+.idea/
+
+.claude/
+.codex/
+graphify-out/
+
+# Electron (Scola desktop)
+electron/node_modules/
+electron/release/
+electron/real-keys.json
+

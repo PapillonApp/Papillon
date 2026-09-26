@@ -1,0 +1,235 @@
+import PackageJSON from "./package.json" with { type: "json" };
+
+// versionCode: seconds since 2020-01-01 UTC — unique, strictly increasing, well under the 2.1e9 cap
+const androidVersionCode = Math.floor(Date.now() / 1000) - 1577836800;
+
+export default {
+  expo: {
+    name: "Papillon",
+    slug: "papillon",
+    version: PackageJSON.version,
+    orientation: "default",
+    icon: "./assets/images/icon.png",
+    scheme: ["papillon", "izly", "skoapp-prod"],
+    platforms: ["ios", "android"],
+    userInterfaceStyle: "automatic",
+    ios: {
+      appleTeamId: "7RXNP6V83P",
+      appStoreUrl:
+        "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
+      bundleIdentifier: "xyz.getpapillon.ios",
+      associatedDomains: ["applinks:getpapillon.xyz"],
+      icon: "./assets/app.icon",
+      minimumOSVersion: "17.6",
+      infoPlist: {
+        AppGroupIdentifier: "group.xyz.getpapillon",
+        CFBundleURLTypes: [
+          {
+            CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
+          },
+        ],
+        CFBundleLocalizations: [
+          "fr",
+          "en",
+          "br",
+          "pt",
+          "de",
+          "es",
+          "tr",
+          "ja",
+          "ru",
+          "ko",
+          "af",
+          "ar",
+          "el",
+          "hi",
+          "nl",
+          "pl",
+          "ro",
+          "sq",
+          "uk",
+          "vi",
+          "bg",
+          "bn",
+          "cs",
+          "da",
+          "fi",
+          "he",
+          "hu",
+          "id",
+          "no",
+          "sk",
+          "sv",
+          "sw",
+          "th",
+          "it",
+          "fa",
+          "ur",
+          "ms",
+          "hr",
+          "et",
+        ],
+        CADisableMinimumFrameDurationOnPhone: true,
+        LSApplicationQueriesSchemes: ["maps"],
+      },
+      entitlements: {
+        "com.apple.security.application-groups": [
+          "group.xyz.getpapillon",
+          "group.xyz.getpapillon.ios",
+        ],
+      },
+      supportsTablet: true,
+      config: {
+        usesNonExemptEncryption: false,
+      },
+    },
+    android: {
+      versionCode: androidVersionCode,
+      package: "xyz.getpapillon.app",
+      blockedPermissions: [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+      ],
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/adaptive-icon.png",
+        backgroundColor: "#ffffff",
+        monochromeImage: "./assets/images/monochrome-icon.png",
+      },
+      supportsTablet: true,
+      predictiveBackGestureEnabled: true,
+    },
+    web: {
+      bundler: "metro",
+      // "single": plain client-rendered SPA bundle, no Node-side static
+      // pre-rendering pass. Desktop (Electron) doesn't need per-route SSR/SEO,
+      // and several native-only libraries (native tab bar, WatermelonDB, the
+      // Magic model) only break when evaluated in that Node pre-render step —
+      // not in an actual browser. Real web hosting can still opt back into
+      // "static" later once/if those are individually made SSR-safe.
+      output: process.env.PAPILLON_TARGET === "electron" ? "single" : "static",
+      favicon: "./assets/images/favicon.png",
+    },
+    plugins: [
+      "expo-ios-scene-lifecycle-plugin",
+      "expo-router",
+      "expo-status-bar",
+      "expo-font",
+      "expo-video",
+      [
+        "expo-audio",
+        {
+          enableBackgroundPlayback: false,
+        },
+      ],
+      "expo-localization",
+      "expo-asset",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-splash-screen",
+        {
+          backgroundColor: "#29947A",
+          image: "./assets/images/logotype.png",
+          imageWidth: 240,
+        },
+      ],
+      [
+        "expo-image-picker",
+        {
+          photosPermission:
+            "Papillon utilise ta galerie pour te permettre de personnaliser ta photo de profil",
+        },
+      ],
+      "expo-web-browser",
+      [
+        "react-native-fast-tflite",
+        {
+          enableCoreMLDelegate: true,
+          enableAndroidGpuLibraries: true,
+        },
+      ],
+      "react-native-bottom-tabs",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          locationWhenInUsePermission:
+            "Papillon utilise ton emplacement pour trouver les établissements autour de toi.",
+          cameraPermission:
+            "Papillon utilise ta caméra pour scanner des QR-codes pour te connecter, pour capturer des documents, ou pour des fonctionnalités amusantes telles que les réactions.",
+        },
+      ],
+      [
+        "react-native-edge-to-edge",
+        {
+          android: {
+            parentTheme: "Material3",
+            enforceNavigationBarContrast: false,
+          },
+        },
+      ],
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "xyz.getpapillon.ios.widgets",
+          "groupIdentifier": "group.xyz.getpapillon.ios",
+          "enablePushNotifications": true,
+          "widgets": [
+            {
+              "name": "Calendar",
+              "displayName": "Emploi du temps",
+              "description": "Affiche tes prochains cours et événements",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium"]
+              }
+            },
+            {
+              "name": "Tasks",
+              "displayName": "Tâches",
+              "description": "Affiche tes tâches à faire",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+              }
+            },
+            {
+              "name": "Notes",
+              "displayName": "Notes",
+              "description": "Affiche tes dernières notes",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+              }
+            },
+            {
+              "name": "Averages",
+              "displayName": "Moyenne générale",
+              "description": "Affiche ta moyenne générale",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+              }
+            }
+          ]
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          android: {
+            enable16KbPageSizes: true,
+          },
+          ios: {
+            extraPods: [
+              { name: "SDWebImage", modular_headers: true },
+              { name: "SDWebImageSVGCoder", modular_headers: true },
+            ],
+            buildReactNativeFromSource: false,
+          },
+        },
+      ],
+      "./plugins/with-widget-fonts",
+      "./plugins/with-ios-native-files",
+      "./plugins/with-android-gradle-properties-newline",
+    ],
+    experiments: {
+      typedRoutes: true,
+    },
+  },
+};

@@ -1,0 +1,8 @@
+{
+  "name": "papillon-tips",
+  "platforms": ["apple"],
+  "coreFeatures": ["swiftui"],
+  "apple": {
+    "modules": ["PapillonTipsModule"]
+  }
+}

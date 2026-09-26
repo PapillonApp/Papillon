@@ -1,0 +1,22 @@
+diff --git a/apple/Sources/ExpoModulesJSI/Runtime/JavaScriptRuntime.swift b/apple/Sources/ExpoModulesJSI/Runtime/JavaScriptRuntime.swift
+index 1111111..2222222 100644
+--- a/apple/Sources/ExpoModulesJSI/Runtime/JavaScriptRuntime.swift
++++ b/apple/Sources/ExpoModulesJSI/Runtime/JavaScriptRuntime.swift
+@@ -214,7 +214,15 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
+     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc))
+       .toOpaque()
+     // Pass a null setter to C++ when the Swift setter is nil so that JS assignment
+     // raises a `jsi::JSError` directly, without crossing the Swift boundary.
+-    let callbacks = expo.HostObjectCallbacks(
+-      context, getter, set == nil ? nil : setter, propertyNamesGetter, deallocate)
++    // Fix: a C function pointer can only be formed from a direct `func` reference, not from
++    // a conditional expression, so we can resolve the optional setter via `if`/`else` first.
++    let setterCallback: (@convention(c) (UnsafeMutableRawPointer, UnsafePointer<CChar>, UnsafeMutableRawPointer) -> Void)?
++    if set == nil {
++      setterCallback = nil
++    } else {
++      setterCallback = setter
++    }
++    let callbacks = expo.HostObjectCallbacks(
++      context, getter, setterCallback, propertyNamesGetter, deallocate)
+     let hostObject = expo.HostObject.makeObject(pointee, consume callbacks)

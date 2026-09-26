@@ -1,0 +1,162 @@
+diff --git a/node_modules/react-native-fast-tflite/android/CMakeLists.txt b/node_modules/react-native-fast-tflite/android/CMakeLists.txt
+index 100468c..e43cc1f 100644
+--- a/node_modules/react-native-fast-tflite/android/CMakeLists.txt
++++ b/node_modules/react-native-fast-tflite/android/CMakeLists.txt
+@@ -36,6 +36,12 @@ add_library(
+   src/main/cpp/Tflite.cpp
+ )
+ 
++target_link_options(${PACKAGE_NAME}
++    PRIVATE
++    "-Wl,-z,max-page-size=16384"
++    "-Wl,-z,common-page-size=16384"
++)
++
+ # Specifies a path to native header files.
+ target_include_directories(
+   ${PACKAGE_NAME}
+@@ -43,6 +49,7 @@ target_include_directories(
+   "../cpp"
+   "src/main/cpp"
+   "src/main/cpp/lib/litert/headers"
++  "src/main/cpp/lib/litert/headers/tflite"
+   "${NODE_MODULES_DIR}/react-native/ReactCommon"
+   "${NODE_MODULES_DIR}/react-native/ReactCommon/callinvoker"
+   "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/jni/react/turbomodule" # <-- CallInvokerHolder JNI wrapper
+diff --git a/node_modules/react-native-fast-tflite/android/build.gradle b/node_modules/react-native-fast-tflite/android/build.gradle
+index 0083618..3aa1edb 100644
+--- a/node_modules/react-native-fast-tflite/android/build.gradle
++++ b/node_modules/react-native-fast-tflite/android/build.gradle
+@@ -1,4 +1,5 @@
+ import java.nio.file.Paths
++import org.gradle.api.file.RelativePath
+ 
+ buildscript {
+   repositories {
+@@ -126,25 +127,44 @@ dependencies {
+   implementation "com.facebook.react:react-native:+"
+ 
+   // Tensorflow Lite .aar (includes C API via prefabs)
+-  implementation "com.google.ai.edge.litert:litert:1.0.1"
+-  extractSO("com.google.ai.edge.litert:litert:1.0.1")
+-  extractHeaders("com.google.ai.edge.litert:litert:1.0.1")
++  implementation "com.google.ai.edge.litert:litert:1.4.0"
++  extractSO("com.google.ai.edge.litert:litert:1.4.0")
++  extractHeaders("com.google.ai.edge.litert:litert:1.4.0")
+ 
+   // Tensorflow Lite GPU delegate
+-  implementation "com.google.ai.edge.litert:litert-gpu:1.0.1"
+-  extractSO("com.google.ai.edge.litert:litert-gpu:1.0.1")
+-  extractHeaders("com.google.ai.edge.litert:litert-gpu:1.0.1")
++  implementation "com.google.ai.edge.litert:litert-gpu:1.4.0"
++  extractSO("com.google.ai.edge.litert:litert-gpu:1.4.0")
++  extractHeaders("com.google.ai.edge.litert:litert-gpu:1.4.0")
++}
++
++task cleanEmptyDirectories(type: Delete) {
++  delete 'src/main/cpp/lib/headers'
++  delete 'src/main/cpp/lib/res'
+ }
+ 
+ task extractAARHeaders {
++  finalizedBy cleanEmptyDirectories
+   doLast {
+-    configurations.extractHeaders.files.each {
+-      def file = it.absoluteFile
+-      def packageName = file.name.tokenize('-')[0]
++    configurations.extractHeaders.files.each { aarFile ->
++      def packageName = aarFile.name.tokenize('-')[0]
+       copy {
+-        from zipTree(file)
+-        into "src/main/cpp/lib/$packageName/"
++        from zipTree(aarFile)
++        into "src/main/cpp/lib/"
+         include "**/*.h"
++        eachFile { fileCopyDetails ->
++          if (fileCopyDetails.name.endsWith(".h")) {
++            def originalRelativePath = fileCopyDetails.relativePath.toString()
++            if (originalRelativePath.startsWith("headers/external/org_tensorflow/tensorflow/")) {
++              def newRelativePath = packageName + "/headers/" + originalRelativePath.substring("headers/external/org_tensorflow/".length())
++              fileCopyDetails.relativePath = new RelativePath(true, newRelativePath.split('/'))
++            } else {
++              def newRelativePath = packageName + "/" + originalRelativePath
++              fileCopyDetails.relativePath = new RelativePath(true, newRelativePath.split('/'))
++            }
++          } else {
++            exclude fileCopyDetails.name
++          }
++        }
+       }
+     }
+   }
+diff --git a/node_modules/react-native-fast-tflite/android/gradle.properties b/node_modules/react-native-fast-tflite/android/gradle.properties
+index 42a799a..46a02f8 100644
+--- a/node_modules/react-native-fast-tflite/android/gradle.properties
++++ b/node_modules/react-native-fast-tflite/android/gradle.properties
+@@ -1,5 +1,5 @@
+-Tflite_kotlinVersion=1.7.0
+-Tflite_minSdkVersion=21
+-Tflite_targetSdkVersion=31
+-Tflite_compileSdkVersion=31
+-Tflite_ndkversion=21.4.7075529
++Tflite_kotlinVersion=2.1.10
++Tflite_minSdkVersion=26
++Tflite_targetSdkVersion=36
++Tflite_compileSdkVersion=36
++Tflite_ndkversion=27.1.12297006
+diff --git a/node_modules/react-native-fast-tflite/cpp/TensorHelpers.cpp b/node_modules/react-native-fast-tflite/cpp/TensorHelpers.cpp
+index 10446ca..6456e6b 100644
+--- a/node_modules/react-native-fast-tflite/cpp/TensorHelpers.cpp
++++ b/node_modules/react-native-fast-tflite/cpp/TensorHelpers.cpp
+@@ -9,7 +9,7 @@
+ #include "TensorHelpers.h"
+ 
+ #ifdef ANDROID
+-#include <tensorflow/lite/c/c_api.h>
++#include <tflite/c/c_api.h>
+ #else
+ #include <TensorFlowLiteC/TensorFlowLiteC.h>
+ #endif
+diff --git a/node_modules/react-native-fast-tflite/cpp/TensorHelpers.h b/node_modules/react-native-fast-tflite/cpp/TensorHelpers.h
+index fac1c11..22ba35b 100644
+--- a/node_modules/react-native-fast-tflite/cpp/TensorHelpers.h
++++ b/node_modules/react-native-fast-tflite/cpp/TensorHelpers.h
+@@ -12,7 +12,7 @@
+ #include <jsi/jsi.h>
+ 
+ #ifdef ANDROID
+-#include <tensorflow/lite/c/c_api.h>
++#include <tflite/c/c_api.h>
+ #else
+ #include <TensorFlowLiteC/TensorFlowLiteC.h>
+ #endif
+diff --git a/node_modules/react-native-fast-tflite/cpp/TensorflowPlugin.cpp b/node_modules/react-native-fast-tflite/cpp/TensorflowPlugin.cpp
+index 36e1887..4993607 100644
+--- a/node_modules/react-native-fast-tflite/cpp/TensorflowPlugin.cpp
++++ b/node_modules/react-native-fast-tflite/cpp/TensorflowPlugin.cpp
+@@ -18,9 +18,9 @@
+ #include <thread>
+ 
+ #ifdef ANDROID
+-#include <tensorflow/lite/c/c_api.h>
+-#include <tensorflow/lite/delegates/gpu/delegate.h>
+-#include <tensorflow/lite/delegates/nnapi/nnapi_delegate_c_api.h>
++#include <tflite/c/c_api.h>
++#include <tflite/delegates/gpu/delegate.h>
++#include <tflite/delegates/nnapi/nnapi_delegate_c_api.h>
+ #else
+ #include <TensorFlowLiteC/TensorFlowLiteC.h>
+ 
+diff --git a/node_modules/react-native-fast-tflite/cpp/TensorflowPlugin.h b/node_modules/react-native-fast-tflite/cpp/TensorflowPlugin.h
+index 0da4822..9266d17 100644
+--- a/node_modules/react-native-fast-tflite/cpp/TensorflowPlugin.h
++++ b/node_modules/react-native-fast-tflite/cpp/TensorflowPlugin.h
+@@ -16,7 +16,7 @@
+ 
+ #ifdef ANDROID
+ #include <ReactCommon/CallInvoker.h>
+-#include <tensorflow/lite/c/c_api.h>
++#include <tflite/c/c_api.h>
+ #else
+ #include <React-callinvoker/ReactCommon/CallInvoker.h>
+ #include <TensorFlowLiteC/TensorFlowLiteC.h>
