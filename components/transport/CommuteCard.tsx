@@ -9,7 +9,7 @@ import { Pressable, View } from "react-native";
 import { useCommute } from "@/hooks/useCommute";
 import type { Course } from "@/services/shared/timetable";
 import { clock, minutes, until } from "@/services/transport/format";
-import type { CommuteDirection, CommuteState } from "@/services/transport/types";
+import type { CommuteDirection, CommuteErrorCode, CommuteState } from "@/services/transport/types";
 import Typography from "@/ui/new/Typography";
 
 import { LineBadge } from "./LineBadge";
@@ -60,16 +60,16 @@ function Skeleton() {
   );
 }
 
+const ERROR_DETAIL_KEYS: Partial<Record<CommuteErrorCode, string>> = {
+  NETWORK: "Transport_Unavailable_Offline",
+  TIMEOUT: "Transport_Unavailable_Offline",
+  RATE_LIMITED: "Transport_Unavailable_Rate_Limited",
+  LOCATION_UNAVAILABLE: "Transport_Error_Location_Description",
+};
+
 function ErrorContent({ state }: { state: Extract<CommuteState, { kind: "error" }> }) {
   const { t } = useTranslation();
-  const detail =
-    state.code === "NETWORK" || state.code === "TIMEOUT"
-      ? t("Transport_Unavailable_Offline")
-      : state.code === "RATE_LIMITED"
-        ? t("Transport_Unavailable_Rate_Limited")
-        : state.code === "LOCATION_UNAVAILABLE"
-          ? t("Transport_Error_Location_Description")
-          : t("Transport_Unavailable_Retry");
+  const detail = t(ERROR_DETAIL_KEYS[state.code] ?? "Transport_Unavailable_Retry");
   return (
     <>
       <Typography variant="title" numberOfLines={1}>{t("Transport_Unavailable")}</Typography>
@@ -95,18 +95,16 @@ function ReadyContent({
   const arrival = clock(itinerary.arrival, i18n.language);
   const untilDeparture = until(itinerary.departure, now);
 
-  const title =
-    direction === "return"
-      ? t("Transport_Return_Summary", { departure, arrival })
-      : untilDeparture > 0 && untilDeparture < SOON_THRESHOLD_MINUTES
-        ? `${t("Transport_Leave_At_Time", { time: departure })} · ${t("Transport_Leave_In_Minutes", { minutes: untilDeparture })}`
-        : t("Transport_Leave_At_Time", { time: departure });
+  const titles: Record<CommuteDirection, string> = {
+    departure: t(untilDeparture > 0 && untilDeparture < SOON_THRESHOLD_MINUTES ? "Transport_Leave_Soon" : "Transport_Leave_At_Time", { time: departure, minutes: untilDeparture }),
+    return: t("Transport_Return_Summary", { departure, arrival }),
+  };
 
   return (
     <>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
         <Typography variant="title" numberOfLines={1} style={{ flexShrink: 1 }}>
-          {title}
+          {titles[direction]}
         </Typography>
         {itinerary.realtime ? (
           <View style={{ width: 7, height: 7, borderRadius: 7, backgroundColor: "#29947A" }} />

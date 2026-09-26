@@ -558,7 +558,7 @@
   "Grades_Skills_Title": "Skills",
   "Tab_Search": "Search",
   "Transport_Leave_At_Time": "Leave at {{time}}",
-  "Transport_Leave_In_Minutes": "in {{minutes}} min",
+  "Transport_Leave_Soon": "Leave at {{time}} · in {{minutes}} min",
   "Transport_Arrival_Summary": "arrive {{time}} · {{minutes}} min",
   "Transport_Late": "Arrive {{time}} · {{minutes}} min past your margin",
   "Transport_Return_Summary": "Back home · leave {{departure}} · arrive {{arrival}}",

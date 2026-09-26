@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import type { Itinerary } from "papillon-transport";
+import type { Itinerary, PlaceKind } from "papillon-transport";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -15,6 +15,13 @@ import { LineBadge } from "./LineBadge";
 
 const LATE_COLOR = "#E8901C";
 
+const WALK_KEYS: Partial<Record<PlaceKind, Record<CommuteDirection, string>>> = {
+  destination: {
+    departure: "Transport_Walk_To_School",
+    return: "Transport_Walk_To_Home",
+  },
+};
+
 export function ItinerarySteps({ itinerary, direction }: { itinerary: Itinerary; direction: CommuteDirection }) {
   const { t, i18n } = useTranslation();
   const list = steps(itinerary);
@@ -26,14 +33,7 @@ export function ItinerarySteps({ itinerary, direction }: { itinerary: Itinerary;
       </List.SectionTitle>
       {list.map((step, index) => {
         if (step.kind === "walk") {
-          const label =
-            step.toKind === "destination"
-              ? direction === "departure"
-                ? t("Transport_Walk_To_School", { minutes: step.minutes })
-                : t("Transport_Walk_To_Home", { minutes: step.minutes })
-              : step.toName
-                ? t("Transport_Walk_To", { minutes: step.minutes, place: step.toName })
-                : t("Transport_Walk", { minutes: step.minutes });
+          const label = t(WALK_KEYS[step.toKind]?.[direction] ?? (step.toName ? "Transport_Walk_To" : "Transport_Walk"), { minutes: step.minutes, place: step.toName });
           return (
             <List.Item key={`walk-${index}`}>
               <List.Leading>
