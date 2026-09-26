@@ -48,6 +48,10 @@ jobs:
       - name: Check exported web bundle for ExpoUI native module
         run: node scripts/check-web-bundle.js
 
+      - name: Pin Tauri runtime dependency graph
+        working-directory: src-tauri
+        run: cargo update -p tauri-runtime --precise 2.10.1 && cargo update -p tauri-runtime-wry --precise 2.10.1
+
       - name: Build Papillon (Tauri)
         uses: tauri-apps/tauri-action@v0
         env:

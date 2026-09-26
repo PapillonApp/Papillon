@@ -15,13 +15,17 @@ name = "papillon_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.6.3" }
+tauri-build = { version = "=2.5.6" }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "=2.10.1" }
+tauri = { version = "=2.10.3" }
+# Force the runtime crates to the same 2.10 line as Tauri. Without this,
+# Cargo can resolve a newer 2.11 runtime and cause NewWindowHandler type errors.
+tauri-runtime = { version = "=2.10.1" }
+tauri-runtime-wry = { version = "=2.10.1" }
 tauri-plugin-log = "2"
 tauri-plugin-http = { version = "=2.5.7", features = ["unsafe-headers"] }
 tauri-plugin-notification = "=2.3.3"
