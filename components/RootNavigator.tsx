@@ -117,7 +117,7 @@ function RootNavigatorContent() {
           options={{
             headerTitle: t("Transport_Itinerary_Title"),
             headerLargeTitle: false,
-            headerTransparent: true,
+            headerTransparent: runsIOS26,
             presentation: "formSheet",
             sheetGrabberVisible: true,
             sheetAllowedDetents: [1],
