@@ -15,7 +15,6 @@ echo "===== Logging package.json ====="
 cat package.json
 echo "===== Adding secrets ====="
 printf "{\"POSTHOG_API_KEY\":\"%s\",\"POSTHOG_HOST\":\"%s\"}" "$POSTHOG_API_KEY" "$POSTHOG_HOST" >> secrets.json
-cat secrets.json
 echo "===== Running expo prebuild ====="
 npx expo prebuild --no-install
 echo "===== Running git restore ====="
