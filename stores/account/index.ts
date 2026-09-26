@@ -5,7 +5,7 @@ import { log } from "@/utils/logger/logger";
 import { trackAdvancedEvent, trackOptionalEvent } from "@/utils/logger/analytics";
 import { initializeTransport } from "@/utils/transport";
 
-import { createMMKVStorage } from '../global'
+import { createEncryptedMMKVStorage } from '../global'
 import { AccountsStorage, Auth, TransportAddress } from "./types";
 
 export const useAccountStore = create<AccountsStorage>()(
@@ -336,7 +336,8 @@ export const useAccountStore = create<AccountsStorage>()(
     }),
     {
       name: "account-storage",
-      storage: createMMKVStorage<AccountsStorage>(
+      // Legacy static key, only used to migrate existing installs to a per-device key
+      storage: createEncryptedMMKVStorage<AccountsStorage>(
         "account-storage",
         "3f64fc8d-472d-43d5-ba11-461020e2423b"
       ),

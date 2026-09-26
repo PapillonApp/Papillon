@@ -1,18 +1,25 @@
-import { createMMKV } from 'react-native-mmkv'
+import { createMMKV, MMKV } from 'react-native-mmkv'
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { PersistStorage } from 'zustand/middleware'
 
+import { createEncryptedMMKV } from './encryption';
 import { UniversalClassSerializer } from './serializer';
 
 const classRegistry = new Map<string, any>();
 classRegistry.set('Skolengo', SkolengoSession);
 
-export const createMMKVStorage = <T>(id: string, encryptionKey?: string): PersistStorage<T> => {
-  const mmkv = createMMKV({
-    id: id,
-    encryptionKey: encryptionKey
-  });
+export const createMMKVStorage = <T>(id: string): PersistStorage<T> =>
+  wrapMMKV<T>(createMMKV({ id }));
 
+export const createEncryptedMMKVStorage = <T>(id: string, legacyKey?: string): PersistStorage<T> => {
+  const mmkv = createEncryptedMMKV(id, legacyKey);
+  if (!mmkv) {
+    return { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+  }
+  return wrapMMKV<T>(mmkv);
+};
+
+const wrapMMKV = <T>(mmkv: MMKV): PersistStorage<T> => {
   return {
     getItem: (name) => {
       const value = mmkv.getString(name);
