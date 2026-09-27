@@ -69,23 +69,43 @@ const Task = () => {
     const previous = isDone;
     setIsDone(done);
     setToggling(true);
+    // DB d'abord (chemin unique liste/détail) : le fait survit au hors-ligne.
+    try {
+      await updateHomeworkIsDone(id, done);
+    } catch {
+      // best-effort
+    }
     // Vrai id Pronote si connu (lignes cache historiques n'ont que le route id).
     const serverTask = { ...task, id: task.pronoteId ?? task.id };
     try {
       await manager?.setHomeworkCompletion(serverTask, done);
-      await updateHomeworkIsDone(id, done);
     } catch (err) {
-      setIsDone(previous);
-      try {
-        await updateHomeworkIsDone(id, previous);
-      } catch {
-        // best-effort rollback
-      }
       const message = String((err as Error)?.message ?? err);
+      const lowered = message.toLowerCase();
+      const offline =
+        lowered.includes("network") ||
+        lowered.includes("abort") ||
+        lowered.includes("timeout") ||
+        lowered.includes("fetch") ||
+        lowered.includes("offline") ||
+        lowered.includes("net::") ||
+        message.includes("TypeError");
+      // Hors-ligne : on garde le fait local (file d'envoi), pas de rollback.
+      if (!offline) {
+        setIsDone(previous);
+        try {
+          await updateHomeworkIsDone(id, previous);
+        } catch {
+          // best-effort rollback
+        }
+      }
+      if (offline) {
+        return;
+      }
       const outOfRange =
         message.includes("404") ||
-        message.toLowerCase().includes("introuvable") ||
-        message.toLowerCase().includes("hors p\u00e9riode");
+        lowered.includes("introuvable") ||
+        lowered.includes("hors p\u00e9riode");
       alert.showAlert({
         title: t("Task_ToggleFailed_Title"),
         description: outOfRange ? t("Task_OutOfPeriod") : t("Task_ToggleFailed_Description"),

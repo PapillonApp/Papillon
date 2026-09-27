@@ -90,7 +90,12 @@ async function request<T>(
   };
 
   const isGet = !options.method || options.method.toUpperCase() === "GET";
-  const dedupKey = isGet ? `${options.method ?? "GET"} ${url}` : null;
+  // Clé de dédup incluant le compte (hash du token) : sans ça, deux comptes
+  // interrogeant la même semaine partageaient la même promesse (fuite inter-comptes).
+  const tokenHash = options.authToken
+    ? String(options.authToken.length) + ":" + String(options.authToken.slice(0, 12))
+    : "noauth";
+  const dedupKey = isGet ? `${options.method ?? "GET"} ${url} ${tokenHash}` : null;
   if (dedupKey && inFlightGets.has(dedupKey)) {
     return inFlightGets.get(dedupKey) as Promise<T>;
   }

@@ -337,9 +337,33 @@ const CourseSheet: React.FC<{ course: SharedCourse; topInset: number }> = ({ cou
   const [downloadingName, setDownloadingName] = useState<string | null>(null);
   const subjectColor = getSubjectColor(course.subject);
   const subjectEmoji = getSubjectEmoji(course.subject);
-  const startTime = Math.floor(course.from.getTime() / 1000);
-  const endTime = Math.floor(course.to.getTime() / 1000);
+  const fromMs = course.from instanceof Date ? course.from.getTime() : new Date(course.from as any).getTime();
+  const toMs = course.to instanceof Date ? course.to.getTime() : new Date(course.to as any).getTime();
+  const validDates = Number.isFinite(fromMs) && Number.isFinite(toMs);
+  const startTime = validDates ? Math.floor(fromMs / 1000) : NaN;
+  const endTime = validDates ? Math.floor(toMs / 1000) : NaN;
   const isCanceled = course.status === CourseStatus.CANCELED;
+  const safeDistanceToNow = (ms: number) => {
+    try {
+      if (!Number.isFinite(ms)) return "—";
+      return formatDistanceToNow(ms, {
+        locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
+        addSuffix: true,
+      });
+    } catch {
+      return "—";
+    }
+  };
+  const safeDistanceStrict = (a: number, b: number) => {
+    try {
+      if (!Number.isFinite(a) || !Number.isFinite(b)) return "—";
+      return formatDistanceStrict(a, b, {
+        locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
+      });
+    } catch {
+      return "—";
+    }
+  };
 
   const flags: Array<{ label: string; color: string }> = [];
   if (course.detention) flags.push({ label: t("Course_Flag_Detention", "Retenue"), color: "#B91C1C" });
@@ -433,10 +457,7 @@ const CourseSheet: React.FC<{ course: SharedCourse; topInset: number }> = ({ cou
             </List.Leading>
             <Typography variant="title">{t("Modal_Course_Start")}</Typography>
             <Typography variant="body1" color="textSecondary">
-              {formatDistanceToNow(startTime * 1000, {
-                locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
-                addSuffix: true,
-              })}
+              {safeDistanceToNow(startTime * 1000)}
             </Typography>
             <List.Trailing>
               <Typography variant="title">
@@ -505,9 +526,7 @@ const CourseSheet: React.FC<{ course: SharedCourse; topInset: number }> = ({ cou
             </List.Leading>
             <Typography variant="title">{t("Modal_Course_Duration")}</Typography>
             <Typography variant="body1" color="textSecondary">
-              {formatDistanceStrict(startTime * 1000, endTime * 1000, {
-                locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
-              })}
+              {safeDistanceStrict(startTime * 1000, endTime * 1000)}
             </Typography>
           </List.Item>
 

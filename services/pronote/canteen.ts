@@ -9,10 +9,13 @@ export async function fetchPronoteCanteenMenu(
   childName?: string
 ): Promise<CanteenMenu[]> {
   try {
-    const fromStr = date.toISOString().split("T")[0];
+    // Dates locales (pas toISOString/UTC) : évite le décalage ±1j selon fuseau.
+    const fmtLocal = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const fromStr = fmtLocal(date);
     const toDate = new Date(date);
     toDate.setDate(toDate.getDate() + 6);
-    const toStr = toDate.toISOString().split("T")[0];
+    const toStr = fmtLocal(toDate);
 
     const data = await PronoteApiClient.getCanteen(authToken, fromStr, toStr, childName);
 
@@ -20,14 +23,19 @@ export async function fetchPronoteCanteenMenu(
       const mapFood = (f: any) => ({
         id: typeof f?.id === "string" ? f.id : null,
         name: typeof f === "string" ? f : (f?.name ?? ""),
-        allergens: Array.isArray(f?.labels) ? f.labels.map((l: any) => (typeof l === "string" ? l : l?.name ?? "")) : (f?.labels || []),
+        // Allergènes ≠ labels : sources distinctes quand disponibles.
+        allergens: Array.isArray(f?.allergens)
+          ? f.allergens.map((a: any) => (typeof a === "string" ? a : a?.name ?? ""))
+          : Array.isArray(f?.allergenes)
+            ? f.allergenes.map((a: any) => (typeof a === "string" ? a : a?.name ?? ""))
+            : [],
         labels: Array.isArray(f?.labels) ? f.labels.map((l: any) => (typeof l === "string" ? { name: l } : { id: l?.id ?? null, name: l?.name ?? "", color: l?.color ?? null })) : undefined,
       });
       let lunchMeal = undefined;
       let dinnerMeal = undefined;
 
       if (m.meal) {
-        const mealObj = {
+        const buildMeal = () => ({
           entry: (m.meal.entry || []).map(mapFood),
           main: (m.meal.main || []).map(mapFood),
           side: (m.meal.side || []).map(mapFood),
@@ -35,9 +43,10 @@ export async function fetchPronoteCanteenMenu(
           dessert: (m.meal.dessert || []).map(mapFood),
           other: (m.meal.other || []).map(mapFood),
           drink: [],
-        };
-        if (m.is_lunch ?? true) lunchMeal = mealObj;
-        if (m.is_dinner ?? false) dinnerMeal = mealObj;
+        });
+        // Cloner : lunch et dinner ne doivent pas partager la même référence.
+        if (m.is_lunch ?? true) lunchMeal = buildMeal();
+        if (m.is_dinner ?? false) dinnerMeal = buildMeal();
       } else if (m.meals) {
         const rawLunch = m.meals?.[0];
         const rawDinner = m.meals?.[1];
@@ -63,13 +72,15 @@ export async function fetchPronoteCanteenMenu(
         }
       }
 
+      const parsed = m.date ? new Date(m.date) : new Date(NaN);
+      if (isNaN(parsed.getTime())) return null;
       return {
-        date: new Date(m.date),
+        date: parsed,
         createdByAccount: accountId,
         lunch: lunchMeal,
         dinner: dinnerMeal,
       };
-    });
+    }).filter((m): m is NonNullable<typeof m> => m !== null);
   } catch (err) {
     error(`Failed to fetch canteen menu: ${err}`, "fetchPronoteCanteenMenu");
     return [];

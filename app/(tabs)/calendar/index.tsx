@@ -5,7 +5,6 @@ import { FlatList, Platform, StyleSheet,View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CourseStatus } from "@/services/shared/timetable";
-import { useAccountStore } from "@/stores/account";
 
 import { CalendarDay } from "./components/CalendarDay";
 import { CalendarHeader } from "./components/CalendarHeader";
@@ -19,10 +18,6 @@ function TabOneScreen() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const insets = useSafeAreaInsets();
   const tabBarHeight = insets.bottom;
-
-  const accounts = useAccountStore(state => state.accounts);
-  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
-  const account = accounts.find(a => a.id === lastUsedAccount)!;
 
   const {
     date,

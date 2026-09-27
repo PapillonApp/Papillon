@@ -53,9 +53,16 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
         result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
         const newHomeworks: Record<string, Homework> = {};
         for (const hw of result) {
-          const id = generateId(
-            hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
-          );
+          // Clé scopée enfant (même fonction que cache/liste) : sans kidName,
+          // les devoirs du parent écrasaient/mismatchaient ceux de l'enfant.
+          let id: string;
+          try {
+            id = getHomeworkRouteId(hw);
+          } catch {
+            id = generateId(
+              hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+            );
+          }
           newHomeworks[id] = { ...hw, id: hw.id ?? id };
         }
         setHomework(newHomeworks);
@@ -151,9 +158,23 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
       }
       catch (err) {
         const message = String(err);
+        const lowered = message.toLowerCase();
         const outOfRange =
           message.includes("404") ||
-          message.toLowerCase().includes("introuvable");
+          lowered.includes("introuvable");
+        // Hors-ligne / timeout : on garde le fait local (offline-first, file
+        // d'envoi via AccountManager), pas de rollback — resync au reconnect.
+        const offline =
+          lowered.includes("network") ||
+          lowered.includes("abort") ||
+          lowered.includes("timeout") ||
+          lowered.includes("fetch") ||
+          lowered.includes("offline") ||
+          lowered.includes("net::") ||
+          message.includes("TypeError");
+        if (offline) {
+          return;
+        }
         alert.showAlert({
             title: t("Task_ToggleFailed_Title"),
             message: outOfRange ? t("Task_OutOfPeriod") : t("Task_ToggleFailed_Description"),

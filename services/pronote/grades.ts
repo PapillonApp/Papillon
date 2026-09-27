@@ -48,7 +48,9 @@ export async function fetchPronoteGrades(
         bonus: Boolean(g.is_bonus ?? false),
         optional: Boolean(g.is_optionnal ?? false),
         outOf: g.out_of !== undefined ? { value: g.out_of } : { value: 20 },
-        coefficient: g.coefficient || 1,
+        // Coefficient 0 = non compté (exclu de la moyenne). ?? préserve le 0,
+        // contrairement à || qui le transformerait en 1.
+        coefficient: g.coefficient ?? 1,
         statusCode,
         rawGrade,
         studentScore: hasValue

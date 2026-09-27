@@ -173,16 +173,23 @@ export async function fetchPronoteWeekTimetable(
       const year = date ? date.getFullYear() : new Date().getFullYear();
       ({ start, end } = getWeekRange(weekNumberRaw, year));
     }
-    const fromStr = start.toISOString().split("T")[0];
-    const toStr = end.toISOString().split("T")[0];
+    const fmtLocalDay = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const fromStr = fmtLocalDay(start);
+    const toStr = fmtLocalDay(end);
 
     const response = await PronoteApiClient.getTimetable(authToken, fromStr, toStr, childName);
     const dayMap: Record<string, Course[]> = {};
+    const localDayKey = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
     for (const l of response.lessons || []) {
       const fromDate = new Date(l.start);
       const toDate = new Date(l.end);
-      const dayKey = fromDate.toISOString().split("T")[0];
+      // Leçon corrompue (dates invalides) : on l'ignore au lieu de crasher le tri/l'UI.
+      if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) continue;
+      // Jour local (cohérent avec la comparaison locale de l'UI), pas UTC.
+      const dayKey = localDayKey(fromDate);
       const isDetention = Boolean((l as any).detention ?? (l as any).is_detention ?? false);
       const isOuting = Boolean((l as any).outing ?? (l as any).is_outing ?? false);
 

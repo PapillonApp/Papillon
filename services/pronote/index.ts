@@ -553,11 +553,17 @@ export class Pronote implements SchoolServicePlugin {
     state?: boolean
   ): Promise<Homework> {
     await this.checkTokenValidty();
+    // Espace parent : le devoir porte son kidName ; le selectedChild global
+    // peut être stale après un switch d'enfant → préférer le kid de l'item.
+    const childName =
+      (homework as { kidName?: unknown }).kidName && typeof (homework as { kidName?: unknown }).kidName === "string" && ((homework as { kidName?: string }).kidName as string).length > 0
+        ? ((homework as { kidName?: string }).kidName as string)
+        : this.getSelectedChildName();
     return setPronoteHomeworkAsDone(
       this.getAuthToken(),
       homework,
       state,
-      this.getSelectedChildName()
+      childName
     );
   }
 

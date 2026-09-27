@@ -14,11 +14,21 @@ export default class CanteenMenu extends Model {
 	@field('dinner') mealRaw: string;
 	@field('createdByAccount') createdByAccount: string;
 	
-	get lunch(): Meal {
-	  return JSON.parse(this.lunchRaw);
+	get lunch(): Meal | undefined {
+	  if (!this.lunchRaw) return undefined;
+	  try {
+	    return JSON.parse(this.lunchRaw);
+	  } catch {
+	    return undefined;
+	  }
 	}
 
-	get dinner(): Meal {
-	  return JSON.parse(this.mealRaw);
+	get dinner(): Meal | undefined {
+	  if (!this.mealRaw) return undefined;
+	  try {
+	    return JSON.parse(this.mealRaw);
+	  } catch {
+	    return undefined;
+	  }
 	}
 }

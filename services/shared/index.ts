@@ -525,7 +525,30 @@ export class AccountManager {
           return getCoursesFromCache([weekNumber], y);
         },
         saveToCache: async (data: CourseDay[]) => {
-          await addCourseDayToDatabase(data);
+          // Jours vides explicitement : le fetcher n'émet que les jours non
+          // vides, sinon un jour vidé (vacances/annulation) garde ses
+          // anciens cours fantômes en base.
+          try {
+            const { getWeekRangeForDate } = await import("@/utils/services/periods");
+            const ref = date instanceof Date && !isNaN(date.getTime()) ? date : new Date();
+            const { start } = getWeekRangeForDate(ref);
+            const seen = new Set(
+              (data || []).map(d => {
+                const dd = d.date instanceof Date ? d.date : new Date(d.date as any);
+                return `${dd.getFullYear()}-${dd.getMonth()}-${dd.getDate()}`;
+              })
+            );
+            const full: CourseDay[] = [...(data || [])];
+            for (let i = 0; i < 7; i++) {
+              const day = new Date(start);
+              day.setDate(start.getDate() + i);
+              const key = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+              if (!seen.has(key)) full.push({ date: day, courses: [] });
+            }
+            await addCourseDayToDatabase(full);
+          } catch {
+            await addCourseDayToDatabase(data);
+          }
         },
       }
     );

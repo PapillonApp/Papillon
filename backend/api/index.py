@@ -1333,7 +1333,12 @@ def set_homework_done(
     if not target:
         raise HTTPException(status_code=404, detail="[homework/done] Devoir introuvable (id inconnu ou hors période ±60j). Rouvre la liste pour rafraîchir.")
 
-    target.set_done(req.done)
+    try:
+        target.set_done(req.done)
+    except Exception as e:
+        # Parent : set_done peut lever selon l'établissement (contexte enfant
+        # pronotepy). 502 + message actionnable, pas un 500 brut.
+        raise HTTPException(status_code=502, detail=f"[homework/done] PRONOTE a refusé la mise à jour ({e}). Vérifie l'enfant sélectionné puis réessaie.")
     return {"success": True, "done": req.done}
 
 @app.get("/attendance")
@@ -1610,8 +1615,10 @@ def get_canteen(
         _set_cache_header(response, True)
         return chit
     client = init_client(auth, child_name=child)
-    start_d = datetime.strptime(from_date, "%Y-%m-%d").date()
-    end_d = datetime.strptime(to_date, "%Y-%m-%d").date() if to_date else start_d
+    start_d = parse_ymd(from_date, "from_date")
+    end_d = parse_ymd(to_date, "to_date") if to_date else start_d
+    if end_d < start_d:
+        raise HTTPException(status_code=422, detail="to_date antérieur à from_date")
 
     menus = []
     if hasattr(client, "menus"):

@@ -134,6 +134,14 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   await safeWrite(
     db,
     async () => {
+      const courseKey = (c: SharedCourseDay["courses"][number]) =>
+        `${c.createdByAccount}::${(c as any)?.kidName ?? ""}`;
+      // Clés rafraîchies sur toute la semaine : permet de purger les jours
+      // devenus vides (aucun cours) pour ces comptes/enfants.
+      const weekKeys = new Set<string>();
+      for (const day of courses) {
+        for (const c of day.courses) weekKeys.add(courseKey(c));
+      }
       for (const day of courses) {
         const dayTimestamp = day.date.getTime();
         const oneDayMs = 24 * 60 * 60 * 1000;
@@ -144,8 +152,6 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
           )
           .fetch();
 
-        const courseKey = (c: SharedCourseDay["courses"][number]) =>
-          `${c.createdByAccount}::${(c as any)?.kidName ?? ""}`;
         const dayCourseIds = new Set(
           day.courses.map(course => {
             const kid = (course as any)?.kidName ?? "";
@@ -157,10 +163,12 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
           }).flat()
         );
         const refreshedKeys = new Set(day.courses.map(courseKey));
+        // Jour vide : on purge avec les clés de la semaine (même fetch).
+        const keysForDay = day.courses.length > 0 ? refreshedKeys : weekKeys;
 
         const coursesToDelete = dbCourses.filter(
           dbCourse =>
-            refreshedKeys.has(`${dbCourse.createdByAccount}::${(dbCourse as any)?.kidName ?? ""}`) &&
+            keysForDay.has(`${dbCourse.createdByAccount}::${(dbCourse as any)?.kidName ?? ""}`) &&
             !dayCourseIds.has(dbCourse.courseId)
         );
 

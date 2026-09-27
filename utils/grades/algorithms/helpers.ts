@@ -27,7 +27,8 @@ export const getSubjectAverageByProperty = (
       continue;
     }
 
-    const coefficient = grade.coefficient || 1;
+    const rawCoef = grade.coefficient;
+    const coefficient = typeof rawCoef === "number" && Number.isFinite(rawCoef) ? rawCoef : 1;
     const outOfValue = grade.outOf.value;
     const gradeValue = targetScore.value;
 

@@ -20,7 +20,10 @@ export async function addCanteenMenuToDatabase(menus: SharedCanteenMenu[]) {
   }> = [];
 
   for (const item of menus) {
-    const id = generateId(item.createdByAccount + item.date);
+    if (!(item.date instanceof Date) || isNaN(item.date.getTime())) continue;
+    // Id stable par jour civil (pas d'heure/TZ) + compte : évite les doublons.
+    const dayKey = `${item.date.getFullYear()}-${item.date.getMonth()}-${item.date.getDate()}`;
+    const id = generateId(item.createdByAccount + dayKey);
     const existing = await db.get('canteenmenus').query(Q.where('menuId', id)).fetch();
 
     if (existing.length === 0) {
@@ -35,13 +38,12 @@ export async function addCanteenMenuToDatabase(menus: SharedCanteenMenu[]) {
         const promises = menusToCreate.map(({ id, item }) =>
           db.get('canteenmenus').create((record: Model) => {
             const menu = record as CanteenMenu;
-            Object.assign(menu, {
-              menuId: id,
-              date: item.date.getTime(),
-              lunch: JSON.stringify(item.lunch),
-              dinner: JSON.stringify(item.dinner),
-              createdByAccount: item.createdByAccount
-            });
+            // Écrire les colonnes brutes (lunch/dinner sont des getters lecture seule).
+            menu.menuId = id;
+            (menu as unknown as Record<string, unknown>).date = item.date.getTime();
+            menu.lunchRaw = item.lunch ? JSON.stringify(item.lunch) : (null as unknown as string);
+            menu.mealRaw = item.dinner ? JSON.stringify(item.dinner) : (null as unknown as string);
+            menu.createdByAccount = item.createdByAccount;
           })
         );
         await Promise.all(promises);
@@ -82,7 +84,9 @@ export async function addCanteenTransactionToDatabase(transactions: SharedCantee
   }> = [];
 
   for (const item of transactions) {
-    const id = generateId(item.createdByAccount + item.date + item.amount + item.label + item.currency);
+    const time = item.date instanceof Date ? item.date.getTime() : new Date(item.date as any).getTime();
+    if (!Number.isFinite(time)) continue;
+    const id = generateId(item.createdByAccount + time + item.amount + item.label + item.currency);
     const existing = await db.get('canteentransactions').query(
       Q.where('transactionId', id)
     ).fetch();
@@ -99,10 +103,11 @@ export async function addCanteenTransactionToDatabase(transactions: SharedCantee
         const promises = transactionsToCreate.map(({ id, item }) =>
           db.get('canteentransactions').create((record: Model) => {
             const transaction = record as CanteenHistoryItem;
+            const t = item.date instanceof Date ? item.date.getTime() : new Date(item.date as any).getTime();
             Object.assign(transaction, {
               createdByAccount: item.createdByAccount,
               transactionId: id,
-              date: item.date,
+              date: t,
               label: item.label,
               currency: item.currency,
               amount: item.amount
