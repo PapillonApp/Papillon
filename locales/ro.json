@@ -1,7 +1,6 @@
 {
   "Global_Back": "Înapoi",
   "Global_DatePrefix": "pe",
-
   "Tab_Home": "Acasă",
   "Tab_Calendar": "Lecții",
   "Tab_Tasks": "Teme",
@@ -16,7 +15,6 @@
   "Tab_Page": "Pagină",
   "Tab_Settings": "Setări",
   "Tab_News": "Noutăți",
-
   "ONBOARDING_MAIN_TITLE": "Aplicația care îți gestionează viața școlară",
   "ONBOARDING_MAIN_DESCRIPTION": "Conectează aplicațiile tale școlare pentru a accesa notele, cursurile, temele și multe altele în interfața Papillon!",
   "ONBOARDING_START_BTN": "Începe",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "Cod PIN",
   "SEARCH_UNIV_PLACEHOLDER": "Caută o instanță...",
   "ONBOARDING_LOADING_LOGIN": "Conectare în curs...",
-
   "WAITING": "În așteptare",
   "IZLY_SMS_SEND": "Tocmai ai primit un link de conectare, apasă pe el și urmează pașii.",
   "STEP": "Pasul",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Conectare",
   "CONFIRM_BTN": "Confirmă",
   "CANCEL_BTN": "Anulează",
-
   "Tab_New_Event": "Eveniment nou",
-
   "Tab_Calendar_Icals": "Gestionare iCal",
   "Tab_Calendar_Icals_Description": "Gestionează URL-urile tale iCal",
-
   "Tab_Calendar_Icals_Add_URL": "Adaugă un URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Gestionează {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Adaugă sau șterge URL-uri iCal pentru a le sincroniza cu calendarul tău.",
   "Tab_Calendar_Icals_Add_Title": "Titlu lipsă",
   "Tab_Calendar_Icals_Add_Description": "Dă-i un nume acestui URL iCal pentru a-l adăuga.",
   "Tab_Calendar_Icals_Empty": "Niciun URL iCal adăugat",
-
   "TabUnderConstruction_Title": "Această secțiune este în construcție.",
   "TabUnderConstruction_Details": "Revino mai târziu pentru actualizări.",
-
   "TabDevModeNotice_Title": "Mod Dezvoltator",
   "TabDevModeNotice_Details": "Mediu de testare complet pentru dezvoltatori.",
-
   "Alert_TechnicalDetails": "Detalii tehnice",
-
   "Online_Course": "Online",
   "Evaluated_Course": "Evaluare",
   "Edited_Course": "Curs modificat",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Sală necunoscută",
   "Event_DeleteEvent": "Șterge evenimentul",
   "Event_Confirm_DeleteEvent": "Ești sigur că vrei să ștergi acest eveniment?",
-
   "Course_Separator_Lunch_Default": "Pauză de prânz",
   "Course_Separator_Lunch_Alt_1": "Poftă bună!",
   "Course_Separator_Lunch_Alt_2": "Miam!",
-
   "Course_Separator_Morning_Default": "Pauză de dimineață",
   "Course_Separator_Morning_Alt_1": "Somn ușor!",
   "Course_Separator_Morning_Alt_2": "Micul dejun",
-
   "Course_Separator_Evening_Default": "Pauză de după-amiază",
   "Course_Separator_Evening_Alt_1": "O pauză e necesară!",
   "Course_Separator_Evening_Alt_2": "Ora gustării!",
-
   "Course_Separator_Night_Default": "Pauză de seară",
   "Course_Separator_Night_Alt_1": "Somn ușor!",
   "Course_Separator_Night_Alt_2": "Este noapte!",
-
   "Context_Delete": "Șterge",
   "Context_Cancel": "Anulează",
   "Context_Edit": "Modifică",
   "Context_Add": "Adaugă",
-
   "Form_Title": "Titlu",
   "Form_Location": "Locație",
   "Form_Organizer": "Organizator",
   "Form_Start": "Început",
   "Form_End": "Sfârșit",
-
   "Confirm_DeleteEvent": "Ești sigur că vrei să ștergi acest eveniment?",
-
   "Home_Welcome_Name": "Bună, {{name}} {{emoji}}",
   "Home_Display_More": "Afișează mai mult",
   "Home_Cards_Button_Description_Plurial": "disponibile",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Nu mai ai nicio lecție programată pentru azi",
   "Home_Planned_One": "Mai ai o lecție azi",
   "Home_Planned_Number": "Mai ai {{number}} lecții azi",
-
   "Home_Widget_NextCourses": "Următoarele lecții",
   "Home_Widget_NewGrades": "Note noi",
   "Home_Widget_NewHomeworks": "Teme de făcut",
-
   "Home_Widget_NoCourses": "Nicio lecție următoare",
   "Home_Widget_NoCourses_Description": "Nu sunt lecții programate pentru astăzi.",
-
   "Home_Cards_Button_Title": "Carduri",
   "Home_Cards_Button_Description_None": "Niciun card",
   "Home_Cards_Button_Description_Singular": "Un card",
   "Home_Cards_Button_Description_Number": "{{number}} carduri",
-
   "Home_Chats_Button_Title": "Mesaje",
   "Home_Chats_Button_Description_None": "Niciun mesaj",
   "Home_Chats_Button_Description_Singular": "Un mesaj",
   "Home_Chats_Button_Description_Number": "{{number}} mesaje",
-
   "Home_Attendance_Title": "Absențe",
   "Home_Attendance_Button_Description_None": "Nicio absență",
   "Home_Attendance_Button_Description_Singular": "O absență",
   "Home_Attendance_Button_Description_Number": "{{number}} absențe",
-
   "Home_Menu_Button_Title": "Meniu",
   "Home_Menu_Button_Description": "Meniul zilei",
-
   "Tab_Calendar_Empty": "Niciun eveniment găsit",
   "Tab_Calendar_Empty_Description": "Adaugă un eveniment sau sincronizează calendarul pentru a începe.",
-
   "Modal_Course_Title": "Cursul meu",
   "Modal_Course_StartsIn": "Începe în",
   "Modal_Course_StartedAgo": "Terminat acum",
   "Modal_Course_Ongoing": "Început de",
   "Modal_Course_Group": "Grup",
   "Modal_Course_Group_Full": "Clasă",
-
   "Modal_Course_Details": "Detalii curs",
   "Modal_Course_Teacher": "Profesor",
   "Modal_Course_Room": "Sală",
   "Modal_Course_Duration": "Durată",
-
   "Modal_Course_Time": "Orar curs",
   "Modal_Course_Start": "Început",
   "Modal_Course_End": "Sfârșit",
-
   "Tasks_Search_Placeholder": "Caută teme",
   "Tasks_LeftHomeworks_Title": "teme rămase",
   "Tasks_LeftHomeworks_Time": "săptămâna aceasta",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Teme finalizate",
   "Task_Show_Title": "Afișează",
   "Settings_General": "General",
-
   "Latest_Grades": "Note noi",
   "Grades_Search_Placeholder": "Caută o notă, o materie",
-
   "Grades_Avg_Methods": "Metode de calcul",
   "Grades_Avg_All_Title": "Media generală",
   "Grades_Avg_All_Short": "Med. generală",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Calculează media ponderată a mediilor pe materie",
   "Grades_Avg_Median_Title": "Mediană",
   "Grades_Avg_Median_Short": "Mediană",
-
   "Grades_Avg_More": "Află mai multe",
   "Grades_Avg_KnowMore": "Află mai multe",
   "Grades_Avg_KnowMore_Description": "Înțelege metodele de calcul ale mediei generale",
-
   "Grades_SubjectInfo": "Informații despre materie",
   "Grades_SubjectInfo_NbGrades": "{{number}} note",
   "SubjectInfo_StudentAverage_Label": "Media elevului",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Cea mai bună medie din grup",
   "SubjectInfo_MinAverage_Label": "Media minimă",
   "SubjectInfo_MinAverage_Description": "Cea mai mică medie din grup",
-
   "Grades_Semester": "Semestru",
   "Grades_Trimester": "Trimestru",
   "Grades_OutPeriod": "În afara perioadei",
   "Grades_Year": "An",
   "Grades_MockExamBac": "Simulare Bac",
   "Grades_MockExamBrevet": "Simulare Evaluare Națională",
-
   "Grades_Method_AllGrades": "Toate materiile",
   "Grades_Method_Weighted": "Pondere",
-
   "Grades_Sort": "Sortează",
   "Grades_Sorting_Alphabetical": "Alfabetic",
   "Grades_Sorting_Averages": "Medii",
   "Grades_Sorting_Date": "Dată",
-
   "Grades_Menu_SortBy": "Sortează după",
   "Grades_Menu_AverageBy": "Media după",
   "NoAverage": "Nicio medie",
-
   "Grades_Empty_Title": "Nicio notă",
   "Grades_Empty_Description": "Nu ai fost încă notat în această perioadă.",
-
   "Grade_NoDescription": "Temă la {{subject}}",
-
   "Grades_Tab_Subjects": "Materii",
   "Grades_Tab_Latest": "Note noi",
-
   "Profile_Attendance_Title": "Prezență",
   "Profile_Attendance_Denominator_Single": "absență",
   "Profile_Attendance_Denominator_Plural": "absențe",
-
   "Profile_Discussions_Title": "Discuții",
   "Profile_Discussions_Denominator_Single": "necitit",
   "Profile_Discussions_Denominator_Plural": "necitite",
-
   "Profile_News_Title": "Noutăți",
   "Profile_News_Denominator_Single": "nouă",
   "Profile_News_Denominator_Plural": "noi",
   "Profile_News_Open": "Deschide",
   "Profile_News_Loading_Title": "Se încarcă noutățile...",
   "Profile_News_Author_Unknown": "Autor necunoscut",
-
   "Profile_Cards_Title": "Cod QR și carduri",
-
   "Modal_Grades_Title": "Detaliul notei",
   "Modal_Grades_BestGrade": "Cea mai bună notă din grup",
-
   "Grades_Details_Title": "Detalii",
   "Grades_NormalizedGrade_Title": "Notă raportată la 20",
   "Grades_NormalizedGrade_Description": "Valoarea notei convertită pe o scară de 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "Med. grup",
   "Grades_Tab_Rank": "Clasament",
   "Grades_Tab_Rank_Description": "Poziția în grup",
-
   "News_Search_Placeholder": "Caută o noutate",
   "News_Empty_Title": "Nicio noutate",
   "News_Empty_Description": "Nu au fost găsite noutăți în instituția ta.",
   "News_Search_NoResults": "Nicio noutate găsită",
   "News_Search_NoResults_Description": "Nu a fost găsită noutatea căutată.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "O temă caldă și elegantă",
-
   "News_Theme_Reading_Title": "Lectură",
   "News_Theme_Reading_Description": "O temă concepută pentru citit",
-
   "Attendance_Hours_Missed": "Ore pierdute",
   "Attendance_Hours_Unjustified": "Ore nemotivate",
   "Attendance_Missing": "Absențe",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Fără motiv",
   "Attendance_NoEvent_Title": "Niciun eveniment",
   "Attendance_NoEvent_Description": "Nicio absență sau întârziere înregistrată pentru această perioadă.",
-
   "Settings_Account_Title": "Contul meu",
   "Settings_Account_Description": "Contul meu",
   "Settings_Services_Title": "Conturi conectate",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Schimbă limba",
   "Settings_Tabs_Title": "Tab-uri",
   "Settings_Tabs_Description": "Ascunde tab-urile din meniu",
-
   "Settings_Personalization_Title_Card": "Personalizare",
   "Settings_Personalization_Subtitle_Card": "Teme, materii...",
   "Settings_SubjectPersonalization_Title": "Personalizează materiile",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Semnalează un bug",
   "Settings_About_Issue_Description": "Raportează un bug întâlnit",
   "Settings_About_Dependency_Version": "Versiunea dependențelor",
-
   "Alert_No_Technical": "Nicio informație tehnică disponibilă.",
   "Alert_Auth_Error": "Eroare de autentificare",
   "Alert_Auth_Bad_Creds": "Datele introduse sunt incorecte sau încerci să te conectezi cu un cont de părinte. Acest tip de cont nu este încă suportat de Papillon.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon nu reușește să obțină informațiile de la această instanță PRONOTE, mai este validă?",
   "Alert_No_Pos": "Imposibil de recuperat locația",
   "Alert_Connexion_Fail": "Conexiune imposibilă",
-
   "Feature_Limited": "Funcționalități limitate",
   "Feature_Soon": "Vine curând!",
   "Feature_Soon_Notification": "Lucrăm din greu pentru a-ți oferi această funcționalitate într-o actualizare viitoare.",
   "Feature_Add_Card": "Adaugă un card nou din tab-ul Profil accesibil în bara de navigare",
-
   "Webview_Wait": "Puțină răbdare...",
-
   "Profile_QRCards": "Cod QR și carduri",
   "Profile_QRCards_Subtitle": "{{count}} card(uri)",
   "Profile_Cards_Loading_History": "Se încarcă istoricul tranzacțiilor",
   "Profile_Cards_Loading_History_Description": "Acest lucru poate dura un moment...",
-
   "Settings_Cards_Banner_Title": "Carduri",
   "Settings_Cantineen_Subtitle_Card": "Cantină, acces",
   "Settings_Cards_Banner_Description": "Adaugă cardurile tale de cantină și transport pentru a le accesa oriunde de pe telefon prin Papillon",
   "Settings_Cards_None_Title": "Niciun card",
   "Settings_Cards_Add_Button": "Adaugă",
-
   "Settings_Cards_None_Description": "Adaugă unul pentru a accesa soldul de la cantină, a scana codul QR și altele",
   "Settings_Subjects_None_Title": "Nicio materie",
   "Settings_Subjects_None_Description": "Răsfoiește diferitele tab-uri ale aplicației pentru a putea personaliza materiile.",
   "Settings_Subjects_Reset_Title": "Resetează",
   "Settings_Subjects_Reset_Message": "Vrei sigur să resetezi toate materiile?",
   "Settings_Subjects_Reset_Button": "Resetează",
-
   "Settings_Donator": "Donatori",
   "Settings_Donator_Description": "Vezi lista donatorilor",
   "Settings_App_Version": "Versiunea aplicației",
-
   "Profile_Cards_Scan_Orientation": "Orientează codul QR către scaner",
   "Profile_Cards_No_Reservation": "Nicio rezervare",
   "Profile_Cards_No_Available_Reservation": "Se pare că nu poți rezerva în această zi.",
   "Profile_Cards_History": "Istoric",
   "Magic_Important": "Poate fi important",
-
   "OnBoarding_Step": "Pasul ",
   "OnBoarding_Step_Of": "din ",
-
   "Consent_Advanced_Title": "Vreau să ajut Papillon",
   "Consent_Advanced_Description": "Colectăm informații mai detaliate despre utilizarea ta.",
   "Consent_Required_Title": "Doar esențialul",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Servește doar la îmbunătățirea aplicației",
   "Consent_Arg2": "Anonim și fără legătură cu identitatea ta",
   "Consent_Arg3": "Nu avem acces la conturile tale",
-
   "Changelog_Title": "Note de actualizare",
-
   "Tasks_Sorting_Methods_DueDate": "Data predării",
   "Tasks_Sorting_Methods_Subject": "Materii",
   "Tasks_Sorting_Methods_Done": "Neterminată",
   "Tasks_ThisWeek": "Săptămâna aceasta",
-
   "Task_Undone": "Neterminată",
   "Task_Done": "Terminată",
-
   "Modal_Wallpaper_Title": "Personalizează fundalul",
   "Modal_Profile_Title": "Personalizează profilul",
-
   "Modal_Task_Status": "Starea temei",
   "Modal_Task_Description": "Descrierea temei",
   "Modal_Task_Attachments": "Atașamente",
-
   "Today": "Astăzi",
   "Yesterday": "Ieri",
-  "Tomorrow": "Mâine"
+  "Tomorrow": "Mâine",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

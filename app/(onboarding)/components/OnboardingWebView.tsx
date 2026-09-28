@@ -10,12 +10,18 @@ import Typography from "@/ui/new/Typography";
 import AndroidBackButton from "@/utils/theme/AndroidBackButton";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
-export default function OnboardingWebView({ webViewRef, ...props }: React.ComponentProps<typeof WebView>) {
+export default function OnboardingWebView({
+  webViewRef,
+  ...props
+}: React.ComponentProps<typeof WebView> & {
+  webViewRef?: React.RefObject<any>;
+}) {
   const insets = useSafeAreaInsets();
   const safePadding = useSafeHorizontalPadding(16);
   const { colors } = useTheme();
 
-  const [currentUrl, setCurrentUrl] = React.useState<string>(props.source.uri || "");
+  const initialUri = (props.source && 'uri' in props.source && typeof props.source.uri === 'string') ? props.source.uri : "";
+  const [currentUrl, setCurrentUrl] = React.useState<string>(initialUri);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [loadingProgress, setLoadingProgress] = React.useState<number>(0);
 

@@ -5,11 +5,34 @@ import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Platform, Text, View, ViewStyle } from "react-native";
 
-const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
+const ModalOverhead = ({
+  style,
+  overhead,
+  overtitle,
+  color,
+  emoji,
+  subject,
+  subjectVariant = "title",
+  title,
+  date,
+  dateFormat,
+}: {
+  style?: ViewStyle;
+  overhead?: React.ReactNode;
+  overtitle?: string;
+  color: string;
+  emoji: string;
+  subject: string;
+  subjectVariant?: Variant;
+  title?: string;
+  date?: Date;
+  dateFormat?: Intl.DateTimeFormatOptions;
+}) => {
   const theme = useTheme();
 
   return (
     <Stack
+      width="100%"
       vAlign="center"
       hAlign="center"
       gap={4}
@@ -18,19 +41,19 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
     >
       <View
         style={{
-          backgroundColor: Platform.OS === 'ios' ? color + "22" : "transparent",
+          backgroundColor: Platform.OS === "ios" ? color + "22" : "transparent",
           width: 48,
           height: 48,
           borderRadius: 120,
           alignItems: "center",
           justifyContent: "center",
           borderColor: color + "22",
-          borderWidth: Platform.OS === 'ios' ? 1 : 0,
+          borderWidth: Platform.OS === "ios" ? 1 : 0,
         }}
       >
         <Text
           style={{
-            fontSize: Platform.OS === 'ios' ? 28 : 36,
+            fontSize: Platform.OS === "ios" ? 28 : 36,
           }}
         >
           {emoji}
@@ -40,11 +63,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
       {overhead}
 
       {overtitle && (
-        <Typography
-          variant="body1"
-            color='secondary'
-            align="center"
-        >
+        <Typography variant="body1" color="secondary" align="center">
           {overtitle}
         </Typography>
       )}
@@ -58,31 +77,37 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
         </Typography>
       )}
       {title && (
-        <Typography
-          variant="body1"
-          align="center"
-        >
+        <Typography variant="body1" align="center">
           {title}
         </Typography>
       )}
       {date && (
-        <Typography
-          variant="body1"
-          color='secondary'
-          align="center"
-        >
-          {new Date(date).toLocaleDateString(undefined, dateFormat ? dateFormat : {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
+        <Typography variant="body1" color="secondary" align="center">
+          {new Date(date).toLocaleDateString(
+            undefined,
+            dateFormat
+              ? dateFormat
+              : {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                }
+          )}
         </Typography>
       )}
     </Stack>
-  )
-}
+  );
+};
 
-const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: string, outOf?: number | string }) => {
+const ModalOverHeadScore = ({
+  color,
+  score,
+  outOf,
+}: {
+  color: string;
+  score?: string;
+  outOf?: number | string;
+}) => {
   const theme = useTheme();
 
   if (!score) return null;
@@ -104,13 +129,20 @@ const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: st
         {score}
       </Typography>
       {outOf && (
-        <Typography variant='h3' weight='semibold' color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
-          {typeof outOf === "string" && outOf.startsWith("%") ? outOf : `/${outOf}`}
+        <Typography
+          variant="h3"
+          weight="semibold"
+          color={adjust(color, theme.dark ? 0.3 : -0.3)}
+          style={{ marginBottom: 7, opacity: 0.5 }}
+        >
+          {typeof outOf === "string" && outOf.startsWith("%")
+            ? outOf
+            : `/${outOf}`}
         </Typography>
       )}
     </Stack>
   );
-}
+};
 
 export default ModalOverhead;
 export { ModalOverHeadScore };

@@ -9,6 +9,7 @@ export interface CourseDay {
 export interface Course extends GenericInterface {
   subject: string;
   id: string;
+  externalId?: string;
   type: CourseType;
   from: Date;
   to: Date;
@@ -21,25 +22,28 @@ export interface Course extends GenericInterface {
   customStatus?: string;
   url?: string;
   resourceId?: string;
+  isSigned?: boolean;
+  canSign?: boolean;
+  isStudentPresent?: boolean;
 }
 
 export interface CourseResource {
   title?: string;
   description?: string;
   category: number;
-  attachments: Attachment[]
+  attachments: Attachment[];
 }
 
 export enum CourseType {
   LESSON,
   ACTIVITY,
   DETENTION,
-  VACATION
+  VACATION,
 }
 
 export enum CourseStatus {
   CANCELED,
   EDITED,
   ONLINE,
-  EVALUATED
+  EVALUATED,
 }

@@ -5,7 +5,7 @@ import { generateId } from "@/utils/generateId";
 import { error, warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance } from "./DatabaseProvider";
-import { mapPeriodGradesToShared,mapPeriodToShared } from "./mappers/grade";
+import { mapPeriodGradesToShared, mapPeriodToShared } from "./mappers/grade";
 import { Grade, Period, PeriodGrades } from "./models/Grades";
 import { safeWrite } from "./utils/safeTransaction";
 
@@ -62,7 +62,7 @@ export async function addGradesToDatabase(grades: SharedGrade[], subject: string
 
     const existing = await db.get('grades').query(Q.where('gradeId', id)).fetch();
 
-    if(existing.length === 0) {
+    if (existing.length === 0) {
       await safeWrite(db, async () => {
         await db.get('grades').create((record: Model) => {
           const grade = record as Grade

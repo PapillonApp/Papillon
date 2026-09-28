@@ -309,7 +309,6 @@
   "Settings_About_Issue": "Reportar un error",
   "Settings_About_Issue_Description": "Reportar un error encontrado",
   "Settings_About_Dependency_Version": "Versión de las dependencias",
-
   "Alert_No_Technical": "Ninguna información técnica disponible.",
   "Alert_Auth_Error": "Error de autenticación",
   "Alert_Auth_Bad_Creds": "Las credenciales que has introducido son incorrectas o intentas conectarte con una cuenta de padre. Este tipo de cuenta aún no es compatible con Papillon.",
@@ -372,5 +371,7 @@
   "Modal_Task_Attachments": "Archivos adjuntos",
   "Today": "Hoy",
   "Yesterday": "Ayer",
-  "Tomorrow": "Mañana"
+  "Tomorrow": "Mañana",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

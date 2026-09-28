@@ -1,8 +1,8 @@
 import { useTheme } from "expo-router/react-navigation";
-import { Stack } from 'expo-router';
-import { t } from 'i18next';
-import React, { useMemo } from 'react';
-import { Platform, StatusBar, View } from 'react-native';
+import { Stack } from "expo-router";
+import { t } from "i18next";
+import React, { useEffect, useMemo } from "react";
+import { Platform, StatusBar, View } from "react-native";
 
 import {
   ALERT_SCREEN_OPTIONS,
@@ -11,25 +11,32 @@ import {
   DEMO_SCREEN_OPTIONS,
   DEVMODE_REQUESTS_SCREEN_OPTIONS,
   DEVMODE_SCREEN_OPTIONS,
-  STACK_SCREEN_OPTIONS
-} from '@/constants/LayoutScreenOptions';
-import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
-import { screenOptions } from '@/utils/theme/ScreenOptions';
-import { useAndroidHeaderProps } from './AndroidHeaderBackground';
-import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+  STACK_SCREEN_OPTIONS,
+} from "@/constants/LayoutScreenOptions";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
+import { useAndroidHeaderProps } from "./AndroidHeaderBackground";
+import MainTabErrorBoundary from "@/ui/components/MainTabErrorBoundary";
+import { setupSignReminderHandlers } from "@/utils/notifications/signReminders";
 
 function RootNavigatorContent() {
   const theme = useTheme();
   const androidHeaderProps = useAndroidHeaderProps();
+  const screenOptions = useScreenOptions();
+
+  useEffect(() => setupSignReminderHandlers(), []);
 
   // Memoize combined screen options to prevent object recreation
-  const stackScreenOptions = useMemo(() => ({
-    ...screenOptions,
-    ...STACK_SCREEN_OPTIONS,
-    contentStyle: {
-      backgroundColor: theme.colors.background
-    }
-  }), [theme]);
+  const stackScreenOptions = useMemo(
+    () => ({
+      ...screenOptions,
+      ...STACK_SCREEN_OPTIONS,
+      contentStyle: {
+        backgroundColor: theme.colors.background,
+      },
+    }),
+    [theme, screenOptions]
+  );
 
   return (
     <View
@@ -83,6 +90,63 @@ function RootNavigatorContent() {
             sheetLargestUndimmedDetentIndex: 0,
             headerTransparent: Platform.OS === "ios",
             headerTitle: t("Modal_Wallpaper_Title"),
+            contentStyle: {
+              backgroundColor: theme.colors.card,
+            },
+            ...androidHeaderProps,
+          }}
+        />
+
+        <Stack.Screen
+          name="(modals)/attendance/methods"
+          options={{
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: "fitToContents",
+            headerShown: false,
+            contentStyle: {
+              backgroundColor: theme.colors.card,
+            },
+            ...androidHeaderProps,
+          }}
+        />
+
+        <Stack.Screen
+          name="(modals)/attendance/code"
+          options={{
+            presentation: "formSheet",
+            headerLargeTitle: false,
+            headerTransparent: true,
+            headerTitle: t("Sign_Attendance_Code_Title"),
+            contentStyle: {
+              backgroundColor: theme.colors.card,
+            },
+            ...androidHeaderProps,
+          }}
+        />
+
+        <Stack.Screen
+          name="(modals)/attendance/scan"
+          options={{
+            presentation: "formSheet",
+            headerShown: false,
+            contentStyle: {
+              backgroundColor: "#000000",
+            },
+            ...androidHeaderProps,
+          }}
+        />
+
+        <Stack.Screen
+          name="(modals)/attendance/sign"
+          options={{
+            presentation: "fullScreenModal",
+            headerShown: true,
+            headerBackVisible: true,
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+            headerTransparent: true,
+            headerTitle: t("Sign_Attendance_Validate"),
             contentStyle: {
               backgroundColor: theme.colors.card,
             },

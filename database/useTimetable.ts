@@ -2,46 +2,57 @@ import { Model, Q } from "@nozbe/watermelondb";
 import { useEffect, useState } from "react";
 
 import { getICalCourseById, getICalEventsForWeek } from "@/services/local/ical";
-import { Course as SharedCourse,CourseDay as SharedCourseDay } from "@/services/shared/timetable"
+import {
+  Course as SharedCourse,
+  CourseDay as SharedCourseDay,
+} from "@/services/shared/timetable";
 import { generateId } from "@/utils/generateId";
 import { warn } from "@/utils/logger/logger";
 
-import { getDatabaseInstance, useDatabase } from "./DatabaseProvider"
+import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
 import { getDateRangeOfWeek } from "./useHomework";
 import { safeWrite } from "./utils/safeTransaction";
 
 export function getCourseRouteId(course: SharedCourse): string {
-  if (course.createdByAccount.startsWith('ical_')) return course.id;
+  if (course.createdByAccount.startsWith("ical_")) return course.id;
   return generateId(
     course.from.toISOString() +
-      course.to.toISOString() +
-      course.subject +
-      course.teacher +
-      course.createdByAccount
+    course.to.toISOString() +
+    course.subject +
+    course.teacher +
+    course.createdByAccount
   );
 }
 
-export async function getCourseById(id: string): Promise<SharedCourse | undefined> {
+export async function getCourseById(
+  id: string
+): Promise<SharedCourse | undefined> {
   try {
     const courses = await getDatabaseInstance()
-      .get<Course>('courses')
-      .query(Q.where('courseId', id))
+      .get<Course>("courses")
+      .query(Q.where("courseId", id))
       .fetch();
-    return courses[0] ? mapCourseToShared(courses[0]) : await getICalCourseById(id);
+    return courses[0]
+      ? mapCourseToShared(courses[0])
+      : await getICalCourseById(id);
   } catch {
     return getICalCourseById(id);
   }
 }
 
-export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, date: Date = new Date()) {
+export function useTimetable(
+  refresh = 0,
+  weekNumber: number | number[] = 0,
+  date: Date = new Date()
+) {
   const database = useDatabase();
   const [timetable, setTimetable] = useState<SharedCourseDay[]>([]);
 
   const weeks = Array.isArray(weekNumber) ? weekNumber : [weekNumber];
   // Create a stable key for the weeks array to use in dependency arrays
-  const weeksKey = weeks.join(',');
+  const weeksKey = weeks.join(",");
 
   useEffect(() => {
     let cancelled = false;
@@ -85,18 +96,34 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
         const dayTimestamp = day.date.getTime();
         const oneDayMs = 24 * 60 * 60 * 1000;
 
-        const dbCourses = await db.get<Course>('courses')
+        const dbCourses = await db
+          .get<Course>("courses")
           .query(
-            Q.where('from', Q.between(dayTimestamp, dayTimestamp + oneDayMs))
+            Q.where("from", Q.between(dayTimestamp, dayTimestamp + oneDayMs))
           )
           .fetch();
 
         const dayCourseIds = new Set(
-          day.courses.map(course => {
-            const oldId = generateId(course.from.toISOString() + course.to.toISOString() + course.subject + course.teacher + course.room + course.createdByAccount);
-            const newId = generateId(course.from.toISOString() + course.to.toISOString() + course.subject + course.teacher + course.createdByAccount);
-            return [oldId, newId];
-          }).flat()
+          day.courses
+            .map(course => {
+              const oldId = generateId(
+                course.from.toISOString() +
+                course.to.toISOString() +
+                course.subject +
+                course.teacher +
+                course.room +
+                course.createdByAccount
+              );
+              const newId = generateId(
+                course.from.toISOString() +
+                course.to.toISOString() +
+                course.subject +
+                course.teacher +
+                course.createdByAccount
+              );
+              return [oldId, newId];
+            })
+            .flat()
         );
         const refreshedServiceIds = new Set(
           day.courses.map(course => course.createdByAccount)
@@ -114,14 +141,23 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
 
         for (const item of day.courses) {
           // MIGRATION TO AVOID DUPES, DO NOT DELETE
-          const oldId = generateId(item.from.toISOString() + item.to.toISOString() + item.subject + item.teacher + item.room + item.createdByAccount);
+          const oldId = generateId(
+            item.from.toISOString() +
+            item.to.toISOString() +
+            item.subject +
+            item.teacher +
+            item.room +
+            item.createdByAccount
+          );
           const id = getCourseRouteId(item);
 
-          const oldExistingRecords = await db.get('courses')
-            .query(Q.where('courseId', oldId))
+          const oldExistingRecords = await db
+            .get("courses")
+            .query(Q.where("courseId", oldId))
             .fetch();
-          const existingRecords = await db.get('courses')
-            .query(Q.where('courseId', id))
+          const existingRecords = await db
+            .get("courses")
+            .query(Q.where("courseId", id))
             .fetch();
 
           if (oldId !== id) {
@@ -131,11 +167,12 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
           }
 
           if (existingRecords.length === 0) {
-            await db.get('courses').create((record: Model) => {
+            await db.get("courses").create((record: Model) => {
               const course = record as Course;
               Object.assign(course, {
                 createdByAccount: item.createdByAccount,
                 courseId: id,
+                externalId: item.externalId,
                 subject: item.subject,
                 type: item.type,
                 from: item.from.getTime(),
@@ -149,6 +186,9 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
                 customStatus: item.customStatus,
                 url: item.url,
                 kidName: item.kidName,
+                isSigned: item.isSigned,
+                canSign: item.canSign,
+                isStudentPresent: item.isStudentPresent,
               });
             });
           } else {
@@ -156,6 +196,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
             await courseToUpdate.update((model: Model) => {
               const course = model as Course;
               Object.assign(course, {
+                externalId: item.externalId ?? course.externalId,
                 subject: item.subject ?? course.subject,
                 type: item.type ?? course.type,
                 from: item.from.getTime(),
@@ -169,6 +210,10 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
                 customStatus: item.customStatus ?? course.customStatus,
                 url: item.url ?? course.url,
                 kidName: item.kidName ?? course.kidName,
+                isSigned: item.isSigned ?? course.isSigned,
+                canSign: item.canSign ?? course.canSign,
+                isStudentPresent:
+                  item.isStudentPresent ?? course.isStudentPresent,
               });
             });
           }
@@ -207,8 +252,8 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
     const { start: minStart, end: maxEnd } = getWeeksRange(weeks, year);
 
     const courses = await database
-      .get<Course>('courses')
-      .query(Q.where('from', Q.between(minStart.getTime(), maxEnd.getTime())))
+      .get<Course>("courses")
+      .query(Q.where("from", Q.between(minStart.getTime(), maxEnd.getTime())))
       .fetch();
 
     const dayMap: Record<number, SharedCourse[]> = {};
@@ -226,7 +271,7 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
         dayMap[dayKey].push(event);
       }
     } catch (icalError) {
-      console.warn('Error loading iCal events:', icalError);
+      console.warn("Error loading iCal events:", icalError);
     }
 
     for (const day in dayMap) {
@@ -235,10 +280,52 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
 
     return Object.entries(dayMap).map(([day, courses]) => ({
       date: new Date(Number(day)),
-      courses
+      courses,
     }));
   } catch (e) {
     warn(String(e));
     return [];
   }
+}
+
+export async function updateCourseAttendance(
+  courseId: string,
+  updates: {
+    isSigned?: boolean;
+    canSign?: boolean;
+    isStudentPresent?: boolean;
+    customStatus?: string;
+  }
+): Promise<void> {
+  const db = getDatabaseInstance();
+  await safeWrite(
+    db,
+    async () => {
+      const records = await db
+        .get<Course>("courses")
+        .query(Q.where("courseId", courseId))
+        .fetch();
+      if (records.length > 0) {
+        await records[0].update((model: Model) => {
+          const course = model as Course;
+          if (updates.isSigned !== undefined)
+            course.isSigned = updates.isSigned;
+          if (updates.canSign !== undefined) course.canSign = updates.canSign;
+          if (updates.isStudentPresent !== undefined)
+            course.isStudentPresent = updates.isStudentPresent;
+          if (updates.customStatus !== undefined)
+            course.customStatus = updates.customStatus;
+        });
+      }
+    },
+    5000,
+    `update_course_attendance_${courseId}`
+  );
+}
+
+export async function updateCourseCustomStatus(
+  courseId: string,
+  customStatus: string
+): Promise<void> {
+  return updateCourseAttendance(courseId, { customStatus });
 }
