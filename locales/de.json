@@ -367,5 +367,7 @@
   "Modal_Task_Attachments": "Anhänge",
   "Today": "Heute",
   "Yesterday": "Gestern",
-  "Tomorrow": "Morgen"
+  "Tomorrow": "Morgen",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

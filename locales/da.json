@@ -1,7 +1,6 @@
 {
   "Global_Back": "Tilbage",
   "Global_DatePrefix": "den",
-
   "Tab_Home": "Hjem",
   "Tab_Calendar": "Skema",
   "Tab_Tasks": "Opgaver",
@@ -16,7 +15,6 @@
   "Tab_Page": "Side",
   "Tab_Settings": "Indstillinger",
   "Tab_News": "Nyheder",
-
   "ONBOARDING_MAIN_TITLE": "Appen til at styre dit skoleliv",
   "ONBOARDING_MAIN_DESCRIPTION": "Forbind dine skole-apps for at få adgang til dine karakterer, lektioner, lektier og meget mere i Papillon-brugerfladen!",
   "ONBOARDING_START_BTN": "Begynd",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "PIN-kode",
   "SEARCH_UNIV_PLACEHOLDER": "Søg efter instans...",
   "ONBOARDING_LOADING_LOGIN": "Logger ind...",
-
   "WAITING": "Venter",
   "IZLY_SMS_SEND": "Du har lige modtaget et link til at logge ind. Klik på det og følg trinnene.",
   "STEP": "Trin",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Log ind",
   "CONFIRM_BTN": "Bekræft",
   "CANCEL_BTN": "Annuller",
-
   "Tab_New_Event": "Ny begivenhed",
-
   "Tab_Calendar_Icals": "Administrer iCal",
   "Tab_Calendar_Icals_Description": "Administrer dine iCal-URL'er",
-
   "Tab_Calendar_Icals_Add_URL": "Tilføj iCal-URL",
   "Tab_Calendar_Icals_Manage_Title": "Administrer {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Tilføj eller slet iCal-URL'er for at synkronisere med dit skema.",
   "Tab_Calendar_Icals_Add_Title": "Titel mangler",
   "Tab_Calendar_Icals_Add_Description": "Giv denne iCal-URL et navn for at tilføje den.",
   "Tab_Calendar_Icals_Empty": "Ingen iCal-URL'er tilføjet",
-
   "TabUnderConstruction_Title": "Denne fane er under opbygning.",
   "TabUnderConstruction_Details": "Kom tilbage senere for opdateringer.",
-
   "TabDevModeNotice_Title": "Udviklertilstand",
   "TabDevModeNotice_Details": "Komplet testmiljø til udviklere.",
-
   "Alert_TechnicalDetails": "Tekniske detaljer",
-
   "Online_Course": "Online",
   "Evaluated_Course": "Evaluering",
   "Edited_Course": "Ændret lektion",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Ukendt lokale",
   "Event_DeleteEvent": "Slet begivenhed",
   "Event_Confirm_DeleteEvent": "Er du sikker på, at du vil slette denne begivenhed?",
-
   "Course_Separator_Lunch_Default": "Frokostpause",
   "Course_Separator_Lunch_Alt_1": "Velbekomme!",
   "Course_Separator_Lunch_Alt_2": "Mums!",
-
   "Course_Separator_Morning_Default": "Formiddagspause",
   "Course_Separator_Morning_Alt_1": "Søvntid!",
   "Course_Separator_Morning_Alt_2": "Morgenmad",
-
   "Course_Separator_Evening_Default": "Eftermiddagspause",
   "Course_Separator_Evening_Alt_1": "Tid til en pause!",
   "Course_Separator_Evening_Alt_2": "Snacktid!",
-
   "Course_Separator_Night_Default": "Aftenpause",
   "Course_Separator_Night_Alt_1": "Søvntid!",
   "Course_Separator_Night_Alt_2": "Det er nat!",
-
   "Context_Delete": "Slet",
   "Context_Cancel": "Annuller",
   "Context_Edit": "Rediger",
   "Context_Add": "Tilføj",
-
   "Form_Title": "Titel",
   "Form_Location": "Lokation",
   "Form_Organizer": "Arrangør",
   "Form_Start": "Start",
   "Form_End": "Slut",
-
   "Confirm_DeleteEvent": "Er du sikker på, at du vil slette denne begivenhed?",
-
   "Home_Welcome_Name": "Hej, {{name}} {{emoji}}",
   "Home_Display_More": "Vis mere",
   "Home_Cards_Button_Description_Plurial": "tilgængelige",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Du har ikke flere planlagte lektioner i dag",
   "Home_Planned_One": "Du har én lektion tilbage i dag",
   "Home_Planned_Number": "Du har {{number}} lektioner tilbage i dag",
-
   "Home_Widget_NextCourses": "Næste lektioner",
   "Home_Widget_NewGrades": "Nye karakterer",
   "Home_Widget_NewHomeworks": "Opgaver der skal laves",
-
   "Home_Widget_NoCourses": "Ingen kommende lektioner",
   "Home_Widget_NoCourses_Description": "Der er ingen lektioner planlagt for i dag.",
-
   "Home_Cards_Button_Title": "Kort",
   "Home_Cards_Button_Description_None": "Ingen kort",
   "Home_Cards_Button_Description_Singular": "Ét kort",
   "Home_Cards_Button_Description_Number": "{{number}} kort",
-
   "Home_Chats_Button_Title": "Beskeder",
   "Home_Chats_Button_Description_None": "Ingen beskeder",
   "Home_Chats_Button_Description_Singular": "Én besked",
   "Home_Chats_Button_Description_Number": "{{number}} beskeder",
-
   "Home_Attendance_Title": "Fravær",
   "Home_Attendance_Button_Description_None": "Intet fravær",
   "Home_Attendance_Button_Description_Singular": "Ét fravær",
   "Home_Attendance_Button_Description_Number": "{{number}} fravær",
-
   "Home_Menu_Button_Title": "Menu",
   "Home_Menu_Button_Description": "Dagens menu",
-
   "Tab_Calendar_Empty": "Ingen begivenheder fundet",
   "Tab_Calendar_Empty_Description": "Tilføj en begivenhed eller synkroniser dit skema for at komme i gang.",
-
   "Modal_Course_Title": "Min lektion",
   "Modal_Course_StartsIn": "Starter om",
   "Modal_Course_StartedAgo": "Sluttede for",
   "Modal_Course_Ongoing": "I gang i",
   "Modal_Course_Group": "Gruppe",
   "Modal_Course_Group_Full": "Klasse",
-
   "Modal_Course_Details": "Lektionsdetaljer",
   "Modal_Course_Teacher": "Underviser",
   "Modal_Course_Room": "Lokale",
   "Modal_Course_Duration": "Varighed",
-
   "Modal_Course_Time": "Tidspunkter",
   "Modal_Course_Start": "Start",
   "Modal_Course_End": "Slut",
-
   "Tasks_Search_Placeholder": "Søg efter opgaver",
   "Tasks_LeftHomeworks_Title": "resterende opgaver",
   "Tasks_LeftHomeworks_Time": "i denne uge",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Færdige opgaver",
   "Task_Show_Title": "Vis",
   "Settings_General": "Generelt",
-
   "Latest_Grades": "Nye karakterer",
   "Grades_Search_Placeholder": "Søg efter en karakter, et fag",
-
   "Grades_Avg_Methods": "Beregningsmetoder",
   "Grades_Avg_All_Title": "Samlet gennemsnit",
   "Grades_Avg_All_Short": "Gennemsnit",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Beregner det vægtede gennemsnit af fagenes gennemsnit",
   "Grades_Avg_Median_Title": "Median",
   "Grades_Avg_Median_Short": "Median",
-
   "Grades_Avg_More": "Læs mere",
   "Grades_Avg_KnowMore": "Læs mere",
   "Grades_Avg_KnowMore_Description": "Forstå metoderne til beregning af det samlede gennemsnit",
-
   "Grades_SubjectInfo": "Information om faget",
   "Grades_SubjectInfo_NbGrades": "{{number}} karakter(er)",
   "SubjectInfo_StudentAverage_Label": "Elevens gennemsnit",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Bedste gennemsnit i gruppen",
   "SubjectInfo_MinAverage_Label": "Laveste gennemsnit",
   "SubjectInfo_MinAverage_Description": "Laveste gennemsnit i gruppen",
-
   "Grades_Semester": "Semester",
   "Grades_Trimester": "Trimester",
   "Grades_OutPeriod": "Uden for periode",
   "Grades_Year": "År",
   "Grades_MockExamBac": "Terminsprøve",
   "Grades_MockExamBrevet": "Øveprøve",
-
   "Grades_Method_AllGrades": "Alle fag",
   "Grades_Method_Weighted": "Vægtning",
-
   "Grades_Sort": "Sorter",
   "Grades_Sorting_Alphabetical": "Alfabetisk",
   "Grades_Sorting_Averages": "Gennemsnit",
   "Grades_Sorting_Date": "Dato",
-
   "Grades_Menu_SortBy": "Sortering efter",
   "Grades_Menu_AverageBy": "Gennemsnit efter",
   "NoAverage": "Intet gennemsnit",
-
   "Grades_Empty_Title": "Ingen karakterer",
   "Grades_Empty_Description": "Du har endnu ikke fået karakterer i denne periode.",
-
   "Grade_NoDescription": "Opgave i {{subject}}",
-
   "Grades_Tab_Subjects": "Fag",
   "Grades_Tab_Latest": "Nye karakterer",
-
   "Profile_Attendance_Title": "Fremmøde",
   "Profile_Attendance_Denominator_Single": "fravær",
   "Profile_Attendance_Denominator_Plural": "fravær",
-
   "Profile_Discussions_Title": "Samtaler",
   "Profile_Discussions_Denominator_Single": "ulæst",
   "Profile_Discussions_Denominator_Plural": "ulæste",
-
   "Profile_News_Title": "Nyheder",
   "Profile_News_Denominator_Single": "ny",
   "Profile_News_Denominator_Plural": "nye",
   "Profile_News_Open": "Åbn",
   "Profile_News_Loading_Title": "Indlæser nyheder...",
   "Profile_News_Author_Unknown": "Ukendt forfatter",
-
   "Profile_Cards_Title": "QR-kode og kort",
-
   "Modal_Grades_Title": "Detaljer for karakter",
   "Modal_Grades_BestGrade": "Bedste karakter i gruppen",
-
   "Grades_Details_Title": "Detaljer",
   "Grades_NormalizedGrade_Title": "Karakter omregnet til 20",
   "Grades_NormalizedGrade_Description": "Værdien af karakteren omregnet til en skala på 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "Gns. gruppe",
   "Grades_Tab_Rank": "Rangering",
   "Grades_Tab_Rank_Description": "Placering i gruppen",
-
   "News_Search_Placeholder": "Søg efter en nyhed",
   "News_Empty_Title": "Ingen nyheder",
   "News_Empty_Description": "Der blev ikke fundet nogen nyheder på din skole.",
   "News_Search_NoResults": "Ingen nyheder fundet",
   "News_Search_NoResults_Description": "Der blev ikke fundet nogen nyheder for din søgning.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Et blødt og elegant tema",
-
   "News_Theme_Reading_Title": "Læsning",
   "News_Theme_Reading_Description": "Et tema designet til læsning",
-
   "Attendance_Hours_Missed": "Forsømte timer",
   "Attendance_Hours_Unjustified": "Ulovligt fravær",
   "Attendance_Missing": "Fravær",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Ingen årsag",
   "Attendance_NoEvent_Title": "Ingen hændelser",
   "Attendance_NoEvent_Description": "Ingen fravær eller forsinkelser registreret for denne periode.",
-
   "Settings_Account_Title": "Min konto",
   "Settings_Account_Description": "Min konto",
   "Settings_Services_Title": "Forbundne konti",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Skift sprog",
   "Settings_Tabs_Title": "Faner",
   "Settings_Tabs_Description": "Skjul faner fra menuen",
-
   "Settings_Personalization_Title_Card": "Personliggørelse",
   "Settings_Personalization_Subtitle_Card": "Temaer, fag...",
   "Settings_SubjectPersonalization_Title": "Tilpas fag",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Rapporter en fejl",
   "Settings_About_Issue_Description": "Rapporter en fejl du har fundet",
   "Settings_About_Dependency_Version": "Version af afhængigheder",
-
   "Alert_No_Technical": "Ingen teknisk information tilgængelig.",
   "Alert_Auth_Error": "Godkendelsesfejl",
   "Alert_Auth_Bad_Creds": "De oplysninger, du indtastede, er forkerte, eller du prøver at logge ind med en forældrekonto. Denne kontotype understøttes endnu ikke af Papillon.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon kan ikke hente oplysninger fra denne PRONOTE-instans. Er den stadig gyldig?",
   "Alert_No_Pos": "Kunne ikke hente placering",
   "Alert_Connexion_Fail": "Forbindelse ikke mulig",
-
   "Feature_Limited": "Begrænsede funktioner",
   "Feature_Soon": "Det kommer snart!",
   "Feature_Soon_Notification": "Vi arbejder hårdt på at tilbyde dig denne funktion i en fremtidig opdatering.",
   "Feature_Add_Card": "Tilføj et nyt kort fra fanen Profil i navigationslinjen",
-
   "Webview_Wait": "Lidt tålmodighed...",
-
   "Profile_QRCards": "QR-kode og kort",
   "Profile_QRCards_Subtitle": "{{count}} kort",
   "Profile_Cards_Loading_History": "Indlæser transaktionshistorik",
   "Profile_Cards_Loading_History_Description": "Dette kan tage et øjeblik...",
-
   "Settings_Cards_Banner_Title": "Kort",
   "Settings_Cantineen_Subtitle_Card": "Kantine, adgang",
   "Settings_Cards_Banner_Description": "Tilføj dine kantinekort og transportkort for at få adgang til dem overalt fra din telefon i Papillon",
   "Settings_Cards_None_Title": "Ingen kort",
   "Settings_Cards_Add_Button": "Tilføj",
-
   "Settings_Cards_None_Description": "Tilføj ét for at se din kantinesaldo, scanne din QR-kode og mere",
   "Settings_Subjects_None_Title": "Ingen fag",
   "Settings_Subjects_None_Description": "Gennemse appens forskellige faner for at kunne tilpasse fagene.",
   "Settings_Subjects_Reset_Title": "Nulstil",
   "Settings_Subjects_Reset_Message": "Vil du virkelig nulstille alle fag?",
   "Settings_Subjects_Reset_Button": "Nulstil",
-
   "Settings_Donator": "Donorer",
   "Settings_Donator_Description": "Se listen over donorer",
   "Settings_App_Version": "App-version",
-
   "Profile_Cards_Scan_Orientation": "Ret QR-koden mod terminalens scanner",
   "Profile_Cards_No_Reservation": "Ingen reservation",
   "Profile_Cards_No_Available_Reservation": "Det ser ud til, at du ikke kan reservere denne dag.",
   "Profile_Cards_History": "Historik",
   "Magic_Important": "Kan være vigtigt",
-
   "OnBoarding_Step": "Trin ",
   "OnBoarding_Step_Of": "af ",
-
   "Consent_Advanced_Title": "Jeg vil hjælpe Papillon",
   "Consent_Advanced_Description": "Vi indsamler mere detaljerede oplysninger om din brug.",
   "Consent_Required_Title": "Kun det nødvendige",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Bruges udelukkende til at forbedre appen",
   "Consent_Arg2": "Anonymt og ikke knyttet til din identitet",
   "Consent_Arg3": "Vi har ikke adgang til dine konti",
-
   "Changelog_Title": "Versionsnoter",
-
   "Tasks_Sorting_Methods_DueDate": "Afleveringsdato",
   "Tasks_Sorting_Methods_Subject": "Fag",
   "Tasks_Sorting_Methods_Done": "Ikke færdig",
   "Tasks_ThisWeek": "Denne uge",
-
   "Task_Undone": "Ikke færdig",
   "Task_Done": "Færdig",
-
   "Modal_Wallpaper_Title": "Tilpas baggrund",
   "Modal_Profile_Title": "Tilpas profil",
-
   "Modal_Task_Status": "Status på opgave",
   "Modal_Task_Description": "Beskrivelse af opgave",
   "Modal_Task_Attachments": "Vedhæftede filer",
-
   "Today": "I dag",
   "Yesterday": "I går",
-  "Tomorrow": "I morgen"
+  "Tomorrow": "I morgen",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

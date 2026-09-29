@@ -52,6 +52,7 @@ import { Homework } from "@/services/shared/homework";
 import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import {
+  AttendanceSignParams,
   Capabilities,
   FetchOptions,
   SchoolServicePlugin,
@@ -90,7 +91,7 @@ export class AccountManager {
     return this.failures.get(capability) ?? [];
   }
 
-  constructor(public account: Account) {}
+  constructor(public account: Account) { }
 
   syncAccount(account: Account): void {
     this.account = account;
@@ -121,7 +122,9 @@ export class AccountManager {
       try {
         debug("Trying to refresh " + service.id);
         const reusable =
-          service.serviceId === Services.PRONOTE ? this.clients[service.id] : undefined;
+          service.serviceId === Services.PRONOTE
+            ? this.clients[service.id]
+            : undefined;
         const plugin = reusable ?? this.getServicePluginForAccount(service);
 
         if (!hasInternet && plugin.requiresInternet !== false) {
@@ -143,8 +146,8 @@ export class AccountManager {
           this.clients[service.id] = plugin;
           debug(
             "Plugin for " +
-              service.id +
-              " doesn't support refresh but is available for other capabilities"
+            service.id +
+            " doesn't support refresh but is available for other capabilities"
           );
         }
       } catch (e) {
@@ -155,10 +158,12 @@ export class AccountManager {
 
     debug(
       "Finished refreshing process for all services, services refreshed: " +
-        Object.keys(this.clients).length
+      Object.keys(this.clients).length
     );
 
-    const challenge = failures.find(f => f.err instanceof SecurityChallengeError);
+    const challenge = failures.find(
+      f => f.err instanceof SecurityChallengeError
+    );
     if (challenge) {
       const err = challenge.err as SecurityChallengeError;
       throw new SecurityChallengeError(
@@ -171,15 +176,27 @@ export class AccountManager {
 
     const authFailure = failures.find(f => isPermanentAuthError(f.err));
     if (authFailure) {
-      throw new AuthenticationError(String(authFailure.err), authFailure.service);
+      throw new AuthenticationError(
+        String(authFailure.err),
+        authFailure.service
+      );
     }
 
-    if (!hasInternet && Object.keys(this.clients).length === 0 && this.account.services.length > 0) {
-      throw new Error("Internet not reachable and no offline service is available.");
+    if (
+      !hasInternet &&
+      Object.keys(this.clients).length === 0 &&
+      this.account.services.length > 0
+    ) {
+      throw new Error(
+        "Internet not reachable and no offline service is available."
+      );
     }
 
     if (!refreshedAtLeastOne && failures.length > 0) {
-      throw new ServiceUnavailableError(String(failures[0].err), failures[0].service);
+      throw new ServiceUnavailableError(
+        String(failures[0].err),
+        failures[0].service
+      );
     }
 
     return refreshedAtLeastOne;
@@ -220,7 +237,9 @@ export class AccountManager {
         multiple: true,
         fallback: async () => getHomeworksFromCache(weekNumber),
         saveToCache: async (data: Homework[]) => {
-          await addHomeworkToDatabase(data);
+          if (data && data.length > 0) {
+            await addHomeworkToDatabase(data);
+          }
         },
       }
     );
@@ -388,7 +407,10 @@ export class AccountManager {
     );
   }
 
-  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
+  async getWeeklyTimetable(
+    weekNumber: number,
+    date: Date
+  ): Promise<CourseDay[]> {
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
@@ -397,7 +419,8 @@ export class AccountManager {
           : [],
       {
         multiple: true,
-        fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
+        fallback: async () =>
+          getCoursesFromCache([weekNumber], date.getFullYear()),
         saveToCache: async (data: CourseDay[]) => {
           addCourseDayToDatabase(data);
         },
@@ -550,10 +573,31 @@ export class AccountManager {
     );
   }
 
-  clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
-    const client = this.clients[clientId];
-    return !!client?.capabilities.includes(capatibility);
+  async signAttendance(
+    params: AttendanceSignParams,
+    clientId?: string
+  ): Promise<unknown> {
+    return await this.fetchData(
+      Capabilities.SIGN,
+      async client => {
+        if (!client.signAttendance) {
+          throw new Error(
+            "signAttendance not implemented but capability is set."
+          );
+        }
+        return await client.signAttendance(params);
+      },
+      { multiple: false, clientId }
+    );
+  }
 
+  clientHasCapability(capability: Capabilities, clientId: string): boolean {
+    const client = this.clients[clientId];
+    return !!client?.capabilities.includes(capability);
+  }
+
+  clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
+    return this.clientHasCapability(capatibility, clientId);
   }
 
   getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
@@ -613,15 +657,17 @@ export class AccountManager {
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
+        // Le cache peut référencer un compte qui n'est plus chargé : on lève pour
+        // que le catch ci-dessous bascule sur le fallback.
         if (!client) {
-          error("Client ID missing");
+          throw new Error("Client ID missing: " + options.clientId);
         }
         if (!client.capabilities.includes(capability)) {
-          error(
+          throw new Error(
             "Capability " +
-              capability +
-              " not supported by client " +
-              options.clientId
+            capability +
+            " not supported by client " +
+            options.clientId
           );
         }
         if (client.requiresInternet !== false && !(await this.hasInternet())) {
@@ -646,7 +692,9 @@ export class AccountManager {
       let availableClients = this.getAvailableClients(capability);
 
       if (!(await this.hasInternet())) {
-        availableClients = availableClients.filter(client => client.requiresInternet === false);
+        availableClients = availableClients.filter(
+          client => client.requiresInternet === false
+        );
         if (availableClients.length === 0 && options?.fallback) {
           warn("No internet connection, using fallback.");
           return await callFallback();
@@ -762,10 +810,16 @@ export class AccountManager {
       return new module.MockData(service.id);
     }
 
+    if (service.serviceId === Services.EDUSIGN) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/edusign/index");
+      return new module.Edusign(service.id);
+    }
+
     error(
       "We're not able to find a plugin for service: " +
-        service.serviceId +
-        ". Please review your implementation",
+      service.serviceId +
+      ". Please review your implementation",
       "AccountManager.getServicePluginForAccount"
     );
   }
@@ -808,7 +862,9 @@ export const initializeAccountManager = async (
 
   const pending = managerInFlight.get(accountId);
   if (pending) {
-    debug("An initialization is already running for " + accountId + ", joining it.");
+    debug(
+      "An initialization is already running for " + accountId + ", joining it."
+    );
     return pending;
   }
 

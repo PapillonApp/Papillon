@@ -1,7 +1,6 @@
 {
   "Global_Back": "Kembali",
   "Global_DatePrefix": "pada",
-
   "Tab_Home": "Utama",
   "Tab_Calendar": "Kursus",
   "Tab_Tasks": "Tugasan",
@@ -16,7 +15,6 @@
   "Tab_Page": "Halaman",
   "Tab_Settings": "Tetapan",
   "Tab_News": "Berita",
-
   "ONBOARDING_MAIN_TITLE": "Aplikasi untuk menguruskan kehidupan sekolahmu",
   "ONBOARDING_MAIN_DESCRIPTION": "Sambungkan aplikasi sekolahmu untuk mengakses gred, kursus, tugasan dan banyak lagi dalam antara muka Papillon!",
   "ONBOARDING_START_BTN": "Mula",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "Kod PIN",
   "SEARCH_UNIV_PLACEHOLDER": "Cari instans...",
   "ONBOARDING_LOADING_LOGIN": "Sedang log masuk...",
-
   "WAITING": "Menunggu",
   "IZLY_SMS_SEND": "Kamu baru sahaja menerima pautan untuk log masuk, klik pada pautan tersebut dan ikuti langkah-langkahnya.",
   "STEP": "Langkah",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Log masuk",
   "CONFIRM_BTN": "Sahkan",
   "CANCEL_BTN": "Batal",
-
   "Tab_New_Event": "Acara baharu",
-
   "Tab_Calendar_Icals": "Pengurusan iCal",
   "Tab_Calendar_Icals_Description": "Uruskan URL iCal kamu",
-
   "Tab_Calendar_Icals_Add_URL": "Tambah URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Urus {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Tambah atau padam URL iCal untuk disinkronkan dengan kalendar kamu.",
   "Tab_Calendar_Icals_Add_Title": "Tajuk hilang",
   "Tab_Calendar_Icals_Add_Description": "Berikan nama pada URL iCal ini untuk menambahnya.",
   "Tab_Calendar_Icals_Empty": "Tiada URL iCal ditambah",
-
   "TabUnderConstruction_Title": "Tab ini sedang dalam pembinaan.",
   "TabUnderConstruction_Details": "Sila kembali nanti untuk kemas kini.",
-
   "TabDevModeNotice_Title": "Mod Pembangunan",
   "TabDevModeNotice_Details": "Persekitaran ujian lengkap untuk pembangun.",
-
   "Alert_TechnicalDetails": "Butiran teknikal",
-
   "Online_Course": "Atas talian",
   "Evaluated_Course": "Penilaian",
   "Edited_Course": "Kursus diubah",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Bilik tidak diketahui",
   "Event_DeleteEvent": "Padam acara",
   "Event_Confirm_DeleteEvent": "Adakah kamu pasti mahu memadam acara ini?",
-
   "Course_Separator_Lunch_Default": "Waktu makan tengah hari",
   "Course_Separator_Lunch_Alt_1": "Selamat menjamu selera!",
   "Course_Separator_Lunch_Alt_2": "Sedapnya!",
-
   "Course_Separator_Morning_Default": "Waktu rehat pagi",
   "Course_Separator_Morning_Alt_1": "Masa untuk tidur!",
   "Course_Separator_Morning_Alt_2": "Sarapan pagi",
-
   "Course_Separator_Evening_Default": "Waktu rehat petang",
   "Course_Separator_Evening_Alt_1": "Perlu berehat sebentar!",
   "Course_Separator_Evening_Alt_2": "Waktu minum petang!",
-
   "Course_Separator_Night_Default": "Waktu rehat malam",
   "Course_Separator_Night_Alt_1": "Masa untuk tidur!",
   "Course_Separator_Night_Alt_2": "Hari sudah malam!",
-
   "Context_Delete": "Padam",
   "Context_Cancel": "Batal",
   "Context_Edit": "Ubah",
   "Context_Add": "Tambah",
-
   "Form_Title": "Tajuk",
   "Form_Location": "Lokasi",
   "Form_Organizer": "Penganjur",
   "Form_Start": "Mula",
   "Form_End": "Tamat",
-
   "Confirm_DeleteEvent": "Adakah kamu pasti mahu memadam acara ini?",
-
   "Home_Welcome_Name": "Helo, {{name}} {{emoji}}",
   "Home_Display_More": "Tunjukkan lagi",
   "Home_Cards_Button_Description_Plurial": "tersedia",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Kamu tiada baki kursus untuk hari ini",
   "Home_Planned_One": "Kamu mempunyai satu baki kursus hari ini",
   "Home_Planned_Number": "Kamu mempunyai {{number}} baki kursus hari ini",
-
   "Home_Widget_NextCourses": "Kursus seterusnya",
   "Home_Widget_NewGrades": "Gred baharu",
   "Home_Widget_NewHomeworks": "Tugasan perlu dilakukan",
-
   "Home_Widget_NoCourses": "Tiada kursus akan datang",
   "Home_Widget_NoCourses_Description": "Tiada kursus dirancang untuk hari ini.",
-
   "Home_Cards_Button_Title": "Kad",
   "Home_Cards_Button_Description_None": "Tiada kad",
   "Home_Cards_Button_Description_Singular": "Satu kad",
   "Home_Cards_Button_Description_Number": "{{number}} kad",
-
   "Home_Chats_Button_Title": "Mesej",
   "Home_Chats_Button_Description_None": "Tiada mesej",
   "Home_Chats_Button_Description_Singular": "Satu mesej",
   "Home_Chats_Button_Description_Number": "{{number}} mesej",
-
   "Home_Attendance_Title": "Kehadiran",
   "Home_Attendance_Button_Description_None": "Tiada ketidakhadiran",
   "Home_Attendance_Button_Description_Singular": "Satu ketidakhadiran",
   "Home_Attendance_Button_Description_Number": "{{number}} ketidakhadiran",
-
   "Home_Menu_Button_Title": "Menu",
   "Home_Menu_Button_Description": "Menu hari ini",
-
   "Tab_Calendar_Empty": "Tiada acara ditemui",
   "Tab_Calendar_Empty_Description": "Tambah acara atau sinkronkan kalendar kamu untuk bermula.",
-
   "Modal_Course_Title": "Kursus saya",
   "Modal_Course_StartsIn": "Bermula dalam",
   "Modal_Course_StartedAgo": "Tamat sejak",
   "Modal_Course_Ongoing": "Sedang berjalan selama",
   "Modal_Course_Group": "Kumpulan",
   "Modal_Course_Group_Full": "Kelas",
-
   "Modal_Course_Details": "Butiran kursus",
   "Modal_Course_Teacher": "Guru",
   "Modal_Course_Room": "Bilik",
   "Modal_Course_Duration": "Tempoh",
-
   "Modal_Course_Time": "Waktu kursus",
   "Modal_Course_Start": "Mula",
   "Modal_Course_End": "Tamat",
-
   "Tasks_Search_Placeholder": "Cari tugasan",
   "Tasks_LeftHomeworks_Title": "tugasan berbaki",
   "Tasks_LeftHomeworks_Time": "minggu ini",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Tugasan selesai",
   "Task_Show_Title": "Tunjukkan",
   "Settings_General": "Umum",
-
   "Latest_Grades": "Gred baharu",
   "Grades_Search_Placeholder": "Cari gred, mata pelajaran",
-
   "Grades_Avg_Methods": "Kaedah pengiraan",
   "Grades_Avg_All_Title": "Purata keseluruhan",
   "Grades_Avg_All_Short": "Purata kes.",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Mengira purata wajar bagi purata mata pelajaran",
   "Grades_Avg_Median_Title": "Median",
   "Grades_Avg_Median_Short": "Median",
-
   "Grades_Avg_More": "Ketahui lebih lanjut",
   "Grades_Avg_KnowMore": "Ketahui lebih lanjut",
   "Grades_Avg_KnowMore_Description": "Fahami kaedah pengiraan purata keseluruhan",
-
   "Grades_SubjectInfo": "Maklumat mata pelajaran",
   "Grades_SubjectInfo_NbGrades": "{{number}} gred",
   "SubjectInfo_StudentAverage_Label": "Purata pelajar",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Purata terbaik dalam kumpulan",
   "SubjectInfo_MinAverage_Label": "Purata minimum",
   "SubjectInfo_MinAverage_Description": "Purata terendah dalam kumpulan",
-
   "Grades_Semester": "Semester",
   "Grades_Trimester": "Trimester",
   "Grades_OutPeriod": "Luar tempoh",
   "Grades_Year": "Tahun",
   "Grades_MockExamBac": "Peperiksaan percubaan",
   "Grades_MockExamBrevet": "Ujian percubaan",
-
   "Grades_Method_AllGrades": "Semua mata pelajaran",
   "Grades_Method_Weighted": "Pemberat",
-
   "Grades_Sort": "Isih",
   "Grades_Sorting_Alphabetical": "Abjad",
   "Grades_Sorting_Averages": "Purata",
   "Grades_Sorting_Date": "Tarikh",
-
   "Grades_Menu_SortBy": "Isih mengikut",
   "Grades_Menu_AverageBy": "Purata mengikut",
   "NoAverage": "Tiada purata",
-
   "Grades_Empty_Title": "Tiada gred",
   "Grades_Empty_Description": "Kamu belum diberikan gred untuk tempoh ini.",
-
   "Grade_NoDescription": "Tugasan {{subject}}",
-
   "Grades_Tab_Subjects": "Mata pelajaran",
   "Grades_Tab_Latest": "Gred baharu",
-
   "Profile_Attendance_Title": "Kehadiran",
   "Profile_Attendance_Denominator_Single": "ketidakhadiran",
   "Profile_Attendance_Denominator_Plural": "ketidakhadiran",
-
   "Profile_Discussions_Title": "Perbincangan",
   "Profile_Discussions_Denominator_Single": "belum dibaca",
   "Profile_Discussions_Denominator_Plural": "belum dibaca",
-
   "Profile_News_Title": "Berita",
   "Profile_News_Denominator_Single": "baharu",
   "Profile_News_Denominator_Plural": "baharu",
   "Profile_News_Open": "Buka",
   "Profile_News_Loading_Title": "Memuatkan berita...",
   "Profile_News_Author_Unknown": "Penulis tidak diketahui",
-
   "Profile_Cards_Title": "Kod QR dan kad",
-
   "Modal_Grades_Title": "Butiran gred",
   "Modal_Grades_BestGrade": "Gred terbaik dalam kumpulan",
-
   "Grades_Details_Title": "Butiran",
   "Grades_NormalizedGrade_Title": "Gred ditukar kepada 20",
   "Grades_NormalizedGrade_Description": "Nilai gred ditukarkan kepada skala 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "Purata kump.",
   "Grades_Tab_Rank": "Kedudukan",
   "Grades_Tab_Rank_Description": "Kedudukan dalam kumpulan",
-
   "News_Search_Placeholder": "Cari berita",
   "News_Empty_Title": "Tiada berita",
   "News_Empty_Description": "Tiada berita ditemui dalam institusi kamu.",
   "News_Search_NoResults": "Tiada berita ditemui",
   "News_Search_NoResults_Description": "Tiada berita ditemui untuk carian kamu.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Tema yang lembut dan elegan",
-
   "News_Theme_Reading_Title": "Pembacaan",
   "News_Theme_Reading_Description": "Tema yang direka untuk pembacaan",
-
   "Attendance_Hours_Missed": "Jam terlepas",
   "Attendance_Hours_Unjustified": "Jam tanpa sebab",
   "Attendance_Missing": "Ketidakhadiran",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Tiada sebab",
   "Attendance_NoEvent_Title": "Tiada acara",
   "Attendance_NoEvent_Description": "Tiada ketidakhadiran atau kelewatan direkodkan untuk tempoh ini.",
-
   "Settings_Account_Title": "Akaun saya",
   "Settings_Account_Description": "Akaun saya",
   "Settings_Services_Title": "Akaun dipautkan",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Tukar bahasa",
   "Settings_Tabs_Title": "Tab",
   "Settings_Tabs_Description": "Sembunyikan tab daripada menu",
-
   "Settings_Personalization_Title_Card": "Penyesuaian",
   "Settings_Personalization_Subtitle_Card": "Tema, subjek...",
   "Settings_SubjectPersonalization_Title": "Suaikan mata pelajaran",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Laporkan pepijat",
   "Settings_About_Issue_Description": "Laporkan pepijat yang ditemui",
   "Settings_About_Dependency_Version": "Versi kebergantungan",
-
   "Alert_No_Technical": "Tiada maklumat teknikal tersedia.",
   "Alert_Auth_Error": "Ralat pengesahan",
   "Alert_Auth_Bad_Creds": "Maklumat log masuk yang kamu masukkan adalah salah atau kamu cuba log masuk dengan akaun penjaga. Jenis akaun ini belum disokong oleh Papillon.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon tidak dapat mengambil maklumat daripada instans PRONOTE ini, adakah ia masih sah?",
   "Alert_No_Pos": "Tidak dapat mengambil lokasi",
   "Alert_Connexion_Fail": "Sambungan tidak berjaya",
-
   "Feature_Limited": "Ciri terhad",
   "Feature_Soon": "Akan datang!",
   "Feature_Soon_Notification": "Kami sedang bertungkus-lumus untuk memberikan ciri ini dalam kemas kini akan datang.",
   "Feature_Add_Card": "Tambah kad baharu daripada tab Profil di bar navigasi",
-
   "Webview_Wait": "Sila bersabar...",
-
   "Profile_QRCards": "Kod QR dan kad",
   "Profile_QRCards_Subtitle": "{{count}} kad",
   "Profile_Cards_Loading_History": "Memuatkan sejarah transaksi",
   "Profile_Cards_Loading_History_Description": "Ini mungkin mengambil masa seketika...",
-
   "Settings_Cards_Banner_Title": "Kad",
   "Settings_Cantineen_Subtitle_Card": "Kantin, akses",
   "Settings_Cards_Banner_Description": "Tambah kad kantin dan pengangkutan kamu untuk mengaksesnya di mana sahaja melalui telefon dalam Papillon",
   "Settings_Cards_None_Title": "Tiada kad",
   "Settings_Cards_Add_Button": "Tambah",
-
   "Settings_Cards_None_Description": "Tambah satu untuk melihat baki kantin, imbas kod QR dan banyak lagi",
   "Settings_Subjects_None_Title": "Tiada mata pelajaran",
   "Settings_Subjects_None_Description": "Terokai pelbagai tab aplikasi supaya kamu boleh menyesuaikan mata pelajaran.",
   "Settings_Subjects_Reset_Title": "Tetap semula",
   "Settings_Subjects_Reset_Message": "Adakah kamu benar-benar mahu menetapkan semula semua mata pelajaran?",
   "Settings_Subjects_Reset_Button": "Tetap semula",
-
   "Settings_Donator": "Penderma",
   "Settings_Donator_Description": "Lihat senarai penderma",
   "Settings_App_Version": "Versi aplikasi",
-
   "Profile_Cards_Scan_Orientation": "Halakan kod QR ke arah pengimbas terminal",
   "Profile_Cards_No_Reservation": "Tiada tempahan",
   "Profile_Cards_No_Available_Reservation": "Nampaknya kamu tidak boleh membuat tempahan untuk hari ini.",
   "Profile_Cards_History": "Sejarah",
   "Magic_Important": "Mungkin penting",
-
   "OnBoarding_Step": "Langkah ",
   "OnBoarding_Step_Of": "daripada ",
-
   "Consent_Advanced_Title": "Saya mahu membantu Papillon",
   "Consent_Advanced_Description": "Kami mengumpul maklumat penggunaan kamu dengan lebih terperinci.",
   "Consent_Required_Title": "Hanya yang penting",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Hanya digunakan untuk menambah baik aplikasi",
   "Consent_Arg2": "Tanpa nama & tidak dikaitkan dengan identiti kamu",
   "Consent_Arg3": "Kami tidak mempunyai akses ke akaun kamu",
-
   "Changelog_Title": "Nota kemas kini",
-
   "Tasks_Sorting_Methods_DueDate": "Tarikh hantar",
   "Tasks_Sorting_Methods_Subject": "Mata pelajaran",
   "Tasks_Sorting_Methods_Done": "Belum selesai",
   "Tasks_ThisWeek": "Minggu ini",
-
   "Task_Undone": "Belum selesai",
   "Task_Done": "Selesai",
-
   "Modal_Wallpaper_Title": "Suaikan kertas dinding",
   "Modal_Profile_Title": "Suaikan profil",
-
   "Modal_Task_Status": "Status tugasan",
   "Modal_Task_Description": "Penerangan tugasan",
   "Modal_Task_Attachments": "Lampiran",
-
   "Today": "Hari ini",
   "Yesterday": "Semalam",
-  "Tomorrow": "Esok"
+  "Tomorrow": "Esok",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

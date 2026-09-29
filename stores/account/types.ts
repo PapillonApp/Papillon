@@ -141,4 +141,5 @@ export enum Services {
   ALISE,
   APPSCHO,
   MOCK_DATA = 10,
+  EDUSIGN = 9999,
 }
