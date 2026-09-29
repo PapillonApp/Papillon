@@ -25,6 +25,7 @@ import Typography from "@/ui/new/Typography";
 import { confirmDestructive, useDevAction } from "@/utils/devmode/actions";
 import { fillStoreFromServices } from "@/utils/devmode/fillStore";
 import { warn } from "@/utils/logger/logger";
+import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { initializeTransport } from "@/utils/transport";
 
 const SCHOOL_ADDRESS = "106 Rue de la Pompe, 75016 Paris";
@@ -294,20 +295,22 @@ export default function DevMode() {
               </List.Trailing>
             </List.Item>
           ) : null}
-          <List.Item href="/(dev)/magic">
-            <List.Leading>
-              <Icon>
-                <Papicons name="Sparkles" />
-              </Icon>
-            </List.Leading>
-            <Typography variant="action">Papillon Magic+</Typography>
-            <Typography variant="body2" color="textSecondary">
-              Modèle de classement des devoirs
-            </Typography>
-            <List.Trailing>
-              <Disclosure value={magicCount > 0 ? plural(magicCount, "devoir") : undefined} />
-            </List.Trailing>
-          </List.Item>
+          {MAGIC_AVAILABLE ? (
+            <List.Item href="/(dev)/magic">
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Sparkles" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Papillon Magic+</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Modèle de classement des devoirs
+              </Typography>
+              <List.Trailing>
+                <Disclosure value={magicCount > 0 ? plural(magicCount, "devoir") : undefined} />
+              </List.Trailing>
+            </List.Item>
+          ) : null}
         </List.Section>
 
         {tipsAreSupported ? (

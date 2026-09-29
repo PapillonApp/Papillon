@@ -5,7 +5,6 @@ import { Platform, ScrollView, View } from "react-native";
 import { Papicons } from "@getpapillon/papicons"
 import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { useMemo, useState } from "react";

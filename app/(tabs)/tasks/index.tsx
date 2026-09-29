@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { useHeaderHeight, useTheme } from 'expo-router/react-navigation';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Reanimated, {
@@ -191,8 +191,8 @@ const TasksView: React.FC = () => {
 
   const [pageOffsets, setPageOffsets] = useState(INITIAL_PAGE_OFFSETS);
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => setPageOffsets(PAGE_OFFSETS));
-    return () => task.cancel();
+    const handle = setTimeout(() => setPageOffsets(PAGE_OFFSETS), 0);
+    return () => clearTimeout(handle);
   }, []);
 
   // The header is rebuilt natively whenever its options change, so the toolbar

@@ -1,5 +1,4 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import { router } from "expo-router";
 import React from "react";
 import { Alert, Image, ScrollView } from "react-native";
@@ -15,7 +14,7 @@ import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { formatSchoolName } from "@/utils/format/formatSchoolName";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
-import ActionMenu from "@/ui/components/ActionMenu";
+import ActionMenu, { type NativeActionEvent } from "@/ui/components/ActionMenu";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { useTheme } from "expo-router/react-navigation";
 

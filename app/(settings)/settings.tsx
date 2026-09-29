@@ -21,6 +21,7 @@ import TypographyLegacy from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
+import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { trackOptionalEvent } from "@/utils/logger/analytics";
 
 import packagejson from "../../package.json"
@@ -231,7 +232,7 @@ export default function SettingsIndex() {
         router.navigate("/(settings)/accounts")
       }
     },
-    {
+    ...(MAGIC_AVAILABLE ? [{
       icon: <Papicons name={"Sparkles"} />,
       title: "Magic+",
       description: t('Settings_MagicPlus_Description_Card'),
@@ -239,7 +240,7 @@ export default function SettingsIndex() {
       onPress: () => {
         router.navigate("/(settings)/magic")
       }
-    }
+    }] : []),
   ]
 
   const RenderBigButtons = useCallback(() => {

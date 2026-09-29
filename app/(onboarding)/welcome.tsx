@@ -71,7 +71,7 @@ export default function Welcome() {
       }}
     >
       {isFocused && (
-        <StatusBar barStyle={"light-content"} animated translucent />
+        <StatusBar barStyle={"light-content"} animated />
       )}
       {isFocused && (
         <Reanimated.View

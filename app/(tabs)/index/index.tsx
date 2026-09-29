@@ -183,7 +183,7 @@ const HomeScreen = () => {
     <>
       <Wallpaper />
       <HomeTopBar />
-      {focused && <StatusBar translucent animated barStyle={'light-content'} />}
+      {focused && <StatusBar animated barStyle={'light-content'} />}
       <HomeViewContainer key={"home"}>
         <FlatList
           renderItem={({ item }) => (
