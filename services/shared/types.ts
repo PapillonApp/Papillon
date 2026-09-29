@@ -6,6 +6,7 @@ import { SessionHandle } from "@blockshub/pawnote-lts";
 import { Client as ArdClient } from "@blockshub/blocksrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Client as TurboselfClient } from "turboself-api";
+import type { CahierDePrepa } from "cahier-de-prepa";
 
 import { Appscho } from "@/services/appscho";
 import type { MockData } from "@/services/mock";
@@ -65,12 +66,25 @@ export interface SchoolServicePlugin {
     | Client
     | ArdClient
     | TurboselfClient
+    | CahierDePrepa
     | User
     | undefined;
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | MockData>;
+  ) => Promise<
+    | Pronote
+    | Skolengo
+    | EcoleDirecte
+    | Multi
+    | TurboSelf
+    | ARD
+    | Izly
+    | Alise
+    | Appscho
+    | MockData
+    | import("@/services/cahierDePrepa").CahierDePrepa
+  >;
   isTokenValid?: () => boolean;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
