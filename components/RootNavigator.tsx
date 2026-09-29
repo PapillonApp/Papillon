@@ -19,6 +19,14 @@ import { useAndroidHeaderProps } from "./AndroidHeaderBackground";
 import MainTabErrorBoundary from "@/ui/components/MainTabErrorBoundary";
 import { setupSignReminderHandlers } from "@/utils/notifications/signReminders";
 
+const DEVMODE_SUBSCREENS = [
+  { name: "(dev)/logs", title: "Journaux" },
+  { name: "(dev)/network", title: "Requêtes réseau" },
+  { name: "(dev)/papillonkit", title: "PapillonKit" },
+  { name: "(dev)/papillonkit-tests", title: "Tests PapillonKit" },
+  { name: "(dev)/magic", title: "Papillon Magic+" },
+];
+
 function RootNavigatorContent() {
   const theme = useTheme();
   const androidHeaderProps = useAndroidHeaderProps();
@@ -78,6 +86,13 @@ function RootNavigatorContent() {
           name="(dev)/request"
           options={DEVMODE_REQUESTS_SCREEN_OPTIONS}
         />
+        {DEVMODE_SUBSCREENS.map(screen => (
+          <Stack.Screen
+            key={screen.name}
+            name={screen.name}
+            options={{ ...DEVMODE_SCREEN_OPTIONS, headerTitle: screen.title }}
+          />
+        ))}
         <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
         <Stack.Screen
