@@ -154,7 +154,7 @@ export default function CourseModal() {
           <List.Item>
             <List.Leading>
               <Icon>
-                <Papicons name="Logout" />
+                <Papicons name="Login" />
               </Icon>
             </List.Leading>
             <Typography variant="title">{t("Modal_Course_Start")}</Typography>
@@ -179,7 +179,7 @@ export default function CourseModal() {
           <List.Item>
             <List.Leading>
               <Icon>
-                <Papicons name="Login" />
+                <Papicons name="Logout" />
               </Icon>
             </List.Leading>
             <Typography variant="title">{t("Modal_Course_End")}</Typography>
