@@ -11,7 +11,6 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "eslint --fix",
-    "check:widgets": "node scripts/check-widgets.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "postinstall": "patch-package"
@@ -29,6 +28,7 @@
     "@eslint/js": "^9.39.1",
     "@expo/ui": "~57.0.18",
     "@getpapillon/papicons": "^0.2.3",
+    "@getpapillon/papillonkit": "^1.1.0",
     "@legendapp/list": "^2.0.15",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -76,7 +76,6 @@
     "expo-system-ui": "~57.0.4",
     "expo-video": "~57.0.4",
     "expo-web-browser": "~57.0.3",
-    "expo-widgets": "~57.0.19",
     "ezly": "^1.4.3",
     "fflate": "^0.8.2",
     "i18next": "^25.10.10",

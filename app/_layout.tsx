@@ -14,7 +14,7 @@ import { useNetworkStore } from '@/stores/logs';
 import { checkConsent } from '@/utils/logger/consent';
 import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
-import { useWidgetSync } from '@/widgets';
+import { useCalendarWidgetFeed } from '@/utils/widgets/useCalendarWidgetFeed';
 import { LogBox } from 'react-native';
 
 // Polyfill Buffer
@@ -38,7 +38,7 @@ export default function RootLayout() {
   const segments = useSegments();
   const lastTrackedView = useRef<string | null>(null);
 
-  useWidgetSync();
+  useCalendarWidgetFeed();
 
   const analyticsView = useMemo(() => {
     if (segments.length === 0) return null;
