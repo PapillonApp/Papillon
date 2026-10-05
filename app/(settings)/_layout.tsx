@@ -82,7 +82,6 @@ export default function Layout() {
           options={{
             headerTitle: "Contributors",
             headerBackButtonDisplayMode: "minimal",
-            headerTransparent: false,
             headerLargeTitle: false,
           }}
         />
@@ -91,7 +90,6 @@ export default function Layout() {
           options={{
             headerTitle: t("Settings_MagicPlus_Title"),
             headerBackButtonDisplayMode: "minimal",
-            headerTransparent: false,
             headerLargeTitle: false,
           }}
         />
@@ -100,7 +98,6 @@ export default function Layout() {
           options={{
             headerTitle: t("Settings_SubjectPersonalization_Title"),
             headerBackButtonDisplayMode: "minimal",
-            headerTransparent: false,
             headerLargeTitle: false,
           }}
         />
@@ -109,7 +106,6 @@ export default function Layout() {
           options={{
             headerTitle: t("Settings_Tabs_Title"),
             headerBackButtonDisplayMode: "minimal",
-            headerTransparent: false,
             headerLargeTitle: false,
           }}
         />
@@ -130,7 +126,6 @@ export default function Layout() {
           options={{
             headerTitle: t("Settings_Language_Title"),
             headerBackButtonDisplayMode: "minimal",
-            headerTransparent: false,
             headerLargeTitle: false,
           }}
         />
@@ -145,7 +140,6 @@ export default function Layout() {
           options={{
             headerTitle: t("Settings_Features_Title"),
             headerBackButtonDisplayMode: "minimal",
-            headerTransparent: false,
             headerLargeTitle: false,
           }}
         />
