@@ -15,7 +15,7 @@ import UserProfile from './UserProfile';
 
 const WALLPAPER_TIP_STYLE = { bottom: 0, left: 0, right: 0 } as const;
 
-const HomeTopBar = ({ height = 56 }: { height?: number }) => {
+const HomeTopBar = ({ height = 56, loading }: { height?: number, loading?: boolean }) => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -67,7 +67,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
             gap: 16,
           }}
         >
-          <UserProfile />
+          <UserProfile loading={loading} />
 
           <Stack
             direction="horizontal"

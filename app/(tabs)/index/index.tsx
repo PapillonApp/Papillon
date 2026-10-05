@@ -88,7 +88,7 @@ const HomeScreen = () => {
     }
   }, [account?.id, recordTeamModalHomeLaunch, router]);
 
-  useHomeData();
+  const { syncing } = useHomeData();
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
 
@@ -183,7 +183,7 @@ const HomeScreen = () => {
   return (
     <>
       <Wallpaper />
-      <HomeTopBar />
+      <HomeTopBar loading={syncing} />
       {focused && <StatusBar animated barStyle={'light-content'} />}
       <HomeViewContainer key={"home"}>
         <FlatList
