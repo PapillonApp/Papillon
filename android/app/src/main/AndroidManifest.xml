@@ -39,6 +39,5 @@
         <data android:scheme="exp+papillon"/>
       </intent-filter>
     </activity>
-    <uses-native-library android:name="libOpenCL.so" android:required="false"/>
   </application>
 </manifest>

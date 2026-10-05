@@ -27,6 +27,10 @@ import { fillStoreFromServices } from "@/utils/devmode/fillStore";
 import { warn } from "@/utils/logger/logger";
 import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { initializeTransport } from "@/utils/transport";
+import {
+  COURSE_LIVE_ACTIVITY_SUPPORTED,
+  stopCourseLiveActivity
+} from "@/utils/widgets/courseLiveActivity";
 
 const SCHOOL_ADDRESS = "106 Rue de la Pompe, 75016 Paris";
 
@@ -47,6 +51,9 @@ export default function DevMode() {
   const hostCount = useNetworkStore(state => state.hosts.size);
   const magicCount = useMagicStore(state => state.processHomeworks.length);
   const forceAllTips = useTipsStore(state => state.forceAll);
+  const liveActivityTestMode = useSettingsStore(
+    state => state.personalization.liveActivityTestMode ?? false
+  );
 
   const attachMockData = () => {
     if (!account) {
@@ -113,6 +120,19 @@ export default function DevMode() {
       "Désactiver",
       disableMockData
     );
+  };
+
+  // Handing the Live Activity over to the trigger also means the timetable
+  // stops taking it down, so whatever is on screen when the mode is turned off
+  // is ours to clean up.
+  const setLiveActivityTestMode = async (enabled: boolean) => {
+    useSettingsStore.getState().mutateProperty("personalization", {
+      liveActivityTestMode: enabled,
+    });
+
+    if (!enabled) {
+      await stopCourseLiveActivity();
+    }
   };
 
   const toggleForcedTips = async () => {
@@ -335,6 +355,25 @@ export default function DevMode() {
                 </Icon>
               </List.Leading>
               <Typography variant="action">Réinitialiser les astuces</Typography>
+            </List.Item>
+          </List.Section>
+        ) : null}
+
+        {COURSE_LIVE_ACTIVITY_SUPPORTED ? (
+          <List.Section>
+            <List.SectionTitle>
+              <Papicons name="Clock" color={muted} />
+              <List.Label>Live Activities</List.Label>
+            </List.SectionTitle>
+            <List.Item>
+              <Typography variant="action">Mode test des Live Activities</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Ajoute un déclencheur sur la fiche d'un cours et met en pause la
+                mise à jour automatique depuis l'emploi du temps.
+              </Typography>
+              <List.Trailing>
+                <Switch value={liveActivityTestMode} onValueChange={setLiveActivityTestMode} />
+              </List.Trailing>
             </List.Item>
           </List.Section>
         ) : null}
