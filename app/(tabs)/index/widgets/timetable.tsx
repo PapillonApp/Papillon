@@ -5,12 +5,11 @@ import React from 'react';
 import { FlatList } from "react-native";
 import * as DateLocale from 'date-fns/locale';
 
-import { CourseStatus } from "@/services/shared/timetable";
+import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import Course from "@/ui/components/Course";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectName } from "@/utils/subjects/name";
 import i18n from "@/utils/i18n";
-import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 import { getStatusText } from '../../calendar/components/CalendarDay';
 import { getCourseRouteId } from '@/database/useTimetable';
 
@@ -34,8 +33,7 @@ function getRelativeDayStatus(date: Date): string | null {
   return distance.charAt(0).toUpperCase() + distance.slice(1);
 }
 
-const HomeTimeTableWidget = React.memo(() => {
-  const { courses } = useTimetableWidgetData();
+const HomeTimeTableWidget = React.memo(({ courses }: { courses: SharedCourse[] }) => {
 
   if (courses.length === 0) {
     return null;

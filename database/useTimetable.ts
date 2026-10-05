@@ -201,7 +201,21 @@ function getWeeksRange(weeks: number[], year: number): { start: Date; end: Date 
   return { start, end };
 }
 
-export async function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+// Every useTimetable instance's observer fires at once on mount and on each sync write;
+// concurrent calls for the same range share one query instead of each re-reading the DB.
+const inFlightCourses = new Map<string, Promise<SharedCourseDay[]>>();
+
+export function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+  const key = `${year}:${weeks.join(',')}`;
+  let pending = inFlightCourses.get(key);
+  if (!pending) {
+    pending = readCoursesFromCache(weeks, year).finally(() => inFlightCourses.delete(key));
+    inFlightCourses.set(key, pending);
+  }
+  return pending;
+}
+
+async function readCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
     const { start: minStart, end: maxEnd } = getWeeksRange(weeks, year);

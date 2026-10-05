@@ -165,6 +165,7 @@ export default {
               { name: "SDWebImageSVGCoder", modular_headers: true },
             ],
             buildReactNativeFromSource: false,
+            ccacheEnabled: true,
           },
         },
       ],
