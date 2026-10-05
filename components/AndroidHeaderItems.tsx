@@ -20,12 +20,15 @@ const ITEM_SIZE = 48;
 
 export type AndroidHeaderMenuAction = MenuAction;
 
+// `icon` is a Papicons name, or any element (e.g. a Lucide icon) rendered as is
+type HeaderIcon = string | React.ReactElement;
+
 export function AndroidHeaderButton({
   icon,
   onPress,
   accessibilityLabel,
 }: {
-  icon: string;
+  icon: HeaderIcon;
   onPress: () => void;
   accessibilityLabel?: string;
 }) {
@@ -40,7 +43,7 @@ export function AndroidHeaderButton({
       android_ripple={{ color: `${tint}22`, borderless: true, radius: ITEM_SIZE / 2 }}
       style={styles.item}
     >
-      <Papicons name={icon} size={24} color={tint} />
+      {typeof icon === "string" ? <Papicons name={icon} size={24} color={tint} /> : icon}
     </Pressable>
   );
 }
@@ -51,7 +54,7 @@ export function AndroidHeaderMenu({
   onPressAction,
   accessibilityLabel,
 }: {
-  icon: string;
+  icon: HeaderIcon;
   actions: AndroidHeaderMenuAction[];
   onPressAction: (event: NativeActionEvent) => void;
   accessibilityLabel?: string;
@@ -61,7 +64,7 @@ export function AndroidHeaderMenu({
   return (
     <ActionMenu actions={actions} onPressAction={onPressAction} placement="below">
       <View accessibilityRole="button" accessibilityLabel={accessibilityLabel} style={styles.item}>
-        <Papicons name={icon} size={24} color={String(colors.text)} />
+        {typeof icon === "string" ? <Papicons name={icon} size={24} color={String(colors.text)} /> : icon}
       </View>
     </ActionMenu>
   );

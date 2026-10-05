@@ -282,10 +282,26 @@ export default function SettingsIndex() {
     default: 0
   });
 
+  const profilePicture = account?.customisation?.profilePicture;
+
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: colors.overground }}>
+      {profilePicture && (
+        <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, height: "60%" }}>
+          <Image
+            source={{ uri: `data:image/png;base64,${profilePicture}` }}
+            blurRadius={40}
+            style={{ width: "100%", height: "100%", opacity: 0.35 }}
+          />
+          <LinearGradient
+            colors={[colors.overground + "00", colors.overground]}
+            locations={[0.2, 0.85]}
+            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+          />
+        </View>
+      )}
       <List
-        style={{ flex: 1, backgroundColor: colors.overground }}
+        style={{ flex: 1, backgroundColor: "transparent" }}
         contentInsetAdjustmentBehavior="automatic"
         gap={12}
         safeHorizontalPadding={16}
@@ -347,6 +363,6 @@ export default function SettingsIndex() {
           </List.Section>
         ))}
       </List>
-    </>
+    </View>
   );
 }

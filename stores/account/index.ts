@@ -4,9 +4,24 @@ import { persist } from 'zustand/middleware'
 import { log } from "@/utils/logger/logger";
 import { trackAdvancedEvent, trackOptionalEvent } from "@/utils/logger/analytics";
 import { initializeTransport } from "@/utils/transport";
+import { generateAvatar, loadAvatarFont } from "@/utils/generative";
 
 import { createEncryptedMMKVStorage } from '../global'
-import { AccountsStorage, Auth, TransportAddress } from "./types";
+import { Account, AccountsStorage, Auth, TransportAddress } from "./types";
+
+// Some services return an HTML error page (base64 "<!DOCTYPE html>") instead of an image
+const isValidPicture = (pp?: string) => !!pp && !pp.startsWith("PCFET0NUWVBFIGh0bWw+");
+
+const withAvatar = (account: Account): Account =>
+  isValidPicture(account.customisation?.profilePicture)
+    ? account
+    : {
+      ...account,
+      customisation: {
+        subjects: account.customisation?.subjects ?? {},
+        profilePicture: generateAvatar(account.firstName),
+      },
+    };
 
 export const useAccountStore = create<AccountsStorage>()(
   persist(
@@ -32,7 +47,7 @@ export const useAccountStore = create<AccountsStorage>()(
         });
       },
       addAccount: account => {
-        set({ accounts: [...get().accounts, account] });
+        set({ accounts: [...get().accounts, withAvatar(account)] });
         trackOptionalEvent("new_account_logged_in");
       },
       updateServiceAuthData: (serviceId: string, authData: Auth) =>
@@ -89,7 +104,7 @@ export const useAccountStore = create<AccountsStorage>()(
               return {
                 ...account,
                 customisation: {
-                  profilePicture,
+                  profilePicture: isValidPicture(profilePicture) ? profilePicture : generateAvatar(account.firstName),
                   subjects: account.customisation?.subjects ?? {},
                 },
               };
@@ -349,6 +364,16 @@ export const useAccountStore = create<AccountsStorage>()(
         "account-storage",
         "3f64fc8d-472d-43d5-ba11-461020e2423b"
       ),
+      onRehydrateStorage: () => state => {
+        // Loaded at startup so avatars generated later (new accounts, "remove photo") use SN Pro too
+        loadAvatarFont()
+          .catch(() => {})
+          .finally(() => {
+            state?.accounts
+              .filter(a => !isValidPicture(a.customisation?.profilePicture))
+              .forEach(a => state.setAccountProfilePicture(a.id, ""));
+          });
+      },
     }
   )
 );

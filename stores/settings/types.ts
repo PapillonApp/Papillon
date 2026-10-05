@@ -43,6 +43,9 @@ export interface Personalization {
   magicModelURL?: string;
   language?: string | null;
   wallpaper?: Wallpaper;
+  // Restored when switching the wallpaper modal back from gradient to image
+  lastImageWallpaper?: Wallpaper;
+  wallpaperGradient?: { colors: string[]; seed: number };
   disabledTabs?: string[];
   disabledTabsByAccount?: Record<string, string[]>;
   gradesSortMethod?: string;

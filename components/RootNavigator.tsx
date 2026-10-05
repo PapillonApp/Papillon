@@ -92,7 +92,7 @@ function RootNavigatorContent() {
           name="(modals)/wallpaper"
           options={{
             presentation: "formSheet",
-            sheetGrabberVisible: true,
+            sheetGrabberVisible: false,
             sheetAllowedDetents: [0.5, 1],
             headerLargeTitle: false,
             sheetLargestUndimmedDetentIndex: 0,
