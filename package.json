@@ -13,7 +13,7 @@
     "lint": "eslint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package && rm -rf node_modules/expo-modules-core/android/.cxx"
   },
   "jest": {
     "preset": "jest-expo"

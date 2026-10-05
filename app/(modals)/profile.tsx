@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
+import { HeaderBackButton, useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import * as ImagePicker from "expo-image-picker"
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -166,16 +166,25 @@ export default function CustomProfileScreen() {
           </View>
         </View>
         <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
-          <NativeHeaderPressable
-            onPressIn={() => {
-              useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
-              router.back();
-            }}
-          >
-            <Icon papicon size={26}>
-              <Papicons name="ArrowLeft" />
-            </Icon>
-          </NativeHeaderPressable>
+          {Platform.OS === "android" ? (
+            <HeaderBackButton
+              onPress={() => {
+                useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
+                router.back();
+              }}
+            />
+          ) : (
+            <NativeHeaderPressable
+              onPressIn={() => {
+                useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
+                router.back();
+              }}
+            >
+              <Icon papicon size={26}>
+                <Papicons name="ArrowLeft" />
+              </Icon>
+            </NativeHeaderPressable>
+          )}
 
         </NativeHeaderSide>
       </ScrollView>

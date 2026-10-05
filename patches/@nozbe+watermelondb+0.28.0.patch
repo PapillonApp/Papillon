@@ -59,3 +59,17 @@ diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDat
      dispatch_sync([self methodQueue], ^{
          installWatermelonJSI(bridge);
      });
+diff --git a/node_modules/@nozbe/watermelondb/native/android/build.gradle b/node_modules/@nozbe/watermelondb/native/android/build.gradle
+--- a/node_modules/@nozbe/watermelondb/native/android/build.gradle
++++ b/node_modules/@nozbe/watermelondb/native/android/build.gradle
+@@ -26,6 +26,10 @@
+ 
+     namespace "com.nozbe.watermelondb"
+ 
++    buildFeatures {
++        buildConfig true
++    }
++
+     defaultConfig {
+         minSdkVersion getExtOrIntegerDefault('minSdkVersion')
+         targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')

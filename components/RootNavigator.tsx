@@ -65,7 +65,7 @@ function RootNavigatorContent() {
         />
         <Stack.Screen
           name="(settings)"
-          options={{ headerShown: false, presentation: "formSheet" }}
+          options={{ headerShown: false, presentation: Platform.OS === "android" ? "card" : "formSheet" }}
         />
         <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
         <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
@@ -91,7 +91,7 @@ function RootNavigatorContent() {
         <Stack.Screen
           name="(modals)/wallpaper"
           options={{
-            presentation: "formSheet",
+            presentation: Platform.OS === "android" ? "card" : "formSheet",
             sheetGrabberVisible: false,
             sheetAllowedDetents: [0.5, 1],
             headerLargeTitle: false,
@@ -108,7 +108,7 @@ function RootNavigatorContent() {
         <Stack.Screen
           name="(modals)/profile"
           options={{
-            presentation: "formSheet",
+            presentation: Platform.OS === "android" ? "card" : "formSheet",
             headerLargeTitle: false,
             headerTitle: t("Modal_Profile_Title"),
             ...androidHeaderProps,

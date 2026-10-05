@@ -1,9 +1,10 @@
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { Papicons } from "@getpapillon/papicons";
 import { useRouter } from "expo-router";
+import { HeaderBackButton } from "expo-router/react-navigation";
 import React from "react";
 import { Linking, Platform, View } from "react-native";
 
@@ -19,11 +20,7 @@ export default function Soon() {
     >
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <NativeHeaderPressable onPress={() => router.back()}>
-            <Icon size={28}>
-              <Papicons name="Cross" />
-            </Icon>
-          </NativeHeaderPressable>
+          <HeaderBackButton onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
 

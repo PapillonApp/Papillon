@@ -286,7 +286,7 @@ export default function SettingsIndex() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.overground }}>
-      {profilePicture && (
+      {profilePicture && Platform.OS !== 'android' && (
         <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, height: "60%" }}>
           <Image
             source={{ uri: `data:image/png;base64,${profilePicture}` }}

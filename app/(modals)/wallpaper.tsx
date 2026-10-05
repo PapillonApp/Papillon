@@ -238,7 +238,7 @@ const WallpaperModal = () => {
   return (
     <>
       <ExpoStack.Title asChild>
-        <View style={{ width: Dimensions.get("window").width - 140 }}>
+        <View style={{ width: Dimensions.get("window").width - (Platform.OS === "android" ? 200 : 140) }}>
           <NativeSegmentedControl
             options={[t("Modal_Wallpaper_Tab_Gradient"), t("Modal_Wallpaper_Tab_Images")]}
             selectedIndex={tab === "gradient" ? 0 : 1}
