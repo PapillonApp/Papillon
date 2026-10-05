@@ -129,7 +129,8 @@ function mapGradeValueToScore(grade: GradeValue | undefined): GradeScore {
 
   switch (grade.kind) {
   case GradeKind.Grade:
-    return { value: grade.points ?? 0 };
+    // An empty grade (a subject without an average) is decoded as NaN.
+    return Number.isFinite(grade.points) ? { value: grade.points as number } : { value: 0, disabled: true, status: "N/A" };
   case GradeKind.NotGraded:
     return { value: 0, disabled: true, status: "N. Not." };
   case GradeKind.Absent:
