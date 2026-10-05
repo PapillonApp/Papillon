@@ -47,7 +47,7 @@ function TabLayoutContent() {
     <NativeTabs
       tintColor={theme.colors.tint}
       labelStyle={tabLabelStyle}
-      labelVisibilityMode={showTabBarLabels ? "labeled" : "selected"}
+      labelVisibilityMode={showTabBarLabels ? "labeled" : "unlabeled"}
       rippleColor={theme.colors.tint + '22'}
       backgroundColor={Platform.OS === 'android' ? theme.colors.background : undefined}
       sidebarAdaptable
