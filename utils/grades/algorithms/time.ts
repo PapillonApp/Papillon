@@ -9,7 +9,10 @@ const PapillonGradesAveragesOverTime = (algorithm: (grades: Grade[], key: ScoreP
   for (let i = 0; i < sortedGrades.length; i++) {
     const currentGrades = sortedGrades.slice(0, i + 1);
     const average = algorithm(currentGrades, key);
-    averages.push({ date: sortedGrades[i].givenAt, average });
+    // -1: nothing countable yet (only non-numeric or coefficient 0 grades).
+    if (average >= 0) {
+      averages.push({ date: sortedGrades[i].givenAt, average });
+    }
   }
 
   return averages;

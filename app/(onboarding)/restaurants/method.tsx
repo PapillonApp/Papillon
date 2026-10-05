@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Image, View } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -26,13 +26,15 @@ export default function ServiceSelection() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t } = useTranslation();
+  const { action } = useLocalSearchParams<{ action?: string }>();
 
   const [selectedService, setSelectedService] = useState(null);
 
   const services = GetSupportedRestaurants((path: { pathname: string }) => {
     router.push({
       pathname: path.pathname as unknown as RelativePathString,
-      params: path.options ?? {} as unknown as UnknownInputParams
+      // Forwarded so a card added from an existing account joins it.
+      params: { ...path.options, ...(action ? { action } : {}) } as unknown as UnknownInputParams
     });
   });
 

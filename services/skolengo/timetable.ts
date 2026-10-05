@@ -20,7 +20,7 @@ export async function fetchSkolengoTimetable(session: Skolengo, accountId: strin
     await getTimetable(session)
   } else {
     for (const kid of (session.kids ?? [])) {
-      await getTimetable(kid, `${kid.firstName} ${kid.firstName}`)
+      await getTimetable(kid, `${kid.firstName} ${kid.lastName}`)
     }
   }
   return result;

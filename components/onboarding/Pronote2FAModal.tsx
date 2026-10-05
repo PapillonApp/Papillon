@@ -22,6 +22,7 @@ import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 
 import { PlatformPressable } from "@/app/(onboarding)/services/ed/credentials";
 
@@ -53,9 +54,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         context.identity,
         context.initialUsername
       )
-      const splittedUsername = session.user.name.split(" ")
-      const firstName = splittedUsername[splittedUsername.length - 1]
-      const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
+      const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
       const schoolName = session.user.resources[0].establishmentName
       const className = session.user.resources[0].className
 

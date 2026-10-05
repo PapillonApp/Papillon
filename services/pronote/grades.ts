@@ -9,6 +9,7 @@ import {
 
 import { AttachmentType } from "@/services/shared/attachment";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
+import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
 import { error } from "@/utils/logger/logger";
 
 /**
@@ -103,15 +104,17 @@ function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] 
     const subjectId = average.subject.id;
 
     const subjectGrades = allMappedGrades.filter(g => g.subjectId === subjectId);
+    // Some schools hide subject averages: compute it from the grades instead.
+    const computedAverage = average.student ? -1 : getSubjectAverage(subjectGrades);
 
     subjects.push({
       id: subjectId,
       name: average.subject.name,
-      studentAverage: mapGradeValueToScore(average.student),
+      studentAverage: computedAverage >= 0 ? { value: computedAverage } : mapGradeValueToScore(average.student),
       classAverage: mapGradeValueToScore(average.class_average),
       maximum: mapGradeValueToScore(average.max),
       minimum: mapGradeValueToScore(average.min),
-      outOf: mapGradeValueToScore(average.outOf),
+      outOf: computedAverage >= 0 ? { value: 20 } : mapGradeValueToScore(average.outOf),
       grades: subjectGrades
     });
   }

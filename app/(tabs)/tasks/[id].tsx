@@ -67,7 +67,7 @@ const Task = () => {
     if (!task) return;
     await manager?.setHomeworkCompletion(task, done);
 
-    updateHomeworkIsDone(id, done);
+    await updateHomeworkIsDone(id, done);
     setIsDone(done);
   }
 

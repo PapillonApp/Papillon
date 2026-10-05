@@ -165,8 +165,10 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
                 teacher: item.teacher ?? course.teacher,
                 group: item.group ?? course.group,
                 backgroundColor: item.backgroundColor ?? course.backgroundColor,
-                status: item.status ?? course.status,
-                customStatus: item.customStatus ?? course.customStatus,
+                // A fresh status always wins: a course that is no longer
+                // cancelled comes back without one.
+                status: item.status,
+                customStatus: item.customStatus,
                 url: item.url ?? course.url,
                 kidName: item.kidName ?? course.kidName,
               });
