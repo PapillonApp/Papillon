@@ -30,6 +30,8 @@ import { ListTouchable } from "@/ui/new/List";
 import { LegendList, LegendListRef } from "@legendapp/list";
 import { FlashList } from "@shopify/flash-list";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
+import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const EmojiItem = memo(({ item, onPress, isSelected }: {item: string, onPress: (emoji: string) => void, isSelected: boolean}) => {
@@ -511,6 +513,7 @@ export default function EditSubject() {
         visible={showEmojiPicker}
         onRequestClose={() => setShowEmojiPicker(false)}
       >
+        <GestureHandlerRootView style={{ flex: 1 }}>
         <EmojiPicker
           onCancel={() => setShowEmojiPicker(false)}
           onSelect={emoji => {
@@ -518,6 +521,7 @@ export default function EditSubject() {
             setShowEmojiPicker(false);
           }}
         />
+        </GestureHandlerRootView>
       </Modal>
     </View>
   );
