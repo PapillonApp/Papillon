@@ -1,9 +1,8 @@
 import { useRouter } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import React from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const OnboardingBackButton = (props: {
   icon?: string;
@@ -11,25 +10,33 @@ const OnboardingBackButton = (props: {
 }) => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(16);
+
+  const isRight = props.position === 'right';
 
   return (
-    <AnimatedPressable
-      onPress={() => router.back()}
+    <SafeAreaView
+      mode="margin"
+      edges={isRight ? { right: 'maximum' } : { left: 'additive' }}
       style={[
         {
-        position: 'absolute',
-        top: insets.top + 4,
-        zIndex: 200,
-        backgroundColor: '#ffffff42',
-        padding: 10,
-        borderRadius: 100,
+          position: 'absolute',
+          top: insets.top + 4,
+          zIndex: 200,
         },
-        props.position === 'right' ? { right: safePadding.paddingRight } : { left: safePadding.paddingLeft }
+        isRight ? { right: 0, marginRight: 16 } : { left: 0, marginLeft: 16 }
       ]}
     >
-      <Papicons name={props.icon ?? "ArrowLeft"} size={26} fill={"#fff"}/>
-    </AnimatedPressable>
+      <AnimatedPressable
+        onPress={() => router.back()}
+        style={{
+          backgroundColor: '#ffffff42',
+          padding: 10,
+          borderRadius: 100,
+        }}
+      >
+        <Papicons name={props.icon ?? "ArrowLeft"} size={26} fill={"#fff"}/>
+      </AnimatedPressable>
+    </SafeAreaView>
   )
 }
 

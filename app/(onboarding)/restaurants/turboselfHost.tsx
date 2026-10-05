@@ -27,7 +27,7 @@ import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { useTranslation } from 'react-i18next';
 import { initializeAccountManager } from '@/services/shared';
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -77,8 +77,6 @@ const staticStyles = StyleSheet.create({
 
 export default function TurboSelfSelectHost() {
   const insets = useSafeAreaInsets();
-  const headerSafePadding = useSafeHorizontalPadding(32);
-  const inputSafePadding = useSafeHorizontalPadding(21);
   const animation = React.useRef<LottieView>(null);
 
   const search = useLocalSearchParams();
@@ -135,7 +133,6 @@ export default function TurboSelfSelectHost() {
     'worklet';
     return {
       paddingTop: height.value + 16,
-      paddingHorizontal: 21,
       gap: 9
     };
   }, []);
@@ -171,125 +168,129 @@ export default function TurboSelfSelectHost() {
       <ViewContainer>
         <Reanimated.View style={AnimatedHeaderStyle}>
           <Stack
-            padding={32}
+            padding={[0, 32]}
             backgroundColor={'#E70026'}
             gap={20}
-            style={[staticStyles.stackContainer, headerSafePadding]}
+            style={staticStyles.stackContainer}
           >
-            <Reanimated.View style={AnimatedLottieContainerStyle}>
-              <LottieView
-                autoPlay
-                loop={false}
-                style={{ width: 230, height: 230 }}
-                source={require('@/assets/lotties/turboself.json')}
-              />
-            </Reanimated.View>
-            <Stack
-              vAlign='start'
-              hAlign='start'
-              width="100%"
-              gap={12}
-            >
-              <Stack flex direction="horizontal">
+            <SafeHorizontalView base={32} style={{ alignSelf: "stretch", alignItems: "center", gap: 20 }}>
+              <Reanimated.View style={AnimatedLottieContainerStyle}>
+                <LottieView
+                  autoPlay
+                  loop={false}
+                  style={{ width: 230, height: 230 }}
+                  source={require('@/assets/lotties/turboself.json')}
+                />
+              </Reanimated.View>
+              <Stack
+                vAlign='start'
+                hAlign='start'
+                width="100%"
+                gap={12}
+              >
+                <Stack flex direction="horizontal">
+                  <Typography
+                    variant="h5"
+                    style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+                  >
+                    {t("STEP")} 3
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    style={{ color: "#FFFFFFA6", lineHeight: 22, fontSize: 18 }}
+                  >
+                    {t("STEP_OUTOF")} 3
+                  </Typography>
+                </Stack>
                 <Typography
-                  variant="h5"
-                  style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+                  variant="h1"
+                  style={{ color: "white", fontSize: 32, lineHeight: 34 }}
                 >
-                  {t("STEP")} 3
-                </Typography>
-                <Typography
-                  variant="h5"
-                  style={{ color: "#FFFFFFA6", lineHeight: 22, fontSize: 18 }}
-                >
-                  {t("STEP_OUTOF")} 3
+                  {t("ONBOARDING_TURBOSELF_SELECTHOST")}
                 </Typography>
               </Stack>
-              <Typography
-                variant="h1"
-                style={{ color: "white", fontSize: 32, lineHeight: 34 }}
-              >
-                {t("ONBOARDING_TURBOSELF_SELECTHOST")}
-              </Typography>
-            </Stack>
+            </SafeHorizontalView>
           </Stack>
         </Reanimated.View>
 
-        <Reanimated.View style={[AnimatedInputContainerStyle, { gap: 10, ...inputSafePadding }]}>
-          <FlatList
-            scrollEnabled={false}
-            data={siblings}
-            numColumns={2}
-            renderItem={({ item }) => (
-              <AnimatedPressable style={{ flex: 1 }} onPress={async () => {
-                const user = item as Host
-                const authentification = await authenticateWithCredentials(String(search.username), String(search.password), true, false, user.id)
-                const accountId = uuid()
-                const store = useAccountStore.getState()
-                const service = {
-                  id: accountId,
-                  auth: {
-                    additionals: {
-                      username: String(search.username),
-                      password: String(search.password),
-                      "hoteId": authentification.host?.id ?? "N/A"
-                    }
-                  },
-                  serviceId: Services.TURBOSELF,
-                  createdAt: (new Date()).toISOString(),
-                  updatedAt: (new Date()).toISOString()
-                }
-
-                if (String(search.action) === "addService") {
-                  store.addServiceToAccount(store.lastUsedAccount, service)
-                  await initializeAccountManager()
-                  router.back();
-                  router.back();
-                  return router.back();
-                }
-
-                store.addAccount({
-                  id: accountId,
-                  firstName: authentification.host?.firstName ?? "N/A",
-                  lastName: authentification.host?.lastName ?? "N/A",
-                  schoolName: authentification.establishment?.name,
-                  className: authentification.host?.division,
-                  services: [service],
-                  createdAt: (new Date()).toISOString(),
-                  updatedAt: (new Date()).toISOString()
-                })
-
-                store.setLastUsedAccount(accountId)
-                return router.push({
-                  pathname: "../end/color",
-                  params: {
-                    accountId
+        <Reanimated.View style={[AnimatedInputContainerStyle, { gap: 10 }]}>
+          <SafeHorizontalView base={21}>
+            <FlatList
+              scrollEnabled={false}
+              data={siblings}
+              numColumns={2}
+              renderItem={({ item }) => (
+                <AnimatedPressable style={{ flex: 1 }} onPress={async () => {
+                  const user = item as Host
+                  const authentification = await authenticateWithCredentials(String(search.username), String(search.password), true, false, user.id)
+                  const accountId = uuid()
+                  const store = useAccountStore.getState()
+                  const service = {
+                    id: accountId,
+                    auth: {
+                      additionals: {
+                        username: String(search.username),
+                        password: String(search.password),
+                        "hoteId": authentification.host?.id ?? "N/A"
+                      }
+                    },
+                    serviceId: Services.TURBOSELF,
+                    createdAt: (new Date()).toISOString(),
+                    updatedAt: (new Date()).toISOString()
                   }
-                });
-              }}>
-                <Stack
-                  hAlign="center"
-                  style={{
-                    flex: 1,
-                    borderColor: colors.border,
-                    borderWidth: 1,
-                    padding: 15,
-                    borderRadius: 25,
-                    margin: 7.5,
-                  }}
-                >
-                  <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
-                    <Papicons name={"User"} />
-                  </Icon>
-                  <Typography variant="body2" nowrap ellipsizeMode="tail">
-                    {`${(item as Host).lastName?.toUpperCase() ?? ""} ${(item as Host).firstName ?? ""}`}
-                  </Typography>
-                </Stack>
-              </AnimatedPressable>
-            )}
-            keyExtractor={item => item.firstName}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ justifyContent: "space-between" }}
-          />
+
+                  if (String(search.action) === "addService") {
+                    store.addServiceToAccount(store.lastUsedAccount, service)
+                    await initializeAccountManager()
+                    router.back();
+                    router.back();
+                    return router.back();
+                  }
+
+                  store.addAccount({
+                    id: accountId,
+                    firstName: authentification.host?.firstName ?? "N/A",
+                    lastName: authentification.host?.lastName ?? "N/A",
+                    schoolName: authentification.establishment?.name,
+                    className: authentification.host?.division,
+                    services: [service],
+                    createdAt: (new Date()).toISOString(),
+                    updatedAt: (new Date()).toISOString()
+                  })
+
+                  store.setLastUsedAccount(accountId)
+                  return router.push({
+                    pathname: "../end/color",
+                    params: {
+                      accountId
+                    }
+                  });
+                }}>
+                  <Stack
+                    hAlign="center"
+                    style={{
+                      flex: 1,
+                      borderColor: colors.border,
+                      borderWidth: 1,
+                      padding: 15,
+                      borderRadius: 25,
+                      margin: 7.5,
+                    }}
+                  >
+                    <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
+                      <Papicons name={"User"} />
+                    </Icon>
+                    <Typography variant="body2" nowrap ellipsizeMode="tail">
+                      {`${(item as Host).lastName?.toUpperCase() ?? ""} ${(item as Host).firstName ?? ""}`}
+                    </Typography>
+                  </Stack>
+                </AnimatedPressable>
+              )}
+              keyExtractor={item => item.firstName}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ justifyContent: "space-between" }}
+            />
+          </SafeHorizontalView>
         </Reanimated.View>
       </ViewContainer >
     </Pressable>

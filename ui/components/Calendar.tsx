@@ -13,7 +13,7 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 import { t } from "i18next";
 import React from "react";
-import { InteractionManager, Platform, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 // UICalendarView, which backs the graphical style, refuses to lay out below
 // 320pt. Pinning the width there keeps the popover from resizing on every tap.
@@ -214,8 +214,8 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
     if (Platform.OS !== "ios" || measuredPickerSize !== null) {
       return;
     }
-    const handle = InteractionManager.runAfterInteractions(() => setPrewarmReady(true));
-    return () => handle.cancel();
+    const handle = requestIdleCallback(() => setPrewarmReady(true), { timeout: 1000 });
+    return () => cancelIdleCallback(handle);
   }, []);
 
   // Held apart from the popover's presentation state so that opening and

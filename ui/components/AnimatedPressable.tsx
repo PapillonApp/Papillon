@@ -8,7 +8,7 @@ import Reanimated, {
 } from "react-native-reanimated";
 import * as ExpoHaptics from "expo-haptics";
 import { Animation } from "../utils/Animation";
-import { Pressable, TapGestureHandler } from "react-native-gesture-handler";
+import { Pressable } from "react-native-gesture-handler";
 import { ListTouchableBlockPressContext } from "../new/ListTouchableContext";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
@@ -75,7 +75,7 @@ function AnimatedPressable({
     [blockParentListTouchablePress, scale, opacity]
   );
 
-  const handleOnActivated = useCallback((e) => {
+  const handlePress = useCallback((e: any) => {
     pressRef.current?.(e);
   }, []);
 
@@ -85,23 +85,16 @@ function AnimatedPressable({
   );
 
   return (
-    <TapGestureHandler
-      // Configure TapGestureHandler to be more responsive to short presses
-      maxDurationMs={300}
-      maxDelayMs={0}
-      onActivated={handleOnActivated}
+    <ReanimatedPressable
+      {...props}
+      layout={props.layout || layoutAnim}
+      style={[style, animatedStyle]}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={handlePress}
     >
-      <ReanimatedPressable
-        {...props}
-        layout={props.layout || layoutAnim}
-        style={[style, animatedStyle]}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-      // onPress is now handled by the TapGestureHandler's onActivated prop
-      >
-        {children}
-      </ReanimatedPressable>
-    </TapGestureHandler>
+      {children}
+    </ReanimatedPressable>
   );
 }
 

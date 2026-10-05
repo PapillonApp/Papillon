@@ -21,6 +21,7 @@ export default {
       associatedDomains: ["applinks:getpapillon.xyz"],
       icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
+      deploymentTarget: "17.6",
       infoPlist: {
         AppGroupIdentifier: "group.xyz.getpapillon",
         CFBundleURLTypes: [
@@ -104,7 +105,6 @@ export default {
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
-      "expo-ios-scene-lifecycle-plugin",
       "expo-router",
       "expo-status-bar",
       "expo-font",
@@ -134,14 +134,6 @@ export default {
         },
       ],
       "expo-web-browser",
-      [
-        "react-native-fast-tflite",
-        {
-          enableCoreMLDelegate: true,
-          enableAndroidGpuLibraries: true,
-        },
-      ],
-      "react-native-bottom-tabs",
       "expo-secure-store",
       [
         "expo-location",
@@ -162,48 +154,6 @@ export default {
         },
       ],
       [
-        "expo-widgets",
-        {
-          "bundleIdentifier": "xyz.getpapillon.ios.widgets",
-          "groupIdentifier": "group.xyz.getpapillon.ios",
-          "enablePushNotifications": true,
-          "widgets": [
-            {
-              "name": "Calendar",
-              "displayName": "Emploi du temps",
-              "description": "Affiche tes prochains cours et événements",
-              "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium"]
-              }
-            },
-            {
-              "name": "Tasks",
-              "displayName": "Tâches",
-              "description": "Affiche tes tâches à faire",
-              "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
-              }
-            },
-            {
-              "name": "Notes",
-              "displayName": "Notes",
-              "description": "Affiche tes dernières notes",
-              "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
-              }
-            },
-            {
-              "name": "Averages",
-              "displayName": "Moyenne générale",
-              "description": "Affiche ta moyenne générale",
-              "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
-              }
-            }
-          ]
-        }
-      ],
-      [
         "expo-build-properties",
         {
           android: {
@@ -215,10 +165,11 @@ export default {
               { name: "SDWebImageSVGCoder", modular_headers: true },
             ],
             buildReactNativeFromSource: false,
+            ccacheEnabled: true,
           },
         },
       ],
-      "./plugins/with-widget-fonts",
+      "@getpapillon/papillonkit",
       "./plugins/with-ios-native-files",
       "./plugins/with-android-gradle-properties-newline",
     ],

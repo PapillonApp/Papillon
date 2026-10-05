@@ -5,18 +5,17 @@ import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Stack from '@/ui/components/Stack';
+import { Link } from 'expo-router';
 
 interface HomeTopBarButtonProps {
   icon: string;
-  onPress?: () => void;
+  route?: string;
 }
 
-const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) => {
+const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route }) => {
   return (
-    <TouchableNativeFeedback
-      useForeground
-      onPress={onPress}
-    >
+    <Link asChild prefetch href={route ?? "/(features)/soon"}>
+    <TouchableNativeFeedback useForeground>
       <View
         style={{
           width: 42,
@@ -33,6 +32,7 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) =>
         </Icon>
       </View>
     </TouchableNativeFeedback>
+    </Link>
   );
 };
 

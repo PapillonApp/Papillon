@@ -6,6 +6,8 @@ import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { Platform } from 'react-native';
 import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
+export const unstable_settings = { initialRouteName: "locate" };
+
 export default function OnboardingLayout() {
   const { t } = useTranslation();
   const screenOptions = useScreenOptions();

@@ -28,7 +28,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { warn } from "@/utils/logger/logger";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 interface SubjectInfo {
   name: string;
@@ -95,7 +95,6 @@ export default function GradesModal() {
   const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
   const displayScaleMax = getDisplayScaleMax(displayScale);
   const insets = useSafeAreaInsets();
-  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0,
@@ -221,8 +220,10 @@ export default function GradesModal() {
       <List
         style={{ flex: 1 }}
         contentInsetAdjustmentBehavior="automatic"
+        safeHorizontalPadding={16}
         ListHeaderComponent={
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{
               alignItems: "center",
               justifyContent: "center",
@@ -353,12 +354,10 @@ export default function GradesModal() {
                 </Stack>
               </Stack>
             )}
-          </View>
+          </SafeHorizontalView>
         }
         contentContainerStyle={{
-          padding: 16,
-          paddingLeft: contentPaddingLeft,
-          paddingRight: contentPaddingRight,
+          paddingVertical: 16,
           width: '100%',
           maxWidth: 900,
           alignSelf: 'center',

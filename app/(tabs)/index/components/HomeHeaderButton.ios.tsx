@@ -14,7 +14,6 @@ export interface HomeHeaderButtonItem {
   icon: string;
   color: string;
   description: string;
-  onPress?: () => void;
   route?: string;
   params?: Record<string, string>;
 }
@@ -52,6 +51,7 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
 
     <Link
       asChild
+      prefetch
       href={{
         pathname: item.route ?? "/(features)/soon",
         params: item.params,

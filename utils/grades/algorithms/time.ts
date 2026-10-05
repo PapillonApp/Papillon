@@ -2,7 +2,7 @@ import { Grade } from "@/services/shared/grade";
 import { ScoreProperty } from "./helpers";
 
 const PapillonGradesAveragesOverTime = (algorithm: (grades: Grade[], key: ScoreProperty) => number, grades: Grade[], key: ScoreProperty = "studentScore") => {
-  const sortedGrades = grades.sort((a, b) => new Date(a.givenAt).getTime() - new Date(b.givenAt).getTime());
+  const sortedGrades = grades.sort((a, b) => (new Date(a.givenAt).getTime() || 0) - (new Date(b.givenAt).getTime() || 0));
 
   const averages: { date: Date; average: number }[] = [];
 

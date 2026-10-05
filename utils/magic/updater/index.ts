@@ -1,5 +1,5 @@
 import { Directory, File, Paths } from "expo-file-system";
-import { loadTensorflowModel } from "react-native-fast-tflite";
+import { loadTensorflowModel } from "../tflite";
 
 import { debug } from "@/utils/logger/logger";
 

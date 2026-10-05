@@ -20,13 +20,13 @@ import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { useSettingsStore } from "@/stores/settings";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import {
   COURSE_LIVE_ACTIVITY_SUPPORTED,
   type CourseLiveActivityPreviewMode,
   previewCourseLiveActivity,
   stopCourseLiveActivity
-} from "@/widgets/course";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+} from "@/utils/widgets/courseLiveActivity";
 
 import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,7 +43,6 @@ export default function CourseModal() {
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0
@@ -132,29 +131,32 @@ export default function CourseModal() {
 
       <List
         contentInsetAdjustmentBehavior="automatic"
+        safeHorizontalPadding={16}
         ListHeaderComponent={
-          <ModalOverhead
-            subject={getSubjectName(item.subject)}
-            title={item.customStatus || getStatusText(item.status)}
-            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
-            emoji={subjectInfo.emoji}
-            subjectVariant="h3"
-            date={new Date(startTime * 1000)}
-            dateFormat={{
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-            }}
-            style={{
-              marginBottom: 24,
-              paddingTop: finalHeaderHeight,
-            }}
-          />
+          <SafeHorizontalView base={16}>
+            <ModalOverhead
+              subject={getSubjectName(item.subject)}
+              title={item.customStatus || getStatusText(item.status)}
+              color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
+              emoji={subjectInfo.emoji}
+              subjectVariant="h3"
+              date={new Date(startTime * 1000)}
+              dateFormat={{
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              }}
+              style={{
+                marginBottom: 24,
+                paddingTop: finalHeaderHeight,
+              }}
+            />
+          </SafeHorizontalView>
         }
         style={{ backgroundColor: "transparent", zIndex: 2 }}
-        contentContainerStyle={{ padding: 16, paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}
+        contentContainerStyle={{ paddingVertical: 16 }}
       >
         {getStatusText(course.status) ? (
           <List.Section>
@@ -179,7 +181,7 @@ export default function CourseModal() {
           <List.Item>
             <List.Leading>
               <Icon>
-                <Papicons name="Logout" />
+                <Papicons name="Login" />
               </Icon>
             </List.Leading>
             <Typography variant="title">{t("Modal_Course_Start")}</Typography>
@@ -204,7 +206,7 @@ export default function CourseModal() {
           <List.Item>
             <List.Leading>
               <Icon>
-                <Papicons name="Login" />
+                <Papicons name="Logout" />
               </Icon>
             </List.Leading>
             <Typography variant="title">{t("Modal_Course_End")}</Typography>

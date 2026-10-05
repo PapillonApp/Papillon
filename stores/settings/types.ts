@@ -29,6 +29,13 @@ export interface Wallpaper {
 
 export type CalendarViewMode = "list" | "week";
 
+export interface AccountWallpaper {
+  wallpaper?: Wallpaper;
+  // Restored when switching the wallpaper modal back from gradient to image
+  lastImageWallpaper?: Wallpaper;
+  wallpaperGradient?: { colors: string[]; seed: number };
+}
+
 export interface Personalization {
   fontFamily?: AppFontFamily;
   gradesDisplayScale?: "20" | "10" | "5" | "percentage";
@@ -49,7 +56,11 @@ export interface Personalization {
   liveActivitiesEnabled?: boolean;
   magicModelURL?: string;
   language?: string | null;
+  // Legacy global wallpaper, read as the fallback for accounts without their own entry
   wallpaper?: Wallpaper;
+  lastImageWallpaper?: Wallpaper;
+  wallpaperGradient?: { colors: string[]; seed: number };
+  wallpapersByAccount?: Record<string, AccountWallpaper>;
   disabledTabs?: string[];
   disabledTabsByAccount?: Record<string, string[]>;
   gradesSortMethod?: string;

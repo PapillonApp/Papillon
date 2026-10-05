@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 import { consumePendingPronoteChallenge, PronoteChallenge } from "@/utils/pronote/challenge";
 
-import { Pronote2FAModal } from "./2fa";
+import { Pronote2FAModal } from "@/components/onboarding/Pronote2FAModal";
 
 export default function PronoteChallengeScreen() {
   const [challenge, setChallenge] = useState<PronoteChallenge | null>(null);

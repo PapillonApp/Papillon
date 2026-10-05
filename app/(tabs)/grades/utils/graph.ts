@@ -16,13 +16,15 @@ export const calculateAmplifiedGraphPoints = (
 ): GraphPoint[] => {
   if (!currentAverageHistory) { return []; }
 
+  // Drop bad entries (NaN/Infinity, -1 "no average" sentinel, invalid dates) instead of breaking the whole graph.
   const points = currentAverageHistory
-    .filter(item => !isNaN(item.average) && item.average !== null && item.average !== undefined)
+    .map(item => ({ average: item.average, date: new Date(item.date) }))
+    .filter(item => Number.isFinite(item.average) && item.average >= 0 && !isNaN(item.date.getTime()))
     .map(item => ({
       value: item.average,
-      date: new Date(item.date),
+      date: item.date,
       originalValue: item.average,
-      originalDate: new Date(item.date)
+      originalDate: item.date
     }));
 
   if (points.length === 0) return [];

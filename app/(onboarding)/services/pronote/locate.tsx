@@ -15,7 +15,7 @@ import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { GeographicSearchCities } from "@/utils/native/georeverse";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const convertPostalCode
 = (postalCode: string) => {
@@ -70,7 +70,6 @@ export default function PronoteLoginMethod() {
   const headerHeight = useHeaderHeight();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(16);
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -124,10 +123,9 @@ export default function PronoteLoginMethod() {
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
-        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} t={t} />}
+        ListHeaderComponent={<SafeHorizontalView base={16}><PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} t={t} /></SafeHorizontalView>}
+        safeHorizontalPadding={16}
         contentContainerStyle={{
-          padding: 16,
-          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,

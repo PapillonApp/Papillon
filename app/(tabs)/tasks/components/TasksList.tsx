@@ -10,7 +10,7 @@ import DateHeader from "../atoms/DateHeader";
 import EmptyState from "../atoms/EmptyState";
 import TaskItem from "./TaskItem";
 import { useTheme } from "expo-router/react-navigation";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export interface HomeworkSection {
   id: string;
@@ -53,7 +53,6 @@ const TasksList: React.FC<TasksListProps> = ({
   animateItems = true,
 }) => {
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const { isLarge } = useResizable();
 
   // Items arrive already merged with the freshly fetched homework, so a row
@@ -99,10 +98,8 @@ const TasksList: React.FC<TasksListProps> = ({
       numColumns={numColumns}
       maintainVisibleContentPosition={{ disabled: true }}
       style={[styles.list, { backgroundColor: colors.overground }]}
+      safeHorizontalPadding={16}
       contentContainerStyle={{
-        paddingLeft: 16,
-        // A large right inset (landscape notch) already gives enough breathing room.
-        paddingRight: insets.right > 10 ? 0 : 16,
         paddingBottom: 16,
       }}
       contentInsetAdjustmentBehavior="automatic"
@@ -110,7 +107,9 @@ const TasksList: React.FC<TasksListProps> = ({
       showsHorizontalScrollIndicator={false}
       ListEmptyComponent={
         isLoaded || hasError ? (
-          <EmptyState isSearching={searchTerm.length > 0} hasError={hasError} />
+          <SafeHorizontalView base={16}>
+            <EmptyState isSearching={searchTerm.length > 0} hasError={hasError} />
+          </SafeHorizontalView>
         ) : null
       }
       refreshControl={

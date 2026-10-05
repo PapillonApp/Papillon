@@ -23,9 +23,9 @@ import {
   getRecipientsFromCache,
 } from "@/database/useChat";
 import {
-  addPeriodGradesToDatabase,
+  cachePeriodGrades,
   addPeriodsToDatabase,
-  getGradePeriodsFromCache,
+  getCachedPeriodGrades,
   getPeriodsFromCache,
 } from "@/database/useGrades";
 import {
@@ -254,9 +254,9 @@ export class AccountManager {
       {
         multiple: false,
         clientId,
-        fallback: async () => getGradePeriodsFromCache(period.name),
+        fallback: async () => getCachedPeriodGrades(`${clientId}:${kid?.id ?? ""}:${period.name}`),
         saveToCache: async (data: PeriodGrades) => {
-          await addPeriodGradesToDatabase(data, period.name);
+          cachePeriodGrades(data, `${clientId}:${kid?.id ?? ""}:${period.name}`);
         },
       }
     );
@@ -613,11 +613,15 @@ export class AccountManager {
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
+        // Expected while the manager is published before its first refresh.
         if (!client) {
-          error("Client ID missing");
+          if (options.fallback) {
+            return await callFallback();
+          }
+          throw new Error(`Client ${options.clientId} is not available yet`);
         }
         if (!client.capabilities.includes(capability)) {
-          error(
+          throw error(
             "Capability " +
               capability +
               " not supported by client " +
@@ -828,11 +832,19 @@ export const initializeAccountManager = async (
       manager.syncAccount(account);
     } else {
       manager = new AccountManager(account);
+      // Published before the network refresh: with no clients yet, every
+      // fetch falls back to the local cache, so screens render the last
+      // known data instantly and get the fresh one on the notify below.
+      globalManager = manager;
+      notifyManagerListeners(manager);
     }
 
     await manager.refreshAllAccounts();
-    globalManager = manager;
-    notifyManagerListeners(manager);
+    // A newer initialization for another account may have taken over while this
+    // one was refreshing; publishing now would hand screens the stale account.
+    if (globalManager === manager) {
+      notifyManagerListeners(manager);
+    }
     return manager;
   })();
 

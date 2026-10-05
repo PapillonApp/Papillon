@@ -18,10 +18,9 @@ import { useTranslation } from "react-i18next";
 import { removeBalanceFromDatabase } from "@/database/useBalance";
 import { getManager } from "@/services/shared";
 import i18n from "@/utils/i18n";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export default function CardView() {
-  const safePadding = useSafeHorizontalPadding(20);
   const router = useRouter();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
@@ -42,148 +41,150 @@ export default function CardView() {
   return (
     <ScrollView
       contentContainerStyle={{
-        padding: 20, ...safePadding, gap: 15, paddingTop: 82,
+        paddingTop: 82, paddingBottom: 20,
       }}
     >
-      <SettingsHeader
-        color={theme.dark ? "#001533" + "80" : "#D9E6FA"}
-        title={t("Settings_Cards_Banner_Title")}
-        description={t("Settings_Cards_Banner_Description")}
-        iconName="Card"
-        imageSource={require("@/assets/images/cards.png")}
-      />
-      {(selfCompatible ?? []).length > 0 ? (
-        <>
-          <Typography style={{ opacity: 0.5 }}>Mes cartes</Typography>
-          <View style={{
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.15,
-            shadowRadius: 3.3,
-            elevation: 4,
-          }}
-          >
-            <ScrollView scrollEnabled={false}>
-              <List>
-                {selfCompatible?.map(service => {
-                  return (
-                    <Item
-                      key={service.id}
-                      onPress={() => {
-                        if (service.serviceId === Services.ECOLEDIRECTE) {
-                          Alert.alert("Tu ne peux pas supprimer cette carte", "Cette carte est liée à ton service scolaire.");
-                          return;
-                        }
-                        Alert.alert(getServiceName(service.serviceId), "Que souhaitez-vous faire ?", [
-                          {
-                            text: "Supprimer",
-                            style: "destructive",
-                            onPress: () => {
-                              useAccountStore.getState().removeServiceFromAccount(service.id);
-                              removeBalanceFromDatabase(service.id)
-                              const manager = getManager()
-                              if (manager) {
-                                manager.removeService(service.id)
-                              }
+      <SafeHorizontalView base={20} style={{ gap: 15 }}>
+        <SettingsHeader
+          color={theme.dark ? "#001533" + "80" : "#D9E6FA"}
+          title={t("Settings_Cards_Banner_Title")}
+          description={t("Settings_Cards_Banner_Description")}
+          iconName="Card"
+          imageSource={require("@/assets/images/cards.png")}
+        />
+        {(selfCompatible ?? []).length > 0 ? (
+          <>
+            <Typography style={{ opacity: 0.5 }}>Mes cartes</Typography>
+            <View style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.15,
+              shadowRadius: 3.3,
+              elevation: 4,
+            }}
+            >
+              <ScrollView scrollEnabled={false}>
+                <List>
+                  {selfCompatible?.map(service => {
+                    return (
+                      <Item
+                        key={service.id}
+                        onPress={() => {
+                          if (service.serviceId === Services.ECOLEDIRECTE) {
+                            Alert.alert("Tu ne peux pas supprimer cette carte", "Cette carte est liée à ton service scolaire.");
+                            return;
+                          }
+                          Alert.alert(getServiceName(service.serviceId), "Que souhaitez-vous faire ?", [
+                            {
+                              text: "Supprimer",
+                              style: "destructive",
+                              onPress: () => {
+                                useAccountStore.getState().removeServiceFromAccount(service.id);
+                                removeBalanceFromDatabase(service.id)
+                                const manager = getManager()
+                                if (manager) {
+                                  manager.removeService(service.id)
+                                }
+                              },
                             },
-                          },
-                          {
-                            text: "Annuler",
-                            style: "cancel",
-                          },
-                        ]);
-                      }}
-                    >
-                      <Leading>
-                        <Image source={getServiceBackground(service.serviceId)}
-                          style={{
-                            width: 60,
-                            height: 40,
-                            borderRadius: 4,
-                          }}
-                        />
-                      </Leading>
-                      <Trailing>
-                        <Papicons name={"ChevronRight"}
-                          fill={colors.text}
-                          opacity={0.5}
-                        />
-                      </Trailing>
-                      <Typography>{getServiceName(service.serviceId)}</Typography>
-                      <Typography style={{ opacity: 0.5 }}>Ajoutée
-                        le {new Date(service.createdAt).toLocaleDateString(i18n.language, {
-                          day: "2-digit",
-                          month: "2-digit",
-                        })}</Typography>
-                    </Item>
-                  );
-                })}
-              </List>
-              <Button color="blue"
-                title="Ajouter"
-                icon={<Papicons name="Plus" />}
-                onPress={() => {
-                  router.push({
-                    pathname: "/(onboarding)/restaurants/method",
-                    params: {
-                      action: "addService",
-                    },
-                  });
-                }}
-              />
-            </ScrollView>
-          </View>
-          <Typography variant="caption"
-            style={{ opacity: 0.5 }}
-          >{t("Feature_Add_Card")}</Typography>
-        </>
-      ) : (
-        <Stack
-          hAlign="center"
-          vAlign="center"
-          margin={16}
-          gap={16}
-        >
-          <View
-            style={{
-              alignItems: "center",
-            }}
+                            {
+                              text: "Annuler",
+                              style: "cancel",
+                            },
+                          ]);
+                        }}
+                      >
+                        <Leading>
+                          <Image source={getServiceBackground(service.serviceId)}
+                            style={{
+                              width: 60,
+                              height: 40,
+                              borderRadius: 4,
+                            }}
+                          />
+                        </Leading>
+                        <Trailing>
+                          <Papicons name={"ChevronRight"}
+                            fill={colors.text}
+                            opacity={0.5}
+                          />
+                        </Trailing>
+                        <Typography>{getServiceName(service.serviceId)}</Typography>
+                        <Typography style={{ opacity: 0.5 }}>Ajoutée
+                          le {new Date(service.createdAt).toLocaleDateString(i18n.language, {
+                            day: "2-digit",
+                            month: "2-digit",
+                          })}</Typography>
+                      </Item>
+                    );
+                  })}
+                </List>
+                <Button color="blue"
+                  title="Ajouter"
+                  icon={<Papicons name="Plus" />}
+                  onPress={() => {
+                    router.push({
+                      pathname: "/(onboarding)/restaurants/method",
+                      params: {
+                        action: "addService",
+                      },
+                    });
+                  }}
+                />
+              </ScrollView>
+            </View>
+            <Typography variant="caption"
+              style={{ opacity: 0.5 }}
+            >{t("Feature_Add_Card")}</Typography>
+          </>
+        ) : (
+          <Stack
+            hAlign="center"
+            vAlign="center"
+            margin={16}
+            gap={16}
           >
-            <Icon papicon
-              opacity={0.5}
-              size={32}
-              style={{ marginBottom: 3 }}
+            <View
+              style={{
+                alignItems: "center",
+              }}
             >
-              <Papicons name={"Card"} />
-            </Icon>
-            <Typography variant="h4"
-              color="text"
-              align="center"
-            >
-              {t("Settings_Cards_None_Title")}
-            </Typography>
-            <Typography variant="body2"
-              color="secondary"
-              align="center"
-            >
-              {t("Settings_Cards_None_Description")}
-            </Typography>
-          </View>
-          <Button color="blue"
-            title={t("Settings_Cards_Add_Button")}
-            icon={<Papicons name={"Plus"} />}
-            onPress={() => {
-              router.push({
-                pathname: "/(onboarding)/restaurants/method",
-                params: {
-                  action: "addService",
-                },
-              });
-            }}
-          />
-        </Stack>
-      )
-      }
+              <Icon papicon
+                opacity={0.5}
+                size={32}
+                style={{ marginBottom: 3 }}
+              >
+                <Papicons name={"Card"} />
+              </Icon>
+              <Typography variant="h4"
+                color="text"
+                align="center"
+              >
+                {t("Settings_Cards_None_Title")}
+              </Typography>
+              <Typography variant="body2"
+                color="secondary"
+                align="center"
+              >
+                {t("Settings_Cards_None_Description")}
+              </Typography>
+            </View>
+            <Button color="blue"
+              title={t("Settings_Cards_Add_Button")}
+              icon={<Papicons name={"Plus"} />}
+              onPress={() => {
+                router.push({
+                  pathname: "/(onboarding)/restaurants/method",
+                  params: {
+                    action: "addService",
+                  },
+                });
+              }}
+            />
+          </Stack>
+        )
+        }
+      </SafeHorizontalView>
     </ScrollView>
   );
 }
