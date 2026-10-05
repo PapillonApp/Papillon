@@ -33,7 +33,7 @@ import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
 
 import OnboardingWebView from "../../components/OnboardingWebView";
-import { Pronote2FAModal } from "./2fa";
+import { Pronote2FAModal } from "@/components/onboarding/Pronote2FAModal";
 import Button from "@/ui/new/Button";
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 

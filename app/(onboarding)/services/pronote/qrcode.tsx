@@ -27,6 +27,7 @@ import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
+import { setPendingPronoteChallenge } from "@/utils/pronote/challenge";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
@@ -97,14 +98,8 @@ export default function PronoteLoginWithQR() {
               context.initialUsername,
             );
           } else {
-            router.push({
-              pathname: "/(onboarding)/services/pronote/2fa",
-              params: {
-                error: JSON.stringify(error),
-                session: JSON.stringify(session),
-                deviceId: accountID
-              }
-            });
+            setPendingPronoteChallenge({ session, error, deviceUUID: accountID });
+            router.push("/(onboarding)/services/pronote/challenge");
           }
         }
       }

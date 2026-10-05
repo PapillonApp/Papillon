@@ -23,7 +23,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
-import { PlatformPressable } from "../ed/credentials";
+import { PlatformPressable } from "@/app/(onboarding)/services/ed/credentials";
 
 export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId, relinkAccountId, relinkServiceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string, relinkAccountId?: string, relinkServiceId?: string }) {
   const { t } = useTranslation();
