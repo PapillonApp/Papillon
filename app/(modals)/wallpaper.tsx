@@ -21,7 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import NativeSegmentedControl from "@/ui/native/NativeSegmentedControl"
 import { generateMeshGradient } from "@/utils/generative"
-import { applyGradientWallpaper, Gradient, GRADIENT_HEIGHT, GRADIENT_PALETTE, GRADIENT_WIDTH, isGradient, randomGradient, randomSeed } from "@/utils/gradientWallpaper"
+import { applyGradientWallpaper, setAccountWallpaper, useAccountWallpaper, Gradient, GRADIENT_HEIGHT, GRADIENT_PALETTE, GRADIENT_WIDTH, isGradient, randomGradient, randomSeed } from "@/utils/gradientWallpaper"
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
 
@@ -70,10 +70,10 @@ const WallpaperModal = () => {
 
   const [currentlyDownloading, setCurrentlyDownloading] = useState<string[]>([]);
 
-  const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
+  const accountWallpaper = useAccountWallpaper();
 
-  const currentWallpaper = settingsStore.wallpaper;
+  const currentWallpaper = accountWallpaper.wallpaper;
   const selectedId = currentWallpaper?.id;
   const hasCustomWallpaper = selectedId?.startsWith("custom:") ?? false;
 
@@ -109,7 +109,7 @@ const WallpaperModal = () => {
 
     const wallpaperFile = new File(wallpaperDirectory, fileName);
     if (wallpaperFile.exists) {
-      mutateProperty("personalization", {
+      setAccountWallpaper({
         wallpaper: {
           id: wallpaper.id,
           path: {
@@ -127,7 +127,7 @@ const WallpaperModal = () => {
       wallpaperDirectory.create();
     }
     File.downloadFileAsync(wallpaper.url!, wallpaperFile).then((result) => {
-      mutateProperty("personalization", {
+      setAccountWallpaper({
         wallpaper: {
           id: wallpaper.id,
           path: {
@@ -162,7 +162,7 @@ const WallpaperModal = () => {
 
         sourceFile.copy(destFile);
 
-        mutateProperty("personalization", {
+        setAccountWallpaper({
           wallpaper: {
             id: `custom:${Date.now()}`,
             path: {
@@ -177,7 +177,7 @@ const WallpaperModal = () => {
     }
   }
 
-  const [gradient, setGradient] = useState<Gradient>(() => settingsStore.wallpaperGradient ?? randomGradient());
+  const [gradient, setGradient] = useState<Gradient>(() => accountWallpaper.wallpaperGradient ?? randomGradient());
   const applyTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
   const pendingGradient = useRef<Gradient | null>(null);
 
@@ -192,6 +192,8 @@ const WallpaperModal = () => {
 
   const updateGradient = (next: Gradient) => {
     setGradient(next);
+    // Home renders gradients from these params: update them now, the PNG on disk can follow
+    setAccountWallpaper({ wallpaperGradient: next });
     pendingGradient.current = next;
     clearTimeout(applyTimeout.current);
     applyTimeout.current = setTimeout(flushGradient, 250);
@@ -209,8 +211,8 @@ const WallpaperModal = () => {
     if (next === "images" && isGradient(currentWallpaper)) {
       clearTimeout(applyTimeout.current);
       pendingGradient.current = null;
-      if (settingsStore.lastImageWallpaper) {
-        mutateProperty("personalization", { wallpaper: settingsStore.lastImageWallpaper });
+      if (accountWallpaper.lastImageWallpaper) {
+        setAccountWallpaper({ wallpaper: accountWallpaper.lastImageWallpaper });
         const gradientFile = currentWallpaper?.path?.name && new File(wallpaperDirectory, currentWallpaper.path.name);
         if (gradientFile && gradientFile.exists) gradientFile.delete();
       }
@@ -220,16 +222,16 @@ const WallpaperModal = () => {
   const downloadsSize = (wallpaperDirectory.info().size / (1024 * 1024)).toFixed(2) + " MB";
 
   const clearWallpaper = () => {
-    mutateProperty("personalization", {
-      wallpaper: undefined
-    })
+    setAccountWallpaper({ wallpaper: undefined })
   };
 
   const clearDownloads = () => {
     wallpaperDirectory.delete();
+    // Downloads are shared by every account: drop all references to them
     mutateProperty("personalization", {
       wallpaper: undefined,
-      lastImageWallpaper: undefined
+      lastImageWallpaper: undefined,
+      wallpapersByAccount: {}
     })
   };
 

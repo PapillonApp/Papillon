@@ -185,13 +185,13 @@ const HomeScreen = () => {
   const allWidgetsHidden = visibleWidgets.length === 0;
 
   React.useEffect(() => {
-    if (!account || welcomeModalSeen) {
+    if (!account || welcomeModalSeen || !focused) {
       return;
     }
 
     mutateSettings("personalization", { welcomeModalSeen: true });
     router.navigate("/(modals)/welcome");
-  }, [account, mutateSettings, router, welcomeModalSeen]);
+  }, [account, focused, mutateSettings, router, welcomeModalSeen]);
 
   return (
     <>

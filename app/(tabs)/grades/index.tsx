@@ -242,7 +242,7 @@ const GradesView = () => {
               )}
             </SafeHorizontalView>
           }
-          ListHeaderComponent={() => (
+          ListHeaderComponent={(
             isSearchbarFocused ? <></> : (
               <View
                 style={{

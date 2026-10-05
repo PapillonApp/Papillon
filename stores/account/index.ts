@@ -7,6 +7,7 @@ import { initializeTransport } from "@/utils/transport";
 import { generateAvatar, loadAvatarFont } from "@/utils/generative";
 
 import { createEncryptedMMKVStorage } from '../global'
+import { useSettingsStore } from '../settings'
 import { Account, AccountsStorage, Auth, TransportAddress } from "./types";
 
 // Some services return an HTML error page (base64 "<!DOCTYPE html>") instead of an image
@@ -48,6 +49,7 @@ export const useAccountStore = create<AccountsStorage>()(
       },
       addAccount: account => {
         set({ accounts: [...get().accounts, withAvatar(account)] });
+        useSettingsStore.getState().mutateProperty("personalization", { welcomeModalSeen: false });
         trackOptionalEvent("new_account_logged_in");
       },
       updateServiceAuthData: (serviceId: string, authData: Auth) =>

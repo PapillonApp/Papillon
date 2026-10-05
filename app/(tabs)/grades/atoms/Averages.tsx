@@ -114,6 +114,7 @@ const Averages = ({
     const { width: windowWidth } = useWindowDimensions();
 
     const [algorithm, setAlgorithm] = useState(algorithms[0]);
+    const [algorithmSheetPresented, setAlgorithmSheetPresented] = useState(false);
 
     const currentAverageHistory = useMemo(() => {
       const points = history[algorithm.key] ?? [];
@@ -206,8 +207,6 @@ const Averages = ({
         style={{ height: "100%", marginLeft: -36, marginRight: compact ? -24 : -10 }}
       />
     ) : null;
-
-    const [algorithmSheetPresented, setAlgorithmSheetPresented] = useState(false);
 
     const algorithmPicker = () => {
       // matchContents sizes the host to its content, so without an explicit

@@ -1,9 +1,41 @@
 import { Directory, File, Paths } from "expo-file-system";
 import { Dimensions } from "react-native";
 
+import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
-import { Wallpaper } from "@/stores/settings/types";
+import { AccountWallpaper, Personalization, Wallpaper } from "@/stores/settings/types";
 import { generateMeshGradient } from "@/utils/generative";
+
+const accountKey = (accountId?: string | null) => accountId ?? "default";
+
+const readAccountWallpaper = (personalization: Personalization, accountId?: string | null): AccountWallpaper =>
+  personalization.wallpapersByAccount?.[accountKey(accountId)] ?? {
+    wallpaper: personalization.wallpaper,
+    lastImageWallpaper: personalization.lastImageWallpaper,
+    wallpaperGradient: personalization.wallpaperGradient,
+  };
+
+/** Wallpaper settings of the active account. */
+export const useAccountWallpaper = (): AccountWallpaper => {
+  const accountId = useAccountStore(state => state.lastUsedAccount);
+  const personalization = useSettingsStore(state => state.personalization);
+  return readAccountWallpaper(personalization, accountId);
+};
+
+export const getAccountWallpaper = (): AccountWallpaper =>
+  readAccountWallpaper(useSettingsStore.getState().personalization, useAccountStore.getState().lastUsedAccount);
+
+/** Merges updates into the active account's wallpaper settings. */
+export function setAccountWallpaper(updates: Partial<AccountWallpaper>) {
+  const { personalization, mutateProperty } = useSettingsStore.getState();
+  const accountId = useAccountStore.getState().lastUsedAccount;
+  mutateProperty("personalization", {
+    wallpapersByAccount: {
+      ...personalization.wallpapersByAccount,
+      [accountKey(accountId)]: { ...readAccountWallpaper(personalization, accountId), ...updates },
+    },
+  });
+}
 
 export type Gradient = { colors: string[]; seed: number };
 
@@ -36,10 +68,9 @@ export function applyGradientWallpaper(gradient: Gradient) {
   const file = new File(directory, `${id}.png`);
   file.writeSync(image.encodeToBytes());
 
-  const { personalization, mutateProperty } = useSettingsStore.getState();
-  const { wallpaper: previous, lastImageWallpaper } = personalization;
+  const { wallpaper: previous, lastImageWallpaper } = getAccountWallpaper();
 
-  mutateProperty("personalization", {
+  setAccountWallpaper({
     wallpaper: { id, path: { directory: directory.name, name: file.name } },
     wallpaperGradient: gradient,
     lastImageWallpaper: previous && !isGradient(previous) ? previous : lastImageWallpaper,

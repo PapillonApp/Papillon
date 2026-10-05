@@ -1,37 +1,37 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { File, Paths } from 'expo-file-system';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Image, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { useSettingsStore } from '@/stores/settings';
-import { applyGradientWallpaper, randomGradient } from '@/utils/gradientWallpaper';
+import { generateMeshGradient } from '@/utils/generative';
+import { applyGradientWallpaper, GRADIENT_HEIGHT, GRADIENT_WIDTH, isGradient, randomGradient, useAccountWallpaper } from '@/utils/gradientWallpaper';
 
 const Wallpaper = ({ height = 400, dim = true }) => {
   try {
-    const settingsStore = useSettingsStore(state => state.personalization);
-    const currentWallpaper = settingsStore.wallpaper;
-
-    const [image, setImage] = useState<string | null>(null);
+    const { wallpaper: currentWallpaper, wallpaperGradient } = useAccountWallpaper();
 
     // No wallpaper yet (first launch, or cleared): default to a random gradient
     useEffect(() => {
       if (!currentWallpaper) applyGradientWallpaper(randomGradient());
     }, [currentWallpaper]);
 
-    useEffect(() => {
-      if (currentWallpaper?.path?.name) {
-        const file = new File(Paths.document, currentWallpaper.path.directory || '', currentWallpaper.path.name);
-        if (file.exists) {
-          setImage(file.uri);
-        } else {
-          setImage(null);
-        }
-      }
-      else {
-        setImage(null);
-      }
+    // Gradients render from their params in memory, so edits show up without waiting for the PNG on disk
+    const showGradient = isGradient(currentWallpaper);
+    const gradientImage = useMemo(() => {
+      if (!wallpaperGradient || !showGradient) return null;
+      // ponytail: quarter-size like the modal preview, blurred so upscaling is invisible; bump if banding shows
+      const rendered = generateMeshGradient(wallpaperGradient.colors, wallpaperGradient.seed, Math.round(GRADIENT_WIDTH / 4), GRADIENT_HEIGHT / 4);
+      return rendered ? `data:image/png;base64,${rendered.encodeToBase64()}` : null;
+    }, [showGradient, wallpaperGradient]);
+
+    const fileImage = useMemo(() => {
+      if (!currentWallpaper?.path?.name) return null;
+      const file = new File(Paths.document, currentWallpaper.path.directory || '', currentWallpaper.path.name);
+      return file.exists ? file.uri : null;
     }, [currentWallpaper]);
+
+    const image = gradientImage ?? fileImage;
 
     return (
       <MaskedView

@@ -613,11 +613,15 @@ export class AccountManager {
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
+        // Expected while the manager is published before its first refresh.
         if (!client) {
-          error("Client ID missing");
+          if (options.fallback) {
+            return await callFallback();
+          }
+          throw new Error(`Client ${options.clientId} is not available yet`);
         }
         if (!client.capabilities.includes(capability)) {
-          error(
+          throw error(
             "Capability " +
               capability +
               " not supported by client " +
@@ -836,8 +840,11 @@ export const initializeAccountManager = async (
     }
 
     await manager.refreshAllAccounts();
-    globalManager = manager;
-    notifyManagerListeners(manager);
+    // A newer initialization for another account may have taken over while this
+    // one was refreshing; publishing now would hand screens the stale account.
+    if (globalManager === manager) {
+      notifyManagerListeners(manager);
+    }
     return manager;
   })();
 
