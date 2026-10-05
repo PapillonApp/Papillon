@@ -4,11 +4,13 @@ import { FlashList } from "@shopify/flash-list";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Animation } from "../utils/Animation";
 import { useDragSafePress } from "../utils/useDragSafePress";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Typography from "./Typography";
+import { SAFE_HORIZONTAL_EDGES } from "../components/SafeHorizontalView";
 
 type MarkerProps = {
   children?: React.ReactNode;
@@ -290,6 +292,9 @@ const List = ({
   animated = false,
   gap = 12,
   numColumns = 1,
+  // When set, cells get this horizontal padding plus the left/right safe area,
+  // applied natively so it follows window resizes without a JS re-render.
+  safeHorizontalPadding,
   ...rest
 }) => {
   const theme = useTheme();
@@ -642,18 +647,39 @@ const List = ({
       }
       data={data}
       keyExtractor={keyExtractor}
-      renderItem={item => (
-        <View
-          style={[
-            numColumns > 1 && {
-              paddingLeft: item.index % numColumns > 0 ? gap / 2 : 0,
-              paddingRight: item.index % numColumns < numColumns - 1 ? gap / 2 : 0,
-            },
-          ]}
-        >
-          {renderItem(item)}
-        </View>
-      )}
+      renderItem={item => {
+        const isFirstColumn = item.index % numColumns === 0;
+        const isLastColumn = item.index % numColumns === numColumns - 1;
+        const innerPadding = numColumns > 1 ? gap / 2 : 0;
+
+        if (safeHorizontalPadding !== undefined) {
+          return (
+            <SafeAreaView
+              edges={{
+                left: isFirstColumn ? SAFE_HORIZONTAL_EDGES.left : "off",
+                right: isLastColumn ? SAFE_HORIZONTAL_EDGES.right : "off",
+              }}
+              style={{
+                paddingLeft: isFirstColumn ? safeHorizontalPadding : innerPadding,
+                paddingRight: isLastColumn ? safeHorizontalPadding : innerPadding,
+              }}
+            >
+              {renderItem(item)}
+            </SafeAreaView>
+          );
+        }
+
+        return (
+          <View
+            style={{
+              paddingLeft: isFirstColumn ? 0 : innerPadding,
+              paddingRight: isLastColumn ? 0 : innerPadding,
+            }}
+          >
+            {renderItem(item)}
+          </View>
+        );
+      }}
       {...rest}
       removeClippedSubviews={removeClippedSubviews}
       initialNumToRender={initialNumToRender}

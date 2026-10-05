@@ -21,17 +21,17 @@ import TypographyLegacy from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
+import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { trackOptionalEvent } from "@/utils/logger/analytics";
 
 import packagejson from "../../package.json"
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import List, { ListTouchable } from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SettingsIndex() {
-  const safePadding = useSafeHorizontalPadding(16);
   const router = useRouter();
   const navigation = useNavigation();
 
@@ -231,7 +231,7 @@ export default function SettingsIndex() {
         router.navigate("/(settings)/accounts")
       }
     },
-    {
+    ...(MAGIC_AVAILABLE ? [{
       icon: <Papicons name={"Sparkles"} />,
       title: "Magic+",
       description: t('Settings_MagicPlus_Description_Card'),
@@ -239,7 +239,7 @@ export default function SettingsIndex() {
       onPress: () => {
         router.navigate("/(settings)/magic")
       }
-    }
+    }] : []),
   ]
 
   const RenderBigButtons = useCallback(() => {
@@ -307,8 +307,10 @@ export default function SettingsIndex() {
         style={{ flex: 1, backgroundColor: colors.overground }}
         contentInsetAdjustmentBehavior="automatic"
         gap={12}
+        safeHorizontalPadding={16}
         ListHeaderComponent={(
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{ marginVertical: 16, gap: 4 }}
           >
             <Stack
@@ -337,9 +339,9 @@ export default function SettingsIndex() {
             </Stack>
             <RenderBigButtons
             />
-          </View>
+          </SafeHorizontalView>
         )}
-        contentContainerStyle={{ padding: 16, ...safePadding, paddingBottom: insets.bottom, paddingTop: finalHeaderHeight }}
+        contentContainerStyle={{ paddingBottom: insets.bottom, paddingTop: finalHeaderHeight }}
       >
         {MoreSettingsList.map(section => (
           <List.Section key={section.title}>

@@ -2,17 +2,15 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import React from "react";
 import { Platform, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import WebView from "react-native-webview";
 
 import { Dynamic } from "@/ui/components/Dynamic";
 import Typography from "@/ui/new/Typography";
 import AndroidBackButton from "@/utils/theme/AndroidBackButton";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function OnboardingWebView({ webViewRef, ...props }: React.ComponentProps<typeof WebView>) {
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(16);
   const { colors } = useTheme();
 
   const [currentUrl, setCurrentUrl] = React.useState<string>(props.source.uri || "");
@@ -44,14 +42,15 @@ export default function OnboardingWebView({ webViewRef, ...props }: React.Compon
         flexDirection: "column",
       }}
     >
-      {Platform.OS === 'android' && (<View style={{
+      {Platform.OS === 'android' && (<SafeAreaView mode="margin" edges={{ left: "additive" }} style={{
         position: "absolute",
-        left: safePadding.paddingLeft,
+        left: 0,
+        marginLeft: 16,
         top: finalHeaderHeight + 11,
         zIndex: 200000,
       }}>
         <AndroidBackButton />
-      </View>)}
+      </SafeAreaView>)}
 
       <View
         style={{
@@ -111,7 +110,7 @@ export default function OnboardingWebView({ webViewRef, ...props }: React.Compon
         )}
       </View>
 
-      <View style={{ flex: 1, paddingLeft: insets.left, paddingRight: insets.right }}>
+      <SafeAreaView edges={["left", "right"]} style={{ flex: 1 }}>
       <WebView
         style={{
           flex: 1,
@@ -145,7 +144,7 @@ export default function OnboardingWebView({ webViewRef, ...props }: React.Compon
         }}
         ref={webViewRef}
       />
-      </View>
+      </SafeAreaView>
     </View>
   )
 }

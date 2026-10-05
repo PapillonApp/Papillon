@@ -1,5 +1,5 @@
 import React from 'react';
-import { InteractionManager, ViewStyle } from 'react-native';
+import { ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -38,11 +38,11 @@ const Ripple: React.FC<RippleProps> = ({
   const containerScale = useSharedValue(1);
 
   const handleTap = () => {
-    // InteractionManager ensures the JS thread is clear 
-    // and animations have finished before navigating
-    InteractionManager.runAfterInteractions(() => {
+    // Wait for the JS thread to be idle (capped by the timeout) so the
+    // ripple can start before navigating
+    requestIdleCallback(() => {
       onTap?.();
-    });
+    }, { timeout: 250 });
   };
 
   const gesture = Gesture.Tap()

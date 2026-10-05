@@ -1,5 +1,4 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuAction, MenuView } from '@react-native-menu/menu';
 import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React from "react";
@@ -11,7 +10,7 @@ import { Dynamic } from "./Dynamic";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
-import ActionMenu from "./ActionMenu";
+import ActionMenu, { MenuAction } from "./ActionMenu";
 
 const ChipButton: React.FC<React.PropsWithChildren<{
   onPress?: () => void;

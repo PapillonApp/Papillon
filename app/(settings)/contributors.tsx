@@ -9,7 +9,6 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { Contributor, getContributors } from "@/utils/github/contributors";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { useTheme } from "expo-router/react-navigation";
 
 const TEAM_LOGINS = [
@@ -22,7 +21,6 @@ const TEAM_LOGINS = [
 ];
 
 export default function SettingsContributors() {
-  const safePadding = useSafeHorizontalPadding(16);
   const { colors } = useTheme();
   const [contributors, setContributors] = useState<Contributor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,7 +73,8 @@ export default function SettingsContributors() {
   return (
     <List
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ padding: 16, ...safePadding, gap: 12 }}
+      safeHorizontalPadding={16}
+      contentContainerStyle={{ paddingVertical: 16, gap: 12 }}
       style={{ flex: 1, backgroundColor: colors.overground }}
     >
       {isLoading && (

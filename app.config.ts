@@ -105,7 +105,6 @@ export default {
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
-      "expo-ios-scene-lifecycle-plugin",
       "expo-router",
       "expo-status-bar",
       "expo-font",
@@ -135,14 +134,6 @@ export default {
         },
       ],
       "expo-web-browser",
-      [
-        "react-native-fast-tflite",
-        {
-          enableCoreMLDelegate: true,
-          enableAndroidGpuLibraries: true,
-        },
-      ],
-      "react-native-bottom-tabs",
       "expo-secure-store",
       [
         "expo-location",
@@ -174,6 +165,7 @@ export default {
               { name: "SDWebImageSVGCoder", modular_headers: true },
             ],
             buildReactNativeFromSource: false,
+            ccacheEnabled: true,
           },
         },
       ],

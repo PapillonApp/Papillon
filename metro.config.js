@@ -17,7 +17,7 @@ const nestedSvgModules = [
 
 const escapePath = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-config.resolver.assetExts.push("tflite", "json", "txt");
+config.resolver.assetExts.push("json", "txt");
 config.resolver.blockList = exclusionList(
   nestedSvgModules.map((modulePath) => new RegExp(`${escapePath(modulePath)}\\/.*`)),
 );

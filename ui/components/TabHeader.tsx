@@ -4,7 +4,7 @@ import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect } from 'react';
 import { Platform, useWindowDimensions, View } from 'react-native';
 import Reanimated from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { runsIOS26 } from '../utils/IsLiquidGlass';
 import { TabHeaderTitleProps } from './TabHeaderTitle';
@@ -82,14 +82,15 @@ const TabHeader: React.FC<TabHeaderProps> = ({
         )}
       </Reanimated.View>
 
-      <View
+      <SafeAreaView
+        edges={['left', 'right']}
         style={{
           paddingTop: usedInsets + 4,
           paddingBottom: 16,
           position: 'absolute',
           top: 0,
-          left: insets.left,
-          right: insets.right,
+          left: 0,
+          right: 0,
           zIndex: 1001,
           gap: 10,
           alignItems: 'center',
@@ -158,7 +159,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
         >
           {!isLarge && bottom}
         </View>
-      </View>
+      </SafeAreaView>
     </>
   )
 };

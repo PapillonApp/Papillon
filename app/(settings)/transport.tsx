@@ -14,10 +14,8 @@ import { AddressModal } from "@/app/(modals)/address";
 import { TransportAddress } from "@/stores/account/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 export default function TransportView() {
-  const safePadding = useSafeHorizontalPadding(20);
   const accountStore = useAccountStore();
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
@@ -61,10 +59,10 @@ export default function TransportView() {
   return (
     <List
       style={{ flex: 1, backgroundColor: theme.colors.overground }}
+      safeHorizontalPadding={20}
       contentContainerStyle={{
-        padding: 20,
-        ...safePadding,
         paddingTop: 16,
+        paddingBottom: 20,
       }}
       contentInsetAdjustmentBehavior="automatic"
     >

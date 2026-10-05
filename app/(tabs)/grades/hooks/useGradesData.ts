@@ -180,6 +180,8 @@ export function useGradesData(
 
   const handleManager = useCallback((manager: AccountManager) => {
     if (!period) { return; }
+    // A new manager notification means fresher data than the cached-fallback read.
+    cacheRef.current.clear();
     fetchGrades(manager, period);
   }, [fetchGrades, period]);
 

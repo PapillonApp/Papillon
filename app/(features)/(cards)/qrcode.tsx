@@ -19,7 +19,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export default function QRCodePage() {
 
@@ -29,7 +29,6 @@ export default function QRCodePage() {
   const service = Number(search.service || Services.TURBOSELF);
 
   const { t } = useTranslation();
-  const safePadding = useSafeHorizontalPadding(20);
 
   const translationY = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -71,56 +70,62 @@ export default function QRCodePage() {
           entering={ZoomInDown.springify()}
           style={{
             flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 20,
             transform: [{ translateY: translationY }, { scale: scale }],
             opacity: opacity,
-            padding: 20,
-            ...safePadding,
+            paddingVertical: 20,
           }}
         >
-          <Reanimated.View
+          <SafeHorizontalView
+            base={20}
             style={{
-              aspectRatio: 1,
-              width: "100%",
-              backgroundColor: "#FFF",
-              position: "relative",
+              flex: 1,
               justifyContent: "center",
               alignItems: "center",
-              shadowRadius: 20,
-              shadowColor: "#000",
-              shadowOpacity: 0.3,
-              borderRadius: 25,
+              gap: 20,
             }}
-            entering={FlipInEasyX.springify().delay(100)}
           >
-            {type === "QR" ? (
-              <QRCode
-                value={qr}
-                size={Dimensions.get("window").width * 0.8}
-                backgroundColor={"transparent"}
-                color={"#000"}
-              />
-            ) : (
-              <Barcode
-                value={qr}
-                format={type as Format}
-                background={"transparent"}
-              />
-            )}
-          </Reanimated.View>
+            <Reanimated.View
+              style={{
+                aspectRatio: 1,
+                width: "100%",
+                backgroundColor: "#FFF",
+                position: "relative",
+                justifyContent: "center",
+                alignItems: "center",
+                shadowRadius: 20,
+                shadowColor: "#000",
+                shadowOpacity: 0.3,
+                borderRadius: 25,
+              }}
+              entering={FlipInEasyX.springify().delay(100)}
+            >
+              {type === "QR" ? (
+                <QRCode
+                  value={qr}
+                  size={Dimensions.get("window").width * 0.8}
+                  backgroundColor={"transparent"}
+                  color={"#000"}
+                />
+              ) : (
+                <Barcode
+                  value={qr}
+                  format={type as Format}
+                  background={"transparent"}
+                />
+              )}
+            </Reanimated.View>
 
-          <Stack
-            style={{ width: 240 }}
-            hAlign="center"
-          >
-            <Phone fill={"#FFFFFF"} />
-            <Typography variant="body2"
-              align="center"
-              color="#FFFFFF"
-            >{t("Profile_Cards_Scan_Orientation")}</Typography>
-          </Stack>
+            <Stack
+              style={{ width: 240 }}
+              hAlign="center"
+            >
+              <Phone fill={"#FFFFFF"} />
+              <Typography variant="body2"
+                align="center"
+                color="#FFFFFF"
+              >{t("Profile_Cards_Scan_Orientation")}</Typography>
+            </Stack>
+          </SafeHorizontalView>
         </Reanimated.View>
         <OnboardingBackButton icon={"Cross"}
           position={"right"}
