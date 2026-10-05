@@ -11,7 +11,7 @@ import { useMemo } from "react";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 import Picker from "@/ui/components/Picker";
 import { useTheme } from "expo-router/react-navigation";
-import { COURSE_LIVE_ACTIVITY_SUPPORTED } from "@/widgets/course";
+import { COURSE_LIVE_ACTIVITY_SUPPORTED } from "@/utils/widgets/courseLiveActivity";
 
 export default function SettingsFeatures() {
   const { t } = useTranslation();

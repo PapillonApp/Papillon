@@ -4,37 +4,20 @@ import { useTranslation } from "react-i18next";
 import { AppState } from "react-native";
 
 import { useTimetableWidgetData } from "@/app/(tabs)/index/hooks/useTimetableWidgetData";
-import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
+import { Course as SharedCourse } from "@/services/shared/timetable";
 import { useSettingsStore } from "@/stores/settings";
 import { warn } from "@/utils/logger/logger";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
+import { LEAD_TIME_MS, nextPlanTransition, planCourseActivities } from "./courseLiveActivityPlan";
+
 export type CourseLiveActivityPreviewMode = "upcoming" | "ongoing";
 
 export const COURSE_LIVE_ACTIVITY_SUPPORTED = PapillonKit.features.liveActivities;
 
-const LEAD_TIME_MS = 15 * 60 * 1000;
 const MAX_TRANSITION_DELAY_MS = 30 * 60 * 1000;
-
-const isEligible = (course: SharedCourse) => course.status !== CourseStatus.CANCELED;
-
-const selectCourse = (courses: SharedCourse[], now: number): SharedCourse | null => {
-  const eligible = courses.filter(isEligible).sort((a, b) => a.from.getTime() - b.from.getTime());
-  return (
-    eligible.find(course => course.from.getTime() <= now && course.to.getTime() > now) ??
-    eligible.find(course => course.from.getTime() > now && course.from.getTime() - now <= LEAD_TIME_MS) ??
-    null
-  );
-};
-
-const nextTransition = (courses: SharedCourse[], now: number): number | null =>
-  courses
-    .filter(isEligible)
-    .flatMap(course => [course.from.getTime() - LEAD_TIME_MS, course.from.getTime(), course.to.getTime()])
-    .filter(moment => moment > now)
-    .sort((a, b) => a - b)[0] ?? null;
 
 const toActivity = (course: SharedCourse, bounds: { from: Date; to: Date } = course) => ({
   id: course.id,
@@ -51,9 +34,7 @@ const toActivity = (course: SharedCourse, bounds: { from: Date; to: Date } = cou
 // together would otherwise both see "nothing running yet" and start an activity.
 let pending: Promise<void> = Promise.resolve();
 
-const present = (course: ReturnType<typeof toActivity> | null): Promise<void> => {
-  const work = () =>
-    course ? PapillonKit.widgets.showCourseActivity(course) : PapillonKit.widgets.endCourseActivities();
+const enqueue = (work: () => Promise<void>): Promise<void> => {
   pending = pending.then(work, work);
   return pending;
 };
@@ -68,11 +49,12 @@ export const previewCourseLiveActivity = (course: SharedCourse, mode: CourseLive
   const duration = scheduled > 0 ? scheduled : PREVIEW_FALLBACK_DURATION_MS;
   const from = new Date(mode === "ongoing" ? now - PREVIEW_ELAPSED_MS : now + LEAD_TIME_MS);
 
-  return present(toActivity(course, { from, to: new Date(from.getTime() + duration) }));
+  const activity = toActivity(course, { from, to: new Date(from.getTime() + duration) });
+  return enqueue(() => PapillonKit.widgets.showCourseActivity(activity));
 };
 
 export const stopCourseLiveActivity = () =>
-  present(null).catch(error => warn(`Course live activity could not be stopped: ${error}`));
+  enqueue(() => PapillonKit.widgets.endCourseActivities()).catch(error => warn(`Course live activity could not be stopped: ${error}`));
 
 const useForegroundTick = () => {
   const [tick, setTick] = useState(0);
@@ -85,9 +67,10 @@ const useForegroundTick = () => {
   return tick;
 };
 
-// Live Activities cannot be scheduled ahead without a push, so the app starts,
-// updates and ends them itself: on foreground, on data change, and on a timer
-// set to the exact moment the selected course changes.
+// Every sync hands the system the whole plan: from iOS 26 it starts the upcoming
+// courses on its own, app closed. Ending one, and starting one before iOS 26,
+// still takes the app, hence a sync on foreground, on data change, and on a
+// timer set to the next moment the plan changes.
 const useSync = () => {
   const { upcomingDays, loading } = useTimetableWidgetData({ showCancelled: true });
   const enabled = useSettingsStore(state => state.personalization.liveActivitiesEnabled ?? true);
@@ -107,10 +90,14 @@ const useSync = () => {
     }
 
     const now = Date.now();
-    const course = enabled ? selectCourse(courses, now) : null;
-    present(course && toActivity(course)).catch(error => warn(`Course live activity sync failed: ${error}`));
+    const plan = enabled
+      ? planCourseActivities(courses, now).map(({ course, startAt }) => ({ ...toActivity(course), startAt }))
+      : [];
+    enqueue(() => PapillonKit.widgets.syncCourseActivities(plan)).catch(error =>
+      warn(`Course live activity sync failed: ${error}`)
+    );
 
-    const next = enabled ? nextTransition(courses, now) : null;
+    const next = enabled ? nextPlanTransition(courses, now) : null;
     if (next === null) {
       return;
     }
