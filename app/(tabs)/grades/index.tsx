@@ -3,8 +3,7 @@ import { Link, Stack, useTheme } from 'expo-router';
 import { t } from 'i18next';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { useFont } from '@/utils/theme/fonts';
-import { FlatList, Platform, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { FlatList, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import i18n from '@/utils/i18n';
 import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
 import { useSettingsStore } from '@/stores/settings';
@@ -67,10 +66,10 @@ const sortSubjects = (subjects: Subject[], method: SortMethod): Subject[] => {
 };
 
 const GradesView = () => {
-  const papillonFont = useFont();
   const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
   const theme = useTheme();
   const resize = useResizable();
+  const { width: screenWidth } = useWindowDimensions();
 
   const { periods, currentPeriod, setCurrentPeriod, refresh: refreshPeriods, loading: loadingPeriods, error: periodsError, failures: periodsFailures } = usePeriodsData();
   const { subjects, history, averages, isAverageServiceProvided, refresh: refreshGrades, loading: loadingGrades, error: gradesError, failures: gradesFailures } = useGradesData(currentPeriod);
@@ -182,8 +181,12 @@ const GradesView = () => {
         </Stack.Toolbar>
       )}
 
-      <Stack.Title style={{ fontFamily: papillonFont('semibold'), fontSize: 17 }}>
-        {currentPeriod ? periodTitle(currentPeriod) : t('Tab_Grades')}
+      <Stack.Title asChild>
+        <View style={[styles.titleContainer, { width: screenWidth - (isAndroid ? 72 : 140) }]}>
+          <Typography variant="header" weight="semibold" numberOfLines={1}>
+            {currentPeriod ? periodTitle(currentPeriod) : t('Tab_Grades')}
+          </Typography>
+        </View>
       </Stack.Title>
 
       {isAndroid ? (
@@ -355,5 +358,18 @@ const GradesView = () => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    height: 44,
+    // Android headers align their title to the leading edge; iOS centers it.
+    alignItems: isAndroid ? 'flex-start' : 'center',
+    paddingHorizontal: isAndroid ? 10 : 0,
+    justifyContent: 'center',
+  },
+  titleSubtitle: {
+    marginTop: -2,
+  },
+});
 
 export default GradesView;
