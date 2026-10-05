@@ -128,6 +128,7 @@ export default function AttendanceView() {
                     }
 
                     const manager = getManager()
+                    if (!manager) return;
                     const attendancesFetched = await manager.getAttendanceForPeriod(selectedPeriod.name)
 
                     setAttendances(attendancesFetched)

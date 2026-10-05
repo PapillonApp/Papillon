@@ -32,6 +32,9 @@ LogBox.ignoreLogs([
   "Manager is null, skipping timetable fetch",
   "Installing bindings...",
   "Successfully installed!",
+  "The action 'PRELOAD' with payload",
+  "DrawerLayoutAndroid is deprecated",
+  "cannot calculate shadow efficiently",
 ]);
 
 export default function RootLayout() {

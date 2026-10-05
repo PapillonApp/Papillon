@@ -97,7 +97,7 @@ export default {
         monochromeImage: "./assets/images/monochrome-icon.png",
       },
       supportsTablet: true,
-      predictiveBackGestureEnabled: true,
+      predictiveBackGestureEnabled: false,
     },
     web: {
       bundler: "metro",

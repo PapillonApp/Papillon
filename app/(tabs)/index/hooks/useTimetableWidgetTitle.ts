@@ -1,4 +1,4 @@
-import { formatDistanceToNowStrict } from "date-fns";
+import { formatDistanceStrict } from "date-fns";
 import * as DateLocale from "date-fns/locale";
 import { t } from "i18next";
 import { useMemo } from "react";
@@ -31,7 +31,7 @@ export const useTimetableWidgetTitle = (courses: SharedCourse[]) =>
       return t("Tomorrow");
     }
 
-    const distance = formatDistanceToNowStrict(nextCourseDay, {
+    const distance = formatDistanceStrict(nextCourseDay, today, {
       addSuffix: true,
       unit: "day",
       locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS

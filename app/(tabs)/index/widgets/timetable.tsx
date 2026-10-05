@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { differenceInCalendarDays, formatDistanceToNowStrict, startOfDay } from "date-fns";
+import { differenceInCalendarDays, formatDistanceStrict, startOfDay } from "date-fns";
 import { t } from "i18next";
 import React from 'react';
 import { FlatList } from "react-native";
@@ -24,7 +24,7 @@ function getRelativeDayStatus(date: Date): string | null {
     return t("Tomorrow");
   }
 
-  const distance = formatDistanceToNowStrict(startOfDay(date), {
+  const distance = formatDistanceStrict(startOfDay(date), startOfDay(new Date()), {
     addSuffix: true,
     unit: "day",
     locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,

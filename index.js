@@ -6,6 +6,12 @@ const SILENCED_LOG_PATTERNS = [
   "Linking found multiple possible URI schemes",
   "You must pass your PostHog project's api key",
   "i18next is made possible by our own product, Locize",
+  // expo-router 58 preview bug: native tabs preload, router rejects it. Dev-only.
+  "The action 'PRELOAD' with payload",
+  // From react-native-gesture-handler's legacy exports, not our code.
+  "DrawerLayoutAndroid is deprecated",
+  // Fabric perf advice on translucent shadowed views, not actionable per-view.
+  "cannot calculate shadow efficiently",
 ];
 
 const shouldSilence = (args) =>

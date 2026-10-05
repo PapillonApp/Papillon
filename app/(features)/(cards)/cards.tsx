@@ -1,4 +1,5 @@
-import { getManager } from "@/services/shared";
+import { useManagerSubscription } from "@/hooks/useManagerSubscription";
+import type { AccountManager } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
@@ -20,7 +21,7 @@ import {
 import { Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Platform, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -32,20 +33,13 @@ export default function QRCodeAndCardsPage() {
 
   const account = accounts.find(a => a.id === lastUsedAccount);
 
-  async function fetchWallets() {
-    const manager = getManager();
-    const balances = await manager.getCanteenBalances();
-    const result: Balance[] = [];
-    for (const balance of balances) {
-      result.push(balance);
-    }
-    setWallets(result);
-  }
-
-  useEffect(() => {
+  // Re-subscribes when accounts change; fires as soon as the manager is ready.
+  const fetchWallets = useCallback(async (manager: AccountManager) => {
     setWallets([]);
-    fetchWallets();
+    setWallets(await manager.getCanteenBalances());
   }, [accounts]);
+
+  useManagerSubscription(fetchWallets);
 
   const { t } = useTranslation();
 
