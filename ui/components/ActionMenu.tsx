@@ -10,6 +10,7 @@ import {
   LayoutRectangle,
   Dimensions,
   ColorValue,
+  Image,
 } from "react-native";
 import { useTheme } from "expo-router/react-navigation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -43,6 +44,8 @@ export type MenuAction = {
   /** SF Symbol name (iOS). */
   image?: string;
   imageColor?: number | ColorValue;
+  /** Local image file URI, shown instead of `image`/`papicon` (e.g. an account avatar). */
+  imageUri?: string;
   /** Papicons icon name, rendered by the Android menu. */
   papicon?: string;
   subactions?: MenuAction[];
@@ -89,7 +92,7 @@ function renderExpoActions(
     ];
 
     if (action.state === "on" || action.state === "off") {
-      if (action.subtitle) {
+      if (action.subtitle || action.imageUri) {
         return (
           <ExpoToggle
             key={id}
@@ -97,8 +100,9 @@ function renderExpoActions(
             onIsOnChange={() => onPress(id)}
             modifiers={imageColor ? [...mods, tint(imageColor)] : mods}
           >
+            {action.imageUri ? <ExpoImage uiImage={action.imageUri} /> : null}
             <ExpoText>{action.title}</ExpoText>
-            <ExpoText>{action.subtitle}</ExpoText>
+            {action.subtitle ? <ExpoText>{action.subtitle}</ExpoText> : null}
           </ExpoToggle>
         );
       }
@@ -166,7 +170,9 @@ function MenuItem({
         <Stack direction="horizontal" hAlign="center" vAlign="center" gap={12} style={[styles.item, isOn && {
           backgroundColor: theme.colors.tint + "20",
         }]}>
-          {action.papicon ? (
+          {action.imageUri ? (
+            <Image source={{ uri: action.imageUri }} style={styles.itemImage} />
+          ) : action.papicon ? (
             <Papicons name={action.papicon } color={(isOn && !hasSubactions) ? theme.colors.tint : colorText} size={22} />
           ) : null}
           <View style={styles.itemContent}>
@@ -544,6 +550,11 @@ const styles = StyleSheet.create({
   },
   itemSelected: {
     backgroundColor: "rgba(0,102,204,0.12)",
+  },
+  itemImage: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
   },
   itemContent: {
     flex: 1,

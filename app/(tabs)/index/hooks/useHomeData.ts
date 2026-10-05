@@ -56,7 +56,7 @@ export const useHomeData = () => {
     }
   }, []);
 
-  const initialize = useCallback(async () => {
+  const initialize = useCallback(async (force = false) => {
     if (!lastUsedAccount) {
       return;
     }
@@ -87,7 +87,7 @@ export const useHomeData = () => {
       return;
     }
 
-    if (Date.now() - (lastHomeSync.get(lastUsedAccount) ?? 0) < HOME_SYNC_TTL_MS) {
+    if (!force && Date.now() - (lastHomeSync.get(lastUsedAccount) ?? 0) < HOME_SYNC_TTL_MS) {
       return;
     }
 
@@ -229,5 +229,7 @@ export const useHomeData = () => {
     initialize();
   }, [initialize]);
 
-  return { syncing };
+  const refresh = useCallback(() => initialize(true), [initialize]);
+
+  return { syncing, refresh };
 };

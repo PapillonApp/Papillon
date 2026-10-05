@@ -3,7 +3,7 @@ import { useIsFocused } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
-import { FlatList, Image, Platform, StatusBar, View } from 'react-native';
+import { FlatList, Image, Platform, RefreshControl, StatusBar, View } from 'react-native';
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -36,6 +36,7 @@ import { ListTouchable } from '@/ui/new/List';
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   const bottomTabBarHeight = insets.bottom + 16;
+  const topBarHeight = insets.top + 56 + (insets.right > 10 ? 10 : 0);
   const focused = useIsFocused();
 
   // Account
@@ -88,12 +89,24 @@ const HomeScreen = () => {
     }
   }, [account?.id, recordTeamModalHomeLaunch, router]);
 
-  const { syncing } = useHomeData();
+  const { syncing, refresh } = useHomeData();
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
 
   const { currentPeriod } = usePeriodsData();
-  const { grades, history, averages } = useGradesData(currentPeriod);
+  const { grades, history, averages, refresh: refreshGrades } = useGradesData(currentPeriod);
+
+  const [refreshing, setRefreshing] = React.useState(false);
+  const handleRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refresh();
+      // The grades widget keeps its own cache, the timetable reads the database.
+      await refreshGrades();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refresh, refreshGrades]);
   const gradesWidgetHidden = grades.length === 0;
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget courses={courses} />, [courses]);
@@ -195,6 +208,7 @@ const HomeScreen = () => {
           keyExtractor={(item) => item.title}
           ListHeaderComponent={<HomeHeader />}
           style={{ flex: 1 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#fff" progressViewOffset={topBarHeight} />}
           contentContainerStyle={{
             paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 16,
             flexGrow: 1,

@@ -1,5 +1,4 @@
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
-import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
 import { Platform, View } from 'react-native';
@@ -17,7 +16,6 @@ const WALLPAPER_TIP_STYLE = { bottom: 0, left: 0, right: 0 } as const;
 
 const HomeTopBar = ({ height = 56, loading }: { height?: number, loading?: boolean }) => {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
 
   return (
     <>
@@ -82,7 +80,6 @@ const HomeTopBar = ({ height = 56, loading }: { height?: number, loading?: boole
               <HomeTopBarButton
                 icon="palette"
                 route="/(modals)/wallpaper"
-                onPress={() => router.push("/(modals)/wallpaper")}
               />
               <Tip
                 tipId={TipIds.homeWallpaper}
@@ -96,7 +93,6 @@ const HomeTopBar = ({ height = 56, loading }: { height?: number, loading?: boole
             <HomeTopBarButton
               icon="gears"
               route="/(settings)/settings"
-              onPress={() => router.push("/(settings)/settings")}
             />
           </Stack>
         </View>

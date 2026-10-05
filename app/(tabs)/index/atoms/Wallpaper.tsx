@@ -5,6 +5,7 @@ import { Image, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { useSettingsStore } from '@/stores/settings';
+import { applyGradientWallpaper, randomGradient } from '@/utils/gradientWallpaper';
 
 const Wallpaper = ({ height = 400, dim = true }) => {
   try {
@@ -12,6 +13,11 @@ const Wallpaper = ({ height = 400, dim = true }) => {
     const currentWallpaper = settingsStore.wallpaper;
 
     const [image, setImage] = useState<string | null>(null);
+
+    // No wallpaper yet (first launch, or cleared): default to a random gradient
+    useEffect(() => {
+      if (!currentWallpaper) applyGradientWallpaper(randomGradient());
+    }, [currentWallpaper]);
 
     useEffect(() => {
       if (currentWallpaper?.path?.name) {

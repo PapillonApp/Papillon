@@ -1,5 +1,4 @@
 import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
-import { router } from 'expo-router';
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,9 +59,6 @@ const HomeHeader = () => {
       description: availableCanteenCards.length > 0 ?
         (availableCanteenCards.length > 1 ? t("Home_Cards_Button_Description_Number", { number: availableCanteenCards.length }) :
           t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None"),
-      onPress: () => {
-        router.push("/(features)/(cards)/cards");
-      },
       route: "/(features)/(cards)/cards"
     },
     {
@@ -71,9 +67,6 @@ const HomeHeader = () => {
       icon: "cutlery",
       color: "#46c700",
       description: t("Home_Menu_Button_Description"),
-      onPress: () => {
-        router.push("/(features)/soon");
-      },
       route: "/(features)/soon"
     },
     {
@@ -84,20 +77,6 @@ const HomeHeader = () => {
       description: absencesCount > 0 ?
         (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular"))
         : t("Home_Attendance_Button_Description_None"),
-      onPress: () => {
-        if (!currentAttendancePeriod) {
-          return;
-        }
-
-        router.push({
-          pathname: "/(features)/attendance",
-          params: {
-            periods: JSON.stringify(attendancesPeriods),
-            currentPeriod: JSON.stringify(currentAttendancePeriod),
-            attendances: JSON.stringify(attendances),
-          },
-        });
-      },
       route: "/(features)/attendance",
       params: {
         periods: JSON.stringify(attendancesPeriods),
@@ -111,9 +90,6 @@ const HomeHeader = () => {
       icon: "newspaper",
       color: "#0080ff",
       description: news[0]?.title ?? t("News_Empty_Title"),
-      onPress: () => {
-        router.push("/(features)/(news)/news");
-      },
       route: "/(features)/(news)/news"
     }
   ], [availableCanteenCards, absencesCount, news, currentAttendancePeriod, attendancesPeriods, attendances, t]);

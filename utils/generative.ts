@@ -1,4 +1,5 @@
-import { BlurStyle, matchFont, SkCanvas, SkImage, Skia, SkTypeface, TileMode } from "@shopify/react-native-skia";
+import { BlurStyle, ClipOp, matchFont, SkCanvas, SkImage, Skia, SkTypeface, TileMode } from "@shopify/react-native-skia";
+import { Directory, File, Paths } from "expo-file-system";
 import { Image, Platform } from "react-native";
 
 // mulberry32: same seed gives the same layout, so a small preview matches the full render
@@ -59,6 +60,42 @@ export function generateAvatar(name = ""): string {
     return image?.encodeToBase64() ?? "";
   } catch {
     return "";
+  }
+}
+
+/** Circular copy of a base64 picture as a cached PNG file URI, for native menus (they only load files and can't clip). */
+export function menuAvatarURI(id: string, base64?: string, size = 72): string | undefined {
+  try {
+    if (!base64) return undefined;
+    // Name depends on the picture: native images only reload when the URI changes
+    let hash = 0;
+    for (let i = 0; i < base64.length; i++) hash = (Math.imul(hash, 31) + base64.charCodeAt(i)) | 0;
+    const directory = new Directory(Paths.cache, "menu-avatars");
+    if (!directory.exists) directory.create();
+    const file = new File(directory, `${id}-${(hash >>> 0).toString(36)}.png`);
+    if (file.exists) return file.uri;
+
+    const source = Skia.Image.MakeImageFromEncoded(Skia.Data.fromBase64(base64));
+    if (!source) return undefined;
+    const image = render(size, size, canvas => {
+      canvas.clipRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, size, size), size / 2, size / 2), ClipOp.Intersect, true);
+      // Center-crop to a square, like the Avatar component's "cover"
+      const side = Math.min(source.width(), source.height());
+      canvas.drawImageRect(
+        source,
+        Skia.XYWHRect((source.width() - side) / 2, (source.height() - side) / 2, side, side),
+        Skia.XYWHRect(0, 0, size, size),
+        Skia.Paint(),
+      );
+    });
+    if (!image) return undefined;
+    for (const entry of directory.list()) {
+      if (entry instanceof File && entry.name.startsWith(`${id}-`)) entry.delete();
+    }
+    file.writeSync(image.encodeToBytes());
+    return file.uri;
+  } catch {
+    return undefined;
   }
 }
 

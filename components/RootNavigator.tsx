@@ -95,7 +95,7 @@ function RootNavigatorContent() {
             sheetGrabberVisible: false,
             sheetAllowedDetents: [0.5, 1],
             headerLargeTitle: false,
-            sheetLargestUndimmedDetentIndex: 0,
+            sheetLargestUndimmedDetentIndex: "none",
             headerTransparent: Platform.OS === "ios",
             headerTitle: t("Modal_Wallpaper_Title"),
             contentStyle: {

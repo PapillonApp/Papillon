@@ -21,17 +21,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import NativeSegmentedControl from "@/ui/native/NativeSegmentedControl"
 import { generateMeshGradient } from "@/utils/generative"
+import { applyGradientWallpaper, Gradient, GRADIENT_HEIGHT, GRADIENT_PALETTE, GRADIENT_WIDTH, isGradient, randomGradient, randomSeed } from "@/utils/gradientWallpaper"
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
 
-const GRADIENT_PALETTE = [
-  "#DD007D", "#FF6B6B", "#FF9F43", "#E8B048", "#26B290", "#1DD1A1",
-  "#48B7E8", "#2E86DE", "#5F27CD", "#C400DD", "#222F3E", "#F5F6FA",
-];
-const DEFAULT_GRADIENT_COLORS = ["#48B7E8", "#5F27CD", "#DD007D"];
-// Home shows the wallpaper full width and 400pt tall (cover): match that ratio so the preview is what gets applied
-const GRADIENT_HEIGHT = 800;
-const GRADIENT_WIDTH = Math.round(GRADIENT_HEIGHT * Dimensions.get("window").width / 400);
 
 interface Collection {
   name: string;
@@ -86,7 +79,7 @@ const WallpaperModal = () => {
 
   const flatListRef = React.useRef<FlatList>(null);
 
-  const [tab, setTab] = useState(selectedId?.startsWith("gradient:") ? 1 : 0);
+  const [tab, setTab] = useState<"gradient" | "images">(currentWallpaper && !isGradient(currentWallpaper) ? "images" : "gradient");
   const [listHeight, setListHeight] = useState(0);
   // Automatic insets break when toggling scrolling between tabs: clear the transparent iOS header ourselves
   const listTopPadding = Platform.OS === "ios" ? headerHeight : 20;
@@ -94,7 +87,7 @@ const WallpaperModal = () => {
   // Bring the selected collection into view when the list appears, not on every selection:
   // a tapped row is already visible, and the first row never needs scrolling
   useEffect(() => {
-    if (tab === 0 && collections.length > 0 && currentWallpaper) {
+    if (tab === "images" && collections.length > 0 && currentWallpaper) {
       const collectionIndex = collections.findIndex((collection) => collection.images.find((image) => image.id === currentWallpaper.id));
       if (collectionIndex > 0) {
         setTimeout(() => {
@@ -184,80 +177,36 @@ const WallpaperModal = () => {
     }
   }
 
-  const isGradient = (wallpaper?: Wallpaper) => wallpaper?.id.startsWith("gradient:") ?? false;
-
-  const applyGradient = (gradient: { colors: string[]; seed: number }) => {
-    const image = generateMeshGradient(gradient.colors, gradient.seed, GRADIENT_WIDTH, GRADIENT_HEIGHT);
-    if (!image) return;
-
-    if (!wallpaperDirectory.exists) {
-      wallpaperDirectory.create();
-    }
-
-    const id = `gradient:${Date.now()}`;
-    const file = new File(wallpaperDirectory, `${id}.png`);
-    file.writeSync(image.encodeToBytes());
-
-    // Read fresh state: this can run from a debounce timer with a stale closure
-    const { wallpaper: previous, lastImageWallpaper } = useSettingsStore.getState().personalization;
-
-    mutateProperty("personalization", {
-      wallpaper: {
-        id,
-        path: {
-          directory: wallpaperDirectory.name,
-          name: file.name
-        }
-      },
-      wallpaperGradient: gradient,
-      lastImageWallpaper: previous && !isGradient(previous) ? previous : lastImageWallpaper,
-    })
-
-    if (isGradient(previous) && previous?.path?.name) {
-      const previousFile = new File(wallpaperDirectory, previous.path.name);
-      if (previousFile.exists) previousFile.delete();
-    }
-  }
-
-  const [gradient, setGradient] = useState(() => settingsStore.wallpaperGradient ?? {
-    colors: DEFAULT_GRADIENT_COLORS,
-    seed: Math.floor(Math.random() * 1e9),
-  });
+  const [gradient, setGradient] = useState<Gradient>(() => settingsStore.wallpaperGradient ?? randomGradient());
   const applyTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const pendingGradient = useRef<{ colors: string[]; seed: number } | null>(null);
+  const pendingGradient = useRef<Gradient | null>(null);
 
   const flushGradient = () => {
     clearTimeout(applyTimeout.current);
-    if (pendingGradient.current) applyGradient(pendingGradient.current);
+    if (pendingGradient.current) applyGradientWallpaper(pendingGradient.current);
     pendingGradient.current = null;
   };
 
   // Closing the modal mid-debounce must still apply what the preview shows
   useEffect(() => () => flushGradient(), []);
 
-  const updateGradient = (next: { colors: string[]; seed: number }) => {
+  const updateGradient = (next: Gradient) => {
     setGradient(next);
     pendingGradient.current = next;
     clearTimeout(applyTimeout.current);
     applyTimeout.current = setTimeout(flushGradient, 250);
   };
 
-  const randomizeGradient = () => {
-    const shuffled = [...GRADIENT_PALETTE].sort(() => Math.random() - 0.5);
-    updateGradient({
-      colors: shuffled.slice(0, 2 + Math.floor(Math.random() * 3)),
-      seed: Math.floor(Math.random() * 1e9),
-    });
-  };
+  const randomizeGradient = () => updateGradient(randomGradient());
 
-  const shuffleGradient = () => updateGradient({ ...gradient, seed: Math.floor(Math.random() * 1e9) });
+  const shuffleGradient = () => updateGradient({ ...gradient, seed: randomSeed() });
 
-  const changeTab = (index: number) => {
-    setTab(index);
-    if (index === 1 && !isGradient(currentWallpaper)) {
-      applyGradient(gradient);
+  const changeTab = (next: "gradient" | "images") => {
+    setTab(next);
+    if (next === "gradient" && !isGradient(currentWallpaper)) {
+      applyGradientWallpaper(gradient);
     }
-    if (index === 0 && isGradient(currentWallpaper)) {
+    if (next === "images" && isGradient(currentWallpaper)) {
       clearTimeout(applyTimeout.current);
       pendingGradient.current = null;
       if (settingsStore.lastImageWallpaper) {
@@ -289,20 +238,20 @@ const WallpaperModal = () => {
       <ExpoStack.Title asChild>
         <View style={{ width: Dimensions.get("window").width - 140 }}>
           <NativeSegmentedControl
-            options={[t("Modal_Wallpaper_Tab_Images"), t("Modal_Wallpaper_Tab_Gradient")]}
-            selectedIndex={tab}
-            onChange={changeTab}
+            options={[t("Modal_Wallpaper_Tab_Gradient"), t("Modal_Wallpaper_Tab_Images")]}
+            selectedIndex={tab === "gradient" ? 0 : 1}
+            onChange={(index) => changeTab(index === 0 ? "gradient" : "images")}
           />
         </View>
       </ExpoStack.Title>
 
       <FlatList
         ref={flatListRef}
-        data={tab === 0 ? collections : []}
+        data={tab === "images" ? collections : []}
         onLayout={(e) => setListHeight(e.nativeEvent.layout.height)}
         // The gradient editor fills the visible sheet (the preview stretches), so there's nothing to scroll
-        scrollEnabled={tab === 0}
-        ListHeaderComponent={tab === 1 ? (
+        scrollEnabled={tab === "images"}
+        ListHeaderComponent={tab === "gradient" ? (
           <View
             style={{
               paddingHorizontal: 16,
@@ -371,12 +320,12 @@ const WallpaperModal = () => {
           </ExpoStack.Toolbar>
           <ExpoStack.Toolbar placement="right" asChild>
             <View style={{ flexDirection: "row" }}>
-              {tab === 1 ? (
+              {tab === "gradient" ? (
                 <AndroidHeaderButton icon={<Dices size={24} color={colors.text} />} onPress={randomizeGradient} />
               ) : (
                 <AndroidHeaderButton icon={<ImageIcon size={24} color={hasCustomWallpaper ? colors.primary : colors.text} />} onPress={uploadCustomWallpaper} />
               )}
-              {tab === 1 ? (
+              {tab === "gradient" ? (
                 <AndroidHeaderButton
                   icon={<RefreshCw size={24} color={colors.text} />}
                   accessibilityLabel={t("Modal_Wallpaper_Gradient_Shuffle")}
@@ -423,7 +372,7 @@ const WallpaperModal = () => {
       ) : (
         <>
           <ExpoStack.Toolbar placement="left">
-            {tab === 1 ? (
+            {tab === "gradient" ? (
               <ExpoStack.Toolbar.Button icon="dice" onPress={randomizeGradient} />
             ) : (
               <ExpoStack.Toolbar.Button
@@ -434,7 +383,7 @@ const WallpaperModal = () => {
             )}
           </ExpoStack.Toolbar>
           <ExpoStack.Toolbar placement="right">
-            {tab === 1 ? (
+            {tab === "gradient" ? (
               <ExpoStack.Toolbar.Button icon="arrow.triangle.2.circlepath" onPress={shuffleGradient}>
                 {t("Modal_Wallpaper_Gradient_Shuffle")}
               </ExpoStack.Toolbar.Button>
@@ -470,8 +419,6 @@ const WallpaperModal = () => {
     </>
   )
 }
-
-type Gradient = { colors: string[]; seed: number };
 
 const GradientEditor = ({ value, onChange }: { value: Gradient, onChange: (gradient: Gradient) => void }) => {
   const { colors } = useTheme();

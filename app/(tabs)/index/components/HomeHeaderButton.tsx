@@ -7,13 +7,13 @@ import { useTheme } from "expo-router/react-navigation";
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Stack from '@/ui/components/Stack';
 import { TouchableNativeFeedback } from 'react-native';
+import { Link } from 'expo-router';
 
 export interface HomeHeaderButtonItem {
   title: string;
   icon: string;
   color: string;
   description: string;
-  onPress?: () => void;
   route?: string;
   params?: Record<string, string>;
 }
@@ -31,10 +31,17 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
         flex: 1,
       }}
     >
+    <Link
+      asChild
+      prefetch
+      href={{
+        pathname: item.route ?? "/(features)/soon",
+        params: item.params,
+      }}
+    >
     <TouchableNativeFeedback
       useForeground
       style={styles.headerBtn}
-      onPress={item.onPress}
     >
       <View
         style={{
@@ -68,6 +75,7 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
         </View>
       </View>
     </TouchableNativeFeedback>
+    </Link>
     </View>
   );
 };
