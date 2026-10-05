@@ -156,6 +156,16 @@ function RootNavigatorContent() {
         />
 
         <Stack.Screen
+          name="(modals)/attachment"
+          options={{
+            headerShown: false,
+            presentation: "fullScreenModal",
+            animation: "fade",
+            contentStyle: { backgroundColor: "#000" },
+          }}
+        />
+
+        <Stack.Screen
           name="(features)/(news)/news"
           options={{
             headerShown: false,
