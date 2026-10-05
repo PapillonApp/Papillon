@@ -551,6 +551,7 @@
   "Settings_Transport_Localisation_Needed": "Papillon a besoin de ta localisation.",
   "Settings_Transport_Localisation_Needed_Description": "Pour utiliser les fonctionnalités de transport, Papillon doit accéder à ta localisation afin de fournir des estimations de temps de trajets.",
   "Settings_Transport_Localisation_Request": "Activer la localisation",
+  "Settings_Features_Description_Card": "Onglets, notes...",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
   "Settings_About": "Toi et Papillon",

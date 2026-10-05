@@ -71,34 +71,6 @@ export default function SettingsIndex() {
 
   const MoreSettingsList = [
     {
-      title: t("Settings_Preferences"),
-      content: [
-        /*{
-          title: t('Settings_Accessibility_Title'),
-          description: t('Settings_Accessibility_Description'),
-          papicon: <Papicons name={"Accessibility"} />,
-          icon: <AccessibilityIcon />,
-          color: "#0038A8",
-          onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
-        },*/
-        /*{
-          title: t("Settings_Transport_Title"),
-          description: t("Settings_Transport_Description"),
-          papicon: <Papicons name={"Bus"} />,
-          icon: <BusIcon />,
-          color: "#000",
-          onPress: () => router.navigate("/(settings)/transport"),
-        },*/
-        {
-          title: t("Settings_Features_Title"),
-          description: t("Settings_Features_Description"),
-          papicon: <Papicons name={"Sparkles"} />,
-          color: "#0059DD",
-          onPress: () => router.navigate("/(settings)/features"),
-        },
-      ],
-    },
-    {
       title: t("Settings_More"),
       content: [
         /*{
@@ -229,6 +201,15 @@ export default function SettingsIndex() {
       color: "#0059DD",
       onPress: () => {
         router.navigate("/(settings)/accounts")
+      }
+    },
+    {
+      icon: <Papicons name={"Gears"} />,
+      title: t("Settings_Features_Title"),
+      description: t("Settings_Features_Description_Card"),
+      color: "#E05A00",
+      onPress: () => {
+        router.navigate("/(settings)/features")
       }
     },
     ...(MAGIC_AVAILABLE ? [{
