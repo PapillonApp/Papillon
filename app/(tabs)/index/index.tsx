@@ -139,7 +139,7 @@ const HomeScreen = () => {
         />
         </MaskedView>
       <View style={{ flex: 1, paddingRight: 16, justifyContent: "center", gap: 3 }}>
-        <Typography variant="body1" weight="bold" color="textPrimary">
+        <Typography variant="body1" weight="bold" color="text">
           Rejoignez la communauté !
         </Typography>
         <Typography variant="body2" style={{ opacity: 0.5 }}>

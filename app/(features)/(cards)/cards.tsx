@@ -95,6 +95,7 @@ export default function QRCodeAndCardsPage() {
                 onPress={() => {
                   router.navigate({
                     pathname: "/(onboarding)/restaurants/method",
+                    params: { action: "addService" },
                   });
                 }}
                 style={{marginTop: 20}}
@@ -140,6 +141,7 @@ export default function QRCodeAndCardsPage() {
                 onPress={() => {
                   router.navigate({
                     pathname: "/(onboarding)/restaurants/method",
+                    params: { action: "addService" },
                   });
                 }}
               />

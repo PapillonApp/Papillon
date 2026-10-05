@@ -124,6 +124,9 @@ export default {
           backgroundColor: "#29947A",
           image: "./assets/images/logotype.png",
           imageWidth: 240,
+          // Android 12+ crops the splash icon to a 192dp circle: the wide
+          // logotype has to fit inside it.
+          android: { imageWidth: 180 },
         },
       ],
       [

@@ -118,6 +118,7 @@ export default function TurboSelfLoginWithCredentials() {
 
         router.back();
         router.dismissAll();
+        return;
       }
       setIsLoggingIn(false);
 

@@ -480,7 +480,8 @@ export class AccountManager {
         client.getCanteenBalances ? await client.getCanteenBalances() : [],
       {
         multiple: true,
-        fallback: async () => getBalancesFromCache(),
+        // The cache holds every account's cards: keep this account's only.
+        fallback: async () => (await getBalancesFromCache()).filter(balance => this.account.services.some(service => service.id === balance.createdByAccount)),
         saveToCache: async (data: Balance[]) => {
           await addBalancesToDatabase(data);
         },
