@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, PixelRatio, Platform } from 'react-native';
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
@@ -20,7 +20,12 @@ export function useCalendarState(viewportWidth: number) {
   const lastTrackedDateKey = useRef<string>("");
   const flatListRef = useRef<FlatList<any>>(null);
   const referenceDate = useRef(new Date());
-  const windowWidth = viewportWidth;
+  // Android snaps on whole px: a fractional page width (e.g. 1079.6px) drifts against
+  // any integer snap interval over ~10k pages. Floor the page to whole px so layout and
+  // snapping agree (costs <1px of width).
+  const windowWidth = Platform.OS === 'android'
+    ? Math.floor(viewportWidth * PixelRatio.get()) / PixelRatio.get()
+    : viewportWidth;
   // Set while the pager is being re-laid out after a window resize. Scroll
   // offsets are meaningless until the correction scroll lands, so they must not
   // be turned into a new date.

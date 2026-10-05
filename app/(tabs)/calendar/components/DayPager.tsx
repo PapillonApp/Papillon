@@ -1,6 +1,6 @@
 import { useTheme } from "expo-router/react-navigation";
 import React, { useCallback, useLayoutEffect, useMemo, useRef } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { PixelRatio, Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Reanimated, {
   runOnJS,
@@ -55,6 +55,13 @@ export function DayPager({
   } = calendar;
 
   const initialIndex = useRef(currentIndex).current;
+
+  // Android truncates snapToInterval to whole px ((dp * density).toInt()), so 1079.999px
+  // becomes 1079 and the error accumulates over ~10k pages, snapping between days.
+  // Nudge by half a px so it truncates to the exact rounded page width.
+  const snapInterval = Platform.OS === 'android'
+    ? (Math.round(windowWidth * PixelRatio.get()) + 0.5) / PixelRatio.get()
+    : windowWidth;
 
   const lastEmittedPage = useSharedValue(settledIndex);
 
@@ -160,7 +167,7 @@ export function DayPager({
         scrollEventThrottle={16}
         onMomentumScrollEnd={handleMomentumScrollEnd}
         onScrollEndDrag={handleScrollEndDrag}
-        snapToInterval={windowWidth}
+        snapToInterval={snapInterval}
         bounces={false}
         windowSize={4}
         maxToRenderPerBatch={3}
