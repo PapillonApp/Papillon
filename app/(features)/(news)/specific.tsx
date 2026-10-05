@@ -28,14 +28,13 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { useFont } from "@/utils/theme/fonts";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const NewsPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [news, setNews] = useState<News>();
   const [loading, setLoading] = useState(true);
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(20);
   const router = useRouter()
   const { colors } = useTheme();
   const font = useFont();
@@ -130,10 +129,8 @@ const NewsPage = () => {
       contentInsetAdjustmentBehavior="automatic"
       style={{ flex: 1 }}
       contentContainerStyle={{
-        ...safePadding,
         paddingTop: 20,
         paddingBottom: 20 + insets.bottom,
-        gap: 24
       }}
     >
       <NativeHeaderSide side="Left">
@@ -147,93 +144,95 @@ const NewsPage = () => {
         />
       </NativeHeaderSide>
 
-      <Stack gap={10}>
-        <Stack padding={[10, 4]} radius={200} backgroundColor={colors.text + "16"}>
-          <TypographyLegacy variant="body2">
-            {news.category}
-          </TypographyLegacy>
-        </Stack>
-
-        <TypographyLegacy variant="h3">
-          {news.title}
-        </TypographyLegacy>
-
-        <Stack direction="horizontal" hAlign="center">
-          <Stack direction="horizontal" gap={8} inline flex hAlign="center">
-            <Avatar initials={getInitials(news.author)} size={28} />
-            <TypographyLegacy nowrap variant="body2">
-              {news.author}
+      <SafeHorizontalView base={20} style={{ gap: 24 }}>
+        <Stack gap={10}>
+          <Stack padding={[10, 4]} radius={200} backgroundColor={colors.text + "16"}>
+            <TypographyLegacy variant="body2">
+              {news.category}
             </TypographyLegacy>
           </Stack>
 
-          <TypographyLegacy nowrap variant="body2" color="secondary">
-            {new Date(news.createdAt).toLocaleDateString(undefined, {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric'
-            })}
+          <TypographyLegacy variant="h3">
+            {news.title}
+          </TypographyLegacy>
+
+          <Stack direction="horizontal" hAlign="center">
+            <Stack direction="horizontal" gap={8} inline flex hAlign="center">
+              <Avatar initials={getInitials(news.author)} size={28} />
+              <TypographyLegacy nowrap variant="body2">
+                {news.author}
+              </TypographyLegacy>
+            </Stack>
+
+            <TypographyLegacy nowrap variant="body2" color="secondary">
+              {new Date(news.createdAt).toLocaleDateString(undefined, {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+              })}
+            </TypographyLegacy>
+          </Stack>
+        </Stack>
+
+        {news.question && (
+          <List scrollEnabled={false}>
+            <List.Item>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="pie" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">
+                Cette actualité contient un sondage
+              </Typography>
+              <Typography variant="body1" color="textSecondary">
+                PRONOTE ne nous permet pas d'afficher les sondages pour le moment.
+              </Typography>
+            </List.Item>
+          </List>
+        )}
+
+        <HTMLView
+          value={cleanedContent}
+          stylesheet={stylesheet}
+          style={{
+            gap: 12
+          }}
+          paragraphBreak=""
+          bullet="  •  "
+        />
+
+        {news.attachments.length > 0 && (
+          <ListLegacy>
+            {news.attachments.map((attachment, index) => (
+              <Item key={index} onPress={() => Linking.openURL(attachment.url)}>
+                <Leading>
+                  <Icon size={28}>
+                    <Papicons name={getAttachmentIcon(attachment)} />
+                  </Icon>
+                </Leading>
+                <TypographyLegacy variant="title">
+                  {attachment.name}
+                </TypographyLegacy>
+                <TypographyLegacy variant="body1" nowrap color="secondary">
+                  {attachment.url}
+                </TypographyLegacy>
+              </Item>
+            ))}
+          </ListLegacy>
+        )}
+
+        <Stack gap={0} style={{ opacity: 0.4 }}>
+          <TypographyLegacy variant="caption">
+            Si cette actualité ne s'affiche pas correctement,
+          </TypographyLegacy>
+          <TypographyLegacy variant="caption" style={{
+            textDecorationLine: 'underline'
+          }} onPress={() => setHTMLCleanupEnabled(!HTMLCleanupEnabled)}>
+            {HTMLCleanupEnabled ? "désactiver" : "activer"} le formattage automatique
           </TypographyLegacy>
         </Stack>
-      </Stack>
-
-      {news.question && (
-        <List scrollEnabled={false}>
-          <List.Item>
-            <List.Leading>
-              <Icon>
-                <Papicons name="pie" />
-              </Icon>
-            </List.Leading>
-            <Typography variant="title">
-              Cette actualité contient un sondage
-            </Typography>
-            <Typography variant="body1" color="textSecondary">
-              PRONOTE ne nous permet pas d'afficher les sondages pour le moment.
-            </Typography>
-          </List.Item>
-        </List>
-      )}
-
-      <HTMLView
-        value={cleanedContent}
-        stylesheet={stylesheet}
-        style={{
-          gap: 12
-        }}
-        paragraphBreak=""
-        bullet="  •  "
-      />
-
-      {news.attachments.length > 0 && (
-        <ListLegacy>
-          {news.attachments.map((attachment, index) => (
-            <Item key={index} onPress={() => Linking.openURL(attachment.url)}>
-              <Leading>
-                <Icon size={28}>
-                  <Papicons name={getAttachmentIcon(attachment)} />
-                </Icon>
-              </Leading>
-              <TypographyLegacy variant="title">
-                {attachment.name}
-              </TypographyLegacy>
-              <TypographyLegacy variant="body1" nowrap color="secondary">
-                {attachment.url}
-              </TypographyLegacy>
-            </Item>
-          ))}
-        </ListLegacy>
-      )}
-
-      <Stack gap={0} style={{ opacity: 0.4 }}>
-        <TypographyLegacy variant="caption">
-          Si cette actualité ne s'affiche pas correctement,
-        </TypographyLegacy>
-        <TypographyLegacy variant="caption" style={{
-          textDecorationLine: 'underline'
-        }} onPress={() => setHTMLCleanupEnabled(!HTMLCleanupEnabled)}>
-          {HTMLCleanupEnabled ? "désactiver" : "activer"} le formattage automatique
-        </TypographyLegacy>
-      </Stack>
+      </SafeHorizontalView>
     </ScrollView >
   );
 };

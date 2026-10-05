@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
 import { Platform, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from "expo-router/react-navigation";
 
 import { TipIds } from '@/constants/Tips';
@@ -44,13 +44,14 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
         </View>
       )}
 
-      <View
+      <SafeAreaView
+        edges={['left', 'right']}
         style={{
           height: height,
           position: "absolute",
           top: insets.top + (insets.right > 10 ? 10 : 0),
-          left: insets.left,
-          right: insets.right,
+          left: 0,
+          right: 0,
           paddingHorizontal: 16,
           zIndex: 11,
           justifyContent: "center",
@@ -99,7 +100,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
             />
           </Stack>
         </View>
-      </View>
+      </SafeAreaView>
     </>
   );
 };

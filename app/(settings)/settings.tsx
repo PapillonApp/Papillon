@@ -28,11 +28,10 @@ import packagejson from "../../package.json"
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import List, { ListTouchable } from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SettingsIndex() {
-  const safePadding = useSafeHorizontalPadding(16);
   const router = useRouter();
   const navigation = useNavigation();
 
@@ -308,8 +307,10 @@ export default function SettingsIndex() {
         style={{ flex: 1, backgroundColor: colors.overground }}
         contentInsetAdjustmentBehavior="automatic"
         gap={12}
+        safeHorizontalPadding={16}
         ListHeaderComponent={(
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{ marginVertical: 16, gap: 4 }}
           >
             <Stack
@@ -338,9 +339,9 @@ export default function SettingsIndex() {
             </Stack>
             <RenderBigButtons
             />
-          </View>
+          </SafeHorizontalView>
         )}
-        contentContainerStyle={{ padding: 16, ...safePadding, paddingBottom: insets.bottom, paddingTop: finalHeaderHeight }}
+        contentContainerStyle={{ paddingBottom: insets.bottom, paddingTop: finalHeaderHeight }}
       >
         {MoreSettingsList.map(section => (
           <List.Section key={section.title}>

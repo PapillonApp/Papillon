@@ -15,11 +15,9 @@ import { getInitials } from "@/utils/chats/initials";
 import { formatSchoolName } from "@/utils/format/formatSchoolName";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
 import ActionMenu, { type NativeActionEvent } from "@/ui/components/ActionMenu";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { useTheme } from "expo-router/react-navigation";
 
 export default function AccountsView() {
-  const safePadding = useSafeHorizontalPadding(16);
   const { colors } = useTheme();
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
@@ -73,9 +71,9 @@ export default function AccountsView() {
     <List
       style={{ flex: 1, backgroundColor: colors.overground }}
       contentInsetAdjustmentBehavior="automatic"
+      safeHorizontalPadding={16}
       contentContainerStyle={{
-        padding: 16,
-        ...safePadding,
+        paddingVertical: 16,
         gap: 16,
       }}
     >

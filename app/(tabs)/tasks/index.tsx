@@ -4,7 +4,6 @@ import { t } from 'i18next';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Reanimated, {
   cancelAnimation,
   runOnJS,
@@ -402,7 +401,7 @@ const TasksView: React.FC = () => {
                     { width: windowWidth, left: (index - INITIAL_INDEX) * windowWidth },
                   ]}
                 >
-                  <SafeAreaView edges={['left', 'right']} style={{ flex: 1, backgroundColor: colors.overground }}>
+                  <View style={{ flex: 1, backgroundColor: colors.overground }}>
                     <TasksWeekPage
                       week={week}
                       homeworks={homeworkByWeek[week]}
@@ -416,7 +415,7 @@ const TasksView: React.FC = () => {
                       setAsDone={setAsDone}
                       hasError={hasHomeworkError}
                     />
-                  </SafeAreaView>
+                  </View>
                 </View>
               );
             })}

@@ -11,14 +11,13 @@ import Button from "@/ui/new/Button";
 import Divider from "@/ui/new/Divider";
 import PapillonLogo from "@/ui/new/symbols/PapillonLogo";
 import Typography from "@/ui/new/Typography";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 
 export default function Welcome() {
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(16);
   const { colors } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
@@ -121,13 +120,13 @@ export default function Welcome() {
       />
 
       <View style={{ maxWidth: 600 }}>
-        <View
+        <SafeHorizontalView
+          base={16}
           style={{
             flex: 1,
             justifyContent: "flex-end",
             alignItems: "center",
-            padding: 16,
-            ...safePadding,
+            paddingTop: 16,
             gap: 10,
             paddingBottom: insets.bottom + 16,
             zIndex: 99,
@@ -221,7 +220,7 @@ export default function Welcome() {
           >
             {t("ONBOARDING_WELCOME_LEGAL")}
           </Typography>
-        </View>
+        </SafeHorizontalView>
       </View>
     </View>
   );

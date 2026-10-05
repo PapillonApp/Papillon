@@ -21,15 +21,13 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 import { PlatformPressable } from "../ed/credentials";
 
 export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId, relinkAccountId, relinkServiceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string, relinkAccountId?: string, relinkServiceId?: string }) {
   const { t } = useTranslation();
   const { colors, dark } = useTheme();
-  const headerSafePadding = useSafeHorizontalPadding(20);
-  const pinSafePadding = useSafeHorizontalPadding(50);
   const alert = useAlert();
 
   const [pinCode, setPinCode] = useState<string>("");
@@ -223,14 +221,14 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
 
   return (
     <View style={{ backgroundColor: colors.background, width: "100%", height: "100%" }}>
-      <View
+      <SafeHorizontalView
+        base={20}
         style={{
           alignItems: "center",
           justifyContent: "flex-end",
           borderBottomLeftRadius: 42,
           borderBottomRightRadius: 42,
-          padding: 20,
-          ...headerSafePadding,
+          paddingTop: 20,
           paddingBottom: 34,
           backgroundColor: "#E50052",
         }}
@@ -255,55 +253,58 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
             {t("ONBOARDING_LOGIN_PINCODE")}
           </Typography>
         </Stack>
-      </View>
+      </SafeHorizontalView>
       <ScrollView>
-        <Stack flex direction="horizontal" style={{ ...pinSafePadding, paddingVertical: 30 }}>
-          <Stack
-            flex
-            direction="horizontal"
-            hAlign="center"
-            gap={10}
-            style={{
-              flex: 1,
-              padding: 20,
-              backgroundColor: colors.text + (dark ? "15" : "08"),
-              borderRadius: 300,
-              borderWidth: 1,
-              borderColor: colors.border
-            }}
-          >
-            <Icon
-              papicon
-              size={24}
-              fill={colors.text + "AF"}
+        <SafeHorizontalView base={50}>
+          <Stack flex direction="horizontal" style={{ paddingVertical: 30 }}>
+            <Stack
+              flex
+              direction="horizontal"
+              hAlign="center"
+              gap={10}
+              style={{
+                flex: 1,
+                padding: 20,
+                backgroundColor: colors.text + (dark ? "15" : "08"),
+                borderRadius: 300,
+                borderWidth: 1,
+                borderColor: colors.border
+              }}
             >
-              <Papicons name={"Password"} />
-            </Icon>
-            <Typography variant="h5" color={pinCode.trim() ? colors.text + "AF" : "secondary"}>{pinCode.trim() ? pinCode : t("INPUT_PIN")}</Typography>
+              <Icon
+                papicon
+                size={24}
+                fill={colors.text + "AF"}
+              >
+                <Papicons name={"Password"} />
+              </Icon>
+              <Typography variant="h5" color={pinCode.trim() ? colors.text + "AF" : "secondary"}>{pinCode.trim() ? pinCode : t("INPUT_PIN")}</Typography>
+            </Stack>
           </Stack>
-        </Stack>
-        <FlatList
-          scrollEnabled={false}
-          data={data}
-          numColumns={3}
-          renderItem={renderItem}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            ...pinSafePadding,
-            gap: 15
-          }}
-          columnWrapperStyle={{
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}
-          style={{
-            width: "100%",
-            overflow: "hidden"
-          }}
-          removeClippedSubviews
-          maxToRenderPerBatch={6}
-          windowSize={1}
-        />
+        </SafeHorizontalView>
+        <SafeHorizontalView base={50}>
+          <FlatList
+            scrollEnabled={false}
+            data={data}
+            numColumns={3}
+            renderItem={renderItem}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              gap: 15
+            }}
+            columnWrapperStyle={{
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+            style={{
+              width: "100%",
+              overflow: "hidden"
+            }}
+            removeClippedSubviews
+            maxToRenderPerBatch={6}
+            windowSize={1}
+          />
+        </SafeHorizontalView>
       </ScrollView>
     </View>
   )

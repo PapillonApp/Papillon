@@ -17,12 +17,11 @@ import Button from "@/ui/new/Button";
 import TextInput from "@/ui/new/TextInput";
 import Typography from "@/ui/new/Typography";
 import uuid from "@/utils/uuid/uuid";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export default function OfflineAccount() {
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(20);
   const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
@@ -73,49 +72,49 @@ export default function OfflineAccount() {
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          padding: 20,
-          ...safePadding,
           paddingTop: headerHeight + 32,
           paddingBottom: 20,
         }}
         keyboardShouldPersistTaps="handled"
       >
-        <Stack gap={8}>
-          <Typography variant="h2">{t("ONBOARDING_OFFLINE_TITLE")}</Typography>
-          <Typography variant="action" color="textSecondary">
-            {t("ONBOARDING_OFFLINE_DESCRIPTION")}
-          </Typography>
+        <SafeHorizontalView base={20} style={{ flexGrow: 1 }}>
+          <Stack gap={8}>
+            <Typography variant="h2">{t("ONBOARDING_OFFLINE_TITLE")}</Typography>
+            <Typography variant="action" color="textSecondary">
+              {t("ONBOARDING_OFFLINE_DESCRIPTION")}
+            </Typography>
 
-          <View style={{ height: 20 }} />
+            <View style={{ height: 20 }} />
 
-          <TextInput
-            color={String(theme.colors.primary)}
-            autoCapitalize="words"
-            autoComplete="name-given"
-            placeholder={t("ONBOARDING_FIRST_NAME")}
-            returnKeyType="next"
-            textContentType="givenName"
-            value={firstName}
-            onChangeText={setFirstName}
-          />
-          <TextInput
-            color={String(theme.colors.primary)}
-            autoCapitalize="words"
-            autoComplete="name-family"
-            placeholder={t("ONBOARDING_LAST_NAME")}
-            returnKeyType="done"
-            textContentType="familyName"
-            value={lastName}
-            onChangeText={setLastName}
-            onSubmitEditing={createAccount}
-          />
-        </Stack>
+            <TextInput
+              color={String(theme.colors.primary)}
+              autoCapitalize="words"
+              autoComplete="name-given"
+              placeholder={t("ONBOARDING_FIRST_NAME")}
+              returnKeyType="next"
+              textContentType="givenName"
+              value={firstName}
+              onChangeText={setFirstName}
+            />
+            <TextInput
+              color={String(theme.colors.primary)}
+              autoCapitalize="words"
+              autoComplete="name-family"
+              placeholder={t("ONBOARDING_LAST_NAME")}
+              returnKeyType="done"
+              textContentType="familyName"
+              value={lastName}
+              onChangeText={setLastName}
+              onSubmitEditing={createAccount}
+            />
+          </Stack>
+        </SafeHorizontalView>
       </ScrollView>
 
-      <View
+      <SafeHorizontalView
+        base={20}
         style={{
-          padding: 20,
-          ...safePadding,
+          paddingTop: 20,
           paddingBottom: insets.bottom + 20,
           borderTopColor: theme.colors.border,
           borderTopWidth: 1,
@@ -128,7 +127,7 @@ export default function OfflineAccount() {
           disabled={!canSubmit}
           fullWidth
         />
-      </View>
+      </SafeHorizontalView>
     </KeyboardAvoidingView>
   );
 }

@@ -24,7 +24,8 @@ import List from '@/ui/new/List';
 import useResizable from '@/ui/utils/Resizable';
 import CompactGrade from '@/ui/new/CompactGrade';
 import { AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeHorizontalView, { SAFE_HORIZONTAL_EDGES } from '@/ui/components/SafeHorizontalView';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -68,7 +69,6 @@ const sortSubjects = (subjects: Subject[], method: SortMethod): Subject[] => {
 const GradesView = () => {
   const papillonFont = useFont();
   const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
-  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const theme = useTheme();
   const resize = useResizable();
 
@@ -222,20 +222,22 @@ const GradesView = () => {
       <View style={{ flex: 1, backgroundColor: Platform.OS === 'ios' ? theme.colors.overground : theme.colors.background }}>
         <List
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}
+          safeHorizontalPadding={16}
           contentInsetAdjustmentBehavior="automatic"
           refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
           numColumns={resize.isLarge ? 2 : 1}
           ListEmptyComponent={
-            loading ? (
-              <GradesLoading />
-            ) : (
-              <GradesEmptyState
-                hasError={hasError}
-                serviceName={failure?.displayName}
-                isSearching={searchText.trim() !== '' && subjects.length > 0}
-              />
-            )
+            <SafeHorizontalView base={16}>
+              {loading ? (
+                <GradesLoading />
+              ) : (
+                <GradesEmptyState
+                  hasError={hasError}
+                  serviceName={failure?.displayName}
+                  isSearching={searchText.trim() !== '' && subjects.length > 0}
+                />
+              )}
+            </SafeHorizontalView>
           }
           ListHeaderComponent={() => (
             isSearchbarFocused ? <></> : (
@@ -243,12 +245,10 @@ const GradesView = () => {
                 style={{
                   paddingVertical: 16,
                   gap: 12,
-                  marginLeft: -contentPaddingLeft,
-                  marginRight: -contentPaddingRight,
                 }}>
-                <View style={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}>
+                <SafeHorizontalView base={16}>
                   <Averages history={history} realAverage={isAverageServiceProvided ? averages.student?.value : undefined} color={theme.colors.primary} displayScale={displayScale} />
-                </View>
+                </SafeHorizontalView>
 
                 <FlatList
                   data={recentGrades}
@@ -270,7 +270,10 @@ const GradesView = () => {
                   showsHorizontalScrollIndicator={false}
                   ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
                   horizontal
-                  contentContainerStyle={{ paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight, paddingVertical: 24, overflow: 'visible' }}
+                  // Edge spacers sized natively by the safe area, so the carousel stays full-bleed.
+                  ListHeaderComponent={<SafeAreaView edges={{ left: SAFE_HORIZONTAL_EDGES.left }} style={{ paddingLeft: 16 }} />}
+                  ListFooterComponent={<SafeAreaView edges={{ right: SAFE_HORIZONTAL_EDGES.right }} style={{ paddingRight: 16 }} />}
+                  contentContainerStyle={{ paddingVertical: 24, overflow: 'visible' }}
                   style={{ overflow: 'visible', marginVertical: -24 }}
                 />
               </View>

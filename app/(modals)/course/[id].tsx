@@ -19,7 +19,7 @@ import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeH
 import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,7 +36,6 @@ export default function CourseModal() {
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0
@@ -107,29 +106,32 @@ export default function CourseModal() {
 
       <List
         contentInsetAdjustmentBehavior="automatic"
+        safeHorizontalPadding={16}
         ListHeaderComponent={
-          <ModalOverhead
-            subject={getSubjectName(item.subject)}
-            title={item.customStatus || getStatusText(item.status)}
-            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
-            emoji={subjectInfo.emoji}
-            subjectVariant="h3"
-            date={new Date(startTime * 1000)}
-            dateFormat={{
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-            }}
-            style={{
-              marginBottom: 24,
-              paddingTop: finalHeaderHeight,
-            }}
-          />
+          <SafeHorizontalView base={16}>
+            <ModalOverhead
+              subject={getSubjectName(item.subject)}
+              title={item.customStatus || getStatusText(item.status)}
+              color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
+              emoji={subjectInfo.emoji}
+              subjectVariant="h3"
+              date={new Date(startTime * 1000)}
+              dateFormat={{
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              }}
+              style={{
+                marginBottom: 24,
+                paddingTop: finalHeaderHeight,
+              }}
+            />
+          </SafeHorizontalView>
         }
         style={{ backgroundColor: "transparent", zIndex: 2 }}
-        contentContainerStyle={{ padding: 16, paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight }}
+        contentContainerStyle={{ paddingVertical: 16 }}
       >
         {getStatusText(course.status) ? (
           <List.Section>
