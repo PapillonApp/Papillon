@@ -14,7 +14,6 @@ import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const Team = [
@@ -105,7 +104,6 @@ export const Team = [
 ];
 
 export default function SettingsAbout() {
-  const safePadding = useSafeHorizontalPadding(20);
   const theme = useTheme();
   const router = useRouter();
 
@@ -194,7 +192,8 @@ export default function SettingsAbout() {
   return (
     <List
       style={{ flex: 1, backgroundColor: theme.colors.overground }}
-      contentContainerStyle={{ padding: 20, ...safePadding, paddingBottom: insets.bottom + 20 }}
+      safeHorizontalPadding={20}
+      contentContainerStyle={{ paddingTop: 20, paddingBottom: insets.bottom + 20 }}
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
     >

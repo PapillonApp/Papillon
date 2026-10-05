@@ -22,7 +22,7 @@ import { ServiceAccount, Services } from "@/stores/account/types";
 import uuid from "@/utils/uuid/uuid";
 import { useTranslation } from "react-i18next";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "expo-router/react-navigation";
 import { INSTANCES, loginWithCredentials } from "@blockshub/blockscho";
@@ -31,7 +31,6 @@ const ANIMATION_DURATION = 100;
 
 export default function AppSchoCredentials() {
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(20);
   const theme = useTheme();
   const { instanceId } = useLocalSearchParams<{ instanceId: string }>();
 
@@ -153,14 +152,13 @@ export default function AppSchoCredentials() {
       style={{ flex: 1, marginBottom: insets.bottom }}
       behavior="padding"
     >
-      <View
+      <SafeHorizontalView
+        base={20}
         style={{
           alignItems: "center",
           justifyContent: "flex-end",
           borderBottomLeftRadius: 42,
           borderBottomRightRadius: 42,
-          padding: 20,
-          ...safePadding,
           paddingTop: insets.top + 20,
           paddingBottom: 34,
           borderCurve: "continuous",
@@ -218,7 +216,7 @@ export default function AppSchoCredentials() {
             {t("ONBOARDING_LOGIN_CREDENTIALS")} {instance?.name || "AppScho"}
           </Typography>
         </Stack>
-      </View>
+      </SafeHorizontalView>
 
       {isLoading ? (
         <View
@@ -241,48 +239,50 @@ export default function AppSchoCredentials() {
           </View>
         </View>
       ) : (
-        <Stack padding={20} gap={10} style={safePadding}>
-          <OnboardingInput
-            icon="User"
-            placeholder={t("INPUT_USERNAME")}
-            text={username}
-            setText={setUsername}
-            isPassword={false}
-            inputProps={{
-              autoCapitalize: "none",
-              autoCorrect: false,
-              spellCheck: false,
-              textContentType: "username",
-            }}
-          />
-          <OnboardingInput
-            icon="Lock"
-            placeholder={t("INPUT_PASSWORD")}
-            text={password}
-            setText={setPassword}
-            isPassword={true}
-            inputProps={{
-              autoCapitalize: "none",
-              autoCorrect: false,
-              spellCheck: false,
-              textContentType: "password",
-              onSubmitEditing: () => {
-                Keyboard.dismiss();
-                handleLogin(username, password);
-              },
-              returnKeyType: "done",
-            }}
-          />
-          <Button
-            title={t("LOGIN_BTN")}
-            style={{
-              backgroundColor: theme.dark ? theme.colors.border : "black",
-            }}
-            size="large"
-            disableAnimation
-            onPress={() => handleLogin(username, password)}
-          />
-        </Stack>
+        <SafeHorizontalView base={20}>
+          <Stack padding={[0, 20]} gap={10}>
+            <OnboardingInput
+              icon="User"
+              placeholder={t("INPUT_USERNAME")}
+              text={username}
+              setText={setUsername}
+              isPassword={false}
+              inputProps={{
+                autoCapitalize: "none",
+                autoCorrect: false,
+                spellCheck: false,
+                textContentType: "username",
+              }}
+            />
+            <OnboardingInput
+              icon="Lock"
+              placeholder={t("INPUT_PASSWORD")}
+              text={password}
+              setText={setPassword}
+              isPassword={true}
+              inputProps={{
+                autoCapitalize: "none",
+                autoCorrect: false,
+                spellCheck: false,
+                textContentType: "password",
+                onSubmitEditing: () => {
+                  Keyboard.dismiss();
+                  handleLogin(username, password);
+                },
+                returnKeyType: "done",
+              }}
+            />
+            <Button
+              title={t("LOGIN_BTN")}
+              style={{
+                backgroundColor: theme.dark ? theme.colors.border : "black",
+              }}
+              size="large"
+              disableAnimation
+              onPress={() => handleLogin(username, password)}
+            />
+          </Stack>
+        </SafeHorizontalView>
       )}
       
       <OnboardingBackButton />

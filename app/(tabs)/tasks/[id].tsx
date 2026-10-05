@@ -24,7 +24,7 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { Homework } from "@/services/shared/homework";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { View } from "react-native";
 
 const Task = () => {
@@ -72,7 +72,6 @@ const Task = () => {
   }
 
   const insets = useSafeAreaInsets();
-  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0
@@ -118,26 +117,27 @@ const Task = () => {
 
       <List
         contentInsetAdjustmentBehavior="automatic"
+        safeHorizontalPadding={16}
         ListHeaderComponent={
-          <ModalOverhead
-            emoji={subjectInfo.emoji}
-            subject={subjectInfo.name}
-            subjectVariant="header"
-            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
-            date={new Date(task.dueDate)}
-            style={{
-              marginVertical: 0,
-              paddingTop: finalHeaderHeight,
-            }}
-          />
+          <SafeHorizontalView base={16}>
+            <ModalOverhead
+              emoji={subjectInfo.emoji}
+              subject={subjectInfo.name}
+              subjectVariant="header"
+              color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
+              date={new Date(task.dueDate)}
+              style={{
+                marginVertical: 0,
+                paddingTop: finalHeaderHeight,
+              }}
+            />
+          </SafeHorizontalView>
         }
         style={{
           backgroundColor: "transparent",
         }}
         contentContainerStyle={{
-          padding: 16,
-          paddingLeft: contentPaddingLeft,
-          paddingRight: contentPaddingRight,
+          paddingVertical: 16,
         }}
       >
         <List.Section>

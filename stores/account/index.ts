@@ -154,7 +154,14 @@ export const useAccountStore = create<AccountsStorage>()(
             };
           }),
         }),
-      setSubjectColor: (subject: string, color: string) =>
+      setSubjectColor: (subject: string, color: string) => {
+        const current = get().accounts.find(
+          account => account.id === get().lastUsedAccount
+        );
+        // Nothing to change: skip the write so subscribers are not re-rendered.
+        if (!current || current.customisation?.subjects?.[subject]?.color === color) {
+          return;
+        }
         set({
           accounts: get().accounts.map(account => {
             if (account.id === get().lastUsedAccount) {
@@ -178,7 +185,8 @@ export const useAccountStore = create<AccountsStorage>()(
             }
             return account;
           }),
-        }),
+        });
+      },
       setSubjectEmoji: (subject: string, emoji: string) =>
         set({
           accounts: get().accounts.map(account => {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSettingsStore } from "@/stores/settings";
 import { predictHomework } from "@/utils/magic/prediction";
+import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { error } from '@/utils/logger/logger';
 
 export const useMagicPrediction = (content: string) => {
@@ -9,7 +10,7 @@ export const useMagicPrediction = (content: string) => {
 
   useEffect(() => {
     let isCancelled = false;
-    if (content && magicEnabled) {
+    if (MAGIC_AVAILABLE && content && magicEnabled) {
       predictHomework(content, magicEnabled)
         .then(p => !isCancelled && setMagic(p))
         .catch(e => !isCancelled && error(e));

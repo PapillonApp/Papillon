@@ -39,9 +39,10 @@ const HomeScreen = () => {
   const focused = useIsFocused();
 
   // Account
-  const store = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
-  const account = accounts.find(a => a.id === store.lastUsedAccount);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const initializeTransport = useAccountStore((state) => state.initializeTransport);
+  const account = accounts.find(a => a.id === lastUsedAccount);
   const recordTeamModalHomeLaunch = useAccountStore(state => state.recordTeamModalHomeLaunch);
   const dismissTeamWidget = useAccountStore(state => state.dismissTeamWidget);
   const router = useRouter();
@@ -56,9 +57,9 @@ const HomeScreen = () => {
     }
 
     if (account && account.transport === undefined) {
-      store.initializeTransport(account.schoolName);
+      initializeTransport(account.schoolName);
     }
-  }, [account, accounts.length, router, store]);
+  }, [account, accounts.length, router, initializeTransport]);
 
   const consentPrompted = React.useRef(false);
 
@@ -87,7 +88,7 @@ const HomeScreen = () => {
     }
   }, [account?.id, recordTeamModalHomeLaunch, router]);
 
-  useHomeData();
+  const { syncing } = useHomeData();
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
 
@@ -95,7 +96,7 @@ const HomeScreen = () => {
   const { grades, history, averages } = useGradesData(currentPeriod);
   const gradesWidgetHidden = grades.length === 0;
 
-  const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
+  const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget courses={courses} />, [courses]);
   const renderGrades = React.useCallback(
     () => <GradesWidget history={history} averages={averages} />,
     [history, averages]
@@ -182,8 +183,8 @@ const HomeScreen = () => {
   return (
     <>
       <Wallpaper />
-      <HomeTopBar />
-      {focused && <StatusBar translucent animated barStyle={'light-content'} />}
+      <HomeTopBar loading={syncing} />
+      {focused && <StatusBar animated barStyle={'light-content'} />}
       <HomeViewContainer key={"home"}>
         <FlatList
           renderItem={({ item }) => (

@@ -15,7 +15,7 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 import { GetSupportedServices } from './utils/constants';
 
@@ -24,8 +24,6 @@ export default function ServiceSelection() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(20);
-  const listSafePadding = useSafeHorizontalPadding(16);
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -71,36 +69,36 @@ export default function ServiceSelection() {
     return (
       <ScrollView
         contentContainerStyle={{
-          padding: 20,
-          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 32,
           paddingBottom: insets.bottom + 20
         }}
       >
-        <Stack
-          vAlign="center"
-          hAlign="center"
-          gap={8}
-        >
-          <Image
-            source={require("@/assets/images/icon.png")}
-            style={{ width: 86, height: 86, borderRadius: 24 }}
-          />
-          <Divider height={8} ghost />
-          <Typography variant="h3" align="center">{t("ONBOARDING_UNSUPPORTED_TITLE")}</Typography>
-          <Typography align="center" variant="body1" color="textSecondary">{t("ONBOARDING_UNSUPPORTED_DESCRIPTION")}</Typography>
-          <Divider height={16} ghost />
-          <Button
-            label={t("Global_Back")}
-            variant="secondary"
-            onPress={() => {
-              router.back();
-            }}
-            fullWidth
-          />
-        </Stack>
+        <SafeHorizontalView base={20} style={{ flexGrow: 1 }}>
+          <Stack
+            vAlign="center"
+            hAlign="center"
+            gap={8}
+          >
+            <Image
+              source={require("@/assets/images/icon.png")}
+              style={{ width: 86, height: 86, borderRadius: 24 }}
+            />
+            <Divider height={8} ghost />
+            <Typography variant="h3" align="center">{t("ONBOARDING_UNSUPPORTED_TITLE")}</Typography>
+            <Typography align="center" variant="body1" color="textSecondary">{t("ONBOARDING_UNSUPPORTED_DESCRIPTION")}</Typography>
+            <Divider height={16} ghost />
+            <Button
+              label={t("Global_Back")}
+              variant="secondary"
+              onPress={() => {
+                router.back();
+              }}
+              fullWidth
+            />
+          </Stack>
+        </SafeHorizontalView>
       </ScrollView>
     )
   }
@@ -109,17 +107,19 @@ export default function ServiceSelection() {
     <View style={{ flex: 1, backgroundColor: colors.overground }}>
       <List
         ListHeaderComponent={() => (
-          <Stack padding={[4, 0]} style={{ maxWidth: 500 }}>
-            <Typography variant="h2">{titleString}</Typography>
-            <Typography variant="action" color="textSecondary">
-              {t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}
-            </Typography>
-            <Divider height={18} ghost />
-          </Stack>
+          <SafeHorizontalView base={16}>
+            <Stack padding={[4, 0]} style={{ maxWidth: 500 }}>
+              <Typography variant="h2">{titleString}</Typography>
+              <Typography variant="action" color="textSecondary">
+                {t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}
+              </Typography>
+              <Divider height={18} ghost />
+            </Stack>
+          </SafeHorizontalView>
         )}
+        safeHorizontalPadding={16}
         contentContainerStyle={{
-          padding: 16,
-          ...listSafePadding,
+          paddingBottom: 16,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,
@@ -170,10 +170,10 @@ export default function ServiceSelection() {
         ))}
       </List>
 
-      <View
+      <SafeHorizontalView
+        base={20}
         style={{
-          padding: 20,
-          ...safePadding,
+          paddingTop: 20,
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
           borderTopWidth: 1,
@@ -190,7 +190,7 @@ export default function ServiceSelection() {
           maxWidth={500}
           fullWidth
         />
-      </View>
+      </SafeHorizontalView>
     </View>
   );
 }

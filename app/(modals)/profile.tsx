@@ -1,5 +1,4 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import * as ImagePicker from "expo-image-picker"
 import { router } from "expo-router";
@@ -22,7 +21,7 @@ import Icon from "@/ui/components/Icon";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
-import ActionMenu from "@/ui/components/ActionMenu";
+import ActionMenu, { type NativeActionEvent } from "@/ui/components/ActionMenu";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();

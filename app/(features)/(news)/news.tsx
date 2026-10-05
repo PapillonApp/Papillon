@@ -25,13 +25,12 @@ import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary'
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const NewsView = () => {
   const theme = useTheme()
   const colors = theme.colors
   const insets = useSafeAreaInsets()
-  const safePadding = useSafeHorizontalPadding(16)
 
   const [headerHeight, setHeaderHeight] = useState(0)
   const bottomTabBarHeight = insets.bottom + 16;
@@ -108,10 +107,10 @@ const NewsView = () => {
         <List
           animated
           style={{ flex: 1, backgroundColor: colors.overground }}
+          safeHorizontalPadding={16}
           contentContainerStyle={{
             paddingTop: headerHeight,
             paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
-            ...safePadding,
             gap: 9,
           }}
           refreshControl={
@@ -128,22 +127,24 @@ const NewsView = () => {
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
           ListEmptyComponent={
             <Dynamic animated key='empty-list:warn' entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <Stack
-                hAlign='center'
-                vAlign='center'
-                flex
-                style={{ width: '100%', marginTop: 16 }}
-              >
-                <Icon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-                  <Papicons name={searchText ? 'Search' : 'Newspaper'} />
-                </Icon>
-                <Typography variant='h4' color='textPrimary' align='center'>
-                  {searchText ? t('News_Search_NoResults') : t('News_Empty_Title')}
-                </Typography>
-                <Typography variant='body2' color='textSecondary' align='center'>
-                  {searchText ? t('News_Search_NoResults_Description') : t('News_Empty_Description')}
-                </Typography>
-              </Stack>
+              <SafeHorizontalView base={16} style={{ width: "100%" }}>
+                <Stack
+                  hAlign='center'
+                  vAlign='center'
+                  flex
+                  style={{ width: '100%', marginTop: 16 }}
+                >
+                  <Icon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+                    <Papicons name={searchText ? 'Search' : 'Newspaper'} />
+                  </Icon>
+                  <Typography variant='h4' color='textPrimary' align='center'>
+                    {searchText ? t('News_Search_NoResults') : t('News_Empty_Title')}
+                  </Typography>
+                  <Typography variant='body2' color='textSecondary' align='center'>
+                    {searchText ? t('News_Search_NoResults_Description') : t('News_Empty_Description')}
+                  </Typography>
+                </Stack>
+              </SafeHorizontalView>
             </Dynamic>
           }
         >

@@ -9,7 +9,7 @@ import Stack from "@/ui/components/Stack";
 import Button from "@/ui/new/Button";
 import Divider from "@/ui/new/Divider";
 import Typography from "@/ui/new/Typography";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 import HighSchoolIllustration from "./components/ageSelection/illustrations/highSchool";
 import MiddleSchoolIllustration from "./components/ageSelection/illustrations/middleSchool";
@@ -64,7 +64,6 @@ export default function AgeSelection() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(20);
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -79,36 +78,39 @@ export default function AgeSelection() {
 
       <FlatList
         ListHeaderComponent={() => (
-          <Stack
-            style={{
-              alignSelf: "center",
-              width: "100%",
-              maxWidth: 500,
-            }}
-          >
-            <Typography variant="h2">{t("ONBOARDING_AGE_TITLE")}</Typography>
-            <Typography variant="action" color="textSecondary">
-              {t("ONBOARDING_AGE_DESCRIPTION")}
-            </Typography>
-            <Divider height={6} ghost />
-          </Stack>
+          <SafeHorizontalView base={20}>
+            <Stack
+              style={{
+                alignSelf: "center",
+                width: "100%",
+                maxWidth: 500,
+              }}
+            >
+              <Typography variant="h2">{t("ONBOARDING_AGE_TITLE")}</Typography>
+              <Typography variant="action" color="textSecondary">
+                {t("ONBOARDING_AGE_DESCRIPTION")}
+              </Typography>
+              <Divider height={6} ghost />
+            </Stack>
+          </SafeHorizontalView>
         )}
         data={LEVELS.map(level =>
           "labelKey" in level ? { ...level, label: t(level.labelKey) } : level
         )}
         renderItem={({ item }) => (
-          <OnboardingSelector
-            item={item}
-            selected={selectedLevel}
-            setSelected={setSelectedLevel}
-          />
+          <SafeHorizontalView base={20}>
+            <OnboardingSelector
+              item={item}
+              selected={selectedLevel}
+              setSelected={setSelectedLevel}
+            />
+          </SafeHorizontalView>
         )}
         contentContainerStyle={{
-          padding: 20,
-          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,
+          paddingBottom: 20,
           width: "100%",
           maxWidth: 500,
           marginHorizontal: 'auto'
@@ -119,10 +121,10 @@ export default function AgeSelection() {
         style={{ flex: 1 }}
       />
 
-      <View
+      <SafeHorizontalView
+        base={20}
         style={{
-          padding: 20,
-          ...safePadding,
+          paddingTop: 20,
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
           borderTopWidth: 1,
@@ -140,7 +142,7 @@ export default function AgeSelection() {
           fullWidth
           maxWidth={500}
         />
-      </View>
+      </SafeHorizontalView>
     </View>
   );
 }

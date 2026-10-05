@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import type { MenuAction as NativeMenuAction, MenuComponentProps as NativeMenuComponentProps } from "@react-native-menu/menu";
 import {
   Modal,
   Platform,
@@ -10,6 +9,7 @@ import {
   Text,
   LayoutRectangle,
   Dimensions,
+  ColorValue,
 } from "react-native";
 import { useTheme } from "expo-router/react-navigation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,8 +23,41 @@ import { Host, Menu as ExpoMenu, Button as ExpoButton, Toggle as ExpoToggle, RNH
 import { disabled as disabledModifier, tint, foregroundStyle, font } from "@expo/ui/swift-ui/modifiers";
 import type { SFSymbol } from "sf-symbols-typescript";
 
+export type NativeActionEvent = {
+  nativeEvent: {
+    event: string;
+  };
+};
+
+export type MenuAction = {
+  id?: string;
+  title: string;
+  subtitle?: string;
+  attributes?: {
+    destructive?: boolean;
+    disabled?: boolean;
+    hidden?: boolean;
+    keepsMenuPresented?: boolean;
+  };
+  state?: "off" | "on" | "mixed";
+  /** SF Symbol name (iOS). */
+  image?: string;
+  imageColor?: number | ColorValue;
+  /** Papicons icon name, rendered by the Android menu. */
+  papicon?: string;
+  subactions?: MenuAction[];
+  /** Render subactions inline in a section instead of a nested menu. */
+  displayInline?: boolean;
+};
+
+export type MenuComponentProps = {
+  actions: MenuAction[];
+  onPressAction?: (event: NativeActionEvent) => void;
+  children?: React.ReactNode;
+};
+
 function renderExpoActions(
-  actions: NativeMenuAction[],
+  actions: MenuAction[],
   onPress: (id: string) => void
 ): React.ReactNode {
   return actions.map((action, index) => {
@@ -102,7 +135,7 @@ function MenuItem({
   destructiveColor,
   onPress,
 }: {
-  action: NativeMenuAction;
+  action: MenuAction;
   textColor: string;
   subtitleColor: string;
   primaryColor: string;
@@ -172,7 +205,7 @@ export default function ActionMenu({
   children,
   onPressAction,
   placement = "auto",
-}: NativeMenuComponentProps & { placement?: "auto" | "below" }) {
+}: MenuComponentProps & { placement?: "auto" | "below" }) {
   const handleActionPress = onPressAction ?? (() => { });
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -190,7 +223,7 @@ export default function ActionMenu({
   const [visible, setVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [submenuStack, setSubmenuStack] = useState<NativeMenuAction[]>([]);
+  const [submenuStack, setSubmenuStack] = useState<MenuAction[]>([]);
   const [position, setPosition] = useState<LayoutRectangle | null>(null);
   const [menuSize, setMenuSize] = useState<{ width: number; height: number } | null>(null);
 
@@ -271,7 +304,7 @@ export default function ActionMenu({
     }, 220);
   }
 
-  function handlePress(action: NativeMenuAction, fallbackId: string) {
+  function handlePress(action: MenuAction, fallbackId: string) {
     if (action.subactions && action.subactions.length > 0) {
       setSubmenuStack((prev) => [...prev, action]);
       return;

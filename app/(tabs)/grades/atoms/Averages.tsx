@@ -4,7 +4,7 @@ import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ColorValue, FlatList, Platform, TouchableOpacity, View } from "react-native";
+import { ColorValue, FlatList, Platform, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { LineGraph } from "react-native-graph";
 
 import GlassContainer from "@/ui/new/GlassContainer";
@@ -111,6 +111,7 @@ const Averages = ({
     const adjustedColor = adjust(accent, theme.dark ? 0.2 : -0.2);
     const papillonFont = useFont();
     const { isLarge } = useResizable();
+    const { width: windowWidth } = useWindowDimensions();
 
     const [algorithm, setAlgorithm] = useState(algorithms[0]);
 
@@ -209,8 +210,10 @@ const Averages = ({
     const [algorithmSheetPresented, setAlgorithmSheetPresented] = useState(false);
 
     const algorithmPicker = () => {
+      // matchContents sizes the host to its content, so without an explicit
+      // width the text lays out unwrapped and overflows the sheet.
       return (
-        <View style={{ padding: 0, gap: 8, maxWidth: 600, alignSelf: "center" }}>
+        <View style={{ paddingHorizontal: 16, gap: 8, width: Math.min(windowWidth, 600), alignSelf: "center" }}>
               <View style={{ gap: 4, padding: 8 }}>
                 <Typography variant="h4">
                   Calcul de la moyenne générale

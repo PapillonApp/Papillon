@@ -14,7 +14,7 @@ import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 
 export interface School {
@@ -60,7 +60,6 @@ export default function PronoteLoginSelectEtab() {
   const headerHeight = useHeaderHeight();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(16);
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -90,10 +89,9 @@ export default function PronoteLoginSelectEtab() {
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
         animated
-        ListHeaderComponent={<PronoteSearchHeader search={search} setSearch={setSearch} loading={loading} t={t} />}
+        ListHeaderComponent={<SafeHorizontalView base={16}><PronoteSearchHeader search={search} setSearch={setSearch} loading={loading} t={t} /></SafeHorizontalView>}
+        safeHorizontalPadding={16}
         contentContainerStyle={{
-          padding: 16,
-          ...safePadding,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,

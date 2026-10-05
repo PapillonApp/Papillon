@@ -1,11 +1,10 @@
-import type { MenuAction, NativeActionEvent } from "@react-native-menu/menu";
 import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { Papicons } from "@getpapillon/papicons";
 
-import ActionMenu from "@/ui/components/ActionMenu";
+import ActionMenu, { type MenuAction, type NativeActionEvent } from "@/ui/components/ActionMenu";
 
 // Android header items are plain React Native views rather than
 // `Stack.Toolbar` items. The toolbar's Android backend hosts its children in a
@@ -19,8 +18,7 @@ import ActionMenu from "@/ui/components/ActionMenu";
 // search icon the stack adds next to them.
 const ITEM_SIZE = 48;
 
-/** `ActionMenu` reads `papicon` off its actions; the upstream type omits it. */
-export type AndroidHeaderMenuAction = MenuAction & { papicon?: string };
+export type AndroidHeaderMenuAction = MenuAction;
 
 export function AndroidHeaderButton({
   icon,

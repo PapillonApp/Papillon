@@ -1,5 +1,4 @@
 import { Papicons } from '@getpapillon/papicons';
-import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { Link, useRouter } from 'expo-router';
@@ -19,8 +18,9 @@ import { useUserProfileData } from '../hooks/useUserProfileData';
 import { t } from 'i18next';
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import ActionMenu from '@/ui/components/ActionMenu';
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
 
-const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
+const UserProfile = ({ subtitle, onPress, loading }: { subtitle?: string, onPress?: () => void, loading?: boolean }) => {
   const router = useRouter();
   const { firstName, lastName, initials, profilePicture, level, establishment } = useUserProfileData() ?? {};
   const accounts = useAccountStore((state) => state.accounts);
@@ -120,11 +120,12 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
               },
             ]}
           >
-            <Stack direction="vertical" vAlign="center" gap={0} style={{ height: 42, paddingHorizontal: 12 }}>
+            <Stack animated direction="vertical" vAlign="center" gap={0} style={{ height: 42, paddingHorizontal: 12 }}>
               <Stack direction="horizontal" hAlign="center" gap={6}>
                 <Typography nowrap color='white' variant='navigation' weight='bold' style={{ maxWidth: Dimensions.get('window').width - 230 }}>
                   {firstName && lastName ? `${firstName} ${lastName}` : "Mon compte"}
                 </Typography>
+                {loading && <ActivityIndicator size={18} strokeWidth={2.5} color="white" />}
                 <Papicons name="chevrondown" size={20} color="white" opacity={0.5} style={{ marginRight: 0 }} />
               </Stack>
               {subtitle &&

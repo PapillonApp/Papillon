@@ -4,11 +4,8 @@ const SILENCED_LOG_PATTERNS = [
   "is missing the required default export",
   "Found screens with the same name nested inside one another",
   "Linking found multiple possible URI schemes",
-  "Failed to install Tensorflow Lite bindings",
   "You must pass your PostHog project's api key",
   "i18next is made possible by our own product, Locize",
-  "Installing bindings...",
-  "Successfully installed!",
 ];
 
 const shouldSilence = (args) =>
