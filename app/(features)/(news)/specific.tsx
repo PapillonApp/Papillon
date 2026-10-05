@@ -7,7 +7,7 @@ import Stack from "@/ui/components/Stack";
 import TypographyLegacy, { VARIANTS } from "@/ui/components/Typography";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Attachment, News as SkolengoNews } from "skolengojs";
 
 import HTMLView from "react-native-htmlview";
@@ -15,15 +15,14 @@ import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Icon from "@/ui/components/Icon";
 import { t } from "i18next";
-import ListLegacy from "@/ui/components/List";
-import Item, { Leading } from "@/ui/components/Item";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { Papicons } from "@getpapillon/papicons";
-import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
+import { AttachmentAction, AttachmentLeading, AttachmentSubtitle } from "@/components/AttachmentStatus";
+import { DownloadOrigin, openAttachment, prefetchAttachments } from "@/stores/downloads";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { useFont } from "@/utils/theme/fonts";
@@ -45,7 +44,9 @@ const NewsPage = () => {
     setLoading(true);
     getNewsById(id)
       .then(result => {
-        if (!cancelled) setNews(result);
+        if (cancelled) return;
+        setNews(result);
+        if (result) prefetchAttachments(result.attachments, { source: "news", parentId: id });
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -122,6 +123,7 @@ const NewsPage = () => {
     return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Typography variant="title">{t("News_Empty_Title")}</Typography></View>;
   }
 
+  const attachmentOrigin: DownloadOrigin = { source: "news", parentId: id };
   const cleanedContent = HTMLCleanupEnabled ? cleanHtmlForArticle(news.content) : news.content
 
   return (
@@ -203,23 +205,22 @@ const NewsPage = () => {
         />
 
         {news.attachments.length > 0 && (
-          <ListLegacy>
-            {news.attachments.map((attachment, index) => (
-              <Item key={index} onPress={() => Linking.openURL(attachment.url)}>
-                <Leading>
-                  <Icon size={28}>
-                    <Papicons name={getAttachmentIcon(attachment)} />
-                  </Icon>
-                </Leading>
-                <TypographyLegacy variant="title">
-                  {attachment.name}
-                </TypographyLegacy>
-                <TypographyLegacy variant="body1" nowrap color="secondary">
-                  {attachment.url}
-                </TypographyLegacy>
-              </Item>
+          <List scrollEnabled={false}>
+            {news.attachments.map(attachment => (
+              <List.Item key={attachment.name + attachment.url} onPress={() => openAttachment(attachment, attachmentOrigin)}>
+                <List.Leading>
+                  <AttachmentLeading attachment={attachment} origin={attachmentOrigin} />
+                </List.Leading>
+                <Typography variant="title" numberOfLines={1}>
+                  {attachment.name || attachment.url}
+                </Typography>
+                <AttachmentSubtitle attachment={attachment} origin={attachmentOrigin} />
+                <List.Trailing>
+                  <AttachmentAction attachment={attachment} origin={attachmentOrigin} />
+                </List.Trailing>
+              </List.Item>
             ))}
-          </ListLegacy>
+          </List>
         )}
 
         <Stack gap={0} style={{ opacity: 0.4 }}>

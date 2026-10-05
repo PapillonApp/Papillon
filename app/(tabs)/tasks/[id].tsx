@@ -2,19 +2,19 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useEffect, useState } from "react";
 
+import { AttachmentAction, AttachmentLeading, AttachmentSubtitle } from "@/components/AttachmentStatus";
 import ModalOverhead from "@/components/ModalOverhead";
 import { getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
+import { DownloadOrigin, openAttachment, prefetchAttachments } from "@/stores/downloads";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { formatHTML } from "@/utils/format/html";
-import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
@@ -44,6 +44,7 @@ const Task = () => {
         if (!cancelled) {
           setTask(result);
           setIsDone(result?.isDone ?? false);
+          if (result) prefetchAttachments(result.attachments, { source: "homework", subject: result.subject, parentId: id });
         }
       })
       .finally(() => {
@@ -84,6 +85,8 @@ const Task = () => {
   if (!task) {
     return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Typography variant="title">{t("Tab_Tasks")}</Typography></View>;
   }
+
+  const attachmentOrigin: DownloadOrigin = { source: "homework", subject: task.subject, parentId: id };
 
   return (
     <>
@@ -189,28 +192,17 @@ const Task = () => {
             </List.SectionTitle>
 
             {task.attachments.map(attachment => (
-              <List.Item
-                onPress={() =>
-                  WebBrowser.openBrowserAsync(attachment.url, {
-                    presentationStyle: "formSheet",
-                  })
-                }
-              >
+              <List.Item key={attachment.name + attachment.url} onPress={() => openAttachment(attachment, attachmentOrigin)}>
                 <List.Leading>
-                  <Icon>
-                    <Papicons name={getAttachmentIcon(attachment)} />
-                  </Icon>
+                  <AttachmentLeading attachment={attachment} origin={attachmentOrigin} />
                 </List.Leading>
                 <Typography variant="title" numberOfLines={1}>
                   {attachment.name || attachment.url}
                 </Typography>
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  numberOfLines={1}
-                >
-                  {attachment.url}
-                </Typography>
+                <AttachmentSubtitle attachment={attachment} origin={attachmentOrigin} />
+                <List.Trailing>
+                  <AttachmentAction attachment={attachment} origin={attachmentOrigin} />
+                </List.Trailing>
               </List.Item>
             ))}
           </List.Section>

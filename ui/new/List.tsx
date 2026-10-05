@@ -20,6 +20,7 @@ type ListItemProps = MarkerProps & {
   id?: string;
   animated?: boolean;
   onPress?: () => void;
+  onLongPress?: () => void;
   href?: Href;
   containerStyle?: any;
   style?: any;
@@ -153,7 +154,10 @@ const renderListRow = ({
       </View>
     ) : null;
   const touchable = (
-    <ListTouchable {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}>
+    <ListTouchable
+      {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}
+      {...(itemProps.onLongPress ? { onLongPress: itemProps.onLongPress } : {})}
+    >
       {row}
     </ListTouchable>
   );

@@ -136,6 +136,30 @@ export default function Layout() {
           }}
         />*/}
         <Stack.Screen
+          name="downloads"
+          options={{
+            headerTitle: t("Settings_Downloads_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="downloads_folder"
+          options={{
+            headerTitle: "",
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="downloads_preferences"
+          options={{
+            headerTitle: t("Settings_Downloads_Preferences"),
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
           name="features"
           options={{
             headerTitle: t("Settings_Features_Title"),
