@@ -63,7 +63,7 @@ export async function addGradesToDatabase(grades: SharedGrade[], subject: string
 
     const existing = await db.get('grades').query(Q.where('gradeId', id)).fetch();
 
-    if(existing.length === 0) {
+    if (existing.length === 0) {
       await safeWrite(db, async () => {
         await db.get('grades').create((record: Model) => {
           const grade = record as Grade

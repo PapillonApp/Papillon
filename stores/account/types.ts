@@ -143,4 +143,5 @@ export enum Services {
   // 9 is reserved: it was the removed Lannion service, and accounts still using
   // it are signed out (REMOVED_SERVICE_ID in useHomeData). Never reuse it.
   MOCK_DATA = 10,
+  EDUSIGN = 9999,
 }

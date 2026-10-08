@@ -20,8 +20,18 @@ function copyManagedFiles(projectRoot, fromDirectory, toDirectory) {
   }
 }
 
+function ensureAppIcon(projectRoot) {
+  const sourceIcon = path.join(projectRoot, "assets", "app.icon");
+  const destIcon = path.join(projectRoot, "ios", "Papillon", "app.icon");
+  if (fs.existsSync(sourceIcon)) {
+    fs.mkdirSync(path.dirname(destIcon), { recursive: true });
+    fs.cpSync(sourceIcon, destIcon, { recursive: true });
+  }
+}
+
 function restoreIosNativeFiles(projectRoot) {
   copyManagedFiles(projectRoot, path.join("native", "ios"), "ios");
+  ensureAppIcon(projectRoot);
 }
 
 function snapshotIosNativeFiles(projectRoot) {

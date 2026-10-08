@@ -1,7 +1,6 @@
 {
   "Global_Back": "חזור",
   "Global_DatePrefix": "ב-",
-
   "Tab_Home": "בית",
   "Tab_Calendar": "מערכת שעות",
   "Tab_Tasks": "משימות",
@@ -16,7 +15,6 @@
   "Tab_Page": "עמוד",
   "Tab_Settings": "הגדרות",
   "Tab_News": "חדשות",
-
   "ONBOARDING_MAIN_TITLE": "האפליקציה לניהול חיי הלימודים שלך",
   "ONBOARDING_MAIN_DESCRIPTION": "חבר את האפליקציות של בית הספר כדי לגשת לציונים, מערכת השעות, המשימות ועוד, הכל בממשק של Papillon!",
   "ONBOARDING_START_BTN": "להתחיל",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "קוד PIN",
   "SEARCH_UNIV_PLACEHOLDER": "חיפוש שרת...",
   "ONBOARDING_LOADING_LOGIN": "מתחבר...",
-
   "WAITING": "בהמתנה",
   "IZLY_SMS_SEND": "קיבלת הרגע קישור להתחברות, לחץ עליו ובצע את השלבים.",
   "STEP": "שלב",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "התחבר",
   "CONFIRM_BTN": "אישור",
   "CANCEL_BTN": "ביטול",
-
   "Tab_New_Event": "אירוע חדש",
-
   "Tab_Calendar_Icals": "ניהול iCal",
   "Tab_Calendar_Icals_Description": "נהל את כתובות ה-iCal שלך",
-
   "Tab_Calendar_Icals_Add_URL": "הוספת כתובת iCal",
   "Tab_Calendar_Icals_Manage_Title": "נהל את {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "הוסף או הסר כתובות iCal לסנכרון עם לוח השנה שלך.",
   "Tab_Calendar_Icals_Add_Title": "כותרת חסרה",
   "Tab_Calendar_Icals_Add_Description": "תן שם לכתובת ה-iCal הזו כדי להוסיף אותה.",
   "Tab_Calendar_Icals_Empty": "לא נוספו כתובות iCal",
-
   "TabUnderConstruction_Title": "לשונית זו בבנייה.",
   "TabUnderConstruction_Details": "חזור מאוחר יותר לעדכונים.",
-
   "TabDevModeNotice_Title": "מצב מפתחים",
   "TabDevModeNotice_Details": "סביבת בדיקות מלאה למפתחים.",
-
   "Alert_TechnicalDetails": "פרטים טכניים",
-
   "Online_Course": "מקוון",
   "Evaluated_Course": "מבחן / הערכה",
   "Edited_Course": "שיעור עודכן",
@@ -94,36 +84,28 @@
   "No_Course_Room": "חדר לא ידוע",
   "Event_DeleteEvent": "מחיקת אירוע",
   "Event_Confirm_DeleteEvent": "האם אתה בטוח שברצונך למחוק אירוע זה?",
-
   "Course_Separator_Lunch_Default": "הפסקת צהריים",
   "Course_Separator_Lunch_Alt_1": "בתיאבון!",
   "Course_Separator_Lunch_Alt_2": "יאמי!",
-
   "Course_Separator_Morning_Default": "הפסקת בוקר",
   "Course_Separator_Morning_Alt_1": "לילה טוב!",
   "Course_Separator_Morning_Alt_2": "ארוחת בוקר",
-
   "Course_Separator_Evening_Default": "הפסקת אחר הצהריים",
   "Course_Separator_Evening_Alt_1": "זמן להפסקה!",
   "Course_Separator_Evening_Alt_2": "זמן לנשנוש!",
-
   "Course_Separator_Night_Default": "הפסקת ערב",
   "Course_Separator_Night_Alt_1": "לילה טוב!",
   "Course_Separator_Night_Alt_2": "כבר לילה!",
-
   "Context_Delete": "מחק",
   "Context_Cancel": "ביטול",
   "Context_Edit": "ערוך",
   "Context_Add": "הוסף",
-
   "Form_Title": "כותרת",
   "Form_Location": "מיקום",
   "Form_Organizer": "מארגן",
   "Form_Start": "התחלה",
   "Form_End": "סיום",
-
   "Confirm_DeleteEvent": "האם אתה בטוח שברצונך למחוק אירוע זה?",
-
   "Home_Welcome_Name": "שלום, {{name}} {{emoji}}",
   "Home_Display_More": "הצג עוד",
   "Home_Cards_Button_Description_Plurial": "זמינים",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "אין לך עוד שיעורים מתוכננים להיום",
   "Home_Planned_One": "נשאר לך שיעור אחד היום",
   "Home_Planned_Number": "נשארו לך {{number}} שיעורים היום",
-
   "Home_Widget_NextCourses": "השיעורים הבאים",
   "Home_Widget_NewGrades": "ציונים חדשים",
   "Home_Widget_NewHomeworks": "משימות לביצוע",
-
   "Home_Widget_NoCourses": "אין שיעורים קרובים",
   "Home_Widget_NoCourses_Description": "אין שיעורים מתוכננים להיום.",
-
   "Home_Cards_Button_Title": "כרטיסים",
   "Home_Cards_Button_Description_None": "אין כרטיסים",
   "Home_Cards_Button_Description_Singular": "כרטיס אחד",
   "Home_Cards_Button_Description_Number": "{{number}} כרטיסים",
-
   "Home_Chats_Button_Title": "הודעות",
   "Home_Chats_Button_Description_None": "אין הודעות",
   "Home_Chats_Button_Description_Singular": "הודעה אחת",
   "Home_Chats_Button_Description_Number": "{{number}} הודעות",
-
   "Home_Attendance_Title": "חיסורים",
   "Home_Attendance_Button_Description_None": "אין חיסורים",
   "Home_Attendance_Button_Description_Singular": "חיסור אחד",
   "Home_Attendance_Button_Description_Number": "{{number}} חיסורים",
-
   "Home_Menu_Button_Title": "תפריט",
   "Home_Menu_Button_Description": "תפריט היום",
-
   "Tab_Calendar_Empty": "לא נמצאו אירועים",
   "Tab_Calendar_Empty_Description": "הוסף אירוע או סנכרן את לוח השנה שלך כדי להתחיל.",
-
   "Modal_Course_Title": "השיעור שלי",
   "Modal_Course_StartsIn": "מתחיל בעוד",
   "Modal_Course_StartedAgo": "הסתיים לפני",
   "Modal_Course_Ongoing": "מתקיים כבר",
   "Modal_Course_Group": "קבוצה",
   "Modal_Course_Group_Full": "כיתה",
-
   "Modal_Course_Details": "פרטי השיעור",
   "Modal_Course_Teacher": "מורה",
   "Modal_Course_Room": "חדר",
   "Modal_Course_Duration": "משך זמן",
-
   "Modal_Course_Time": "שעות השיעור",
   "Modal_Course_Start": "התחלה",
   "Modal_Course_End": "סיום",
-
   "Tasks_Search_Placeholder": "חיפוש משימות",
   "Tasks_LeftHomeworks_Title": "משימות נותרו",
   "Tasks_LeftHomeworks_Time": "השבוע",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "משימות שהושלמו",
   "Task_Show_Title": "הצגה",
   "Settings_General": "כללי",
-
   "Latest_Grades": "ציונים חדשים",
   "Grades_Search_Placeholder": "חיפוש ציון או מקצוע",
-
   "Grades_Avg_Methods": "שיטות חישוב",
   "Grades_Avg_All_Title": "ממוצע כללי",
   "Grades_Avg_All_Short": "ממוצע כללי",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "מחשב את הממוצע המשוקלל של ממוצעי המקצועות",
   "Grades_Avg_Median_Title": "חציון",
   "Grades_Avg_Median_Short": "חציון",
-
   "Grades_Avg_More": "למידע נוסף",
   "Grades_Avg_KnowMore": "למידע נוסף",
   "Grades_Avg_KnowMore_Description": "הבנת שיטות חישוב הממוצע הכללי",
-
   "Grades_SubjectInfo": "מידע על המקצוע",
   "Grades_SubjectInfo_NbGrades": "{{number}} ציונים",
   "SubjectInfo_StudentAverage_Label": "ממוצע התלמיד",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "הממוצע הגבוה ביותר בקבוצה",
   "SubjectInfo_MinAverage_Label": "ממוצע מינימלי",
   "SubjectInfo_MinAverage_Description": "הממוצע הנמוך ביותר בקבוצה",
-
   "Grades_Semester": "סמסטר",
   "Grades_Trimester": "שליש",
   "Grades_OutPeriod": "מחוץ לתקופה",
   "Grades_Year": "שנה",
   "Grades_MockExamBac": "בגרות מדומה",
   "Grades_MockExamBrevet": "מבחן מגן",
-
   "Grades_Method_AllGrades": "כל המקצועות",
   "Grades_Method_Weighted": "משקל (מקדם)",
-
   "Grades_Sort": "מיון",
   "Grades_Sorting_Alphabetical": "אלפביתי",
   "Grades_Sorting_Averages": "ממוצעים",
   "Grades_Sorting_Date": "תאריך",
-
   "Grades_Menu_SortBy": "מיון לפי",
   "Grades_Menu_AverageBy": "ממוצע לפי",
   "NoAverage": "אין ממוצע",
-
   "Grades_Empty_Title": "אין ציונים",
   "Grades_Empty_Description": "עדיין לא קיבלת ציונים בתקופה זו.",
-
   "Grade_NoDescription": "מטלה במקצוע {{subject}}",
-
   "Grades_Tab_Subjects": "מקצועות",
   "Grades_Tab_Latest": "ציונים חדשים",
-
   "Profile_Attendance_Title": "נוכחות",
   "Profile_Attendance_Denominator_Single": "חיסור",
   "Profile_Attendance_Denominator_Plural": "חיסורים",
-
   "Profile_Discussions_Title": "שיחות",
   "Profile_Discussions_Denominator_Single": "שלא נקרא",
   "Profile_Discussions_Denominator_Plural": "שלא נקראו",
-
   "Profile_News_Title": "חדשות",
   "Profile_News_Denominator_Single": "חדש",
   "Profile_News_Denominator_Plural": "חדשים",
   "Profile_News_Open": "פתיחה",
   "Profile_News_Loading_Title": "טוען חדשות...",
   "Profile_News_Author_Unknown": "מחבר לא ידוע",
-
   "Profile_Cards_Title": "קוד QR וכרטיסים",
-
   "Modal_Grades_Title": "פרטי הציון",
   "Modal_Grades_BestGrade": "הציון הכי גבוה בקבוצה",
-
   "Grades_Details_Title": "פרטים",
   "Grades_NormalizedGrade_Title": "ציון מנורמל ל-20",
   "Grades_NormalizedGrade_Description": "ערך הציון מומר לסולם של 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "ממוצע קבוצה",
   "Grades_Tab_Rank": "דירוג",
   "Grades_Tab_Rank_Description": "מיקום בקבוצה",
-
   "News_Search_Placeholder": "חיפוש ידיעה",
   "News_Empty_Title": "אין חדשות",
   "News_Empty_Description": "לא נמצאו ידיעות במוסד הלימודים שלך.",
   "News_Search_NoResults": "לא נמצאו ידיעות",
   "News_Search_NoResults_Description": "לא נמצאו ידיעות התואמות לחיפוש שלך.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "ערכת נושא רכה ואלגנטית",
-
   "News_Theme_Reading_Title": "קריאה",
   "News_Theme_Reading_Description": "ערכת נושא המיועדת לקריאה",
-
   "Attendance_Hours_Missed": "שעות שהוחסרו",
   "Attendance_Hours_Unjustified": "שעות לא מוצדקות",
   "Attendance_Missing": "חיסורים",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "אין סיבה",
   "Attendance_NoEvent_Title": "אין אירועים",
   "Attendance_NoEvent_Description": "לא נרשמו חיסורים או איחורים לתקופה זו.",
-
   "Settings_Account_Title": "החשבון שלי",
   "Settings_Account_Description": "החשבון שלי",
   "Settings_Services_Title": "חשבונות מחוברים",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "שינוי שפה",
   "Settings_Tabs_Title": "לשוניות",
   "Settings_Tabs_Description": "הסתרת לשוניות מהתפריט",
-
   "Settings_Personalization_Title_Card": "התאמה אישית",
   "Settings_Personalization_Subtitle_Card": "ערכות נושא, מקצועות...",
   "Settings_SubjectPersonalization_Title": "התאמה אישית של מקצועות",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "דיווח על באג",
   "Settings_About_Issue_Description": "דיווח על תקלה שנתקלת בה",
   "Settings_About_Dependency_Version": "גרסת ספריות",
-
   "Alert_No_Technical": "אין מידע טכני זמין.",
   "Alert_Auth_Error": "שגיאת אימות",
   "Alert_Auth_Bad_Creds": "פרטי ההתחברות שהזנת שגויים או שאתה מנסה להתחבר עם חשבון הורה. סוג חשבון זה עדיין אינו נתמך על ידי Papillon.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon לא מצליחה לקבל מידע משרת ה-PRONOTE הזה, האם הוא עדיין תקף?",
   "Alert_No_Pos": "לא ניתן לקבל את המיקום",
   "Alert_Connexion_Fail": "התחברות נכשלה",
-
   "Feature_Limited": "תכונות מוגבלות",
   "Feature_Soon": "זה מגיע בקרוב!",
   "Feature_Soon_Notification": "אנו עובדים קשה כדי להציע לכם תכונה זו בעדכון עתידי.",
   "Feature_Add_Card": "הוסף כרטיס חדש מלשונית הפרופיל הנגישה בסרגל הניווט",
-
   "Webview_Wait": "מעט סבלנות...",
-
   "Profile_QRCards": "קוד QR וכרטיסים",
   "Profile_QRCards_Subtitle": "{{count}} כרטיסים",
   "Profile_Cards_Loading_History": "טוען היסטוריית עסקאות",
   "Profile_Cards_Loading_History_Description": "זה עשוי לקחת רגע...",
-
   "Settings_Cards_Banner_Title": "כרטיסים",
   "Settings_Cantineen_Subtitle_Card": "קפיטריה, גישה",
   "Settings_Cards_Banner_Description": "הוסף את כרטיסי הקפיטריה והתחבורה שלך כדי לגשת אליהם מכל מקום מהטלפון שלך ב-Papillon",
   "Settings_Cards_None_Title": "אין כרטיסים",
   "Settings_Cards_Add_Button": "הוספה",
-
   "Settings_Cards_None_Description": "הוסף כרטיס כדי לראות את יתרת הקפיטריה, לסרוק את קוד ה-QR שלך ועוד",
   "Settings_Subjects_None_Title": "אין מקצועות",
   "Settings_Subjects_None_Description": "עיין בלשוניות השונות של האפליקציה כדי שתוכל להתאים אישית את המקצועות.",
   "Settings_Subjects_Reset_Title": "איפוס",
   "Settings_Subjects_Reset_Message": "האם אתה באמת רוצה לאפס את כל המקצועות?",
   "Settings_Subjects_Reset_Button": "איפוס",
-
   "Settings_Donator": "תורמים",
   "Settings_Donator_Description": "צפייה ברשימת התורמים",
   "Settings_App_Version": "גרסת האפליקציה",
-
   "Profile_Cards_Scan_Orientation": "כוון את קוד ה-QR אל הסורק",
   "Profile_Cards_No_Reservation": "אין הזמנה",
   "Profile_Cards_No_Available_Reservation": "נראה שאינך יכול להזמין ביום זה.",
   "Profile_Cards_History": "היסטוריה",
   "Magic_Important": "אולי חשוב",
-
   "OnBoarding_Step": "שלב ",
   "OnBoarding_Step_Of": "מתוך ",
-
   "Consent_Advanced_Title": "אני רוצה לעזור ל-Papillon",
   "Consent_Advanced_Description": "אנו אוספים מידע מפורט יותר על השימוש שלך.",
   "Consent_Required_Title": "רק מה שחיוני",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "משמש אך ורק לשיפור האפליקציה",
   "Consent_Arg2": "אנונימי וללא קשר לזהותך",
   "Consent_Arg3": "אין לנו גישה לחשבונות שלך",
-
   "Changelog_Title": "הערות גרסה",
-
   "Tasks_Sorting_Methods_DueDate": "תאריך הגשה",
   "Tasks_Sorting_Methods_Subject": "מקצועות",
   "Tasks_Sorting_Methods_Done": "לא הושלם",
   "Tasks_ThisWeek": "השבוע",
-
   "Task_Undone": "לא הושלם",
   "Task_Done": "הושלם",
-
   "Modal_Wallpaper_Title": "התאמת רקע",
   "Modal_Profile_Title": "התאמת פרופיל",
-
   "Modal_Task_Status": "מצב המטלה",
   "Modal_Task_Description": "תיאור המטלה",
   "Modal_Task_Attachments": "קבצים מצורפים",
-
   "Today": "היום",
   "Yesterday": "אתמול",
-  "Tomorrow": "מחר"
+  "Tomorrow": "מחר",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

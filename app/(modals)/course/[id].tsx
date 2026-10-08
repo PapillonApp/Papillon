@@ -1,18 +1,25 @@
-import { Papicons } from '@getpapillon/papicons';
+import { Papicons } from "@getpapillon/papicons";
 import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
-import * as DateLocale from 'date-fns/locale';
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
+import { formatDistanceStrict, formatDistanceToNow } from "date-fns";
+import * as DateLocale from "date-fns/locale";
 import i18n, { t } from "i18next";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Alert, Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-
 import ModalOverhead from "@/components/ModalOverhead";
 import { getCourseById } from "@/database/useTimetable";
-import { Course as SharedCourse } from "@/services/shared/timetable";
+import { getManager } from "@/services/shared";
+import { Capabilities } from "@/services/shared/types";
+import {
+  Course as SharedCourse,
+  CourseStatus,
+} from "@/services/shared/timetable";
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Icon from "@/ui/components/Icon";
+import Button from "@/ui/new/Button";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
@@ -29,7 +36,7 @@ import {
 } from "@/utils/widgets/courseLiveActivity";
 
 import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface SubjectInfo {
   name: string;
@@ -45,7 +52,7 @@ export default function CourseModal() {
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
-    default: 0
+    default: 0,
   });
   const [course, setCourse] = useState<SharedCourse>();
   const [loading, setLoading] = useState(true);
@@ -60,27 +67,58 @@ export default function CourseModal() {
   const canTriggerLiveActivity =
     COURSE_LIVE_ACTIVITY_SUPPORTED && liveActivityTestMode && liveActivitiesEnabled;
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    getCourseById(id)
-      .then(result => {
-        if (!cancelled) setCourse(result);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
+  const accounts = useAccountStore(state => state.accounts);
+  const courseAccount = course
+    ? accounts.find(a => a.id === course.createdByAccount)
+    : undefined;
+
+  const manager = getManager(true);
+  const hasSignCapability =
+    course &&
+    (manager?.clientHasCapability(Capabilities.SIGN, course.createdByAccount) ||
+      manager?.clientHasCapatibility(
+        Capabilities.SIGN,
+        course.createdByAccount
+      ) ||
+      courseAccount?.services.some(s => s.serviceId === Services.EDUSIGN));
+
+  const canSign =
+    Boolean(hasSignCapability) &&
+    (course?.canSign !== undefined
+      ? course.canSign
+      : !course?.isSigned && !course?.isStudentPresent) &&
+    course?.status !== CourseStatus.CANCELED;
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      getCourseById(id)
+        .then(result => {
+          if (!cancelled) setCourse(result);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+      return () => {
+        cancelled = true;
+      };
+    }, [id])
+  );
 
   if (loading) {
-    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><ActivityIndicator /></View>;
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
   }
 
   if (!course) {
-    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Typography variant="title">{t("Tab_Calendar")}</Typography></View>;
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Typography variant="title">{t("Tab_Calendar")}</Typography>
+      </View>
+    );
   }
 
   const subjectInfo: SubjectInfo = {
@@ -102,7 +140,12 @@ export default function CourseModal() {
   const endTime = Math.floor(course.to.getTime() / 1000);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.overground }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: (colors as any).overground ?? colors.background,
+      }}
+    >
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
           <HeaderBackButton onPress={() => router.back()} />
@@ -133,7 +176,7 @@ export default function CourseModal() {
             <ModalOverhead
               subject={getSubjectName(item.subject)}
               title={item.customStatus || getStatusText(item.status)}
-              color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
+              color={Platform.OS === "ios" ? subjectInfo.color : String(colors.primary)}
               emoji={subjectInfo.emoji}
               subjectVariant="h3"
               date={new Date(startTime * 1000)}
@@ -168,6 +211,27 @@ export default function CourseModal() {
             </List.Item>
           </List.Section>
         ) : null}
+
+        {canSign && (
+          <View style={{ marginBottom: 16 }}>
+            <Button
+              label={t("Modal_Course_Sign")}
+              variant="primary"
+              fullWidth
+              leading={
+                <Icon size={20} fill="white" papicon>
+                  <Papicons name="PenAlt" />
+                </Icon>
+              }
+              onPress={() =>
+                router.push({
+                  pathname: "/(modals)/attendance/methods",
+                  params: { id: course.id },
+                })
+              }
+            />
+          </View>
+        )}
 
         <List.Section>
           <List.SectionTitle>
