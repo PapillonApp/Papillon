@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "expo-router/react-navigation";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
@@ -12,7 +12,7 @@ import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { formatHTML } from "@/utils/format/html";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
@@ -24,7 +24,7 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { Homework } from "@/services/shared/homework";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { View } from "react-native";
 
 const Task = () => {
@@ -67,12 +67,11 @@ const Task = () => {
     if (!task) return;
     await manager?.setHomeworkCompletion(task, done);
 
-    updateHomeworkIsDone(id, done);
+    await updateHomeworkIsDone(id, done);
     setIsDone(done);
   }
 
   const insets = useSafeAreaInsets();
-  const { paddingLeft: contentPaddingLeft, paddingRight: contentPaddingRight } = useSafeHorizontalPadding(16);
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
     default: 0
@@ -90,11 +89,7 @@ const Task = () => {
     <>
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <NativeHeaderPressable onPress={() => router.back()}>
-            <Icon size={28}>
-              <Papicons name="ArrowLeft" />
-            </Icon>
-          </NativeHeaderPressable>
+          <HeaderBackButton onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
 
@@ -118,26 +113,27 @@ const Task = () => {
 
       <List
         contentInsetAdjustmentBehavior="automatic"
+        safeHorizontalPadding={16}
         ListHeaderComponent={
-          <ModalOverhead
-            emoji={subjectInfo.emoji}
-            subject={subjectInfo.name}
-            subjectVariant="header"
-            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
-            date={new Date(task.dueDate)}
-            style={{
-              marginVertical: 0,
-              paddingTop: finalHeaderHeight,
-            }}
-          />
+          <SafeHorizontalView base={16}>
+            <ModalOverhead
+              emoji={subjectInfo.emoji}
+              subject={subjectInfo.name}
+              subjectVariant="header"
+              color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
+              date={new Date(task.dueDate)}
+              style={{
+                marginVertical: 0,
+                paddingTop: finalHeaderHeight,
+              }}
+            />
+          </SafeHorizontalView>
         }
         style={{
           backgroundColor: "transparent",
         }}
         contentContainerStyle={{
-          padding: 16,
-          paddingLeft: contentPaddingLeft,
-          paddingRight: contentPaddingRight,
+          paddingVertical: 16,
         }}
       >
         <List.Section>

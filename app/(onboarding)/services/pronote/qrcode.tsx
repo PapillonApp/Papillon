@@ -27,18 +27,16 @@ import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
+import { setPendingPronoteChallenge } from "@/utils/pronote/challenge";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import * as Device from "expo-device";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  // Modals render outside the screen's SafeAreaView, so they pad themselves.
-  const safePadding = useSafeHorizontalPadding(16);
-  const headerSafePadding = useSafeHorizontalPadding(20);
 
   const { colors } = theme;
   const [permission, requestPermission] = useCameraPermissions();
@@ -100,14 +98,8 @@ export default function PronoteLoginWithQR() {
               context.initialUsername,
             );
           } else {
-            router.push({
-              pathname: "/(onboarding)/services/pronote/2fa",
-              params: {
-                error: JSON.stringify(error),
-                session: JSON.stringify(session),
-                deviceId: accountID
-              }
-            });
+            setPendingPronoteChallenge({ session, error, deviceUUID: accountID });
+            router.push("/(onboarding)/services/pronote/challenge");
           }
         }
       }
@@ -247,10 +239,10 @@ export default function PronoteLoginWithQR() {
 
           <View style={{ flex: 1 }} />
 
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{
               width: "100%",
-              ...safePadding,
               paddingBottom: insets.bottom,
               gap: 8,
             }}
@@ -262,7 +254,7 @@ export default function PronoteLoginWithQR() {
                 router.back();
               }}
             />
-          </View>
+          </SafeHorizontalView>
         </View>
       </Modal>
 
@@ -282,13 +274,13 @@ export default function PronoteLoginWithQR() {
           behavior="padding"
           keyboardVerticalOffset={insets.top}
         >
-          <View
+          <SafeHorizontalView
+            base={20}
             style={{
               justifyContent: "center",
               alignItems: "center",
               marginBottom: 24,
               paddingVertical: 16,
-              ...headerSafePadding,
               borderBottomColor: colors.border,
               borderBottomWidth: 0.5,
             }}
@@ -303,7 +295,7 @@ export default function PronoteLoginWithQR() {
             >
               {t("ONBOARDING_QRCODE_VALIDATION")}
             </Typography>
-          </View>
+          </SafeHorizontalView>
 
           <Reanimated.View
             entering={FadeInUp.duration(250)}
@@ -361,10 +353,10 @@ export default function PronoteLoginWithQR() {
             />
           </View>
 
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{
               width: "100%",
-              ...safePadding,
               paddingBottom: insets.bottom + 16,
               gap: 8,
             }}
@@ -383,7 +375,7 @@ export default function PronoteLoginWithQR() {
                 setPinModalVisible(false);
               }}
             />
-          </View>
+          </SafeHorizontalView>
         </KeyboardAvoidingView>
       </Modal>
 

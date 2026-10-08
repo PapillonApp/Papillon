@@ -1,5 +1,5 @@
 export function GetIdentityFromPronoteUsername(str: string): { firstName: string; lastName: string } {
-  const match = /[A-Z]{2,}(?:\s[A-Z]{2,})*/.exec(str);
+  const match = /[A-ZÀ-ÖØ-Þ]{2,}(?:[\s'-]+[A-ZÀ-ÖØ-Þ]{2,})*/.exec(str);
 
   if (match) {
     const lastName = match[0].trim();

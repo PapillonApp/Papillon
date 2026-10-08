@@ -15,6 +15,7 @@ import { checkConsent } from '@/utils/logger/consent';
 import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
 import { useCalendarWidgetFeed } from '@/utils/widgets/useCalendarWidgetFeed';
+import { useCourseLiveActivity } from '@/utils/widgets/courseLiveActivity';
 import { LogBox } from 'react-native';
 
 // Polyfill Buffer
@@ -31,6 +32,9 @@ LogBox.ignoreLogs([
   "Manager is null, skipping timetable fetch",
   "Installing bindings...",
   "Successfully installed!",
+  "The action 'PRELOAD' with payload",
+  "DrawerLayoutAndroid is deprecated",
+  "cannot calculate shadow efficiently",
 ]);
 
 export default function RootLayout() {
@@ -39,6 +43,7 @@ export default function RootLayout() {
   const lastTrackedView = useRef<string | null>(null);
 
   useCalendarWidgetFeed();
+  useCourseLiveActivity();
 
   const analyticsView = useMemo(() => {
     if (segments.length === 0) return null;

@@ -1,6 +1,6 @@
 /* eslint-disable max-depth */
 import { Directory, File, Paths } from "expo-file-system";
-import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
+import { loadTensorflowModel, TensorflowModel } from "./tflite";
 
 import packageJson from "@/package.json";
 import { useSettingsStore } from "@/stores/settings";

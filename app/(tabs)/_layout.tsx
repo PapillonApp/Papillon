@@ -4,7 +4,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import useResizable from "@/ui/utils/Resizable";
 import { useTheme } from "expo-router/react-navigation";
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useTranslation } from 'react-i18next';
 import { Platform, DynamicColorIOS } from 'react-native';
 import { useFont } from '@/utils/theme/fonts';
@@ -47,7 +47,7 @@ function TabLayoutContent() {
     <NativeTabs
       tintColor={theme.colors.tint}
       labelStyle={tabLabelStyle}
-      labelVisibilityMode={showTabBarLabels ? "labeled" : "selected"}
+      labelVisibilityMode={showTabBarLabels ? "labeled" : "unlabeled"}
       rippleColor={theme.colors.tint + '22'}
       backgroundColor={Platform.OS === 'android' ? theme.colors.background : undefined}
       sidebarAdaptable

@@ -33,13 +33,12 @@ import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
 
 import OnboardingWebView from "../../components/OnboardingWebView";
-import { Pronote2FAModal } from "./2fa";
+import { Pronote2FAModal } from "@/components/onboarding/Pronote2FAModal";
 import Button from "@/ui/new/Button";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export default function PronoteENTLogin() {
   const { colors } = useTheme();
-  const safePadding = useSafeHorizontalPadding(20);
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { params } = useRoute();
@@ -417,16 +416,18 @@ export default function PronoteENTLogin() {
           entering={FadeIn.duration(130)}
           exiting={FadeOut.duration(130)}
         >
-          <Stack vAlign="center" hAlign="center" width={"100%"} gap={3} padding={20} style={safePadding}>
-            <ActivityIndicator />
-            <Divider height={12} ghost />
-            <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? formatSchoolName(school.name) : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
-            <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+          <SafeHorizontalView base={20} style={{ width: "100%" }}>
+            <Stack vAlign="center" hAlign="center" width={"100%"} gap={3} padding={[0, 20]}>
+              <ActivityIndicator />
+              <Divider height={12} ghost />
+              <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? formatSchoolName(school.name) : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
+              <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
 
-            {hasLoadingBeenTooLong && (
-              <Button label="Masquer" variant="text" onPress={() => setLoadingHidden(true)} />
-            )}
-          </Stack>
+              {hasLoadingBeenTooLong && (
+                <Button label="Masquer" variant="text" onPress={() => setLoadingHidden(true)} />
+              )}
+            </Stack>
+          </SafeHorizontalView>
         </Reanimated.View>
       }
 

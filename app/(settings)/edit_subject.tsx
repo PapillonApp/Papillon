@@ -31,6 +31,8 @@ import { LegendList, LegendListRef } from "@legendapp/list";
 import { FlashList } from "@shopify/flash-list";
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
 import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const EmojiItem = memo(({ item, onPress, isSelected }: {item: string, onPress: (emoji: string) => void, isSelected: boolean}) => {
   const theme = useTheme();
@@ -267,8 +269,6 @@ function EmojiPicker({
 export default function EditSubject() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(16);
-  const headerSafePadding = useSafeHorizontalPadding(15);
 
   const params = useLocalSearchParams();
 
@@ -296,51 +296,53 @@ export default function EditSubject() {
         paddingTop: Platform.OS === "android" ? insets.top : 0,
       }}
     >
-      <Stack
-        padding={15}
-        style={{ justifyContent: "space-between", alignItems: "center", ...headerSafePadding }}
-        direction={"horizontal"}
-      >
-        <AnimatedPressable
-          style={{
-            padding: 10,
-            backgroundColor: colors.text + "10",
-            borderRadius: 100,
-          }}
-          onPress={() => {
-            router.back();
-          }}
+      <SafeHorizontalView base={15}>
+        <Stack
+          padding={[0, 15]}
+          style={{ justifyContent: "space-between", alignItems: "center" }}
+          direction={"horizontal"}
         >
-          <Papicons name={"Cross"} size={25} color={colors.text + "7F"} />
-        </AnimatedPressable>
-        <Typography variant={"title"}>Modifier la matière</Typography>
-        <AnimatedPressable
-          style={{
-            padding: 10,
-            backgroundColor: colors.primary,
-            borderRadius: 100,
-          }}
-          onPress={() => {
-            const store = useAccountStore.getState();
-            const originalName = String(params.name);
-            const originalColor = String(params.color);
-            const originalEmoji = String(params.emoji);
+          <AnimatedPressable
+            style={{
+              padding: 10,
+              backgroundColor: colors.text + "10",
+              borderRadius: 100,
+            }}
+            onPress={() => {
+              router.back();
+            }}
+          >
+            <Papicons name={"Cross"} size={25} color={colors.text + "7F"} />
+          </AnimatedPressable>
+          <Typography variant={"title"}>Modifier la matière</Typography>
+          <AnimatedPressable
+            style={{
+              padding: 10,
+              backgroundColor: colors.primary,
+              borderRadius: 100,
+            }}
+            onPress={() => {
+              const store = useAccountStore.getState();
+              const originalName = String(params.name);
+              const originalColor = String(params.color);
+              const originalEmoji = String(params.emoji);
 
-            store.setSubjectName(String(params.id), selectedName);
-            store.setSubjectEmoji(String(params.id), selectedEmoji);
-            store.setSubjectColor(String(params.id), selectedColor);
-            trackAdvancedEvent("subject_info_changed", {
-              name_changed: selectedName !== originalName,
-              emoji_changed: selectedEmoji !== originalEmoji,
-              color_changed: selectedColor !== originalColor,
-            });
+              store.setSubjectName(String(params.id), selectedName);
+              store.setSubjectEmoji(String(params.id), selectedEmoji);
+              store.setSubjectColor(String(params.id), selectedColor);
+              trackAdvancedEvent("subject_info_changed", {
+                name_changed: selectedName !== originalName,
+                emoji_changed: selectedEmoji !== originalEmoji,
+                color_changed: selectedColor !== originalColor,
+              });
 
-            router.back();
-          }}
-        >
-          <Papicons name={"Check"} size={25} color={"#FFF"} />
-        </AnimatedPressable>
-      </Stack>
+              router.back();
+            }}
+          >
+            <Papicons name={"Check"} size={25} color={"#FFF"} />
+          </AnimatedPressable>
+        </Stack>
+      </SafeHorizontalView>
       <Stack hAlign={"center"} pointerEvents={"none"}>
         <CompactGrade
           date={new Date()}
@@ -354,149 +356,155 @@ export default function EditSubject() {
       </Stack>
 
       <Stack gap={10}>
-        <Stack
-          gap={5}
-          direction={"horizontal"}
-          hAlign={"center"}
-          style={{ ...safePadding, marginTop: 20 }}
-        >
-          <Papicons name={"Font"} color={colors.text + "7F"} size={18} />
-          <Typography color="secondary">Nom de la matière</Typography>
-        </Stack>
-        <Stack style={safePadding}>
-          <OnboardingInput
-            placeholder={"Nom de la matière"}
-            text={selectedName}
-            setText={setSelectedName}
-            icon={"Font"}
-            inputProps={{}}
-          />
-        </Stack>
-        <Stack
-          gap={5}
-          direction={"horizontal"}
-          hAlign={"center"}
-          style={safePadding}
-        >
-          <Papicons name={"Palette"} color={colors.text + "7F"} size={18} />
-          <Typography color="secondary">Couleur</Typography>
-        </Stack>
+        <SafeHorizontalView base={16}>
+          <Stack
+            gap={5}
+            direction={"horizontal"}
+            hAlign={"center"}
+            style={{ marginTop: 20 }}
+          >
+            <Papicons name={"Font"} color={colors.text + "7F"} size={18} />
+            <Typography color="secondary">Nom de la matière</Typography>
+          </Stack>
+        </SafeHorizontalView>
+        <SafeHorizontalView base={16}>
+          <Stack>
+            <OnboardingInput
+              placeholder={"Nom de la matière"}
+              text={selectedName}
+              setText={setSelectedName}
+              icon={"Font"}
+              inputProps={{}}
+            />
+          </Stack>
+        </SafeHorizontalView>
+        <SafeHorizontalView base={16}>
+          <Stack
+            gap={5}
+            direction={"horizontal"}
+            hAlign={"center"}
+          >
+            <Papicons name={"Palette"} color={colors.text + "7F"} size={18} />
+            <Typography color="secondary">Couleur</Typography>
+          </Stack>
+        </SafeHorizontalView>
         <ScrollView
           horizontal
           contentContainerStyle={{
-            gap: 10,
             height: 50,
             alignItems: "center",
-            ...safePadding,
           }}
           showsHorizontalScrollIndicator={false}
         >
-          {Colors.map(color => (
-            <AnimatedPressable
-              key={color}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 100,
-                backgroundColor: color,
-                borderWidth: 4,
-                borderColor: "#FFF",
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 0,
-                },
-                shadowOpacity: 0.25,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onPress={() => setSelectedColor(color)}
-            >
-              {selectedColor === color && (
-                <Papicons name={"Check"} color={"#FFF"} />
-              )}
-            </AnimatedPressable>
-          ))}
+          <SafeHorizontalView base={16} style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            {Colors.map(color => (
+              <AnimatedPressable
+                key={color}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 100,
+                  backgroundColor: color,
+                  borderWidth: 4,
+                  borderColor: "#FFF",
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 0,
+                  },
+                  shadowOpacity: 0.25,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => setSelectedColor(color)}
+              >
+                {selectedColor === color && (
+                  <Papicons name={"Check"} color={"#FFF"} />
+                )}
+              </AnimatedPressable>
+            ))}
+          </SafeHorizontalView>
         </ScrollView>
-        <Stack
-          gap={5}
-          direction={"horizontal"}
-          hAlign={"center"}
-          style={safePadding}
-        >
-          <Papicons name={"Emoji"} color={colors.text + "7F"} size={18} />
-          <Typography color="secondary">Emoji</Typography>
-        </Stack>
+        <SafeHorizontalView base={16}>
+          <Stack
+            gap={5}
+            direction={"horizontal"}
+            hAlign={"center"}
+          >
+            <Papicons name={"Emoji"} color={colors.text + "7F"} size={18} />
+            <Typography color="secondary">Emoji</Typography>
+          </Stack>
+        </SafeHorizontalView>
         <ScrollView
           horizontal
           style={{ width: Dimensions.get("window").width }}
           contentContainerStyle={{
-            gap: 10,
             height: 60,
             alignItems: "center",
-            ...safePadding,
           }}
           showsHorizontalScrollIndicator={false}
         >
-          {!AvailableEmojis.includes(selectedEmoji) && (
-            <AnimatedPressable
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 100,
-                backgroundColor: selectedColor + "20",
-                borderWidth: 1,
-                borderColor: colors.border,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Typography
+          <SafeHorizontalView base={16} style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            {!AvailableEmojis.includes(selectedEmoji) && (
+              <AnimatedPressable
                 style={{
-                  fontSize: 25,
-                  lineHeight: 32,
+                  width: 60,
+                  height: 60,
+                  borderRadius: 100,
+                  backgroundColor: selectedColor + "20",
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                {selectedEmoji}
-              </Typography>
-            </AnimatedPressable>
-          )}
-          {AvailableEmojis.map(emoji => (
-            <AnimatedPressable
-              key={emoji}
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 100,
-                backgroundColor:
-                  selectedColor + (selectedEmoji === emoji ? "20" : "00"),
-                borderWidth: 1,
-                borderColor: colors.border,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onPress={() => {
-                if (emoji === "custom") {
-                  setShowEmojiPicker(true);
-                } else {
-                  setSelectedEmoji(emoji);
-                }
-              }}
-            >
-              {emoji === "custom" ? (
-                <Papicons name={"Emoji"} color={colors.text + "7F"} size={25} />
-              ) : (
                 <Typography
                   style={{
                     fontSize: 25,
                     lineHeight: 32,
                   }}
                 >
-                  {emoji}
+                  {selectedEmoji}
                 </Typography>
-              )}
-            </AnimatedPressable>
-          ))}
+              </AnimatedPressable>
+            )}
+            {AvailableEmojis.map(emoji => (
+              <AnimatedPressable
+                key={emoji}
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 100,
+                  backgroundColor:
+                    selectedColor + (selectedEmoji === emoji ? "20" : "00"),
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  if (emoji === "custom") {
+                    setShowEmojiPicker(true);
+                  } else {
+                    setSelectedEmoji(emoji);
+                  }
+                }}
+              >
+                {emoji === "custom" ? (
+                  <Papicons name={"Emoji"} color={colors.text + "7F"} size={25} />
+                ) : (
+                  <Typography
+                    style={{
+                      fontSize: 25,
+                      lineHeight: 32,
+                    }}
+                  >
+                    {emoji}
+                  </Typography>
+                )}
+              </AnimatedPressable>
+            ))}
+          </SafeHorizontalView>
         </ScrollView>
       </Stack>
       <Modal
@@ -505,6 +513,7 @@ export default function EditSubject() {
         visible={showEmojiPicker}
         onRequestClose={() => setShowEmojiPicker(false)}
       >
+        <GestureHandlerRootView style={{ flex: 1 }}>
         <EmojiPicker
           onCancel={() => setShowEmojiPicker(false)}
           onSelect={emoji => {
@@ -512,6 +521,7 @@ export default function EditSubject() {
             setShowEmojiPicker(false);
           }}
         />
+        </GestureHandlerRootView>
       </Modal>
     </View>
   );

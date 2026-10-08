@@ -4,11 +4,14 @@ const SILENCED_LOG_PATTERNS = [
   "is missing the required default export",
   "Found screens with the same name nested inside one another",
   "Linking found multiple possible URI schemes",
-  "Failed to install Tensorflow Lite bindings",
   "You must pass your PostHog project's api key",
   "i18next is made possible by our own product, Locize",
-  "Installing bindings...",
-  "Successfully installed!",
+  // expo-router 58 preview bug: native tabs preload, router rejects it. Dev-only.
+  "The action 'PRELOAD' with payload",
+  // From react-native-gesture-handler's legacy exports, not our code.
+  "DrawerLayoutAndroid is deprecated",
+  // Fabric perf advice on translucent shadowed views, not actionable per-view.
+  "cannot calculate shadow efficiently",
 ];
 
 const shouldSilence = (args) =>

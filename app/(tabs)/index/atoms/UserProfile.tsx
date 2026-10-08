@@ -1,11 +1,11 @@
 import { Papicons } from '@getpapillon/papicons';
-import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { Link, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { Pressable } from 'react-native';
+import Reanimated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { initializeAccountManager } from '@/services/shared';
 import { useAccountStore } from '@/stores/account';
@@ -18,20 +18,39 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { useUserProfileData } from '../hooks/useUserProfileData';
 import { t } from 'i18next';
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
+import { menuAvatarURI } from '@/utils/generative';
 import ActionMenu from '@/ui/components/ActionMenu';
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
 
-const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
+const UserProfile = ({ subtitle, onPress, loading }: { subtitle?: string, onPress?: () => void, loading?: boolean }) => {
   const router = useRouter();
   const { firstName, lastName, initials, profilePicture, level, establishment } = useUserProfileData() ?? {};
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const theme = useTheme();
 
+  // Spinner slot width/gap animated on the UI thread so the row (and glass pill) reflows smoothly
+  const loadingProgress = useSharedValue(loading ? 1 : 0);
+  useEffect(() => {
+    loadingProgress.value = withTiming(loading ? 1 : 0, { duration: 300, easing: Easing.bezier(0.3, 0.3, 0, 1) });
+  }, [loading, loadingProgress]);
+  const spinnerSlotStyle = useAnimatedStyle(() => ({
+    width: loadingProgress.value * 18,
+    marginRight: (loadingProgress.value - 1) * 6,
+  }));
+
+  // Only re-render avatar files when the accounts change, not on every render
+  const avatarURIs = useMemo(
+    () => Object.fromEntries(accounts.map(account => [account.id, menuAvatarURI(account.id, account.customisation?.profilePicture)])),
+    [accounts]
+  );
+
   const AccountsMenuItems = (accounts && accounts.length > 0) && accounts.map((account) => ({
     id: account.id,
     title: account.firstName + ' ' + account.lastName,
     subtitle: formatSchoolName(account.schoolName ?? ""),
     state: account.id === lastUsedAccount ? 'on' : 'off',
+    imageUri: avatarURIs[account.id],
   })) || [];
 
   return (
@@ -125,6 +144,9 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 <Typography nowrap color='white' variant='navigation' weight='bold' style={{ maxWidth: Dimensions.get('window').width - 230 }}>
                   {firstName && lastName ? `${firstName} ${lastName}` : "Mon compte"}
                 </Typography>
+                <Reanimated.View style={[{ height: 18, alignItems: 'center' }, spinnerSlotStyle]}>
+                  {loading && <ActivityIndicator size={18} strokeWidth={2.5} color="white" />}
+                </Reanimated.View>
                 <Papicons name="chevrondown" size={20} color="white" opacity={0.5} style={{ marginRight: 0 }} />
               </Stack>
               {subtitle &&

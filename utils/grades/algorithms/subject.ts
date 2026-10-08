@@ -75,7 +75,7 @@ export const getSubjectAverage = (
 
 const PapillonSubjectAvg = (grades: Grade[], key: ScoreProperty = "studentScore"): number => {
   if (!grades?.length) {
-    return 0;
+    return -1;
   }
 
   const groupedBySubject: Record<string, Grade[]> = {};
@@ -103,7 +103,7 @@ const PapillonSubjectAvg = (grades: Grade[], key: ScoreProperty = "studentScore"
     }
   }
 
-  return countedSubjects > 0 ? totalAverage / countedSubjects : 0;
+  return countedSubjects > 0 ? totalAverage / countedSubjects : -1;
 };
 
 export default PapillonSubjectAvg;

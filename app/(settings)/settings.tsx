@@ -21,17 +21,17 @@ import TypographyLegacy from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
+import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { trackOptionalEvent } from "@/utils/logger/analytics";
 
 import packagejson from "../../package.json"
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import List, { ListTouchable } from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SettingsIndex() {
-  const safePadding = useSafeHorizontalPadding(16);
   const router = useRouter();
   const navigation = useNavigation();
 
@@ -70,34 +70,6 @@ export default function SettingsIndex() {
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [
-    {
-      title: t("Settings_Preferences"),
-      content: [
-        /*{
-          title: t('Settings_Accessibility_Title'),
-          description: t('Settings_Accessibility_Description'),
-          papicon: <Papicons name={"Accessibility"} />,
-          icon: <AccessibilityIcon />,
-          color: "#0038A8",
-          onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
-        },*/
-        /*{
-          title: t("Settings_Transport_Title"),
-          description: t("Settings_Transport_Description"),
-          papicon: <Papicons name={"Bus"} />,
-          icon: <BusIcon />,
-          color: "#000",
-          onPress: () => router.navigate("/(settings)/transport"),
-        },*/
-        {
-          title: t("Settings_Features_Title"),
-          description: t("Settings_Features_Description"),
-          papicon: <Papicons name={"Sparkles"} />,
-          color: "#0059DD",
-          onPress: () => router.navigate("/(settings)/features"),
-        },
-      ],
-    },
     {
       title: t("Settings_More"),
       content: [
@@ -232,6 +204,15 @@ export default function SettingsIndex() {
       }
     },
     {
+      icon: <Papicons name={"Gears"} />,
+      title: t("Settings_Features_Title"),
+      description: t("Settings_Features_Description_Card"),
+      color: "#E05A00",
+      onPress: () => {
+        router.navigate("/(settings)/features")
+      }
+    },
+    ...(MAGIC_AVAILABLE ? [{
       icon: <Papicons name={"Sparkles"} />,
       title: "Magic+",
       description: t('Settings_MagicPlus_Description_Card'),
@@ -239,7 +220,7 @@ export default function SettingsIndex() {
       onPress: () => {
         router.navigate("/(settings)/magic")
       }
-    }
+    }] : []),
   ]
 
   const RenderBigButtons = useCallback(() => {
@@ -301,14 +282,32 @@ export default function SettingsIndex() {
     default: 0
   });
 
+  const profilePicture = account?.customisation?.profilePicture;
+
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: colors.overground }}>
+      {profilePicture && Platform.OS !== 'android' && (
+        <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, height: "60%" }}>
+          <Image
+            source={{ uri: `data:image/png;base64,${profilePicture}` }}
+            blurRadius={40}
+            style={{ width: "100%", height: "100%", opacity: 0.35 }}
+          />
+          <LinearGradient
+            colors={[colors.overground + "00", colors.overground]}
+            locations={[0.2, 0.85]}
+            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+          />
+        </View>
+      )}
       <List
-        style={{ flex: 1, backgroundColor: colors.overground }}
+        style={{ flex: 1, backgroundColor: "transparent" }}
         contentInsetAdjustmentBehavior="automatic"
         gap={12}
+        safeHorizontalPadding={16}
         ListHeaderComponent={(
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{ marginVertical: 16, gap: 4 }}
           >
             <Stack
@@ -337,9 +336,9 @@ export default function SettingsIndex() {
             </Stack>
             <RenderBigButtons
             />
-          </View>
+          </SafeHorizontalView>
         )}
-        contentContainerStyle={{ padding: 16, ...safePadding, paddingBottom: insets.bottom, paddingTop: finalHeaderHeight }}
+        contentContainerStyle={{ paddingBottom: insets.bottom, paddingTop: finalHeaderHeight }}
       >
         {MoreSettingsList.map(section => (
           <List.Section key={section.title}>
@@ -364,6 +363,6 @@ export default function SettingsIndex() {
           </List.Section>
         ))}
       </List>
-    </>
+    </View>
   );
 }

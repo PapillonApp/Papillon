@@ -7,63 +7,63 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		004CA964762546539296E15E /* Oxanium-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E099A5F7B5074742A3CA97BD /* Oxanium-Regular.ttf */; };
-		03869E88F3FA4CD594E3D8FF /* PapillonWidgetStrings.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A8298342E3E478B8302591B /* PapillonWidgetStrings.json */; };
-		083906A4C29845D987BC1929 /* Oxanium-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84AF26269ABD42DCB62A6459 /* Oxanium-SemiBold.ttf */; };
-		112F25A2114D4AE98460AF26 /* FixelText-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 89B735C5C2574352842A9741 /* FixelText-Light.otf */; };
-		117FB778A5E64D93B9620C62 /* SNPro-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0440D45C4864CB685B32ECF /* SNPro-Black.ttf */; };
-		13ABA3077ED24E5FAA27C4D4 /* IBMPlexSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84E0C1363CE54E7F89693C6B /* IBMPlexSerif-Bold.ttf */; };
+		04A8990B334049179A0AFF69 /* PapillonWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB51B02F4EB6420784AAC534 /* PapillonWidgets.swift */; };
+		097259421F2F48E6960697D7 /* IBMPlexSerif-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 58EDFE507BC044B7AEB18269 /* IBMPlexSerif-Light.ttf */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		15907FF3D66C4055AC18435E /* SNPro-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3682D6F4C2D646F5A0106978 /* SNPro-Semibold.ttf */; };
-		27420683110819A2BB19A621 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D28C892B59C0C5B313C69E6 /* ExpoModulesProvider.swift */; };
-		296E8500FEC840A299F9F4A8 /* PapillonWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9AC31C86C20D489798C0E2C3 /* PapillonWidgets.appex */; };
-		381F909B223A4483921DA72C /* IBMPlexSerif-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3FF18A18ACE642B69DF2E1B8 /* IBMPlexSerif-SemiBold.ttf */; };
-		3B376FF9F65A43359653D512 /* SNPro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F9A8D71C756240008C1F6559 /* SNPro-Regular.ttf */; };
+		16B4DF78A342700505DEA6D5 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFB0FB0A2ED9A36C55163D8C /* ExpoModulesProvider.swift */; };
+		2103166B224143C8B8335AA5 /* app.icon in Resources */ = {isa = PBXBuildFile; fileRef = B35A1A77E1614E98BA91C857 /* app.icon */; };
+		24C97C8C8E44109D966F2F47 /* libPods-PapillonWidgets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A4DB4CBBF77221AE072DDE2 /* libPods-PapillonWidgets.a */; };
+		2D8BB73A921E4E7183FE7554 /* Courgette-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A2F41DDF5DA54424A8B89E7A /* Courgette-Regular.ttf */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		3FD5C6BC21BC4D28A4750A57 /* PapillonAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3532B6B52F6A492A8694136D /* PapillonAppShortcuts.swift */; };
-		49FCADD2A0434D2FBB06C643 /* IBMPlexSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0F9EE93791744CDA7FDD6A3 /* IBMPlexSerif-Regular.ttf */; };
-		4F40EB531C5842FE88469097 /* IBMPlexSerif-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4A126D89B8F4B7B925C7646 /* IBMPlexSerif-Light.ttf */; };
-		57EF9CA1B20A871D81B05355 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FCA57B4FFA181EBD7570F8A1 /* PrivacyInfo.xcprivacy */; };
-		581CA9114ADE2D03013507BE /* libPods-PapillonWidgets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E237D5F993C39A48D9D241C /* libPods-PapillonWidgets.a */; };
-		6F869BA5546B4F30B3D40A32 /* Oxanium-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D8A53634557B4B90B8E09D9F /* Oxanium-Light.ttf */; };
-		7EE5FAED62D54095B51145A8 /* SNPro-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F548FEF347F74C3D8F2071F4 /* SNPro-Medium.ttf */; };
-		86269573A1244B5698AB5B59 /* AppShortcuts.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 59BC7F0910224C789555FF27 /* AppShortcuts.xcstrings */; };
-		89DF81AABA72484691456ACE /* PapillonWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7577B5B425E54AE3AEB74D10 /* PapillonWidgets.swift */; };
-		98C127F518864DBB8A6613EF /* FixelText-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 69DB718726334F6A8F701581 /* FixelText-Regular.otf */; };
-		9F392D4B0DF8401FAD70BC68 /* app.icon in Resources */ = {isa = PBXBuildFile; fileRef = 36444F47663D4D5D8FE6D910 /* app.icon */; };
-		9FB3F0A7EE964ACABDF94555 /* FixelText-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = C81C3A3A5CF84DF099A48309 /* FixelText-Medium.otf */; };
-		A0F501DECA314FE082B69A95 /* IBMPlexSerif-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6C1EA32075834B1198522A38 /* IBMPlexSerif-Medium.ttf */; };
-		A1A5B460981B372B8E3345E1 /* libPods-Papillon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6AA424A742CB0143E2599A3 /* libPods-Papillon.a */; };
-		A804A54021844E50BE88D507 /* SNPro-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 659D4E16C93E4DB9A7706BD1 /* SNPro-Light.ttf */; };
-		AF82A8B20D48429ABE2683CC /* Oxanium-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 858A79ED3ED04033B39BE20E /* Oxanium-Bold.ttf */; };
-		B98E4017BC454D5CA8A78795 /* Courgette-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D2A65A6A458481F8E221A27 /* Courgette-Regular.ttf */; };
+		42E4BA383A2B48828EA80D29 /* Oxanium-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CF950A33798140488B7658DE /* Oxanium-SemiBold.ttf */; };
+		51688343F4C24B5465414DC1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B5C21238C4C7B23D8B8C5180 /* PrivacyInfo.xcprivacy */; };
+		5ADDF9AF178E4085B3D76771 /* IBMPlexSerif-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 51D74F3D9B334D24958CAB75 /* IBMPlexSerif-SemiBold.ttf */; };
+		5E157C4870D543FA9FEC6299 /* FixelText-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3917A1E9A4934CD7A1C5A4E4 /* FixelText-SemiBold.otf */; };
+		5E84A3C115814872B6B9FE17 /* PapillonWidgetStrings.json in Resources */ = {isa = PBXBuildFile; fileRef = 35E002D09EB948D6978C5266 /* PapillonWidgetStrings.json */; };
+		6044E08BD2241A25F10AA425 /* libPods-Papillon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F8FA695815DCB8333777818 /* libPods-Papillon.a */; };
+		619B043C1EDA4AF2AEA53EB8 /* Oxanium-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09E5B7389FF4460DB25B6B44 /* Oxanium-Light.ttf */; };
+		64CE79265B1F42F880312BD5 /* IBMPlexSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C35F335942D54B29B7673473 /* IBMPlexSerif-Regular.ttf */; };
+		67782560AC0C4767892D166F /* SNPro-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B9C5B0D3CCD148988DBE5029 /* SNPro-Bold.ttf */; };
+		730446F16A5148CB956E527D /* FixelText-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 363A17AFBC9F4B4695D6C16D /* FixelText-Medium.otf */; };
+		7CB4BC4CF41E43D28E743578 /* SNPro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CC6AAEE611814226A3D547F9 /* SNPro-Regular.ttf */; };
+		7F79227FFB7F4B8088743EC0 /* SNPro-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9E57C0D541564BE392A877C8 /* SNPro-Light.ttf */; };
+		90F1E59097694FF79D1D03C2 /* PapillonWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 625C42CE1C724E38830C26EF /* PapillonWidgets.appex */; };
+		A12C2AB60B41423085E36246 /* AppShortcuts.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C617C965CAE74FBB869C9693 /* AppShortcuts.xcstrings */; };
+		A8F03999C36A4EA78DE54B69 /* SNPro-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C6174DD74200463792624030 /* SNPro-Black.ttf */; };
+		AFCA47EECF194451B91CC779 /* SNPro-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3BFDEAEEBB7948C0A3DBA8F8 /* SNPro-Medium.ttf */; };
+		B033A1327A064FEC893C70BB /* PapillonAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F3E87DE8A3463DA67F408A /* PapillonAppShortcuts.swift */; };
+		B05FAB30C2684153808EE354 /* SNPro-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F9B82A5AF38B413A80AD9CAE /* SNPro-Semibold.ttf */; };
+		B22923D5DBFC4066AB4C9906 /* FixelText-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2EB7816425AB45808F22F8D9 /* FixelText-Light.otf */; };
+		B60984898BC94D6D9AFCED7B /* IBMPlexSerif-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9294A4C85FFD45458B703BF1 /* IBMPlexSerif-Medium.ttf */; };
+		BA43217E682A455098F9F42E /* FixelText-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 71E9689549D546A18D1371C4 /* FixelText-Bold.otf */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		BF014E5DAC5044D3A6AFC733 /* SNPro-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FD4FB5C11B3E4D87B73D6BF0 /* SNPro-Bold.ttf */; };
-		D2A193A850454DA1B8DC1612 /* FixelText-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0763F3430E3D4CDB8D0DD7B0 /* FixelText-Bold.otf */; };
-		E1DFDCC39839498F8F368523 /* FixelText-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 685B13837B0B4D32A8CF76C9 /* FixelText-SemiBold.otf */; };
-		EFC2ED86AE8F4F3F9D5D4691 /* Oxanium-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 685CAD44BBCA49239F47453D /* Oxanium-Medium.ttf */; };
+		C7C9A69619D64E7993EBC28D /* Oxanium-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85ED0B093C374DFB87EC2668 /* Oxanium-Regular.ttf */; };
+		D0051C42DD7640A793E05FAC /* Oxanium-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D98E5520F32B4D4BAEED1390 /* Oxanium-Bold.ttf */; };
+		DCB29C8EC7D04FA6B579206E /* Oxanium-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B353C6DFA8C346A695A527EC /* Oxanium-Medium.ttf */; };
+		E40079933E4E4C749EB2C88A /* IBMPlexSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 767E9DDC77224E33B0FCAA63 /* IBMPlexSerif-Bold.ttf */; };
+		EECB8CA580314E71B58FA757 /* FixelText-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = DCBB5DB969974CD2992F0EB6 /* FixelText-Regular.otf */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		FC9401F64F34438BAFB42EEE /* CoreML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAAA87151EC4CE8AB11628B /* CoreML.framework */; };
+		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FBBD182FE50841938958D5ED /* PBXContainerItemProxy */ = {
+		E504E86EE85B4CC09BBC0A94 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 11A7D637F2AB499F8F139C57;
+			remoteGlobalIDString = 379E4846BB2E4A44903D6EA9;
 			remoteInfo = PapillonWidgets;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		EE45F8A0078F41DC80B506BD /* Embed Foundation Extensions */ = {
+		04CECBFFF9354D2AA55AA872 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				296E8500FEC840A299F9F4A8 /* PapillonWidgets.appex in Embed Foundation Extensions */,
+				90F1E59097694FF79D1D03C2 /* PapillonWidgets.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,53 +71,53 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0763F3430E3D4CDB8D0DD7B0 /* FixelText-Bold.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-Bold.otf"; path = "Fonts/FixelText-Bold.otf"; sourceTree = "<group>"; };
-		10FA13EC1D18136CB118CD70 /* Pods-PapillonWidgets.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PapillonWidgets.debug.xcconfig"; path = "Target Support Files/Pods-PapillonWidgets/Pods-PapillonWidgets.debug.xcconfig"; sourceTree = "<group>"; };
+		09E5B7389FF4460DB25B6B44 /* Oxanium-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-Light.ttf"; path = "Fonts/Oxanium-Light.ttf"; sourceTree = "<group>"; };
+		0F5A4F177E6B159C6C05BE29 /* Pods-Papillon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papillon.debug.xcconfig"; path = "Target Support Files/Pods-Papillon/Pods-Papillon.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Papillon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Papillon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Papillon/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Papillon/Info.plist; sourceTree = "<group>"; };
-		17F36D5C616EA75559B396A5 /* Pods-PapillonWidgets.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PapillonWidgets.release.xcconfig"; path = "Target Support Files/Pods-PapillonWidgets/Pods-PapillonWidgets.release.xcconfig"; sourceTree = "<group>"; };
-		1D2A65A6A458481F8E221A27 /* Courgette-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Courgette-Regular.ttf"; path = "Fonts/Courgette-Regular.ttf"; sourceTree = "<group>"; };
-		3532B6B52F6A492A8694136D /* PapillonAppShortcuts.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = PapillonAppShortcuts.swift; path = Papillon/PapillonAppShortcuts.swift; sourceTree = "<group>"; };
-		36444F47663D4D5D8FE6D910 /* app.icon */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 524278956537; includeInIndex = 0; lastKnownFileType = unknown; name = app.icon; path = Papillon/app.icon; sourceTree = "<group>"; };
-		3682D6F4C2D646F5A0106978 /* SNPro-Semibold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Semibold.ttf"; path = "Fonts/SNPro-Semibold.ttf"; sourceTree = "<group>"; };
-		3A8298342E3E478B8302591B /* PapillonWidgetStrings.json */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = text.json; path = PapillonWidgetStrings.json; sourceTree = "<group>"; };
-		3FF18A18ACE642B69DF2E1B8 /* IBMPlexSerif-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-SemiBold.ttf"; path = "Fonts/IBMPlexSerif-SemiBold.ttf"; sourceTree = "<group>"; };
-		4F9D5D7153394ED686AFC46E /* PapillonWidgets.entitlements */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 524278956537; includeInIndex = 0; lastKnownFileType = unknown; path = PapillonWidgets.entitlements; sourceTree = "<group>"; };
-		59BC7F0910224C789555FF27 /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = text.json.xcstrings; name = AppShortcuts.xcstrings; path = Papillon/AppShortcuts.xcstrings; sourceTree = "<group>"; };
-		5D28C892B59C0C5B313C69E6 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Papillon/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		5E237D5F993C39A48D9D241C /* libPods-PapillonWidgets.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PapillonWidgets.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		613C1FFA5D884F7B91985678 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		659D4E16C93E4DB9A7706BD1 /* SNPro-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Light.ttf"; path = "Fonts/SNPro-Light.ttf"; sourceTree = "<group>"; };
-		685B13837B0B4D32A8CF76C9 /* FixelText-SemiBold.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-SemiBold.otf"; path = "Fonts/FixelText-SemiBold.otf"; sourceTree = "<group>"; };
-		685CAD44BBCA49239F47453D /* Oxanium-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-Medium.ttf"; path = "Fonts/Oxanium-Medium.ttf"; sourceTree = "<group>"; };
-		69DB718726334F6A8F701581 /* FixelText-Regular.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-Regular.otf"; path = "Fonts/FixelText-Regular.otf"; sourceTree = "<group>"; };
-		6C1EA32075834B1198522A38 /* IBMPlexSerif-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-Medium.ttf"; path = "Fonts/IBMPlexSerif-Medium.ttf"; sourceTree = "<group>"; };
-		7577B5B425E54AE3AEB74D10 /* PapillonWidgets.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; path = PapillonWidgets.swift; sourceTree = "<group>"; };
-		84AF26269ABD42DCB62A6459 /* Oxanium-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-SemiBold.ttf"; path = "Fonts/Oxanium-SemiBold.ttf"; sourceTree = "<group>"; };
-		84E0C1363CE54E7F89693C6B /* IBMPlexSerif-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-Bold.ttf"; path = "Fonts/IBMPlexSerif-Bold.ttf"; sourceTree = "<group>"; };
-		858A79ED3ED04033B39BE20E /* Oxanium-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-Bold.ttf"; path = "Fonts/Oxanium-Bold.ttf"; sourceTree = "<group>"; };
-		89B735C5C2574352842A9741 /* FixelText-Light.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-Light.otf"; path = "Fonts/FixelText-Light.otf"; sourceTree = "<group>"; };
-		9AC31C86C20D489798C0E2C3 /* PapillonWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; fileEncoding = 524278956537; includeInIndex = 0; path = PapillonWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		A6AA424A742CB0143E2599A3 /* libPods-Papillon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Papillon.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A4DB4CBBF77221AE072DDE2 /* libPods-PapillonWidgets.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PapillonWidgets.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2EB7816425AB45808F22F8D9 /* FixelText-Light.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-Light.otf"; path = "Fonts/FixelText-Light.otf"; sourceTree = "<group>"; };
+		2FE381766589AFF5EB03E3AB /* Pods-PapillonWidgets.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PapillonWidgets.debug.xcconfig"; path = "Target Support Files/Pods-PapillonWidgets/Pods-PapillonWidgets.debug.xcconfig"; sourceTree = "<group>"; };
+		32466D06DB280B7C81D6EAB5 /* Pods-Papillon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papillon.release.xcconfig"; path = "Target Support Files/Pods-Papillon/Pods-Papillon.release.xcconfig"; sourceTree = "<group>"; };
+		35E002D09EB948D6978C5266 /* PapillonWidgetStrings.json */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = text.json; name = PapillonWidgetStrings.json; path = PapillonWidgetStrings.json; sourceTree = "<group>"; };
+		363A17AFBC9F4B4695D6C16D /* FixelText-Medium.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-Medium.otf"; path = "Fonts/FixelText-Medium.otf"; sourceTree = "<group>"; };
+		3917A1E9A4934CD7A1C5A4E4 /* FixelText-SemiBold.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-SemiBold.otf"; path = "Fonts/FixelText-SemiBold.otf"; sourceTree = "<group>"; };
+		3BFDEAEEBB7948C0A3DBA8F8 /* SNPro-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Medium.ttf"; path = "Fonts/SNPro-Medium.ttf"; sourceTree = "<group>"; };
+		3F8FA695815DCB8333777818 /* libPods-Papillon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Papillon.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		51D74F3D9B334D24958CAB75 /* IBMPlexSerif-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-SemiBold.ttf"; path = "Fonts/IBMPlexSerif-SemiBold.ttf"; sourceTree = "<group>"; };
+		58EDFE507BC044B7AEB18269 /* IBMPlexSerif-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-Light.ttf"; path = "Fonts/IBMPlexSerif-Light.ttf"; sourceTree = "<group>"; };
+		625C42CE1C724E38830C26EF /* PapillonWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = undefined; name = PapillonWidgets.appex; path = PapillonWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		71E9689549D546A18D1371C4 /* FixelText-Bold.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-Bold.otf"; path = "Fonts/FixelText-Bold.otf"; sourceTree = "<group>"; };
+		767E9DDC77224E33B0FCAA63 /* IBMPlexSerif-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-Bold.ttf"; path = "Fonts/IBMPlexSerif-Bold.ttf"; sourceTree = "<group>"; };
+		85ED0B093C374DFB87EC2668 /* Oxanium-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-Regular.ttf"; path = "Fonts/Oxanium-Regular.ttf"; sourceTree = "<group>"; };
+		9294A4C85FFD45458B703BF1 /* IBMPlexSerif-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-Medium.ttf"; path = "Fonts/IBMPlexSerif-Medium.ttf"; sourceTree = "<group>"; };
+		9E57C0D541564BE392A877C8 /* SNPro-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Light.ttf"; path = "Fonts/SNPro-Light.ttf"; sourceTree = "<group>"; };
+		A2F41DDF5DA54424A8B89E7A /* Courgette-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Courgette-Regular.ttf"; path = "Fonts/Courgette-Regular.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Papillon/SplashScreen.storyboard; sourceTree = "<group>"; };
-		B0440D45C4864CB685B32ECF /* SNPro-Black.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Black.ttf"; path = "Fonts/SNPro-Black.ttf"; sourceTree = "<group>"; };
-		B4A126D89B8F4B7B925C7646 /* IBMPlexSerif-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-Light.ttf"; path = "Fonts/IBMPlexSerif-Light.ttf"; sourceTree = "<group>"; };
-		B6A8DB5989EC8CCDB00C3858 /* Pods-Papillon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papillon.debug.xcconfig"; path = "Target Support Files/Pods-Papillon/Pods-Papillon.debug.xcconfig"; sourceTree = "<group>"; };
+		AB51B02F4EB6420784AAC534 /* PapillonWidgets.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = PapillonWidgets.swift; path = PapillonWidgets.swift; sourceTree = "<group>"; };
+		B353C6DFA8C346A695A527EC /* Oxanium-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-Medium.ttf"; path = "Fonts/Oxanium-Medium.ttf"; sourceTree = "<group>"; };
+		B35A1A77E1614E98BA91C857 /* app.icon */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = app.icon; path = Papillon/app.icon; sourceTree = "<group>"; };
+		B5C21238C4C7B23D8B8C5180 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Papillon/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B9C5B0D3CCD148988DBE5029 /* SNPro-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Bold.ttf"; path = "Fonts/SNPro-Bold.ttf"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		C0F9EE93791744CDA7FDD6A3 /* IBMPlexSerif-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-Regular.ttf"; path = "Fonts/IBMPlexSerif-Regular.ttf"; sourceTree = "<group>"; };
-		C81C3A3A5CF84DF099A48309 /* FixelText-Medium.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-Medium.otf"; path = "Fonts/FixelText-Medium.otf"; sourceTree = "<group>"; };
-		CDC5321718FCECAEDA56E7C8 /* Pods-Papillon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papillon.release.xcconfig"; path = "Target Support Files/Pods-Papillon/Pods-Papillon.release.xcconfig"; sourceTree = "<group>"; };
-		D8A53634557B4B90B8E09D9F /* Oxanium-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-Light.ttf"; path = "Fonts/Oxanium-Light.ttf"; sourceTree = "<group>"; };
-		DEAAA87151EC4CE8AB11628B /* CoreML.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 524278956537; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = CoreML.framework; path = System/Library/Frameworks/CoreML.framework; sourceTree = SDKROOT; };
-		E099A5F7B5074742A3CA97BD /* Oxanium-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-Regular.ttf"; path = "Fonts/Oxanium-Regular.ttf"; sourceTree = "<group>"; };
+		C35F335942D54B29B7673473 /* IBMPlexSerif-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "IBMPlexSerif-Regular.ttf"; path = "Fonts/IBMPlexSerif-Regular.ttf"; sourceTree = "<group>"; };
+		C6174DD74200463792624030 /* SNPro-Black.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Black.ttf"; path = "Fonts/SNPro-Black.ttf"; sourceTree = "<group>"; };
+		C617C965CAE74FBB869C9693 /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = text.json.xcstrings; name = AppShortcuts.xcstrings; path = Papillon/AppShortcuts.xcstrings; sourceTree = "<group>"; };
+		C92382E4B07D45398A7BA586 /* PapillonWidgets.entitlements */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = PapillonWidgets.entitlements; path = PapillonWidgets.entitlements; sourceTree = "<group>"; };
+		CC6AAEE611814226A3D547F9 /* SNPro-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Regular.ttf"; path = "Fonts/SNPro-Regular.ttf"; sourceTree = "<group>"; };
+		CF950A33798140488B7658DE /* Oxanium-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-SemiBold.ttf"; path = "Fonts/Oxanium-SemiBold.ttf"; sourceTree = "<group>"; };
+		CFB0FB0A2ED9A36C55163D8C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Papillon/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		D98E5520F32B4D4BAEED1390 /* Oxanium-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "Oxanium-Bold.ttf"; path = "Fonts/Oxanium-Bold.ttf"; sourceTree = "<group>"; };
+		DCBB5DB969974CD2992F0EB6 /* FixelText-Regular.otf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "FixelText-Regular.otf"; path = "Fonts/FixelText-Regular.otf"; sourceTree = "<group>"; };
+		E762F1065C1640FB94E4E2A0 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = Info.plist; path = Info.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EF540BA6471E1253DDDC33DA /* Pods-PapillonWidgets.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PapillonWidgets.release.xcconfig"; path = "Target Support Files/Pods-PapillonWidgets/Pods-PapillonWidgets.release.xcconfig"; sourceTree = "<group>"; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Papillon/AppDelegate.swift; sourceTree = "<group>"; };
+		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = Papillon/SceneDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* Papillon-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Papillon-Bridging-Header.h"; path = "Papillon/Papillon-Bridging-Header.h"; sourceTree = "<group>"; };
-		F548FEF347F74C3D8F2071F4 /* SNPro-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Medium.ttf"; path = "Fonts/SNPro-Medium.ttf"; sourceTree = "<group>"; };
-		F9A8D71C756240008C1F6559 /* SNPro-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Regular.ttf"; path = "Fonts/SNPro-Regular.ttf"; sourceTree = "<group>"; };
-		FCA57B4FFA181EBD7570F8A1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Papillon/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		FD4FB5C11B3E4D87B73D6BF0 /* SNPro-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Bold.ttf"; path = "Fonts/SNPro-Bold.ttf"; sourceTree = "<group>"; };
+		F3F3E87DE8A3463DA67F408A /* PapillonAppShortcuts.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = PapillonAppShortcuts.swift; path = Papillon/PapillonAppShortcuts.swift; sourceTree = "<group>"; };
+		F9B82A5AF38B413A80AD9CAE /* SNPro-Semibold.ttf */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "SNPro-Semibold.ttf"; path = "Fonts/SNPro-Semibold.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,16 +125,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FC9401F64F34438BAFB42EEE /* CoreML.framework in Frameworks */,
-				A1A5B460981B372B8E3345E1 /* libPods-Papillon.a in Frameworks */,
+				6044E08BD2241A25F10AA425 /* libPods-Papillon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		791ABE5E53D54BD8ABEC80A7 /* Frameworks */ = {
+		BA1C7A81144A471682077D49 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				581CA9114ADE2D03013507BE /* libPods-PapillonWidgets.a in Frameworks */,
+				24C97C8C8E44109D966F2F47 /* libPods-PapillonWidgets.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,36 +144,82 @@
 			isa = PBXGroup;
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
+				F11748432D0307B40044C1D9 /* SceneDelegate.swift */,
 				F11748442D0722820044C1D9 /* Papillon-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				36444F47663D4D5D8FE6D910 /* app.icon */,
-				3532B6B52F6A492A8694136D /* PapillonAppShortcuts.swift */,
-				59BC7F0910224C789555FF27 /* AppShortcuts.xcstrings */,
-				FCA57B4FFA181EBD7570F8A1 /* PrivacyInfo.xcprivacy */,
+				B35A1A77E1614E98BA91C857 /* app.icon */,
+				F3F3E87DE8A3463DA67F408A /* PapillonAppShortcuts.swift */,
+				C617C965CAE74FBB869C9693 /* AppShortcuts.xcstrings */,
+				B5C21238C4C7B23D8B8C5180 /* PrivacyInfo.xcprivacy */,
 			);
 			name = Papillon;
+			sourceTree = "<group>";
+		};
+		2410E5B0950E49C59193D9B5 /* PapillonWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				AB51B02F4EB6420784AAC534 /* PapillonWidgets.swift */,
+				35E002D09EB948D6978C5266 /* PapillonWidgetStrings.json */,
+				A2F41DDF5DA54424A8B89E7A /* Courgette-Regular.ttf */,
+				71E9689549D546A18D1371C4 /* FixelText-Bold.otf */,
+				2EB7816425AB45808F22F8D9 /* FixelText-Light.otf */,
+				363A17AFBC9F4B4695D6C16D /* FixelText-Medium.otf */,
+				DCBB5DB969974CD2992F0EB6 /* FixelText-Regular.otf */,
+				3917A1E9A4934CD7A1C5A4E4 /* FixelText-SemiBold.otf */,
+				767E9DDC77224E33B0FCAA63 /* IBMPlexSerif-Bold.ttf */,
+				58EDFE507BC044B7AEB18269 /* IBMPlexSerif-Light.ttf */,
+				9294A4C85FFD45458B703BF1 /* IBMPlexSerif-Medium.ttf */,
+				C35F335942D54B29B7673473 /* IBMPlexSerif-Regular.ttf */,
+				51D74F3D9B334D24958CAB75 /* IBMPlexSerif-SemiBold.ttf */,
+				D98E5520F32B4D4BAEED1390 /* Oxanium-Bold.ttf */,
+				09E5B7389FF4460DB25B6B44 /* Oxanium-Light.ttf */,
+				B353C6DFA8C346A695A527EC /* Oxanium-Medium.ttf */,
+				85ED0B093C374DFB87EC2668 /* Oxanium-Regular.ttf */,
+				CF950A33798140488B7658DE /* Oxanium-SemiBold.ttf */,
+				C6174DD74200463792624030 /* SNPro-Black.ttf */,
+				B9C5B0D3CCD148988DBE5029 /* SNPro-Bold.ttf */,
+				9E57C0D541564BE392A877C8 /* SNPro-Light.ttf */,
+				3BFDEAEEBB7948C0A3DBA8F8 /* SNPro-Medium.ttf */,
+				CC6AAEE611814226A3D547F9 /* SNPro-Regular.ttf */,
+				F9B82A5AF38B413A80AD9CAE /* SNPro-Semibold.ttf */,
+				E762F1065C1640FB94E4E2A0 /* Info.plist */,
+				C92382E4B07D45398A7BA586 /* PapillonWidgets.entitlements */,
+			);
+			name = PapillonWidgets;
+			path = PapillonWidgets;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				DEAAA87151EC4CE8AB11628B /* CoreML.framework */,
-				A6AA424A742CB0143E2599A3 /* libPods-Papillon.a */,
-				5E237D5F993C39A48D9D241C /* libPods-PapillonWidgets.a */,
+				3F8FA695815DCB8333777818 /* libPods-Papillon.a */,
+				1A4DB4CBBF77221AE072DDE2 /* libPods-PapillonWidgets.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		69FFA7B92B3EBDF6178FB9A0 /* Papillon */ = {
+		347F0A7A730F762D91AB0E26 /* Papillon */ = {
 			isa = PBXGroup;
 			children = (
-				5D28C892B59C0C5B313C69E6 /* ExpoModulesProvider.swift */,
+				CFB0FB0A2ED9A36C55163D8C /* ExpoModulesProvider.swift */,
 			);
 			name = Papillon;
+			sourceTree = "<group>";
+		};
+		3CF44C8BB3FC9CB8FF2D5AFC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0F5A4F177E6B159C6C05BE29 /* Pods-Papillon.debug.xcconfig */,
+				32466D06DB280B7C81D6EAB5 /* Pods-Papillon.release.xcconfig */,
+				2FE381766589AFF5EB03E3AB /* Pods-PapillonWidgets.debug.xcconfig */,
+				EF540BA6471E1253DDDC33DA /* Pods-PapillonWidgets.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -191,9 +236,9 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				B4FAEDC722B446A8A3B4FF06 /* PapillonWidgets */,
-				B956543DDB0BB8EAF640C45D /* Pods */,
-				CFF23F73FE80A9EE8F659C06 /* ExpoModulesProviders */,
+				2410E5B0950E49C59193D9B5 /* PapillonWidgets */,
+				3CF44C8BB3FC9CB8FF2D5AFC /* Pods */,
+				A46C808BB71934F16BC616EB /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -204,53 +249,17 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* Papillon.app */,
-				9AC31C86C20D489798C0E2C3 /* PapillonWidgets.appex */,
+				625C42CE1C724E38830C26EF /* PapillonWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B4FAEDC722B446A8A3B4FF06 /* PapillonWidgets */ = {
+		A46C808BB71934F16BC616EB /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				7577B5B425E54AE3AEB74D10 /* PapillonWidgets.swift */,
-				3A8298342E3E478B8302591B /* PapillonWidgetStrings.json */,
-				1D2A65A6A458481F8E221A27 /* Courgette-Regular.ttf */,
-				0763F3430E3D4CDB8D0DD7B0 /* FixelText-Bold.otf */,
-				89B735C5C2574352842A9741 /* FixelText-Light.otf */,
-				C81C3A3A5CF84DF099A48309 /* FixelText-Medium.otf */,
-				69DB718726334F6A8F701581 /* FixelText-Regular.otf */,
-				685B13837B0B4D32A8CF76C9 /* FixelText-SemiBold.otf */,
-				84E0C1363CE54E7F89693C6B /* IBMPlexSerif-Bold.ttf */,
-				B4A126D89B8F4B7B925C7646 /* IBMPlexSerif-Light.ttf */,
-				6C1EA32075834B1198522A38 /* IBMPlexSerif-Medium.ttf */,
-				C0F9EE93791744CDA7FDD6A3 /* IBMPlexSerif-Regular.ttf */,
-				3FF18A18ACE642B69DF2E1B8 /* IBMPlexSerif-SemiBold.ttf */,
-				858A79ED3ED04033B39BE20E /* Oxanium-Bold.ttf */,
-				D8A53634557B4B90B8E09D9F /* Oxanium-Light.ttf */,
-				685CAD44BBCA49239F47453D /* Oxanium-Medium.ttf */,
-				E099A5F7B5074742A3CA97BD /* Oxanium-Regular.ttf */,
-				84AF26269ABD42DCB62A6459 /* Oxanium-SemiBold.ttf */,
-				B0440D45C4864CB685B32ECF /* SNPro-Black.ttf */,
-				FD4FB5C11B3E4D87B73D6BF0 /* SNPro-Bold.ttf */,
-				659D4E16C93E4DB9A7706BD1 /* SNPro-Light.ttf */,
-				F548FEF347F74C3D8F2071F4 /* SNPro-Medium.ttf */,
-				F9A8D71C756240008C1F6559 /* SNPro-Regular.ttf */,
-				3682D6F4C2D646F5A0106978 /* SNPro-Semibold.ttf */,
-				613C1FFA5D884F7B91985678 /* Info.plist */,
-				4F9D5D7153394ED686AFC46E /* PapillonWidgets.entitlements */,
+				347F0A7A730F762D91AB0E26 /* Papillon */,
 			);
-			path = PapillonWidgets;
-			sourceTree = "<group>";
-		};
-		B956543DDB0BB8EAF640C45D /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				B6A8DB5989EC8CCDB00C3858 /* Pods-Papillon.debug.xcconfig */,
-				CDC5321718FCECAEDA56E7C8 /* Pods-Papillon.release.xcconfig */,
-				10FA13EC1D18136CB118CD70 /* Pods-PapillonWidgets.debug.xcconfig */,
-				17F36D5C616EA75559B396A5 /* Pods-PapillonWidgets.release.xcconfig */,
-			);
-			path = Pods;
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -262,25 +271,42 @@
 			path = Papillon/Supporting;
 			sourceTree = "<group>";
 		};
-		CFF23F73FE80A9EE8F659C06 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				69FFA7B92B3EBDF6178FB9A0 /* Papillon */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		11A7D637F2AB499F8F139C57 /* PapillonWidgets */ = {
+		13B07F861A680F5B00A75B9A /* Papillon */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 56EE27C79BC5452E9B6511AE /* Build configuration list for PBXNativeTarget "PapillonWidgets" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Papillon" */;
 			buildPhases = (
-				4B92387B9BD7171DDDED11FC /* [CP] Check Pods Manifest.lock */,
-				468436CC55534E909A995699 /* Sources */,
-				81F848BBFC4C4CC6980A72CC /* Resources */,
-				791ABE5E53D54BD8ABEC80A7 /* Frameworks */,
+				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
+				A08486C1CFFEB5C1A922E4BE /* [Expo] Configure project */,
+				13B07F871A680F5B00A75B9A /* Sources */,
+				13B07F8C1A680F5B00A75B9A /* Frameworks */,
+				13B07F8E1A680F5B00A75B9A /* Resources */,
+				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
+				89E9C317DDE84AB59881436A /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
+				04CECBFFF9354D2AA55AA872 /* Embed Foundation Extensions */,
+				7B6428BC46C4B3CF7E4ACBB6 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				221A86652C6344F8AC4E622E /* PBXTargetDependency */,
+			);
+			name = Papillon;
+			productName = Papillon;
+			productReference = 13B07F961A680F5B00A75B9A /* Papillon.app */;
+			productType = "com.apple.product-type.application";
+		};
+		379E4846BB2E4A44903D6EA9 /* PapillonWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 669F353DA0254235B6E3C0C5 /* Build configuration list for PBXNativeTarget "PapillonWidgets" */;
+			buildPhases = (
+				54174F589F98A5317244D323 /* [CP] Check Pods Manifest.lock */,
+				37EDB6D597AC452DB2311906 /* Sources */,
+				9EF78ED5CCE94932B6361462 /* Resources */,
+				BA1C7A81144A471682077D49 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -288,33 +314,8 @@
 			);
 			name = PapillonWidgets;
 			productName = PapillonWidgets;
-			productReference = 9AC31C86C20D489798C0E2C3 /* PapillonWidgets.appex */;
+			productReference = 625C42CE1C724E38830C26EF /* PapillonWidgets.appex */;
 			productType = "com.apple.product-type.app-extension";
-		};
-		13B07F861A680F5B00A75B9A /* Papillon */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Papillon" */;
-			buildPhases = (
-				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				4226BB9295AC2AED7537BE80 /* [Expo] Configure project */,
-				13B07F871A680F5B00A75B9A /* Sources */,
-				13B07F8C1A680F5B00A75B9A /* Frameworks */,
-				13B07F8E1A680F5B00A75B9A /* Resources */,
-				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				5CB697BB8DB645959C0034E5 /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
-				EE45F8A0078F41DC80B506BD /* Embed Foundation Extensions */,
-				34E8D91CC12CA9C969437E8B /* [CP] Embed Pods Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				989DA5CFF63E4E12B6E70040 /* PBXTargetDependency */,
-			);
-			name = Papillon;
-			productName = Papillon;
-			productReference = 13B07F961A680F5B00A75B9A /* Papillon.app */;
-			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -324,11 +325,11 @@
 			attributes = {
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
-					11A7D637F2AB499F8F139C57 = {
-						CreatedOnToolsVersion = 27.0;
-					};
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
+					};
+					379E4846BB2E4A44903D6EA9 = {
+						CreatedOnToolsVersion = 27.0;
 					};
 				};
 			};
@@ -347,7 +348,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* Papillon */,
-				11A7D637F2AB499F8F139C57 /* PapillonWidgets */,
+				379E4846BB2E4A44903D6EA9 /* PapillonWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -360,39 +361,39 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				9F392D4B0DF8401FAD70BC68 /* app.icon in Resources */,
-				86269573A1244B5698AB5B59 /* AppShortcuts.xcstrings in Resources */,
-				57EF9CA1B20A871D81B05355 /* PrivacyInfo.xcprivacy in Resources */,
+				2103166B224143C8B8335AA5 /* app.icon in Resources */,
+				A12C2AB60B41423085E36246 /* AppShortcuts.xcstrings in Resources */,
+				51688343F4C24B5465414DC1 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		81F848BBFC4C4CC6980A72CC /* Resources */ = {
+		9EF78ED5CCE94932B6361462 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03869E88F3FA4CD594E3D8FF /* PapillonWidgetStrings.json in Resources */,
-				B98E4017BC454D5CA8A78795 /* Courgette-Regular.ttf in Resources */,
-				D2A193A850454DA1B8DC1612 /* FixelText-Bold.otf in Resources */,
-				112F25A2114D4AE98460AF26 /* FixelText-Light.otf in Resources */,
-				9FB3F0A7EE964ACABDF94555 /* FixelText-Medium.otf in Resources */,
-				98C127F518864DBB8A6613EF /* FixelText-Regular.otf in Resources */,
-				E1DFDCC39839498F8F368523 /* FixelText-SemiBold.otf in Resources */,
-				13ABA3077ED24E5FAA27C4D4 /* IBMPlexSerif-Bold.ttf in Resources */,
-				4F40EB531C5842FE88469097 /* IBMPlexSerif-Light.ttf in Resources */,
-				A0F501DECA314FE082B69A95 /* IBMPlexSerif-Medium.ttf in Resources */,
-				49FCADD2A0434D2FBB06C643 /* IBMPlexSerif-Regular.ttf in Resources */,
-				381F909B223A4483921DA72C /* IBMPlexSerif-SemiBold.ttf in Resources */,
-				AF82A8B20D48429ABE2683CC /* Oxanium-Bold.ttf in Resources */,
-				6F869BA5546B4F30B3D40A32 /* Oxanium-Light.ttf in Resources */,
-				EFC2ED86AE8F4F3F9D5D4691 /* Oxanium-Medium.ttf in Resources */,
-				004CA964762546539296E15E /* Oxanium-Regular.ttf in Resources */,
-				083906A4C29845D987BC1929 /* Oxanium-SemiBold.ttf in Resources */,
-				117FB778A5E64D93B9620C62 /* SNPro-Black.ttf in Resources */,
-				BF014E5DAC5044D3A6AFC733 /* SNPro-Bold.ttf in Resources */,
-				A804A54021844E50BE88D507 /* SNPro-Light.ttf in Resources */,
-				7EE5FAED62D54095B51145A8 /* SNPro-Medium.ttf in Resources */,
-				3B376FF9F65A43359653D512 /* SNPro-Regular.ttf in Resources */,
-				15907FF3D66C4055AC18435E /* SNPro-Semibold.ttf in Resources */,
+				5E84A3C115814872B6B9FE17 /* PapillonWidgetStrings.json in Resources */,
+				2D8BB73A921E4E7183FE7554 /* Courgette-Regular.ttf in Resources */,
+				BA43217E682A455098F9F42E /* FixelText-Bold.otf in Resources */,
+				B22923D5DBFC4066AB4C9906 /* FixelText-Light.otf in Resources */,
+				730446F16A5148CB956E527D /* FixelText-Medium.otf in Resources */,
+				EECB8CA580314E71B58FA757 /* FixelText-Regular.otf in Resources */,
+				5E157C4870D543FA9FEC6299 /* FixelText-SemiBold.otf in Resources */,
+				E40079933E4E4C749EB2C88A /* IBMPlexSerif-Bold.ttf in Resources */,
+				097259421F2F48E6960697D7 /* IBMPlexSerif-Light.ttf in Resources */,
+				B60984898BC94D6D9AFCED7B /* IBMPlexSerif-Medium.ttf in Resources */,
+				64CE79265B1F42F880312BD5 /* IBMPlexSerif-Regular.ttf in Resources */,
+				5ADDF9AF178E4085B3D76771 /* IBMPlexSerif-SemiBold.ttf in Resources */,
+				D0051C42DD7640A793E05FAC /* Oxanium-Bold.ttf in Resources */,
+				619B043C1EDA4AF2AEA53EB8 /* Oxanium-Light.ttf in Resources */,
+				DCB29C8EC7D04FA6B579206E /* Oxanium-Medium.ttf in Resources */,
+				C7C9A69619D64E7993EBC28D /* Oxanium-Regular.ttf in Resources */,
+				42E4BA383A2B48828EA80D29 /* Oxanium-SemiBold.ttf in Resources */,
+				A8F03999C36A4EA78DE54B69 /* SNPro-Black.ttf in Resources */,
+				67782560AC0C4767892D166F /* SNPro-Bold.ttf in Resources */,
+				7F79227FFB7F4B8088743EC0 /* SNPro-Light.ttf in Resources */,
+				AFCA47EECF194451B91CC779 /* SNPro-Medium.ttf in Resources */,
+				7CB4BC4CF41E43D28E743578 /* SNPro-Regular.ttf in Resources */,
+				B05FAB30C2684153808EE354 /* SNPro-Semibold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -414,7 +415,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
+			shellScript = "if [[ -f \"$SRCROOT/.xcode.env\" ]]; then\n  source \"$SRCROOT/.xcode.env\"\nfi\nif [[ -f \"$SRCROOT/.xcode.env.local\" ]]; then\n  source \"$SRCROOT/.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$SRCROOT/.xcode.env.updates\" ]]; then\n  source \"$SRCROOT/.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$SRCROOT/.xcode.env.local\" ]]; then\n  source \"$SRCROOT/.xcode.env.local\"\nfi\n\n\"`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\"\n\n";
 		};
 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -438,7 +439,29 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		34E8D91CC12CA9C969437E8B /* [CP] Embed Pods Frameworks */ = {
+		54174F589F98A5317244D323 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PapillonWidgets-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7B6428BC46C4B3CF7E4ACBB6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -454,6 +477,7 @@
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ExpoModulesCore/ExpoModulesCore.framework/ExpoModulesCore",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ExpoModulesJSI/ExpoModulesJSI.framework/ExpoModulesJSI",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ExpoModulesWorklets/ExpoModulesWorklets.framework/ExpoModulesWorklets",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ExpoUI/ExpoUI.framework/ExpoUI",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ExpoVideo/ExpoVideo.framework/ExpoVideo",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
@@ -470,6 +494,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ExpoModulesCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ExpoModulesJSI.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ExpoModulesWorklets.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ExpoUI.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ExpoVideo.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
@@ -480,7 +505,75 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Papillon/Pods-Papillon-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		4226BB9295AC2AED7537BE80 /* [Expo] Configure project */ = {
+		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Papillon/Pods-Papillon-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoApplication/ExpoApplication_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoDevice/ExpoDevice_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoLocalization/ExpoLocalization_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoNotifications/ExpoNotifications_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MMKV/MMKV_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNDeviceInfo/RNDeviceInfoPrivacyInfo.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React-timing_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-ios/LottiePrivacyInfo.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-react-native/Lottie_React_Native_Privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoApplication_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoDevice_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLocalization_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MMKV_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNDeviceInfoPrivacyInfo.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-timing_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevMenu.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/LottiePrivacyInfo.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Lottie_React_Native_Privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Papillon/Pods-Papillon-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		89E9C317DDE84AB59881436A /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo Dev Launcher] Strip Local Network Keys for Release";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Strip dev-launcher-specific local network permission keys from release builds.\n# This only removes _expo._tcp Bonjour services and the dev-launcher usage description.\n# Other Bonjour services and custom descriptions are preserved for production use.\n#\n# Detect debug builds via the DEBUG compile condition rather than the configuration name,\n# so custom debug configurations (e.g. \"Dev\", \"Staging\") that define DEBUG keep the keys.\ncase \" $SWIFT_ACTIVE_COMPILATION_CONDITIONS \" in\n  *\" DEBUG \"*) IS_DEBUG_BUILD=1 ;;\n  *) IS_DEBUG_BUILD=0 ;;\nesac\n\nif [ \"$IS_DEBUG_BUILD\" != \"1\" ]; then\n  PLIST_PATH=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n  if [ -f \"$PLIST_PATH\" ]; then\n    # Check if NSBonjourServices exists\n    if /usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" >/dev/null 2>&1; then\n      # Get the count of services\n      COUNT=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n\n      # Remove _expo._tcp\n      for ((i=COUNT-1; i>=0; i--)); do\n        SERVICE=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n        if echo \"$SERVICE\" | grep -q \"_expo._tcp\"; then\n          /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || true\n        fi\n      done\n\n      # If the array is now empty, remove it entirely\n      REMAINING=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n      if [ \"$REMAINING\" -eq \"0\" ]; then\n        /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null || true\n      fi\n    fi\n\n    # Only delete the description if it matches the dev-launcher default text\n    DESC=$(/usr/libexec/PlistBuddy -c \"Print :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n    if echo \"$DESC\" | grep -q \"Expo Dev Launcher\"; then\n      /usr/libexec/PlistBuddy -c \"Delete :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || true\n    fi\n  fi\nfi\n";
+		};
+		A08486C1CFFEB5C1A922E4BE /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -504,102 +597,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Papillon/expo-configure-project.sh\"\n";
 		};
-		4B92387B9BD7171DDDED11FC /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-PapillonWidgets-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5CB697BB8DB645959C0034E5 /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo Dev Launcher] Strip Local Network Keys for Release";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Strip dev-launcher-specific local network permission keys from non-Debug builds\n# This only removes _expo._tcp Bonjour services and the dev-launcher usage description.\n# Other Bonjour services and custom descriptions are preserved for production use.\n\nif [ \"$CONFIGURATION\" != \"Debug\" ]; then\n  PLIST_PATH=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n  if [ -f \"$PLIST_PATH\" ]; then\n    # Check if NSBonjourServices exists\n    if /usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" >/dev/null 2>&1; then\n      # Get the count of services\n      COUNT=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n\n      # Remove _expo._tcp\n      for ((i=COUNT-1; i>=0; i--)); do\n        SERVICE=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n        if echo \"$SERVICE\" | grep -q \"_expo._tcp\"; then\n          /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || true\n        fi\n      done\n\n      # If the array is now empty, remove it entirely\n      REMAINING=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n      if [ \"$REMAINING\" -eq \"0\" ]; then\n        /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null || true\n      fi\n    fi\n\n    # Only delete the description if it matches the dev-launcher default text\n    DESC=$(/usr/libexec/PlistBuddy -c \"Print :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n    if echo \"$DESC\" | grep -q \"Expo Dev Launcher\"; then\n      /usr/libexec/PlistBuddy -c \"Delete :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || true\n    fi\n  fi\nfi\n";
-		};
-		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Papillon/Pods-Papillon-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoDevice/ExpoDevice_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoLocalization/ExpoLocalization_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoNotifications/ExpoNotifications_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/MMKV/MMKV_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RNDeviceInfo/RNDeviceInfoPrivacyInfo.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React-timing_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/TensorFlowLiteC/TensorFlowLiteC.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/TensorFlowLiteC/TensorFlowLiteCCoreML.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-ios/LottiePrivacyInfo.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-react-native/Lottie_React_Native_Privacy.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoApplication_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoDevice_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLocalization_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MMKV_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNDeviceInfoPrivacyInfo.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-timing_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TensorFlowLiteC.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TensorFlowLiteCCoreML.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevMenu.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/LottiePrivacyInfo.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Lottie_React_Native_Privacy.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Papillon/Pods-Papillon-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -608,33 +605,34 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				3FD5C6BC21BC4D28A4750A57 /* PapillonAppShortcuts.swift in Sources */,
-				27420683110819A2BB19A621 /* ExpoModulesProvider.swift in Sources */,
+				F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */,
+				B033A1327A064FEC893C70BB /* PapillonAppShortcuts.swift in Sources */,
+				16B4DF78A342700505DEA6D5 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		468436CC55534E909A995699 /* Sources */ = {
+		37EDB6D597AC452DB2311906 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				89DF81AABA72484691456ACE /* PapillonWidgets.swift in Sources */,
+				04A8990B334049179A0AFF69 /* PapillonWidgets.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		989DA5CFF63E4E12B6E70040 /* PBXTargetDependency */ = {
+		221A86652C6344F8AC4E622E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 11A7D637F2AB499F8F139C57 /* PapillonWidgets */;
-			targetProxy = FBBD182FE50841938958D5ED /* PBXContainerItemProxy */;
+			target = 379E4846BB2E4A44903D6EA9 /* PapillonWidgets */;
+			targetProxy = E504E86EE85B4CC09BBC0A94 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B6A8DB5989EC8CCDB00C3858 /* Pods-Papillon.debug.xcconfig */;
+			baseConfigurationReference = 0F5A4F177E6B159C6C05BE29 /* Pods-Papillon.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = app;
 				CLANG_ENABLE_MODULES = YES;
@@ -672,7 +670,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CDC5321718FCECAEDA56E7C8 /* Pods-Papillon.release.xcconfig */;
+			baseConfigurationReference = 32466D06DB280B7C81D6EAB5 /* Pods-Papillon.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = app;
 				CLANG_ENABLE_MODULES = YES;
@@ -702,39 +700,9 @@
 			};
 			name = Release;
 		};
-		39315C003D634C10B60F8369 /* Debug */ = {
+		284CA2B5C95A473C91A724D6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 10FA13EC1D18136CB118CD70 /* Pods-PapillonWidgets.debug.xcconfig */;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = PapillonWidgets/PapillonWidgets.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7RXNP6V83P;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PapillonWidgets/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Papillon;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 8.5.5;
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = xyz.getpapillon.ios.widgets;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		7D06270B5CFA4B1C8E4E200A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 17F36D5C616EA75559B396A5 /* Pods-PapillonWidgets.release.xcconfig */;
+			baseConfigurationReference = EF540BA6471E1253DDDC33DA /* Pods-PapillonWidgets.release.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = PapillonWidgets/PapillonWidgets.entitlements;
@@ -829,7 +797,6 @@
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
-				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				USE_HERMES = true;
 			};
 			name = Debug;
@@ -892,11 +859,40 @@
 				PODFILE_DIR = "$(SRCROOT)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
-				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		E816132F645C419682301C08 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2FE381766589AFF5EB03E3AB /* Pods-PapillonWidgets.debug.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = PapillonWidgets/PapillonWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7RXNP6V83P;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PapillonWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Papillon;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 8.5.5;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.getpapillon.ios.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -910,11 +906,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		56EE27C79BC5452E9B6511AE /* Build configuration list for PBXNativeTarget "PapillonWidgets" */ = {
+		669F353DA0254235B6E3C0C5 /* Build configuration list for PBXNativeTarget "PapillonWidgets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				39315C003D634C10B60F8369 /* Debug */,
-				7D06270B5CFA4B1C8E4E200A /* Release */,
+				E816132F645C419682301C08 /* Debug */,
+				284CA2B5C95A473C91A724D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

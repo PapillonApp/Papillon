@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Image, View } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 import { GetSupportedRestaurants } from "../utils/constants";
 
@@ -24,17 +24,17 @@ export default function ServiceSelection() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const safePadding = useSafeHorizontalPadding(20);
-  const listSafePadding = useSafeHorizontalPadding(16);
   const router = useRouter();
   const { t } = useTranslation();
+  const { action } = useLocalSearchParams<{ action?: string }>();
 
   const [selectedService, setSelectedService] = useState(null);
 
   const services = GetSupportedRestaurants((path: { pathname: string }) => {
     router.push({
       pathname: path.pathname as unknown as RelativePathString,
-      params: path.options ?? {} as unknown as UnknownInputParams
+      // Forwarded so a card added from an existing account joins it.
+      params: { ...path.options, ...(action ? { action } : {}) } as unknown as UnknownInputParams
     });
   });
 
@@ -58,17 +58,19 @@ export default function ServiceSelection() {
     <View style={{ flex: 1, backgroundColor: colors.overground }}>
       <List
         ListHeaderComponent={() => (
-          <Stack padding={[4, 0]}>
-            <Typography variant="h2">{titleString}</Typography>
-            <Typography variant="action" color="textSecondary">
-              {t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}
-            </Typography>
-            <Divider height={18} ghost />
-          </Stack>
+          <SafeHorizontalView base={16}>
+            <Stack padding={[4, 0]}>
+              <Typography variant="h2">{titleString}</Typography>
+              <Typography variant="action" color="textSecondary">
+                {t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}
+              </Typography>
+              <Divider height={18} ghost />
+            </Stack>
+          </SafeHorizontalView>
         )}
+        safeHorizontalPadding={16}
         contentContainerStyle={{
-          padding: 16,
-          ...listSafePadding,
+          paddingBottom: 16,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,
@@ -119,10 +121,10 @@ export default function ServiceSelection() {
         ))}
       </List>
 
-      <View
+      <SafeHorizontalView
+        base={20}
         style={{
-          padding: 20,
-          ...safePadding,
+          paddingTop: 20,
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
           borderTopWidth: 1,
@@ -148,7 +150,7 @@ export default function ServiceSelection() {
           }}
           variant="secondary"
         />
-      </View>
+      </SafeHorizontalView>
     </View>
   );
 }

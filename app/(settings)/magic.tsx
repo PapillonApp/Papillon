@@ -14,14 +14,12 @@ import { MAGIC_URL } from "@/utils/endpoints";
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
 import { checkAndUpdateModel, getCurrentPtr } from "@/utils/magic/updater";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
 
 function getMagicURL(): string {
   return useSettingsStore.getState().personalization.magicModelURL || MAGIC_URL;
 }
 
 export default function SettingsMagic() {
-  const safePadding = useSafeHorizontalPadding(20);
   const theme = useTheme();
   const { colors } = theme;
 
@@ -122,7 +120,8 @@ export default function SettingsMagic() {
   return (
     <List
       style={{ flex: 1, backgroundColor: colors.overground }}
-      contentContainerStyle={{ padding: 20, ...safePadding }}
+      safeHorizontalPadding={20}
+      contentContainerStyle={{ paddingVertical: 20 }}
       contentInsetAdjustmentBehavior="automatic"
     >
       <List.View style={{ marginBottom: 20 }}>

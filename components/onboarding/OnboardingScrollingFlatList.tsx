@@ -16,7 +16,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
 const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, color, step, totalSteps, elements, renderItem }: {
@@ -30,8 +30,6 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
   renderItem: (info: ListRenderItemInfo<unknown>) => React.JSX.Element
 }) => {
   const insets = useSafeAreaInsets();
-  const headerSafePadding = useSafeHorizontalPadding(32);
-  const safePadding = useSafeHorizontalPadding(16);
   const animation = React.useRef<LottieView>(null);
 
   const scrollY = React.useRef(useSharedValue(0)).current;
@@ -104,7 +102,7 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
         style={[AnimatedHeaderStyle, { transformOrigin: "top" }]}
       >
         <Stack
-          padding={32}
+          padding={[0, 32]}
           backgroundColor={color}
           gap={20}
           style={{
@@ -115,46 +113,47 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
             paddingBottom: 34,
             borderCurve: "continuous",
             height: "100%",
-            ...headerSafePadding,
           }}
         >
-          <Reanimated.View style={AnimatedLottieContainerStyle}>
-            {lottie && (
-              <LottieView
-                autoPlay
-                loop={false}
-                style={{ width: 230, height: 230 }}
-                source={lottie}
-              />
-            )}
-          </Reanimated.View>
-          <Stack
-            vAlign='start'
-            hAlign='start'
-            width="100%"
-            gap={12}
-          >
-            <Stack flex direction="horizontal">
+          <SafeHorizontalView base={32} style={{ alignSelf: "stretch", alignItems: "center", gap: 20 }}>
+            <Reanimated.View style={AnimatedLottieContainerStyle}>
+              {lottie && (
+                <LottieView
+                  autoPlay
+                  loop={false}
+                  style={{ width: 230, height: 230 }}
+                  source={lottie}
+                />
+              )}
+            </Reanimated.View>
+            <Stack
+              vAlign='start'
+              hAlign='start'
+              width="100%"
+              gap={12}
+            >
+              <Stack flex direction="horizontal">
+                <Typography
+                  variant="h5"
+                  style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+                >
+                  {t('OnBoarding_Step') + step}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+                >
+                  {t('OnBoarding_Step_Of') + totalSteps}
+                </Typography>
+              </Stack>
               <Typography
-                variant="h5"
-                style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+                variant="h1"
+                style={{ color: "white", fontSize: 32, lineHeight: 34 }}
               >
-                {t('OnBoarding_Step') + step}
-              </Typography>
-              <Typography
-                variant="h5"
-                style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
-              >
-                {t('OnBoarding_Step_Of') + totalSteps}
+                {title}
               </Typography>
             </Stack>
-            <Typography
-              variant="h1"
-              style={{ color: "white", fontSize: 32, lineHeight: 34 }}
-            >
-              {title}
-            </Typography>
-          </Stack>
+          </SafeHorizontalView>
         </Stack>
       </Reanimated.View>
 
@@ -172,11 +171,14 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
         }}
         contentContainerStyle={{
           paddingTop: height + 16,
-          ...safePadding,
           gap: 10,
           paddingBottom: insets.bottom + 16,
         }}
-        renderItem={renderItem}
+        renderItem={(info) => (
+          <SafeHorizontalView base={16}>
+            {renderItem(info)}
+          </SafeHorizontalView>
+        )}
       />
 
       {hasReturnButton && (

@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WHITE_LABEL_APPS } from "@studentsphere/linksign";
 import Typography from '@/ui/new/Typography';
 import Stack from '@/ui/components/Stack';
+import SafeHorizontalView from '@/ui/components/SafeHorizontalView';
 import { Papicons } from "@getpapillon/papicons";
 import List from "@/ui/new/List";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -53,16 +54,19 @@ export default function EdusignWhitelabel() {
       <List
         animated
         ListHeaderComponent={
-          <Stack padding={[4, 0]}>
-            <Typography variant="h2">{t("ONBOARDING_SCHOOL_APP")}</Typography>
-            <Typography variant="action" color="textSecondary">
-              {t("ONBOARDING_WHITELABEL_DESCRIPTION")}
-            </Typography>
-            <Divider height={18} ghost />
-          </Stack>
+          <SafeHorizontalView base={16}>
+            <Stack padding={[4, 0]}>
+              <Typography variant="h2">{t("ONBOARDING_SCHOOL_APP")}</Typography>
+              <Typography variant="action" color="textSecondary">
+                {t("ONBOARDING_WHITELABEL_DESCRIPTION")}
+              </Typography>
+              <Divider height={18} ghost />
+            </Stack>
+          </SafeHorizontalView>
         }
+        safeHorizontalPadding={16}
         contentContainerStyle={{
-          padding: 16,
+          paddingVertical: 16,
           flexGrow: 1,
           paddingTop: headerHeight + 20,
           paddingBottom: 20

@@ -206,8 +206,10 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
                 teacher: item.teacher ?? course.teacher,
                 group: item.group ?? course.group,
                 backgroundColor: item.backgroundColor ?? course.backgroundColor,
-                status: item.status ?? course.status,
-                customStatus: item.customStatus ?? course.customStatus,
+                // A fresh status always wins: a course that is no longer
+                // cancelled comes back without one.
+                status: item.status,
+                customStatus: item.customStatus,
                 url: item.url ?? course.url,
                 kidName: item.kidName ?? course.kidName,
                 isSigned: item.isSigned ?? course.isSigned,
@@ -246,7 +248,21 @@ function getWeeksRange(weeks: number[], year: number): { start: Date; end: Date 
   return { start, end };
 }
 
-export async function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+// Every useTimetable instance's observer fires at once on mount and on each sync write;
+// concurrent calls for the same range share one query instead of each re-reading the DB.
+const inFlightCourses = new Map<string, Promise<SharedCourseDay[]>>();
+
+export function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+  const key = `${year}:${weeks.join(',')}`;
+  let pending = inFlightCourses.get(key);
+  if (!pending) {
+    pending = readCoursesFromCache(weeks, year).finally(() => inFlightCourses.delete(key));
+    inFlightCourses.set(key, pending);
+  }
+  return pending;
+}
+
+async function readCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
     const { start: minStart, end: maxEnd } = getWeeksRange(weeks, year);

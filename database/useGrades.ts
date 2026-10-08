@@ -1,12 +1,13 @@
 import { Model, Q } from "@nozbe/watermelondb";
+import { createMMKV } from "react-native-mmkv";
 
 import { Grade as SharedGrade, Period as SharedPeriod, PeriodGrades as SharedPeriodGrades } from "@/services/shared/grade";
 import { generateId } from "@/utils/generateId";
 import { error, warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance } from "./DatabaseProvider";
-import { mapPeriodGradesToShared, mapPeriodToShared } from "./mappers/grade";
-import { Grade, Period, PeriodGrades } from "./models/Grades";
+import { mapPeriodToShared } from "./mappers/grade";
+import { Grade, Period } from "./models/Grades";
 import { safeWrite } from "./utils/safeTransaction";
 
 export async function addPeriodsToDatabase(periods: SharedPeriod[]) {
@@ -90,44 +91,22 @@ export async function addGradesToDatabase(grades: SharedGrade[], subject: string
   }
 }
 
-export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period: string) {
-  const db = getDatabaseInstance();
-  const id = generateId(period);
+// ponytail: the whole PeriodGrades as JSON in MMKV. The periodgrades/subjects
+// tables were never filled with subjects or grades, so they could not serve as a cache.
+const periodGradesCache = createMMKV({ id: "period-grades-cache" });
 
-  const existing = await db.get('periodgrades').query(
-    Q.where("id", id)
-  ).fetch();
-
-  await safeWrite(db, async () => {
-    if (existing.length > 0) {
-      await existing[0].update((record: Model) => {
-        const periodGrade = record as PeriodGrades;
-        Object.assign(periodGrade, {
-          createdByAccount: item.createdByAccount,
-          studentOverallRaw: JSON.stringify(item.studentOverall),
-          classAverageRaw: JSON.stringify(item.classAverage)
-        });
-      });
-    } else {
-      await db.get('periodgrades').create((record: Model) => {
-        const periodGrade = record as PeriodGrades;
-        Object.assign(periodGrade, {
-          id: id,
-          createdByAccount: item.createdByAccount,
-          studentOverallRaw: JSON.stringify(item.studentOverall),
-          classAverageRaw: JSON.stringify(item.classAverage)
-        });
-      });
-    }
-  }, 10000, 'addPeriodGradesToDatabase');
+export function cachePeriodGrades(item: SharedPeriodGrades, key: string) {
+  periodGradesCache.set(key, JSON.stringify(item));
 }
 
-export async function getGradePeriodsFromCache(period: string): Promise<SharedPeriodGrades | null> {
-  const rows = await getDatabaseInstance()
-    .get<PeriodGrades>('periodgrades')
-    .query(Q.where('periodGradeId', period))
-    .fetch();
+export function getCachedPeriodGrades(key: string): SharedPeriodGrades | null {
+  const raw = periodGradesCache.getString(key);
+  if (!raw) { return null; }
 
-  if (rows.length === 0) { return null; }
-  return mapPeriodGradesToShared(rows[0]);
+  try {
+    return JSON.parse(raw, (k, v) => (k === "givenAt" && typeof v === "string" ? new Date(v) : v));
+  } catch {
+    periodGradesCache.remove(key);
+    return null;
+  }
 }

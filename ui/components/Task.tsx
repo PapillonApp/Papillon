@@ -6,7 +6,7 @@ import { useTheme } from "expo-router/react-navigation";
 import adjust from '@/utils/adjustColor';
 import { Text } from 'react-native';
 
-import { formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
 import i18n from '@/utils/i18n';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -67,7 +67,7 @@ const Task: React.FC<TaskProps> = React.memo(({
       return i18n.t("Tomorrow").toLowerCase();
     }
 
-    return formatDistanceToNow(date, { addSuffix: true, locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
+    return formatDistanceStrict(startOfDay(date), startOfDay(new Date()), { addSuffix: true, unit: "day", locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
   }
 
   return (

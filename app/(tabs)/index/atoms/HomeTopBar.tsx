@@ -1,9 +1,8 @@
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
-import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
 import { Platform, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from "expo-router/react-navigation";
 
 import { TipIds } from '@/constants/Tips';
@@ -15,9 +14,8 @@ import UserProfile from './UserProfile';
 
 const WALLPAPER_TIP_STYLE = { bottom: 0, left: 0, right: 0 } as const;
 
-const HomeTopBar = ({ height = 56 }: { height?: number }) => {
+const HomeTopBar = ({ height = 56, loading }: { height?: number, loading?: boolean }) => {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
 
   return (
     <>
@@ -44,13 +42,14 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
         </View>
       )}
 
-      <View
+      <SafeAreaView
+        edges={['left', 'right']}
         style={{
           height: height,
           position: "absolute",
           top: insets.top + (insets.right > 10 ? 10 : 0),
-          left: insets.left,
-          right: insets.right,
+          left: 0,
+          right: 0,
           paddingHorizontal: 16,
           zIndex: 11,
           justifyContent: "center",
@@ -66,7 +65,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
             gap: 16,
           }}
         >
-          <UserProfile />
+          <UserProfile loading={loading} />
 
           <Stack
             direction="horizontal"
@@ -81,7 +80,6 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
               <HomeTopBarButton
                 icon="palette"
                 route="/(modals)/wallpaper"
-                onPress={() => router.push("/(modals)/wallpaper")}
               />
               <Tip
                 tipId={TipIds.homeWallpaper}
@@ -95,11 +93,10 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
             <HomeTopBarButton
               icon="gears"
               route="/(settings)/settings"
-              onPress={() => router.push("/(settings)/settings")}
             />
           </Stack>
         </View>
-      </View>
+      </SafeAreaView>
     </>
   );
 };

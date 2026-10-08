@@ -12,12 +12,12 @@ import Icon from "@/ui/components/Icon";
 import Item, { Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "expo-router/react-navigation";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import { useRouter } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import NativeSwitch from "@/ui/native/NativeSwitch";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { useFont } from "@/utils/theme/fonts";
 
 export default function TabOneScreen() {
@@ -74,11 +74,7 @@ export default function TabOneScreen() {
     >
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <NativeHeaderPressable onPress={() => router.back()}>
-            <Icon size={28}>
-              <Papicons name="Cross" />
-            </Icon>
-          </NativeHeaderPressable>
+          <HeaderBackButton onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
       <List>

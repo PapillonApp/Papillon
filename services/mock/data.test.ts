@@ -1,4 +1,5 @@
 import { ObservationType } from "@/services/shared/attendance";
+import { CourseStatus } from "@/services/shared/timetable";
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 
 import { MockData } from "./index";
@@ -31,7 +32,24 @@ describe("Mock Data generators", () => {
     expect(first).toEqual(second);
     expect(first).toHaveLength(5);
     expect(first.map(day => day.date.getDay())).toEqual([1, 2, 3, 4, 5]);
-    expect(first.every(day => day.courses.length === 5)).toBe(true);
+    expect(first.map(day => day.courses.length)).toEqual([4, 5, 2, 5, 4]);
+    expect(
+      first
+        .flatMap(day => day.courses)
+        .some(course => course.status === CourseStatus.CANCELED)
+    ).toBe(true);
+    expect(
+      first.some(day =>
+        day.courses.some((course, index) =>
+          day.courses.some(
+            (other, otherIndex) =>
+              otherIndex !== index &&
+              course.from < other.to &&
+              other.from < course.to
+          )
+        )
+      )
+    ).toBe(true);
     expect(
       first
         .flatMap(day => day.courses)

@@ -8,10 +8,9 @@ import { Link } from 'expo-router';
 interface HomeTopBarButtonProps {
   icon: string;
   route?: string;
-  onPress?: () => void;
 }
 
-const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route, onPress }) => {
+const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route }) => {
   return (
     <LiquidGlassView
       glassType="clear"
@@ -23,7 +22,7 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route, onPres
         borderRadius: 30,
       }}
     >
-      <Link asChild href={route ?? "/(features)/soon"}>
+      <Link asChild prefetch href={route ?? "/(features)/soon"}>
       <Pressable
         style={{
           width: '100%',

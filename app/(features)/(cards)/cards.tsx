@@ -1,4 +1,5 @@
-import { getManager } from "@/services/shared";
+import { useManagerSubscription } from "@/hooks/useManagerSubscription";
+import type { AccountManager } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
@@ -11,7 +12,7 @@ import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import Typography from "@/ui/components/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { useSafeHorizontalPadding } from "@/ui/hooks/useSafeHorizontalPadding";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import {
   getServiceBackground,
   getServiceLogo,
@@ -20,33 +21,25 @@ import {
 import { Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Platform, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);
-  const safePadding = useSafeHorizontalPadding(20);
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
 
   const account = accounts.find(a => a.id === lastUsedAccount);
 
-  async function fetchWallets() {
-    const manager = getManager();
-    const balances = await manager.getCanteenBalances();
-    const result: Balance[] = [];
-    for (const balance of balances) {
-      result.push(balance);
-    }
-    setWallets(result);
-  }
-
-  useEffect(() => {
+  // Re-subscribes when accounts change; fires as soon as the manager is ready.
+  const fetchWallets = useCallback(async (manager: AccountManager) => {
     setWallets([]);
-    fetchWallets();
+    setWallets(await manager.getCanteenBalances());
   }, [accounts]);
+
+  useManagerSubscription(fetchWallets);
 
   const { t } = useTranslation();
 
@@ -79,75 +72,81 @@ export default function QRCodeAndCardsPage() {
       />
 
       {wallets?.length === 0 ? (
-        <Stack flex hAlign={"center"} vAlign={"center"} height={"100%"} padding={20} style={safePadding}>
-          <Dynamic
-            animated
-            entering={PapillonAppearIn}
-            exiting={PapillonAppearOut}
-          >
-            <EmptyItem
-              icon="Card"
-              title={t("Settings_Cards_None_Title")}
-              description={t("Settings_Cards_None_Description")}
-              margin={0}
-            />
-          </Dynamic>
+        <SafeHorizontalView base={20} style={{ flex: 1, height: "100%" }}>
+          <Stack flex hAlign={"center"} vAlign={"center"} height={"100%"} padding={[0, 20]}>
+            <Dynamic
+              animated
+              entering={PapillonAppearIn}
+              exiting={PapillonAppearOut}
+            >
+              <EmptyItem
+                icon="Card"
+                title={t("Settings_Cards_None_Title")}
+                description={t("Settings_Cards_None_Description")}
+                margin={0}
+              />
+            </Dynamic>
 
-          <Dynamic animated>
-            <Button
-              fullWidth
-              label="Ajouter ma première carte"
-              leading={<Plus color="#FFF" />}
-              onPress={() => {
-                router.navigate({
-                  pathname: "/(onboarding)/restaurants/method",
-                });
-              }}
-              style={{marginTop: 20}}
-            />
-          </Dynamic>
-        </Stack>
+            <Dynamic animated>
+              <Button
+                fullWidth
+                label="Ajouter ma première carte"
+                leading={<Plus color="#FFF" />}
+                onPress={() => {
+                  router.navigate({
+                    pathname: "/(onboarding)/restaurants/method",
+                    params: { action: "addService" },
+                  });
+                }}
+                style={{marginTop: 20}}
+              />
+            </Dynamic>
+          </Stack>
+        </SafeHorizontalView>
       ) : (
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={{ flex: 1, paddingTop: headerHeight - 16 }}
-          contentContainerStyle={{ padding: 20, ...safePadding, gap: 16 }}
+          contentContainerStyle={{ paddingVertical: 20 }}
         >
-          {wallets.map((c, i) => {
-            return (
-              <Dynamic
-                animated
-                key={c.createdByAccount + c.label}
-                entering={PapillonAppearIn}
-                exiting={PapillonAppearOut}
-              >
-                <Card
+          <SafeHorizontalView base={20} style={{ gap: 16 }}>
+            {wallets.map((c, i) => {
+              return (
+                <Dynamic
+                  animated
                   key={c.createdByAccount + c.label}
-                  index={i}
-                  wallet={c}
-                  service={
-                    account?.services.find(
-                      service => service.id === c.createdByAccount
-                    )?.serviceId ?? Services.TURBOSELF
-                  }
-                  totalCards={wallets.length}
-                />
-              </Dynamic>
-            );
-          })}
+                  entering={PapillonAppearIn}
+                  exiting={PapillonAppearOut}
+                >
+                  <Card
+                    key={c.createdByAccount + c.label}
+                    index={i}
+                    wallet={c}
+                    service={
+                      account?.services.find(
+                        service => service.id === c.createdByAccount
+                      )?.serviceId ?? Services.TURBOSELF
+                    }
+                    totalCards={wallets.length}
+                  />
+                </Dynamic>
+              );
+            })}
 
-          <Dynamic animated>
-            <Button
-              fullWidth
-              label="Ajouter"
-              leading={<Plus color="#FFF" />}
-              onPress={() => {
-                router.navigate({
-                  pathname: "/(onboarding)/restaurants/method",
-                });
-              }}
-            />
-          </Dynamic>
+            <Dynamic animated>
+              <Button
+                fullWidth
+                label="Ajouter"
+                leading={<Plus color="#FFF" />}
+                onPress={() => {
+                  router.navigate({
+                    pathname: "/(onboarding)/restaurants/method",
+                    params: { action: "addService" },
+                  });
+                }}
+              />
+            </Dynamic>
+          </SafeHorizontalView>
         </ScrollView>
       )}
     </>

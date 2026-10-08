@@ -1,10 +1,10 @@
-import { isLiquidGlassSupported } from "@callstack/liquid-glass";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect, useState } from "react";
 import { Dimensions, Platform, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native";
 
+import { runsIOS26 } from "../utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import { Dynamic } from "./Dynamic";
 import Icon from "./Icon";
@@ -28,7 +28,7 @@ const SearchContainer = ({ children, style }: { children: React.ReactNode, style
   const { colors } = useTheme();
   const { isLarge } = useResizable();
 
-  if (!isLiquidGlassSupported) {
+  if (!runsIOS26) {
     return (
       <View
         style={[{

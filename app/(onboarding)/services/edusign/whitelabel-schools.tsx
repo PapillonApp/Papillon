@@ -10,6 +10,7 @@ import { appLogos } from "./whitelabel";
 
 import Typography from '@/ui/new/Typography';
 import Stack from '@/ui/components/Stack';
+import SafeHorizontalView from '@/ui/components/SafeHorizontalView';
 import ActivityIndicator from '@/ui/components/ActivityIndicator';
 import { useAlert } from "@/ui/components/AlertProvider";
 import Search from "@/ui/components/Search";
@@ -118,35 +119,38 @@ export default function EdusignWhitelabelSchools() {
       <List
         animated
         ListHeaderComponent={
-          <Stack padding={[4, 0]}>
-            <Typography variant="h2">{appName}</Typography>
-            <Typography variant="action" color="textSecondary">
-              {t("ONBOARDING_SELECT_SCHOOL")}
-            </Typography>
-            <Divider height={6} ghost />
-            <Search
-              placeholder={t("ONBOARDING_SEARCH_SCHOOL_PLACEHOLDER")}
-              style={{ width: "100%" }}
-              value={searchQuery}
-              setValue={setSearchQuery}
-              onTextChange={setSearchQuery}
-            />
-            {isLoading && (
-              <Dynamic animated>
-                <Stack vAlign="center" hAlign="center" width={"100%"} gap={2}>
-                  <Divider height={18} ghost />
-                  <ActivityIndicator size={30} color={colors.primary as string} />
-                  <Divider height={12} ghost />
-                  <Typography align="center" variant="h5">{t("ONBOARDING_SCHOOLS_SEARCHING")}</Typography>
-                  <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
-                </Stack>
-              </Dynamic>
-            )}
-            <Divider height={18} ghost />
-          </Stack>
+          <SafeHorizontalView base={16}>
+            <Stack padding={[4, 0]}>
+              <Typography variant="h2">{appName}</Typography>
+              <Typography variant="action" color="textSecondary">
+                {t("ONBOARDING_SELECT_SCHOOL")}
+              </Typography>
+              <Divider height={6} ghost />
+              <Search
+                placeholder={t("ONBOARDING_SEARCH_SCHOOL_PLACEHOLDER")}
+                style={{ width: "100%" }}
+                value={searchQuery}
+                setValue={setSearchQuery}
+                onTextChange={setSearchQuery}
+              />
+              {isLoading && (
+                <Dynamic animated>
+                  <Stack vAlign="center" hAlign="center" width={"100%"} gap={2}>
+                    <Divider height={18} ghost />
+                    <ActivityIndicator size={30} color={colors.primary as string} />
+                    <Divider height={12} ghost />
+                    <Typography align="center" variant="h5">{t("ONBOARDING_SCHOOLS_SEARCHING")}</Typography>
+                    <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+                  </Stack>
+                </Dynamic>
+              )}
+              <Divider height={18} ghost />
+            </Stack>
+          </SafeHorizontalView>
         }
+        safeHorizontalPadding={16}
         contentContainerStyle={{
-          padding: 16,
+          paddingVertical: 16,
           flexGrow: 1,
           paddingTop: headerHeight + 20,
           paddingBottom: 20

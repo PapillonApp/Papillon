@@ -9,6 +9,7 @@ import type { StudentAccount } from "@studentsphere/linksign";
 import uuid from "@/utils/uuid/uuid";
 import Typography from "@/ui/new/Typography";
 import Stack from "@/ui/components/Stack";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { useAlert } from "@/ui/components/AlertProvider";
 import Search from "@/ui/components/Search";
 
@@ -140,28 +141,31 @@ export default function EdusignSelectAccount() {
       <List
         animated
         ListHeaderComponent={
-          <Stack padding={[4, 0]}>
-            <Typography variant="h2">{t("ONBOARDING_SELECT_SCHOOL")}</Typography>
-            <Typography variant="action" color="textSecondary">
-              {t("ONBOARDING_MULTI_ACCOUNTS_DESCRIPTION")}
-            </Typography>
-            <Divider height={6} ghost />
-            {accounts.length > 2 && (
-              <>
-                <Search
-                  placeholder={t("ONBOARDING_SEARCH_ACCOUNT_PLACEHOLDER")}
-                  style={{ width: "100%" }}
-                  value={searchQuery}
-                  setValue={setSearchQuery}
-                  onTextChange={setSearchQuery}
-                />
-                <Divider height={18} ghost />
-              </>
-            )}
-          </Stack>
+          <SafeHorizontalView base={16}>
+            <Stack padding={[4, 0]}>
+              <Typography variant="h2">{t("ONBOARDING_SELECT_SCHOOL")}</Typography>
+              <Typography variant="action" color="textSecondary">
+                {t("ONBOARDING_MULTI_ACCOUNTS_DESCRIPTION")}
+              </Typography>
+              <Divider height={6} ghost />
+              {accounts.length > 2 && (
+                <>
+                  <Search
+                    placeholder={t("ONBOARDING_SEARCH_ACCOUNT_PLACEHOLDER")}
+                    style={{ width: "100%" }}
+                    value={searchQuery}
+                    setValue={setSearchQuery}
+                    onTextChange={setSearchQuery}
+                  />
+                  <Divider height={18} ghost />
+                </>
+              )}
+            </Stack>
+          </SafeHorizontalView>
         }
+        safeHorizontalPadding={16}
         contentContainerStyle={{
-          padding: 16,
+          paddingVertical: 16,
           flexGrow: 1,
           paddingTop: headerHeight + 20,
           paddingBottom: 20,

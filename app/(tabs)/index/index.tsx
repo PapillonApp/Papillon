@@ -3,7 +3,7 @@ import { useIsFocused } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
-import { FlatList, Image, Platform, StatusBar, View } from 'react-native';
+import { FlatList, Image, Platform, RefreshControl, StatusBar, View } from 'react-native';
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -36,12 +36,14 @@ import { ListTouchable } from '@/ui/new/List';
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   const bottomTabBarHeight = insets.bottom + 16;
+  const topBarHeight = insets.top + 56 + (insets.right > 10 ? 10 : 0);
   const focused = useIsFocused();
 
   // Account
-  const store = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
-  const account = accounts.find(a => a.id === store.lastUsedAccount);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const initializeTransport = useAccountStore((state) => state.initializeTransport);
+  const account = accounts.find(a => a.id === lastUsedAccount);
   const recordTeamModalHomeLaunch = useAccountStore(state => state.recordTeamModalHomeLaunch);
   const dismissTeamWidget = useAccountStore(state => state.dismissTeamWidget);
   const router = useRouter();
@@ -56,9 +58,9 @@ const HomeScreen = () => {
     }
 
     if (account && account.transport === undefined) {
-      store.initializeTransport(account.schoolName);
+      initializeTransport(account.schoolName);
     }
-  }, [account, accounts.length, router, store]);
+  }, [account, accounts.length, router, initializeTransport]);
 
   const consentPrompted = React.useRef(false);
 
@@ -87,15 +89,27 @@ const HomeScreen = () => {
     }
   }, [account?.id, recordTeamModalHomeLaunch, router]);
 
-  useHomeData();
+  const { syncing, refresh } = useHomeData();
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
 
   const { currentPeriod } = usePeriodsData();
-  const { grades, history, averages } = useGradesData(currentPeriod);
+  const { grades, history, averages, refresh: refreshGrades } = useGradesData(currentPeriod);
+
+  const [refreshing, setRefreshing] = React.useState(false);
+  const handleRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refresh();
+      // The grades widget keeps its own cache, the timetable reads the database.
+      await refreshGrades();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refresh, refreshGrades]);
   const gradesWidgetHidden = grades.length === 0;
 
-  const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
+  const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget courses={courses} />, [courses]);
   const renderGrades = React.useCallback(
     () => <GradesWidget history={history} averages={averages} />,
     [history, averages]
@@ -125,7 +139,7 @@ const HomeScreen = () => {
         />
         </MaskedView>
       <View style={{ flex: 1, paddingRight: 16, justifyContent: "center", gap: 3 }}>
-        <Typography variant="body1" weight="bold" color="textPrimary">
+        <Typography variant="body1" weight="bold" color="text">
           Rejoignez la communauté !
         </Typography>
         <Typography variant="body2" style={{ opacity: 0.5 }}>
@@ -171,19 +185,19 @@ const HomeScreen = () => {
   const allWidgetsHidden = visibleWidgets.length === 0;
 
   React.useEffect(() => {
-    if (!account || welcomeModalSeen) {
+    if (!account || welcomeModalSeen || !focused) {
       return;
     }
 
     mutateSettings("personalization", { welcomeModalSeen: true });
     router.navigate("/(modals)/welcome");
-  }, [account, mutateSettings, router, welcomeModalSeen]);
+  }, [account, focused, mutateSettings, router, welcomeModalSeen]);
 
   return (
     <>
       <Wallpaper />
-      <HomeTopBar />
-      {focused && <StatusBar translucent animated barStyle={'light-content'} />}
+      <HomeTopBar loading={syncing} />
+      {focused && <StatusBar animated barStyle={'light-content'} />}
       <HomeViewContainer key={"home"}>
         <FlatList
           renderItem={({ item }) => (
@@ -194,6 +208,7 @@ const HomeScreen = () => {
           keyExtractor={(item) => item.title}
           ListHeaderComponent={<HomeHeader />}
           style={{ flex: 1 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#fff" progressViewOffset={topBarHeight} />}
           contentContainerStyle={{
             paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 16,
             flexGrow: 1,
