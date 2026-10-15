@@ -11,7 +11,7 @@ import {
 
 import { fetchEdusignTimetable } from "./timetable";
 import { fetchEdusignAttendance } from "./attendance";
-import { refreshEdusignAccount } from "./refresh";
+import { isEdusignAuthError, refreshEdusignAccount } from "./refresh";
 import { fetchEdusignNews } from "./news";
 import { News } from "../shared/news";
 import { Homework } from "../shared/homework";
@@ -37,7 +37,30 @@ export class Edusign implements SchoolServicePlugin {
   session: LinksignClient | undefined = undefined;
   authData: Auth = {};
 
+  private refreshing: Promise<void> | null = null;
+
   constructor(public accountId: string) {}
+
+  private async withAuthRetry<T>(fn: (session: LinksignClient) => Promise<T>): Promise<T> {
+    if (!this.session) {
+      throw error("Session or account is not valid", "Edusign.withAuthRetry");
+    }
+    try {
+      return await fn(this.session);
+    } catch (e) {
+      if (!isEdusignAuthError(e)) {
+        throw e;
+      }
+      // Single in-flight refresh: the refresh token rotates on each use.
+      this.refreshing ??= this.refreshAccount(this.authData)
+        .then(() => {})
+        .finally(() => {
+          this.refreshing = null;
+        });
+      await this.refreshing;
+      return fn(this.session!);
+    }
+  }
 
   async refreshAccount(credentials: Auth): Promise<Edusign> {
     const refresh = await refreshEdusignAccount(this.accountId, credentials);
@@ -50,19 +73,11 @@ export class Edusign implements SchoolServicePlugin {
     weekNumber: number,
     date: Date
   ): Promise<CourseDay[]> {
-    if (this.session) {
-      const days = await fetchEdusignTimetable(
-        this.session,
-        this.accountId,
-        weekNumber
-      );
-      syncSignReminders(days.flatMap(day => day.courses));
-      return days;
-    }
-    throw error(
-      "Session or account is not valid",
-      "Edusign.getWeeklyTimetable"
+    const days = await this.withAuthRetry(session =>
+      fetchEdusignTimetable(session, this.accountId, weekNumber)
     );
+    syncSignReminders(days.flatMap(day => day.courses));
+    return days;
   }
 
   async getAttendancePeriods(): Promise<Period[]> {
@@ -79,27 +94,19 @@ export class Edusign implements SchoolServicePlugin {
   }
 
   async getAttendanceForPeriod(periodId: string): Promise<Attendance> {
-    if (this.session) {
-      return fetchEdusignAttendance(this.session, this.accountId, periodId);
-    }
-    throw error(
-      "Session or account is not valid",
-      "Edusign.getAttendanceForPeriod"
+    return this.withAuthRetry(session =>
+      fetchEdusignAttendance(session, this.accountId, periodId)
     );
   }
 
   async getNews(): Promise<News[]> {
-    if (this.session) {
-      return fetchEdusignNews(this.session, this.accountId);
-    }
-    throw error("Session or account is not valid", "Edusign.getNews");
+    return this.withAuthRetry(session => fetchEdusignNews(session, this.accountId));
   }
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
-    if (this.session) {
-      return fetchEdusignHomeworks(this.session, this.accountId, weekNumber);
-    }
-    throw error("Session or account is not valid", "Edusign.getHomeworks");
+    return this.withAuthRetry(session =>
+      fetchEdusignHomeworks(session, this.accountId, weekNumber)
+    );
   }
 
   async signAttendance(params: AttendanceSignParams): Promise<unknown> {
@@ -143,7 +150,7 @@ export class Edusign implements SchoolServicePlugin {
   -d '${JSON.stringify(body)}'`);
 
       try {
-        return await this.session.signByQRCode(qrCodeId, body);
+        return await this.withAuthRetry(session => session.signByQRCode(qrCodeId, body));
       } catch (err: any) {
         console.log(`\n\n=== EDUSIGN QR CODE ERROR ===\nname: ${err?.name}\nmessage: ${err?.message}\nfull error: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}\n====================================\n\n`);
         throw err;
@@ -168,7 +175,8 @@ export class Edusign implements SchoolServicePlugin {
       const deviceIdHeader = (this.session as any)?.deviceId ? `-H 'x-device-id: ${(this.session as any)?.deviceId}' \\\n` : "";
       console.log(`\n\n=== EDUSIGN DEBUG CURL (CODE) ===\ncurl -X POST 'https://api.edusign.fr/student/courses/code/setStudentPresent/${encodeURIComponent(params.code.trim())}' \\\n  -H 'Authorization: Bearer ${token}' \\\n  -H 'Content-Type: application/json' \\\n  ${deviceIdHeader}  -d '${JSON.stringify(body)}'\n=================================\n\n`);
 
-      return await this.session.signByCode(params.code.trim(), body);
+      const code = params.code.trim();
+      return await this.withAuthRetry(session => session.signByCode(code, body));
     }
 
     throw error(

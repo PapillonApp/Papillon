@@ -5,6 +5,11 @@ import { AuthenticationError } from "../errors/AuthenticationError";
 import { getStaticDeviceId } from "@/utils/device";
 import { useAccountStore } from "@/stores/account";
 
+export const isEdusignAuthError = (err: unknown): boolean => {
+  const name = (err as Error)?.name;
+  return name === "InvalidTokenError" || name === "UnauthorizedError";
+};
+
 export async function refreshEdusignAccount(
   accountId: string,
   credentials: Auth
@@ -37,11 +42,14 @@ export async function refreshEdusignAccount(
       return { auth: authData, session: client };
     } catch (err) {
       error("Failed to refresh Edusign token via refreshToken: " + String(err), "Edusign.refreshEdusignAccount");
-      throw new AuthenticationError("Failed to refresh Edusign token", {
-        id: accountId,
-        serviceId: Services.EDUSIGN,
-        auth: credentials,
-      } as any);
+      if (isEdusignAuthError(err)) {
+        throw new AuthenticationError("Edusign refresh token expired", {
+          id: accountId,
+          serviceId: Services.EDUSIGN,
+          auth: credentials,
+        } as any);
+      }
+      throw err;
     }
   }
 
