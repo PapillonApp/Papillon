@@ -27,10 +27,6 @@ import { fillStoreFromServices } from "@/utils/devmode/fillStore";
 import { warn } from "@/utils/logger/logger";
 import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { initializeTransport } from "@/utils/transport";
-import {
-  COURSE_LIVE_ACTIVITY_SUPPORTED,
-  stopCourseLiveActivity
-} from "@/utils/widgets/courseLiveActivity";
 
 const SCHOOL_ADDRESS = "106 Rue de la Pompe, 75016 Paris";
 
@@ -122,18 +118,8 @@ export default function DevMode() {
     );
   };
 
-  // Handing the Live Activity over to the trigger also means the timetable
-  // stops taking it down, so whatever is on screen when the mode is turned off
-  // is ours to clean up.
-  const setLiveActivityTestMode = async (enabled: boolean) => {
-    useSettingsStore.getState().mutateProperty("personalization", {
-      liveActivityTestMode: enabled,
-    });
-
-    if (!enabled) {
-      await stopCourseLiveActivity();
-    }
-  };
+  const setLiveActivityTestMode = (enabled: boolean) =>
+    useSettingsStore.getState().mutateProperty("personalization", { liveActivityTestMode: enabled });
 
   const toggleForcedTips = async () => {
     if (forceAllTips) {
@@ -359,7 +345,7 @@ export default function DevMode() {
           </List.Section>
         ) : null}
 
-        {COURSE_LIVE_ACTIVITY_SUPPORTED ? (
+        {PapillonKit.features.liveActivities ? (
           <List.Section>
             <List.SectionTitle>
               <Papicons name="Clock" color={muted} />

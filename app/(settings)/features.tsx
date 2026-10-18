@@ -11,7 +11,7 @@ import { useMemo } from "react";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 import Picker from "@/ui/components/Picker";
 import { useTheme } from "expo-router/react-navigation";
-import { COURSE_LIVE_ACTIVITY_SUPPORTED } from "@/utils/widgets/courseLiveActivity";
+import * as PapillonKit from "@getpapillon/papillonkit";
 
 export default function SettingsFeatures() {
   const { t } = useTranslation();
@@ -109,7 +109,7 @@ export default function SettingsFeatures() {
         </List.Item>
       </List.Section>
 
-      {COURSE_LIVE_ACTIVITY_SUPPORTED && (
+      {PapillonKit.features.liveActivities && (
         <List.Section>
           <List.SectionTitle>
             <List.Label>{t("Settings_Features_LockScreen")}</List.Label>

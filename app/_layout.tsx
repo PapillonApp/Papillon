@@ -15,7 +15,7 @@ import { checkConsent } from '@/utils/logger/consent';
 import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
 import { useCalendarWidgetFeed } from '@/utils/widgets/useCalendarWidgetFeed';
-import { useCourseLiveActivity } from '@/utils/widgets/courseLiveActivity';
+import { usePapillonKitSettingsSync } from '@/utils/widgets/usePapillonKitSettingsSync';
 import { LogBox } from 'react-native';
 
 // Polyfill Buffer
@@ -43,7 +43,7 @@ export default function RootLayout() {
   const lastTrackedView = useRef<string | null>(null);
 
   useCalendarWidgetFeed();
-  useCourseLiveActivity();
+  usePapillonKitSettingsSync();
 
   const analyticsView = useMemo(() => {
     if (segments.length === 0) return null;
