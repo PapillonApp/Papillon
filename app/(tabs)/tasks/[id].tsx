@@ -65,7 +65,9 @@ const Task = () => {
   const setAsDone = async (done: boolean) => {
     const manager = getManager();
     if (!task) return;
-    await manager?.setHomeworkCompletion(task, done);
+    if(!task.custom) {
+      await manager?.setHomeworkCompletion(task, done);
+    }
 
     await updateHomeworkIsDone(id, done);
     setIsDone(done);

@@ -45,6 +45,7 @@ export async function getHomeworkById(id: string): Promise<SharedHomework | unde
   const cachedHomework = records[0] ? mapHomeworkToShared(records[0]) : undefined;
 
   if (!cachedHomework) return undefined;
+  if (cachedHomework.custom) return cachedHomework;
 
   try {
     const { getManager } = await import("@/services/shared");
@@ -274,6 +275,26 @@ export async function updateHomeworkIsDone(
     "updateHomeworkIsDone"
   );
 }
+
+export async function deleteHomeworkFromDatabase(homeworkId: string) {
+  const db = getDatabaseInstance();
+
+  const existing = await db
+    .get("homework")
+    .query(Q.where("homeworkId", homeworkId))
+    .fetch();
+
+  await safeWrite(
+    db,
+    async () => {
+      for (const record of existing) {
+        await record.destroyPermanently();
+      }
+    },
+    10000,
+    "deleteHomeworkFromDatabase"
+  );
+} 
 
 export function getDateRangeOfWeek(
   weekNumber: number,
