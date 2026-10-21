@@ -1,13 +1,14 @@
 import { Papicons } from "@getpapillon/papicons";
 import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack as RouterStack, useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useEffect, useState } from "react";
 
+import { AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
 import ModalOverhead from "@/components/ModalOverhead";
-import { getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
+import { deleteHomeworkFromDatabase, getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
@@ -18,7 +19,7 @@ import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
@@ -73,6 +74,21 @@ const Task = () => {
     setIsDone(done);
   }
 
+  const editTask = () => router.push({ pathname: "/tasks/new", params: { id } });
+
+  const deleteTask = () =>
+    Alert.alert(t("Task_Delete_Title"), t("Task_Delete_Message"), [
+      { text: t("CANCEL_BTN"), style: "cancel" },
+      {
+        text: t("Context_Delete"),
+        style: "destructive",
+        onPress: async () => {
+          await deleteHomeworkFromDatabase(id);
+          router.back();
+        },
+      },
+    ]);
+
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
     android: insets.top + 32,
@@ -94,6 +110,31 @@ const Task = () => {
           <HeaderBackButton onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
+
+      {task.custom && (Platform.OS === "android" ? (
+        <RouterStack.Toolbar placement="right" asChild>
+          <AndroidHeaderMenu
+            icon="Dots"
+            actions={[
+              { id: "edit", title: t("Task_Edit"), papicon: "Pen" },
+              { id: "delete", title: t("Context_Delete"), papicon: "Trash", attributes: { destructive: true } },
+            ]}
+            onPressAction={({ nativeEvent }) => (nativeEvent.event === "edit" ? editTask() : deleteTask())}
+          />
+        </RouterStack.Toolbar>
+      ) : (
+        <RouterStack.Toolbar placement="right">
+          <RouterStack.Toolbar.Menu>
+            <RouterStack.Toolbar.Icon sf="ellipsis" />
+            <RouterStack.Toolbar.MenuAction icon="pencil" onPress={editTask}>
+              {t("Task_Edit")}
+            </RouterStack.Toolbar.MenuAction>
+            <RouterStack.Toolbar.MenuAction icon="trash" destructive onPress={deleteTask}>
+              {t("Context_Delete")}
+            </RouterStack.Toolbar.MenuAction>
+          </RouterStack.Toolbar.Menu>
+        </RouterStack.Toolbar>
+      ))}
 
       {Platform.OS !== "android" && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.colors.overground, zIndex: -10 }}>

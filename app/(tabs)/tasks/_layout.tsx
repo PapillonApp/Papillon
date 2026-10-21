@@ -35,6 +35,17 @@ export default function Layout() {
           ...androidHeaderProps,
         }}
       />
+      <Stack.Screen
+        name="new"
+        // Opened with an `id` when editing an existing custom task.
+        options={({ route }) => ({
+          headerTitle: (route.params as { id?: string } | undefined)?.id
+            ? t("Task_Edit_Title")
+            : t("Task_New_Title"),
+          headerLargeTitle: false,
+          ...androidHeaderProps,
+        })}
+      />
     </Stack>
   );
 }

@@ -166,6 +166,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
 
   const homeworksToDelete = dbHomeworks.filter(
     dbHomework =>
+      !dbHomework.custom &&
       refreshedServiceIds.has(dbHomework.createdByAccount) &&
       !homeworkIds.includes(dbHomework.homeworkId)
   );
