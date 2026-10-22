@@ -34,67 +34,73 @@ const SubjectSelector = ({ subjects, selectedSubject, setSelectedSubject }: {
   setSelectedSubject: (s: CustomisableSubject) => void;
 }) => {
   const { colors } = useTheme();
+  // The iOS menu is a SwiftUI host sized to its content, so a percentage width
+  // resolves to nothing: the row is given the measured width of the column.
+  const [width, setWidth] = useState<number>();
 
   return (
-    <ActionMenu
-      onPressAction={({ nativeEvent }) => {
-        const selected = subjects.find(s => s.id === nativeEvent.event);
-        if (selected) {
-          setSelectedSubject(selected);
-        }
-      }}
-      actions={subjects.map(subject => ({
-        id: subject.id,
-        title: [subject.emoji, subject.name].join(" "),
-        state: subject.id === selectedSubject.id ? "on" : "off",
-      }))}
-    >
-      <View
-        style={{
-          width: "100%",
-          backgroundColor: colors.card,
-          flexDirection: "row",
-          gap: 10,
-          padding: 10,
-          alignItems: "center",
-          borderRadius: 30,
-          borderWidth: 1,
-          borderColor: colors.border,
-          shadowRadius: 3,
-          shadowColor: "#000",
-          shadowOpacity: 0.05,
-          shadowOffset: { width: 0, height: 0 },
+    <View style={{ width: "100%" }} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
+      <ActionMenu
+        onPressAction={({ nativeEvent }) => {
+          const selected = subjects.find(s => s.id === nativeEvent.event);
+          if (selected) {
+            setSelectedSubject(selected);
+          }
         }}
+        actions={subjects.map(subject => ({
+          id: subject.id,
+          title: [subject.emoji, subject.name].join(" "),
+          state: subject.id === selectedSubject.id ? "on" : "off",
+        }))}
       >
-        <Stack backgroundColor={selectedSubject.color + 40}
-          inline
-          radius={80}
-          vAlign="center"
-          hAlign="center"
-          style={{ width: 32, height: 32 }}
+        <View
+          style={{
+            width: width ?? "100%",
+            backgroundColor: colors.card,
+            flexDirection: "row",
+            gap: 10,
+            padding: 10,
+            alignItems: "center",
+            borderRadius: 30,
+            borderWidth: 1,
+            borderColor: colors.border,
+            shadowRadius: 3,
+            shadowColor: "#000",
+            shadowOpacity: 0.05,
+            shadowOffset: { width: 0, height: 0 },
+          }}
         >
-          <Text style={{ fontSize: 20 }}>{selectedSubject.emoji}</Text>
-        </Stack>
-        <Typography
-          style={{ flex: 1 }}
-          nowrap
-        >
-          {selectedSubject.name}
-        </Typography>
-        <Papicons
-          name={"ChevronDown"}
-          size={24}
-          color={String(colors.text) + "7F"}
-          style={{ marginRight: 2 }}
-        />
-      </View>
-    </ActionMenu>
+          <Stack backgroundColor={selectedSubject.color + 40}
+            inline
+            radius={80}
+            vAlign="center"
+            hAlign="center"
+            style={{ width: 32, height: 32 }}
+          >
+            <Text style={{ fontSize: 20 }}>{selectedSubject.emoji}</Text>
+          </Stack>
+          <Typography
+            style={{ flex: 1 }}
+            nowrap
+          >
+            {selectedSubject.name}
+          </Typography>
+          <Papicons
+            name={"ChevronDown"}
+            size={24}
+            color={String(colors.text) + "7F"}
+            style={{ marginRight: 2 }}
+          />
+        </View>
+      </ActionMenu>
+    </View>
   );
 };
 
-const DateSelector = ({ selectedDate, setDate }: {
+const DateSelector = ({ selectedDate, setDate, accent }: {
   selectedDate: Date;
   setDate: (s: Date) => void;
+  accent: string;
 }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -181,7 +187,7 @@ const DateSelector = ({ selectedDate, setDate }: {
           <View
             style={{
               height: 30,
-              backgroundColor: colors.primary,
+              backgroundColor: accent,
               borderRadius: 80,
               paddingHorizontal: 12,
               justifyContent: "center",
@@ -215,7 +221,7 @@ const DateSelector = ({ selectedDate, setDate }: {
               width: "100%",
               height: 300,
             }}
-            accentColor={String(colors.primary)}
+            accentColor={accent}
             onChange={(event, date) => {
               if (date) {
                 setDate(date);
@@ -249,9 +255,12 @@ const NewTaskModal = () => {
   // string the task stores, and `replacedId` the id the task is saved under.
   const local = useLocalSearchParams<{ replacedId?: string, subject?: string, date?: string, description?: string, done?: string }>();
   const isEditing = Boolean(local.replacedId);
-  const [selectedSubject, setSelectedSubject] = useState<CustomisableSubject | undefined>(
-    local.subject ? subjects.find(s => s.id === local.subject) ?? subjects[0] : subjects[0]
-  );
+  // Only the id is held: subjects can still be filling in after the first
+  // render, and the first one stands in until the user picks.
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | undefined>(local.subject);
+  const selectedSubject = subjects.find(s => s.id === selectedSubjectId) ?? subjects[0];
+  // Every accent on the screen follows the subject, like the task card itself.
+  const accent = selectedSubject?.color ?? String(colors.primary);
   const [selectedDate, setDate] = useState<Date>(local.date ? new Date(parseInt(local.date)) : new Date());
   const [taskDescription, setDescription] = useState<string>(local.description ?? "");
   const [taskDone, setTaskDone] = useState<boolean>(local.done === "1");
@@ -260,7 +269,9 @@ const NewTaskModal = () => {
   const disabled = !selectedSubject || taskDescription.trim() === "" || !account || saving;
 
   const save = async () => {
-    if (disabled || !selectedSubject || !account) {return;}
+    if (disabled || !selectedSubject || !account) {
+      return;
+    }
 
     const homework: Homework = {
       id: "",
@@ -331,7 +342,7 @@ const NewTaskModal = () => {
           disabled={disabled}
           style={{
             padding: 10,
-            backgroundColor: disabled ? adjust(String(colors.text), dark ? -0.9 : 0.95) : colors.primary,
+            backgroundColor: disabled ? adjust(String(colors.text), dark ? -0.9 : 0.95) : accent,
             borderRadius: 100,
           }}
           onPress={save}
@@ -377,11 +388,10 @@ const NewTaskModal = () => {
               emoji={selectedSubject?.emoji ?? "🦋"}
               title=""
               description={taskDescription || t("Task_New_TaskDescription_Placeholder")}
-              color={selectedSubject?.color ?? String(colors.primary)}
+              color={accent}
               date={selectedDate}
               completed={taskDone}
               hasAttachments={false}
-              isCustom
               onToggle={() => { setTaskDone(!taskDone); }}
             />
           </View>
@@ -399,7 +409,7 @@ const NewTaskModal = () => {
               <Typography color="secondary">{t("Task_New_Subject")}</Typography>
             </Stack>
             {selectedSubject ? (
-              <SubjectSelector subjects={subjects} selectedSubject={selectedSubject} setSelectedSubject={setSelectedSubject} />
+              <SubjectSelector subjects={subjects} selectedSubject={selectedSubject} setSelectedSubject={subject => setSelectedSubjectId(subject.id)} />
             ) : (
               <Typography color="secondary">{t("Task_New_NoSubject")}</Typography>
             )}
@@ -417,7 +427,7 @@ const NewTaskModal = () => {
               />
               <Typography color="secondary">{t("Task_New_DueDate")}</Typography>
             </Stack>
-            <DateSelector selectedDate={selectedDate} setDate={setDate} />
+            <DateSelector selectedDate={selectedDate} setDate={setDate} accent={accent} />
           </Stack>
           <Stack gap={10}
             style={{ paddingHorizontal: 16 }}
@@ -456,8 +466,8 @@ const NewTaskModal = () => {
                 color: colors.text,
               }}
               multiline
-              selectionColor={colors.primary}
-              cursorColor={colors.primary}
+              selectionColor={accent}
+              cursorColor={accent}
               textAlignVertical="top"
               value={taskDescription}
               onChangeText={setDescription}

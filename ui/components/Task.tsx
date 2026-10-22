@@ -101,7 +101,7 @@ const Task: React.FC<TaskProps> = React.memo(({
             </Text>
             {/* Name */}
             <Stack inline flex direction="horizontal" gap={4} hAlign='center'>
-              <Typography nowrap variant='body1' weight='semibold' color={tintedColor}>
+              <Typography nowrap variant='body1' weight='semibold' color={tintedColor} style={{ flexShrink: 1 }}>
                 {subject}
               </Typography>
 
