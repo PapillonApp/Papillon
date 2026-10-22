@@ -1,6 +1,6 @@
 import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Auth, Services } from "@/stores/account/types";
-import { User } from "appscho";
+import { User } from "@blockshub/blockscho";
 import { refreshAppSchoAccount } from "./refresh";
 import { error } from "@/utils/logger/logger";
 import { CourseDay } from "@/services/shared/timetable";

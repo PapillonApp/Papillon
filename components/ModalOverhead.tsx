@@ -1,14 +1,14 @@
+import { Papicons } from "@getpapillon/papicons";
+
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography, { Variant } from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
-import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
-import { t } from "i18next";
+import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Platform, Text, View, ViewStyle } from "react-native";
 
-const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", custom = false, title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, title?: string, custom?: boolean, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
+const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", custom = false, title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, custom?: boolean, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
   const theme = useTheme();
 
   return (
@@ -45,30 +45,40 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
       {overtitle && (
         <Typography
           variant="body1"
-          color='secondary'
+            color='secondary'
+            align="center"
         >
           {overtitle}
         </Typography>
       )}
-      <Stack direction="horizontal" hAlign="center">
-        {subject && (
+      {subject && !custom && (
+        <Typography
+          variant={subjectVariant}
+          align="center"
+          color={adjust(color, theme.dark ? 0.3 : -0.3)}
+        >
+          {subject}
+        </Typography>
+      )}
+      {subject && custom && (
+        <Stack direction="horizontal" hAlign="center" vAlign="center" gap={6}>
           <Typography
             variant={subjectVariant}
             align="center"
             color={adjust(color, theme.dark ? 0.3 : -0.3)}
+            style={{ flexShrink: 1 }}
           >
             {subject}
           </Typography>
-        )}
-        {custom && (
           <Icon size={18} fill={adjust(color, theme.dark ? 0.3 : -0.3)}>
             <Papicons name="PenAlt" />
           </Icon>
-        )}
-      </Stack>
+        </Stack>
+      )}
       {title && (
         <Typography
           variant="body1"
+          align="center"
         >
           {title}
         </Typography>
@@ -77,6 +87,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
         <Typography
           variant="body1"
           color='secondary'
+          align="center"
         >
           {new Date(date).toLocaleDateString(undefined, dateFormat ? dateFormat : {
             day: "numeric",
@@ -89,25 +100,34 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
   )
 }
 
-const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score: string, outOf: number | string }) => {
+const ModalOverHeadScore = ({ color, score, outOf }: { color: string, score?: string, outOf?: number | string }) => {
   const theme = useTheme();
+
+  if (!score) return null;
 
   return (
     <Stack
-      direction='horizontal'
+      direction="horizontal"
       vAlign="end"
       hAlign="end"
       gap={2}
       style={{ marginBottom: -4 }}
     >
-      <Typography variant='h0' weight='medium' inline color={adjust(color, theme.dark ? 0.3 : -0.3)}>
+      <Typography
+        variant="h0"
+        weight="medium"
+        inline
+        color={adjust(color, theme.dark ? 0.3 : -0.3)}
+      >
         {score}
       </Typography>
-      <Typography variant='h3' weight='semibold' color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
-        {typeof outOf === "string" && outOf.startsWith("%") ? outOf : `/${outOf}`}
-      </Typography>
+      {outOf && (
+        <Typography variant='h3' weight='semibold' color={adjust(color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
+          {typeof outOf === "string" && outOf.startsWith("%") ? outOf : `/${outOf}`}
+        </Typography>
+      )}
     </Stack>
-  )
+  );
 }
 
 export default ModalOverhead;

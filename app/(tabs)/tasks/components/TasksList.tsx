@@ -1,21 +1,16 @@
-import React, { useCallback } from 'react';
-import { Platform, RefreshControl, SectionList, StyleSheet } from 'react-native';
-import Reanimated, {
-  createAnimatedComponent,
-  LinearTransition,
-} from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { useCallback, useMemo } from "react";
+import { RefreshControl, StyleSheet } from "react-native";
+import Reanimated, { LinearTransition } from "react-native-reanimated";
 
 import { Homework } from "@/services/shared/homework";
-import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
-import { generateId } from "@/utils/generateId";
+import List from "@/ui/new/List";
+import useResizable from "@/ui/utils/Resizable";
 
-import DateHeader from '../atoms/DateHeader';
-import EmptyState from '../atoms/EmptyState';
-import TasksSummary from '../atoms/TasksSummary';
-import TaskItem from './TaskItem';
-
-const AnimatedSectionList = createAnimatedComponent(SectionList<Homework, HomeworkSection>);
+import DateHeader from "../atoms/DateHeader";
+import EmptyState from "../atoms/EmptyState";
+import TaskItem from "./TaskItem";
+import { useTheme } from "expo-router/react-navigation";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export interface HomeworkSection {
   id: string;
@@ -26,128 +21,134 @@ export interface HomeworkSection {
 
 interface TasksListProps {
   sections: HomeworkSection[];
-  headerHeight: number;
   searchTerm: string;
   isRefreshing: boolean;
   onRefresh: () => void;
   collapsedGroups: string[];
   toggleGroup: (headerId: string) => void;
   sortMethod: string;
-  homework: Record<string, Homework>;
   setAsDone: (item: Homework, done: boolean) => void;
+  isLoaded?: boolean;
+  /** The homework could not be loaded: an empty week means "unknown", not "free". */
+  hasError?: boolean;
+  /**
+   * Rows animate in only on the page the screen opened with. Every other page
+   * is mounted off-screen by the week pager, where a couple of dozen entering
+   * animations would cost frames without anyone seeing them.
+   */
+  animateItems?: boolean;
 }
 
 const TasksList: React.FC<TasksListProps> = ({
   sections,
-  headerHeight,
   searchTerm,
   isRefreshing,
   onRefresh,
   collapsedGroups,
   toggleGroup,
   sortMethod,
-  homework,
   setAsDone,
+  isLoaded = true,
+  hasError = false,
+  animateItems = true,
 }) => {
-  const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const { isLarge } = useResizable();
 
-  const renderItem = useCallback(
-    ({ item, index, section }: { item: Homework, index: number, section: HomeworkSection }) => {
-      if (sortMethod === 'date' && collapsedGroups.includes(section.id)) {
-        return null;
-      }
-      // Generate the same ID used to store homeworks in the homework object
-      const generatedId = generateId(
-        item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString()
-      );
-      const inFresh = homework[generatedId];
-      const source = inFresh ?? item;
-      const fromCache = !inFresh;
-
-      return (
-        <Reanimated.View
-          layout={LinearTransition}
-          entering={PapillonAppearIn}
-          exiting={PapillonAppearOut}
-        >
-          <TaskItem
-            item={source}
-            index={index}
-            fromCache={fromCache}
-            setAsDone={(item, done) => {
-              setAsDone(item, done);
-            }}
-          />
-        </Reanimated.View>
-      );
-    },
-    [homework, setAsDone, collapsedGroups, sortMethod]
+  // Items arrive already merged with the freshly fetched homework, so a row
+  // only needs the item itself — no per-row lookup, no per-row id hashing.
+  const renderTask = useCallback(
+    (item: Homework, index: number) => (
+      <Reanimated.View layout={LinearTransition}>
+        <TaskItem
+          item={item}
+          index={index}
+          fromCache={item.fromCache}
+          animated={animateItems}
+          setAsDone={setAsDone}
+        />
+      </Reanimated.View>
+    ),
+    [setAsDone, animateItems]
   );
 
-  const renderSectionHeader = useCallback(
-    ({ section }: { section: HomeworkSection }) => {
-      if (!section.title || sortMethod !== 'date') {
-        return null;
-      }
-
-      const isCollapsed = collapsedGroups.includes(section.id);
-
-      return (
-        <Reanimated.View layout={LinearTransition}>
-          <DateHeader
-            title={section.title}
-            isCollapsed={isCollapsed}
-            onToggle={() => toggleGroup(section.id)}
-          />
-        </Reanimated.View>
-      );
-    },
-    [collapsedGroups, sortMethod, toggleGroup]
-  );
-
-  const keyExtractor = useCallback((item: Homework) => {
-    return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
+  const taskKeyExtractor = useCallback((item: Homework) => {
+    return (
+      item.id ??
+      "hw:" +
+        item.subject +
+        item.content +
+        item.createdByAccount +
+        new Date(item.dueDate).toDateString()
+    );
   }, []);
 
-  const bottomTabBarHeight = insets.bottom;
+  const visibleSections = useMemo(
+    () => sections.filter(section => section.data.length > 0),
+    [sections]
+  );
+  const showsDayGroups =
+    sortMethod === "date" && searchTerm.trim().length === 0;
+  const numColumns = isLarge && showsDayGroups ? 2 : 1;
 
   return (
-    <AnimatedSectionList
-      sections={sections}
-      style={styles.list}
+    <List
+      key={`tasks-list-${numColumns}`}
+      animated
+      numColumns={numColumns}
+      maintainVisibleContentPosition={{ disabled: true }}
+      style={[styles.list, { backgroundColor: colors.overground }]}
+      safeHorizontalPadding={16}
       contentContainerStyle={{
-        paddingHorizontal: 16,
-        paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
-        paddingTop: headerHeight + (Platform.OS === 'android' ? 10 : 0),
+        paddingBottom: 16,
       }}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-      scrollIndicatorInsets={{
-        top: headerHeight - insets.top
-      }}
-      renderSectionHeader={renderSectionHeader}
-      ListEmptyComponent={<EmptyState isSearching={searchTerm.length > 0} />}
-      stickySectionHeadersEnabled={false}
-      ListHeaderComponent={
-        searchTerm.trim().length === 0 ? (
-          <TasksSummary sections={sections} />
+      contentInsetAdjustmentBehavior="automatic"
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      ListEmptyComponent={
+        isLoaded || hasError ? (
+          <SafeHorizontalView base={16}>
+            <EmptyState isSearching={searchTerm.length > 0} hasError={hasError} />
+          </SafeHorizontalView>
         ) : null
       }
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          progressViewOffset={headerHeight}
         />
       }
-    />
+    >
+      {visibleSections.map(section => {
+        const isCollapsed = collapsedGroups.includes(section.id);
+
+        return (
+          <Reanimated.View key={section.id} layout={LinearTransition}>
+            {section.title && sortMethod === "date" && (
+              <DateHeader
+                title={section.title}
+                isCollapsed={isCollapsed}
+                onToggle={() => toggleGroup(section.id)}
+              />
+            )}
+
+            {!isCollapsed &&
+              section.data.map((item, index) => (
+                <React.Fragment key={taskKeyExtractor(item)}>
+                  {renderTask(item, index)}
+                </React.Fragment>
+              ))}
+          </Reanimated.View>
+        );
+      })}
+    </List>
   );
 };
 
 const styles = StyleSheet.create({
   list: {
     flex: 1,
-    height: '100%',
+    height: "100%",
   },
 });
 

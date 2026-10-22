@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Stack from './Stack';
 import Typography from './Typography';
 import { formatHTML } from '@/utils/format/html';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import adjust from '@/utils/adjustColor';
 import { Text } from 'react-native';
 
-import { formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
 import i18n from '@/utils/i18n';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -32,29 +32,29 @@ interface TaskProps {
   isCustom?: boolean;
   magic?: string;
   onToggle: () => void;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 export function formatDistanceDay(date: Date): string {
-    // if yesterday, today or tomorrow
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+  // if yesterday, today or tomorrow
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
 
-    if (date.toDateString() === yesterday.toDateString()) {
-      return i18n.t("Yesterday").toLowerCase();
-    } else if (date.toDateString() === today.toDateString()) {
-      return i18n.t("Today").toLowerCase();
-    } else if (date.toDateString() === tomorrow.toDateString()) {
-      return i18n.t("Tomorrow").toLowerCase();
-    }
-
-    return formatDistanceToNow(date, { addSuffix: true, locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
+  if (date.toDateString() === yesterday.toDateString()) {
+    return i18n.t("Yesterday").toLowerCase();
+  } else if (date.toDateString() === today.toDateString()) {
+    return i18n.t("Today").toLowerCase();
+  } else if (date.toDateString() === tomorrow.toDateString()) {
+    return i18n.t("Tomorrow").toLowerCase();
   }
 
-const Task: React.FC<TaskProps> = ({
+  return formatDistanceStrict(startOfDay(date), startOfDay(new Date()), { addSuffix: true, unit: "day", locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
+}
+
+const Task: React.FC<TaskProps> = React.memo(({
   subject,
   emoji,
   title,
@@ -69,12 +69,16 @@ const Task: React.FC<TaskProps> = ({
   onPress
 }) => {
   const theme = useTheme();
-  const tintedColor = adjust(color, theme.dark ? 0.3 : -0.3);
+  const tintedColor = useMemo(() => adjust(color, theme.dark ? 0.3 : -0.3), [color, theme.dark]);
+  const formattedDescription = useMemo(() => formatHTML(description), [description]);
 
   return (
     <ListTouchable onPress={onPress}>
-      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: (Platform.OS === 'android' && !theme.dark) ? "#FFF" : theme.colors.item, elevation: 2, overflow: "hidden" }}>
-        <Stack animated layout={Animation(LinearTransition, "list")} padding={[16, 14]} gap={12} radius={20} style={{ overflow: "hidden" }}>
+      <Stack card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: (Platform.OS === 'android' && !theme.dark) ? "#FFF" : theme.colors.item, elevation: 2, overflow: "hidden" }}>
+        {/* The card above already clips to its corners: a second rounded clip
+            here would cost another offscreen pass per row, on every row the
+            week pager moves across the screen. */}
+        <Stack padding={[16, 14]} gap={12}>
           {Platform.OS !== "android" && (
             <LinearGradient
               colors={[color, theme.colors.card]}
@@ -107,6 +111,7 @@ const Task: React.FC<TaskProps> = ({
                   <Papicons name="link" />
                 </Icon>
               )}
+
               {isCustom && (
                 <Icon size={18} fill={tintedColor}>
                   <Papicons name="PenAlt" />
@@ -122,7 +127,7 @@ const Task: React.FC<TaskProps> = ({
           {/* Content */}
           <Stack animated layout={Animation(LinearTransition, "list")}>
             <Typography numberOfLines={3} variant='title' weight='medium'>
-              {formatHTML(description)}
+              {formattedDescription}
             </Typography>
           </Stack>
 
@@ -186,6 +191,8 @@ const Task: React.FC<TaskProps> = ({
       </Stack>
     </ListTouchable >
   );
-};
+});
+
+Task.displayName = "Task";
 
 export default Task;

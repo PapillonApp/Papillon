@@ -6,7 +6,7 @@ import {
   NotebookPunishment,
   SessionHandle,
   TabLocation,
-} from "pawnote";
+} from "@blockshub/pawnote-lts";
 
 import { Absence, Attendance, Delay, Observation, Punishment } from "@/services/shared/attendance";
 import { Period } from "@/services/shared/grade";

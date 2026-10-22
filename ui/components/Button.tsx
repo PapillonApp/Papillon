@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useCallback, useMemo } from "react";
 import { ActivityIndicator, Pressable, PressableProps } from "react-native";
 import Reanimated, { Easing, FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
@@ -9,9 +9,7 @@ import Typography from "./Typography";
 import * as ExpoHaptics from "expo-haptics";
 import { runsIOS26 } from "../utils/IsLiquidGlass";
 
-import {
-  LiquidGlassView
-} from '@callstack/liquid-glass';
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -239,12 +237,10 @@ const Button: React.FC<ButtonProps> = React.memo(({
           gap: 5,
           opacity: disabled ? 0.5 : 1,
         }}
-        tintColor={
-          buttonTint
-        }
+        glassTintColor={buttonTint}
         {...rest}
-        effect="regular"
-        interactive={true}
+        glassType="regular"
+        isInteractive={true}
       >
         <Pressable
           onPress={onPress}

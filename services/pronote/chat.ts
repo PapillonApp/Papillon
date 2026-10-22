@@ -3,10 +3,13 @@ import {
   discussionRecipients,
   discussions,
   discussionSendMessage,
-  EntityKind, newDiscussion, NewDiscussionRecipient, newDiscussionRecipients,
+  EntityKind,
+  newDiscussion,
+  NewDiscussionRecipient,
+  newDiscussionRecipients,
   SessionHandle,
   TabLocation,
-} from "pawnote";
+} from "@blockshub/pawnote-lts";
 
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { error } from "@/utils/logger/logger";
@@ -144,7 +147,7 @@ export async function fetchPronoteRecipients(
   }
 
   const alLRecipients = await Promise.all(
-    session.user.resources.flatMap(resource =>
+    session.user.resources.flatMap(() =>
       [
         EntityKind.Teacher,
         EntityKind.Personal

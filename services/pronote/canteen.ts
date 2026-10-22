@@ -1,4 +1,10 @@
-import { Food as PawnoteFood, Meal as PawnoteMeal, Menu, menus, SessionHandle } from "pawnote";
+import {
+  Food as PawnoteFood,
+  Meal as PawnoteMeal,
+  Menu,
+  menus,
+  SessionHandle,
+} from "@blockshub/pawnote-lts";
 
 import { CanteenMenu, Food, Meal } from "@/services/shared/canteen";
 import { error } from "@/utils/logger/logger";

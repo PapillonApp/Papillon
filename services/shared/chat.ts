@@ -1,4 +1,4 @@
-import { Discussion, NewDiscussionRecipient } from "pawnote";
+import { Discussion, NewDiscussionRecipient } from "@blockshub/pawnote-lts";
 import { Mail, Recipients } from "skolengojs";
 
 import { Attachment } from "@/services/shared/attachment";

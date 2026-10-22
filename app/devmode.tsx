@@ -1,465 +1,527 @@
-import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import React from "react";
+import { ActivityIndicator, Alert, Platform, Switch, View } from "react-native";
 import { router } from "expo-router";
-import { Plus } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
+import { useTheme } from "expo-router/react-navigation";
+import { Papicons } from "@getpapillon/papicons";
+import * as PapillonKit from "@getpapillon/papillonkit";
 
-import DevModeNotice from "@/components/DevModeNotice";
-import LogIcon from "@/components/Log/LogIcon";
+import packageJson from "@/package.json";
+import Disclosure from "@/components/Devmode/Disclosure";
 import { database } from "@/database";
-import { useAccountStore } from '@/stores/account';
-import { useLogStore } from '@/stores/logs';
+import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
+import { showAllTips, tipsAreSupported } from "@/modules/papillon-tips";
+import { attachMockDataToCurrentAccount } from "@/services/mock/account";
+import { getManager, initializeAccountManager } from "@/services/shared";
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
+import { useLogStore, useNetworkStore } from "@/stores/logs";
+import { LogType } from "@/stores/logs/types";
 import { useMagicStore } from "@/stores/magic";
 import { useSettingsStore } from "@/stores/settings";
-import { useAlert } from "@/ui/components/AlertProvider";
+import { useTipsStore } from "@/stores/tips";
 import Icon from "@/ui/components/Icon";
-import Item, { Leading, Trailing } from '@/ui/components/Item';
-import List from '@/ui/components/List';
-import SectionHeader from "@/ui/components/SectionHeader";
-import Typography from "@/ui/components/Typography";
-import { MAGIC_URL } from "@/utils/endpoints";
-import { log } from "@/utils/logger/logger";
-import ModelManager from "@/utils/magic/ModelManager";
-import { scheduleNotificationAtDate } from "@/utils/notification/reminder/helper";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
+import { confirmDestructive, useDevAction } from "@/utils/devmode/actions";
+import { fillStoreFromServices } from "@/utils/devmode/fillStore";
+import { warn } from "@/utils/logger/logger";
+import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { initializeTransport } from "@/utils/transport";
-import NativeSwitch from "@/ui/native/NativeSwitch";
+import {
+  COURSE_LIVE_ACTIVITY_SUPPORTED,
+  stopCourseLiveActivity
+} from "@/utils/widgets/courseLiveActivity";
 
-export default function Devmode() {
-  const accountStore = useAccountStore();
-  const logsStore = useLogStore();
-  const settingStore = useSettingsStore(state => state.personalization)
-  const mutateProperty = useSettingsStore(state => state.mutateProperty)
-  const magicStore = useMagicStore()
+const SCHOOL_ADDRESS = "106 Rue de la Pompe, 75016 Paris";
 
-  const magicStoreHomework = useMagicStore(state => state.processHomeworks)
+const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? "s" : ""}`;
 
+export default function DevMode() {
   const { colors } = useTheme();
-  const alert = useAlert();
+  const muted = String(colors.text) + "88";
+  const { running, run } = useDevAction();
 
-  const [showAccountStore, setShowAccountStore] = useState(false);
-  const [showLogsStore, setShowLogsStore] = useState(false);
+  const mockDataEnabled = useSettingsStore(state => state.personalization.mockDataEnabled ?? false);
+  const account = useAccountStore(state => state.accounts.find(item => item.id === state.lastUsedAccount));
+  const logCount = useLogStore(state => state.logs.length);
+  const errorCount = useLogStore(state => state.logs.filter(log => log.type === LogType.ERROR).length);
+  const requestCount = useNetworkStore(state =>
+    Array.from(state.hosts.values()).reduce((total, host) => total + host.requests.length, 0)
+  );
+  const hostCount = useNetworkStore(state => state.hosts.size);
+  const magicCount = useMagicStore(state => state.processHomeworks.length);
+  const forceAllTips = useTipsStore(state => state.forceAll);
+  const liveActivityTestMode = useSettingsStore(
+    state => state.personalization.liveActivityTestMode ?? false
+  );
 
-  const [visibleLogsCount, setVisibleLogsCount] = useState(20);
-
-  const loadMoreLogs = () => {
-    setVisibleLogsCount((prev) => prev + 20);
+  const attachMockData = () => {
+    if (!account) {
+      Alert.alert("Aucun compte actif", "Crée d'abord un compte, puis reviens attacher Mock Data.");
+      return;
+    }
+    if (account.services.some(service => service.serviceId === Services.MOCK_DATA)) {
+      Alert.alert("Mock Data déjà attaché", "Utilise « Remplir la base » pour récupérer ses données.");
+      return;
+    }
+    Alert.alert("Attacher Mock Data", `Ajoute le service fictif à ${account.firstName} ${account.lastName}.`, [
+      { text: "Annuler", style: "cancel" },
+      { text: "Attacher", onPress: () => run("attach", attachMockDataToCurrentAccount) },
+    ]);
   };
 
-  useEffect(() => {
-    if (!showLogsStore) {
-      setVisibleLogsCount(20);
+  const fillStore = () =>
+    run("fill", async () => {
+      const report = await fillStoreFromServices();
+      Alert.alert(
+        report.failures.length > 0 ? "Remplissage incomplet" : "Base remplie",
+        [
+          report.account ? `${report.account.name} · ${plural(report.account.serviceCount, "service")}` : null,
+          report.lines.join("\n") || null,
+          report.skipped.length ? `Non fourni par le service :\n${report.skipped.join(", ")}` : null,
+          report.failures.length ? `Échecs :\n${report.failures.join("\n")}` : null,
+        ]
+          .filter(Boolean)
+          .join("\n\n") || "Rien à récupérer."
+      );
+    });
+
+  const disableMockData = async () => {
+    const mockServices = useAccountStore
+      .getState()
+      .accounts.flatMap(item => item.services.filter(service => service.serviceId === Services.MOCK_DATA));
+
+    for (const service of mockServices) {
+      await ClearDatabaseForAccount(service.id);
+      getManager()?.removeService(service.id);
+      useAccountStore.getState().removeServiceFromAccount(service.id);
     }
 
+    useSettingsStore.getState().mutateProperty("personalization", { mockDataEnabled: false });
 
-  }, [showLogsStore]);
+    const activeAccountId = useAccountStore.getState().lastUsedAccount;
+    if (activeAccountId) {
+      try {
+        await initializeAccountManager(activeAccountId);
+      } catch (cause) {
+        warn(`Mock Data was disabled, but the account manager could not refresh: ${String(cause)}`);
+      }
+    }
+  };
+
+  const setMockDataEnabled = (enabled: boolean) => {
+    if (enabled) {
+      useSettingsStore.getState().mutateProperty("personalization", { mockDataEnabled: true });
+      return;
+    }
+    confirmDestructive(
+      "Désactiver Mock Data",
+      "Les services Mock Data seront retirés de tous les comptes et leurs données locales supprimées.",
+      "Désactiver",
+      disableMockData
+    );
+  };
+
+  // Handing the Live Activity over to the trigger also means the timetable
+  // stops taking it down, so whatever is on screen when the mode is turned off
+  // is ours to clean up.
+  const setLiveActivityTestMode = async (enabled: boolean) => {
+    useSettingsStore.getState().mutateProperty("personalization", {
+      liveActivityTestMode: enabled,
+    });
+
+    if (!enabled) {
+      await stopCourseLiveActivity();
+    }
+  };
+
+  const toggleForcedTips = async () => {
+    if (forceAllTips) {
+      useTipsStore.getState().setForceAll(false);
+      return;
+    }
+    useTipsStore.getState().setForceAll(true);
+    await showAllTips();
+  };
+
+  const resetTips = () =>
+    confirmDestructive(
+      "Réinitialiser les astuces",
+      "Les compteurs repartent de zéro. Les astuces déjà fermées reviendront au prochain lancement de l'app.",
+      "Réinitialiser",
+      () => {
+        const tips = useTipsStore.getState();
+        tips.reset();
+        tips.requestDatastoreReset();
+      }
+    );
+
+  const testTransport = (address?: string) =>
+    run(address ? "transport-address" : "transport", async () => {
+      const transport = await initializeTransport(address);
+      Alert.alert("Transport initialisé", JSON.stringify(transport, null, 2));
+    });
+
+  const clearDatabase = () =>
+    database.write(async () => {
+      await database.unsafeResetDatabase();
+    });
+
+  const resetPapillon = async () => {
+    await clearDatabase();
+    useSettingsStore.getState().reset();
+    useAccountStore.getState().reset();
+    router.dismissAll();
+    router.reload();
+  };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={styles.containerContent}
-      style={styles.container}
-    >
-      <DevModeNotice />
-
-      <List>
-        <Item>
-          <Trailing>
-            <NativeSwitch
-              style={{ marginRight: 10 }}
-              value={showLogsStore}
-              onValueChange={() => {
-                requestAnimationFrame(() => {
-                  setShowLogsStore(!showLogsStore);
-                });
-              }}
-            />
-          </Trailing>
-          <Typography variant="title">Logs Store</Typography>
-        </Item>
-
-        {showLogsStore &&
-          logsStore.logs
-            .slice()
-            .reverse()
-            .slice(0, visibleLogsCount)
-            .map((logEntry, index) => (
-              <Item key={index}>
-                <Leading>
-                  <LogIcon type={logEntry.type} />
-                </Leading>
-                <Typography variant="body2">{logEntry.message}</Typography>
-                <Typography variant="caption">
-                  {new Date(logEntry.date).toLocaleString()} -{" "}
-                  {logEntry.from ?? "UNKNOW"}
-                </Typography>
-              </Item>
-            ))}
-
-        {showLogsStore && visibleLogsCount < logsStore.logs.length && (
-          <Item onPress={loadMoreLogs}>
-            <Leading>
-              <Plus color={colors.text} size={24} />
-            </Leading>
-            <Typography variant="title">Charger plus</Typography>
-          </Item>
-        )}
-        <Item
-          onPress={() => {
-            const accounts = useAccountStore.getState().accounts;
-            for (const account of accounts) {
-              useAccountStore.getState().removeAccount(account);
-            }
-            Alert.alert("Success");
-          }}
-        >
-          <Typography variant="title">Reset Account Store</Typography>
-        </Item>
-      </List>
-
-      <SectionHeader
-        title="Magic+"
-        leading={
-          <Icon>
-            <Papicons name="Sparkles" size={18} />
-          </Icon>
-        }
-      />
-
-      <List>
-        <Item>
-          <Typography>
-            {settingStore.magicEnabled
-              ? "Papillon Magic+ est Activé"
-              : "Papillon Magic+ est Désactivé"}
-          </Typography>
-        </Item>
-        <Item onPress={() => ModelManager.refresh()}>
-          <Typography variant="title">Rafraîchir le modèle</Typography>
-        </Item>
-        <Item
-          onPress={async () => {
-            try {
-              const result = await ModelManager.reset();
-              if (result.success) {
-                Alert.alert(
-                  "Succès",
-                  "Le modèle a été réinitialisé avec succès. Il sera retéléchargé au prochain démarrage."
-                );
-              } else {
-                Alert.alert("Erreur", `Échec du reset: ${result.error}`);
-              }
-            } catch (error) {
-              Alert.alert("Erreur", `Erreur lors du reset: ${String(error)}`);
-            }
-          }}
-        >
-          <Typography variant="title">Reset complet du modèle</Typography>
-        </Item>
-        <Item
-          onPress={() => {
-            const status = ModelManager.getStatus();
-            Alert.alert(
-              "Statut du modèle",
-              `Modèle chargé: ${status.hasModel ? "Oui" : "Non"}\n` +
-                `Max Length: ${status.maxLen}\n` +
-                `Nombre de labels: ${status.labelsCount}\n` +
-                `Taille du vocabulaire: ${status.wordIndexSize}\n` +
-                `Index OOV: ${status.oovIndex}`
-            );
-          }}
-        >
-          <Typography variant="title">Afficher le statut du modèle</Typography>
-        </Item>
-        <Item
-          onPress={async () => {
-            try {
-              const result = await ModelManager.predict(
-                "ds analyse de doc",
-                true
-              );
-              if ("error" in result) {
-                Alert.alert("Erreur de prédiction", result.error);
-              } else {
-                Alert.alert(
-                  "Test de prédiction réussi",
-                  `Prédiction: ${result.predicted}\nScores: ${result.scores
-                    .slice(0, 3)
-                    .map(s => s.toFixed(3))
-                    .join(", ")}...`
-                );
-              }
-            } catch (error) {
-              Alert.alert("Erreur", `Erreur lors du test: ${String(error)}`);
-            }
-          }}
-        >
-          <Typography variant="title">Tester une prédiction</Typography>
-        </Item>
-        <Item
-          onPress={() => {
-            try {
-              magicStore.clear();
-              Alert.alert(
-                "Cache vidé",
-                "Le cache des prédictions Magic a été vidé avec succès !"
-              );
-            } catch (error) {
-              Alert.alert(
-                "Erreur",
-                `Erreur lors du vidage du cache: ${String(error)}`
-              );
-            }
-          }}
-        >
-          <Typography variant="title">Vider le cache Magic</Typography>
-          <Trailing>
-            <Typography variant="caption">
-              {magicStoreHomework.length} devoirs
+    <View style={{ flex: 1, backgroundColor: colors.overground }}>
+      <List
+        showsVerticalScrollIndicator={false}
+        animated
+        contentInsetAdjustmentBehavior="always"
+        contentContainerStyle={{ padding: 16, paddingBottom: 60 }}
+      >
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="Info" color={muted} />
+            <List.Label>Cette installation</List.Label>
+          </List.SectionTitle>
+          <List.Item>
+            <Typography variant="action">Papillon</Typography>
+            <List.Trailing>
+              <Typography variant="body1" color="textSecondary">
+                {packageJson.version}
+              </Typography>
+            </List.Trailing>
+          </List.Item>
+          <List.Item>
+            <Typography variant="action">Système</Typography>
+            <List.Trailing>
+              <Typography variant="body1" color="textSecondary">
+                {`${Platform.OS === "ios" ? "iOS" : "Android"} ${Platform.Version}`}
+              </Typography>
+            </List.Trailing>
+          </List.Item>
+          <List.Item>
+            <Typography variant="action">Compte actif</Typography>
+            <Typography variant="body2" color="textSecondary" numberOfLines={1}>
+              {account
+                ? `${account.firstName} ${account.lastName} · ${plural(account.services.length, "service")}`
+                : "Aucun"}
             </Typography>
-          </Trailing>
-        </Item>
-        <Item
-          onPress={() => {
-            const currentURL = settingStore.magicModelURL || MAGIC_URL;
+          </List.Item>
+        </List.Section>
 
-            Alert.prompt(
-              "URL Custom Magic Model",
-              `URL actuelle: ${currentURL}\n\nEntrez une nouvelle URL:`,
-              [
-                {
-                  text: "Annuler",
-                  style: "cancel",
-                },
-                {
-                  text: "Valider",
-                  onPress: (newURL?: string) => {
-                    if (newURL && newURL.trim()) {
-                      mutateProperty("personalization", {
-                        magicModelURL: newURL.trim(),
-                      });
-                      Alert.alert("Succès", "URL du modèle Magic mise à jour!");
-                    }
-                  },
-                },
-              ],
-              "plain-text",
-              currentURL
-            );
-          }}
-        >
-          <Typography variant="title">
-            Changer l&apos;URL Custom Magic
-          </Typography>
-        </Item>
-        <Item
-          onPress={() => {
-            Alert.alert(
-              "Reset URL Magic Model",
-              "Voulez-vous remettre l'URL du modèle Magic par défaut?",
-              [
-                {
-                  text: "Annuler",
-                  style: "cancel",
-                },
-                {
-                  text: "Reset",
-                  style: "destructive",
-                  onPress: () => {
-                    mutateProperty("personalization", {
-                      magicModelURL: MAGIC_URL,
-                    });
-                    Alert.alert(
-                      "Succès",
-                      "URL du modèle Magic remise par défaut!"
-                    );
-                  },
-                },
-              ]
-            );
-          }}
-        >
-          <Typography variant="title">Reset URL Magic Model</Typography>
-        </Item>
-        <Item onPress={() => magicStore.clear()}>
-          <Typography variant="title">Clear Magic Store</Typography>
-        </Item>
-        <Item onPress={() => log(JSON.stringify(magicStoreHomework))}>
-          <Typography variant="title">ConsoleLog Magic Store</Typography>
-        </Item>
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="ArrowDownBox" color={muted} />
+            <List.Label>Données</List.Label>
+          </List.SectionTitle>
+          <List.Item>
+            <Typography variant="action">Service fictif</Typography>
+            <Typography variant="body2" color="textSecondary">
+              Propose Mock Data dans l'ajout de compte.
+            </Typography>
+            <List.Trailing>
+              <Switch value={mockDataEnabled} onValueChange={setMockDataEnabled} />
+            </List.Trailing>
+          </List.Item>
+          <List.Item onPress={attachMockData}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Plus" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Attacher Mock Data au compte actif</Typography>
+            {running === "attach" ? (
+              <List.Trailing>
+                <ActivityIndicator />
+              </List.Trailing>
+            ) : null}
+          </List.Item>
+          <List.Item onPress={fillStore}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="ArrowDownBox" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Remplir la base</Typography>
+            <Typography variant="body2" color="textSecondary">
+              Récupère d'un coup toutes les données du compte actif.
+            </Typography>
+            {running === "fill" ? (
+              <List.Trailing>
+                <ActivityIndicator />
+              </List.Trailing>
+            ) : null}
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="Code" color={muted} />
+            <List.Label>Diagnostic</List.Label>
+          </List.SectionTitle>
+          <List.Item href="/(dev)/logs">
+            <List.Leading>
+              <Icon>
+                <Papicons name="List" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Journaux</Typography>
+            <Typography variant="body2" color="textSecondary">
+              {errorCount > 0 ? plural(errorCount, "erreur") : "Aucune erreur"}
+            </Typography>
+            <List.Trailing>
+              <Disclosure value={logCount} />
+            </List.Trailing>
+          </List.Item>
+          <List.Item href="/(dev)/network">
+            <List.Leading>
+              <Icon>
+                <Papicons name="Globe" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Requêtes réseau</Typography>
+            <Typography variant="body2" color="textSecondary">
+              {hostCount > 0 ? plural(hostCount, "serveur") : "Aucune requête"}
+            </Typography>
+            <List.Trailing>
+              <Disclosure value={requestCount} />
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="Sparkles" color={muted} />
+            <List.Label>Modules</List.Label>
+          </List.SectionTitle>
+          {Platform.OS === "ios" && PapillonKit.isSupported ? (
+            <List.Item href="/(dev)/papillonkit">
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Apple" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">PapillonKit</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Siri, widgets et Apple Intelligence
+              </Typography>
+              <List.Trailing>
+                <Disclosure />
+              </List.Trailing>
+            </List.Item>
+          ) : null}
+          {MAGIC_AVAILABLE ? (
+            <List.Item href="/(dev)/magic">
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Sparkles" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Papillon Magic+</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Modèle de classement des devoirs
+              </Typography>
+              <List.Trailing>
+                <Disclosure value={magicCount > 0 ? plural(magicCount, "devoir") : undefined} />
+              </List.Trailing>
+            </List.Item>
+          ) : null}
+        </List.Section>
+
+        {tipsAreSupported ? (
+          <List.Section>
+            <List.SectionTitle>
+              <Papicons name="InfoBox" color={muted} />
+              <List.Label>Astuces</List.Label>
+            </List.SectionTitle>
+            <List.Item>
+              <Typography variant="action">Forcer toutes les astuces</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Chaque astuce apparaît dès le prochain passage sur son écran.
+              </Typography>
+              <List.Trailing>
+                <Switch value={forceAllTips} onValueChange={() => run("tips", toggleForcedTips)} />
+              </List.Trailing>
+            </List.Item>
+            <List.Item onPress={resetTips}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Trash" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Réinitialiser les astuces</Typography>
+            </List.Item>
+          </List.Section>
+        ) : null}
+
+        {COURSE_LIVE_ACTIVITY_SUPPORTED ? (
+          <List.Section>
+            <List.SectionTitle>
+              <Papicons name="Clock" color={muted} />
+              <List.Label>Live Activities</List.Label>
+            </List.SectionTitle>
+            <List.Item>
+              <Typography variant="action">Mode test des Live Activities</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Ajoute un déclencheur sur la fiche d'un cours et met en pause la
+                mise à jour automatique depuis l'emploi du temps.
+              </Typography>
+              <List.Trailing>
+                <Switch value={liveActivityTestMode} onValueChange={setLiveActivityTestMode} />
+              </List.Trailing>
+            </List.Item>
+          </List.Section>
+        ) : null}
+
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="Bus" color={muted} />
+            <List.Label>Transport</List.Label>
+          </List.SectionTitle>
+          <List.Item onPress={() => testTransport()}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="Play" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Initialiser sans adresse</Typography>
+            {running === "transport" ? (
+              <List.Trailing>
+                <ActivityIndicator />
+              </List.Trailing>
+            ) : null}
+          </List.Item>
+          <List.Item onPress={() => testTransport(SCHOOL_ADDRESS)}>
+            <List.Leading>
+              <Icon>
+                <Papicons name="MapPin" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Initialiser avec une adresse</Typography>
+            <Typography variant="body2" color="textSecondary">
+              {SCHOOL_ADDRESS}
+            </Typography>
+            {running === "transport-address" ? (
+              <List.Trailing>
+                <ActivityIndicator />
+              </List.Trailing>
+            ) : null}
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="Phone" color={muted} />
+            <List.Label>Écrans</List.Label>
+          </List.SectionTitle>
+          <List.Item href="/(modals)/welcome">
+            <List.Leading>
+              <Icon>
+                <Papicons name="Butterfly" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Modal de bienvenue</Typography>
+            <List.Trailing>
+              <Disclosure />
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <Papicons name="AlertTriangle" color={muted} />
+            <List.Label>Zone de danger</List.Label>
+          </List.SectionTitle>
+          <List.Item
+            onPress={() =>
+              confirmDestructive(
+                "Supprimer la base de données",
+                "Toutes les données enregistrées sur cet appareil seront effacées. Celles des services reviendront à la prochaine synchronisation, pas celles ajoutées à la main.",
+                "Supprimer",
+                async () => {
+                  await clearDatabase();
+                  Alert.alert("Base de données supprimée");
+                }
+              )
+            }
+          >
+            <List.Leading>
+              <Icon>
+                <Papicons name="Trash" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Supprimer la base de données</Typography>
+          </List.Item>
+          <List.Item
+            onPress={() =>
+              confirmDestructive(
+                "Réinitialiser les paramètres",
+                "Tous les réglages de Papillon reviennent à leur valeur par défaut.",
+                "Réinitialiser",
+                () => {
+                  useSettingsStore.getState().reset();
+                  Alert.alert("Paramètres réinitialisés");
+                }
+              )
+            }
+          >
+            <List.Leading>
+              <Icon>
+                <Papicons name="Gears" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Réinitialiser les paramètres</Typography>
+          </List.Item>
+          <List.Item
+            onPress={() =>
+              confirmDestructive(
+                "Supprimer les comptes",
+                "Tous les comptes seront déconnectés de cet appareil.",
+                "Supprimer",
+                () => {
+                  useAccountStore.getState().reset();
+                  Alert.alert("Comptes supprimés");
+                }
+              )
+            }
+          >
+            <List.Leading>
+              <Icon>
+                <Papicons name="UserCross" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="action">Supprimer les comptes</Typography>
+          </List.Item>
+          <List.Item
+            style={{ backgroundColor: "#C50017" }}
+            onPress={() =>
+              confirmDestructive(
+                "Réinitialiser Papillon",
+                "Comptes, paramètres et données locales seront définitivement effacés, puis l'app redémarrera.",
+                "Tout effacer",
+                resetPapillon
+              )
+            }
+          >
+            <List.Leading>
+              <Icon fill="#FFFFFF" opacity={1}>
+                <Papicons name="Trash" />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title" color="white">
+              Réinitialiser Papillon
+            </Typography>
+            <Typography variant="body2" color="white">
+              Efface comptes, paramètres et données locales.
+            </Typography>
+          </List.Item>
+        </List.Section>
       </List>
-
-      <SectionHeader
-        title="Alert"
-        leading={
-          <Icon>
-            <Papicons name="Star" size={18} />
-          </Icon>
-        }
-      />
-
-      <List>
-        <Item
-          onPress={() =>
-            alert.showAlert({
-              title: "Connexion impossible",
-              description:
-                "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
-              icon: "AlertTriangle",
-              color: "#D60046",
-              customButton: {
-                label: "Me reconnecter",
-                showCancelButton: true,
-                onPress: () => {
-                  const lastUsedAccount =
-                    useAccountStore.getState().lastUsedAccount;
-                  const badService = useAccountStore
-                    .getState()
-                    .accounts.find(account => account.id === lastUsedAccount)
-                    ?.services[0];
-
-                  // Unavailable in ED/SKolengo
-                  const authUrl =
-                    badService?.auth?.additionals?.["instanceURL"] ?? "";
-                  setTimeout(() => {
-                    router.push({
-                      pathname: "/(onboarding)/pronote/webview",
-                      params: { url: authUrl, serviceId: badService?.id },
-                    });
-                  }, 200);
-                },
-              },
-              technical: String(
-                " Error: TokenExpiredError at AuthService.validateToken (file:///app/services/auth.js:45:15) at processTicksAndRejections (node:internal/process/task_queues:96:5) at async file:///app/routes/api/user.js:10:28"
-              ),
-            })
-          }
-        >
-          <Typography variant="title">Error Alert</Typography>
-        </Item>
-        <Item
-          onPress={() => {
-            const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
-            const badService = useAccountStore
-              .getState()
-              .accounts.find(account => account.id === lastUsedAccount)
-              ?.services[0];
-            useAccountStore.getState().updateServiceAuthData(badService!.id, {
-              ...badService?.auth,
-              refreshToken: "",
-            });
-          }}
-        >
-          <Typography variant="title">Clear Auth Data</Typography>
-        </Item>
-        <Item>
-          <Typography variant="title">Activer Alert au Login</Typography>
-          <Trailing>
-            <NativeSwitch
-              value={settingStore.showAlertAtLogin}
-              onValueChange={value =>
-                mutateProperty("personalization", { showAlertAtLogin: value })
-              }
-            />
-          </Trailing>
-        </Item>
-      </List>
-
-      <SectionHeader
-        title="Session"
-        leading={
-          <Icon>
-            <Papicons name="Star" size={18} />
-          </Icon>
-        }
-      />
-
-      <List>
-        <Item
-          onPress={async () => {
-            await database.write(async () => {
-              await database.unsafeResetDatabase();
-            });
-          }}
-        >
-          <Typography variant="title">
-            Réinitialiser la base de données
-          </Typography>
-        </Item>
-      </List>
-
-      <SectionHeader
-        title="Transport"
-        leading={
-          <Icon>
-            <Papicons name="Bus" size={18} />
-          </Icon>
-        }
-      />
-      <List>
-        <Item
-          onPress={() => {
-            initializeTransport(undefined).then(transport => {
-              console.log(transport);
-            });
-          }}
-        >
-          <Typography variant="title">Initialiser sans addresse</Typography>
-        </Item>
-        <Item
-          onPress={() => {
-            initializeTransport("106 Rue de la Pompe, 75016 Paris").then(
-              transport => {
-                console.log(transport);
-              }
-            );
-          }}
-        >
-          <Typography variant="title">Initialiser avec addresse</Typography>
-        </Item>
-      </List>
-
-      <SectionHeader
-        title="Notifications"
-        leading={
-          <Icon>
-            <Papicons name="Clock" size={18} />
-          </Icon>
-        }
-      />
-
-      <List>
-        <Item
-          onPress={() => {
-            requestPermissionsAsync();
-          }}
-        >
-          <Typography variant="title">Demander la permission</Typography>
-        </Item>
-        <Item
-          onPress={async () => {
-            const date = new Date(Date.now() + 5000);
-
-            const id = await scheduleNotificationAtDate(
-              "Papillon",
-              "Une notification programmée via Papillon arrive à l'instant!",
-              date
-            );
-
-            Alert.alert("Une notification arrive dans 5 sec", `ID : ${id}`);
-          }}
-        >
-          <Typography variant="title">Programmer une notification</Typography>
-        </Item>
-      </List>
-    </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  containerContent: {},
-});

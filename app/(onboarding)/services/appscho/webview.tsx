@@ -1,6 +1,6 @@
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import { router, useLocalSearchParams } from "expo-router";
-import { INSTANCES, getCASURL, loginWithOAuth } from "appscho";
+import { INSTANCES, getCASURL, loginWithOAuth } from "@blockshub/blockscho";
 import { useTranslation } from "react-i18next";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { useAccountStore } from "@/stores/account";
@@ -58,12 +58,8 @@ export default function AppschoWebView() {
         
         store.setLastUsedAccount(id);
 
-        return router.push({
-          pathname: "/(onboarding)/end/color",
-          params: {
-            accountId: id,
-          },
-        });
+        router.dismissAll();
+        return router.push("/");
       } catch (error) {
         Error(`OAuth login error: ${error}`);
         alert.showAlert({

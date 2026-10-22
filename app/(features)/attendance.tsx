@@ -3,15 +3,13 @@ import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeH
 import { router, useLocalSearchParams } from "expo-router";
 import { Platform, ScrollView, View } from "react-native";
 import { Papicons } from "@getpapillon/papicons"
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
-import { useHeaderHeight } from "@react-navigation/elements";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import adjust from "@/utils/adjustColor";
 import { error } from "@/utils/logger/logger";
@@ -27,6 +25,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Typography from "@/ui/new/Typography";
 import { formatDate, formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
 import * as DateLocale from 'date-fns/locale';
+
+const parseSearchParam = <T,>(value: string | string[] | undefined, fallback: T): T => {
+  const serializedValue = Array.isArray(value) ? value[0] : value;
+
+  if (!serializedValue) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(serializedValue) as T;
+  } catch {
+    return fallback;
+  }
+};
 
 const formatEventTime = (durationData: number, detailed: boolean) => {
   if(detailed) {
@@ -47,12 +59,12 @@ export default function AttendanceView() {
     const header = useHeaderHeight();
 
     const search = useLocalSearchParams();
-    const currentPeriod = JSON.parse(String(search.currentPeriod)) as Period;
-    const periods = JSON.parse(String(search.periods)) as Period[];
-    const attendancesFromSearch = JSON.parse(String(search.attendances)) as Attendance[];
+    const periods = parseSearchParam<Period[]>(search.periods, []);
+    const currentPeriod = parseSearchParam<Period | undefined>(search.currentPeriod, periods[0]);
+    const attendancesFromSearch = parseSearchParam<Attendance[]>(search.attendances, []);
 
     const [attendances, setAttendances] = useState<Attendance[]>(attendancesFromSearch);
-    const [period, setPeriod] = useState<Period>(currentPeriod);
+    const [period, setPeriod] = useState<Period | undefined>(currentPeriod);
 
     const { missedTime, missedTimeUnjustified, unjustifiedAbsenceCount, unjustifiedDelayCount, absenceCount, delayCount } = useMemo(() => {
       let missed = 0;
@@ -62,7 +74,10 @@ export default function AttendanceView() {
       let Abs = 0
       let Delays = 0
       for (const attendance of attendances) {
-        for (const absence of attendance.absences) {
+        if (!attendance) {
+          continue;
+        }
+        for (const absence of attendance.absences ?? []) {
           Abs += 1;
           missed += absence.timeMissed;
           if (!absence.justified) {
@@ -70,7 +85,7 @@ export default function AttendanceView() {
             unjustifiedAbs += 1;
           }
         }
-        for (const delay of attendance.delays) {
+        for (const delay of attendance.delays ?? []) {
           Delays += 1;
           if (!delay.justified) {
             unjustifiedDelays += 1;
@@ -109,9 +124,11 @@ export default function AttendanceView() {
 
                     if (!selectedPeriod) {
                       error(t("Attendance_InvalidPeriod"))
+                      return;
                     }
 
                     const manager = getManager()
+                    if (!manager) return;
                     const attendancesFetched = await manager.getAttendanceForPeriod(selectedPeriod.name)
 
                     setAttendances(attendancesFetched)
@@ -146,13 +163,14 @@ export default function AttendanceView() {
         />
 
         <List
+          style={{ flex: 1, backgroundColor: colors.overground }}
+          safeHorizontalPadding={16}
           contentContainerStyle={{
-            padding: 16,
             paddingTop: headerHeight,
             paddingBottom: insets.bottom + 16,
           }}
         >
-          {attendances.some(attendance => attendance.absences.length == 0) && attendances.some(attendance => attendance.delays.length == 0) ? (
+          {attendances.some(attendance => (attendance?.absences ?? []).length == 0) && attendances.some(attendance => (attendance?.delays ?? []).length == 0) ? (
             <List.Item>
               <List.Leading>
                 <Icon>
@@ -222,7 +240,7 @@ export default function AttendanceView() {
             </List.Section>
           )}
 
-          {attendances.some(attendance => attendance.absences.length > 0) && (
+          {attendances.some(attendance => (attendance?.absences ?? []).length > 0) && (
             <List.Section>
               <List.SectionTitle>
                 <Icon opacity={0.5} size={20}>
@@ -237,7 +255,7 @@ export default function AttendanceView() {
               </List.SectionTitle>
 
               {attendances.map((attendance, index) =>
-                attendance.absences.map((absence, absenceIndex) => {
+                (attendance?.absences ?? []).map((absence, absenceIndex) => {
                   const fromDate = new Date(absence.from);
                   const dateString = formatDistanceToNowStrict(fromDate, {
                     locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
@@ -265,7 +283,7 @@ export default function AttendanceView() {
             </List.Section>
           )}
 
-          {attendances.some(attendance => attendance.delays.length > 0) && (
+          {attendances.some(attendance => (attendance?.delays ?? []).length > 0) && (
             <List.Section>
               <List.SectionTitle>
                 <Icon opacity={0.5} size={20}>
@@ -280,7 +298,7 @@ export default function AttendanceView() {
               </List.SectionTitle>
 
               {attendances.map((attendance, index) =>
-                attendance.delays.map((delay, absenceIndex) => {
+                (attendance?.delays ?? []).map((delay, absenceIndex) => {
                   const fromDate = new Date(delay.givenAt);
                   const date = fromDate.getTime();
                   const dateString = formatDistanceToNowStrict(date, {

@@ -1,116 +1,420 @@
-import { useTheme } from "@react-navigation/native";
+import { Stack, useRouter } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
-import React, { useCallback, useRef, useState } from "react";
-import { FlatList, Platform, StyleSheet,View } from "react-native";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { LayoutChangeEvent, Platform, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
+import type { CalendarViewMode } from "@/stores/settings/types";
+import Calendar, { CalendarRef } from "@/ui/components/Calendar";
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import Typography from '@/ui/new/Typography';
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import useResizable from "@/ui/utils/Resizable";
+import i18n from "@/utils/i18n";
 
-import { CalendarDay } from "./components/CalendarDay";
-import { CalendarHeader } from "./components/CalendarHeader";
+import Reanimated, { useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
+
+import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
+
+import { DayPager } from "./components/DayPager";
+import { WeekView } from "./components/WeekView";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
+import { useWeekGeometry, type WeekGeometry } from "./hooks/useWeekGeometry";
+import { useWeekendVisibility } from "./hooks/useWeekendVisibility";
 
-export default function TabOneScreen() {
+const isAndroid = Platform.OS === "android";
+
+const TITLE_SLIDE_RATIO = 0.4;
+
+const TOOLBAR_BUTTON_INSET = 40;
+const TOOLBAR_BUTTON_SIZE = 40;
+
+interface DayLabels {
+  main: string;
+  relative?: string;
+}
+
+function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function getDayLabels(day: Date): DayLabels {
+  const isSameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  const relative = isSameDay(day, today)
+    ? t("Today")
+    : isSameDay(day, yesterday)
+      ? t("Yesterday")
+      : isSameDay(day, tomorrow)
+        ? t("Tomorrow")
+        : undefined;
+
+  return {
+    main: day.toLocaleDateString(i18n.language, { weekday: "long", day: "numeric", month: "long" }),
+    relative,
+  };
+}
+
+function getWeekLabels(geometry: WeekGeometry, pageIndex: number): DayLabels {
+  const firstDayIndex = geometry.dayIndexOfPage(pageIndex);
+  const first = geometry.dateOfDayIndex(firstDayIndex);
+  const last = geometry.dateOfDayIndex(firstDayIndex + geometry.columns - 1);
+
+  if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
+    return {
+      main: capitalize(first.toLocaleDateString(i18n.language, { month: "long", year: "numeric" })),
+    };
+  }
+
+  const sameYear = first.getFullYear() === last.getFullYear();
+  const firstPart = first.toLocaleDateString(
+    i18n.language,
+    sameYear ? { month: "short" } : { month: "short", year: "numeric" }
+  );
+  const lastPart = last.toLocaleDateString(i18n.language, { month: "short", year: "numeric" });
+
+  return { main: `${capitalize(firstPart)} – ${capitalize(lastPart)}` };
+}
+
+function getToolbarLabel(day: Date, compact: boolean): string {
+  const labels = getDayLabels(day);
+  if (labels.relative) {
+    return labels.relative;
+  }
+  if (compact) {
+    return day.toLocaleDateString(i18n.language, { day: "numeric", month: "short" });
+  }
+  return labels.main;
+}
+
+const TITLE_LAYER_OFFSETS = [-2, -1, 0, 1, 2];
+
+function TitleLayer({ page, pageIndex, labels, slideDistance }: {
+  page: SharedValue<number>;
+  pageIndex: number;
+  labels: DayLabels;
+  slideDistance: number;
+}) {
+  const style = useAnimatedStyle(() => {
+    const distance = pageIndex - page.value;
+    return {
+      opacity: Math.max(0, 1 - Math.abs(distance)),
+      transform: [{ translateX: distance * slideDistance }],
+    };
+  });
+
+  return (
+    <Reanimated.View pointerEvents="none" style={[styles.titleLayer, style]}>
+      <Typography variant="header" weight="semibold" numberOfLines={1}>
+        {labels.main}
+      </Typography>
+      {labels.relative && (
+        <Typography variant="body2" color="textSecondary" weight="semibold" numberOfLines={1} style={styles.titleSubtitle}>
+          {labels.relative}
+        </Typography>
+      )}
+    </Reanimated.View>
+  );
+}
+
+function TabOneScreen() {
   const { colors } = useTheme();
-  const calendarRef = useRef<any>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const router = useRouter();
+  const calendarRef = useRef<CalendarRef>(null);
   const insets = useSafeAreaInsets();
-  const tabBarHeight = insets.bottom;
+  const headerHeight = useHeaderHeight();
+  const { width: screenWidth } = useWindowDimensions();
 
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
-  const account = accounts.find(a => a.id === lastUsedAccount)!;
+  const account = accounts.find(a => a.id === lastUsedAccount);
 
-  const {
-    date,
-    weekNumber,
-    currentIndex,
-    flatListRef,
-    getDateFromIndex,
-    handleDateChange,
-    onMomentumScrollEnd,
-    onScroll,
-    INITIAL_INDEX,
-    windowWidth
-  } = useCalendarState();
+  const { isTablet } = useResizable();
+  const storedViewMode = useSettingsStore(state => state.personalization.calendarViewMode);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
+
+  const viewMode = storedViewMode ?? (isTablet ? "week" : "list");
+  const isWeekMode = viewMode === "week";
+
+  const setViewMode = useCallback((mode: CalendarViewMode) => {
+    mutateProperty("personalization", { calendarViewMode: mode });
+  }, [mutateProperty]);
+
+  useEffect(() => {
+    if (storedViewMode === undefined) {
+      setViewMode(viewMode);
+    }
+  }, [storedViewMode, viewMode, setViewMode]);
+
+  const [contentWidth, setContentWidth] = useState<number | null>(null);
+  const handleContentLayout = useCallback((event: LayoutChangeEvent) => {
+    const measured = Math.round(event.nativeEvent.layout.width);
+    setContentWidth(previous => (previous === measured || measured <= 0 ? previous : measured));
+  }, []);
+
+  const calendar = useCalendarState(contentWidth ?? screenWidth);
+  const { date, weekNumber, getDateFromIndex, getIndexFromDate, handleDateChange } = calendar;
 
   const {
     timetable,
     manualRefreshing,
     handleRefresh,
-    isLoading
+    error: timetableError,
+    failures: timetableFailures,
   } = useTimetableData(weekNumber, date);
 
-  const renderDay = useCallback(({ index }: { index: number }) => {
-    const dayDate = getDateFromIndex(index);
-    const normalizedDate = new Date(dayDate);
-    normalizedDate.setHours(0, 0, 0, 0);
-    const dayCourses = timetable.find(d => {
-      const dDate = new Date(d.date);
-      dDate.setHours(0, 0, 0, 0);
-      return dDate.getTime() === normalizedDate.getTime();
-    })?.courses || [];
+  const weekend = useWeekendVisibility(timetable);
+  const weekGeometry = useWeekGeometry(weekend, contentWidth ?? screenWidth);
 
-    return (
-      <CalendarDay
-        dayDate={dayDate}
-        courses={dayCourses}
-        isRefreshing={manualRefreshing}
-        onRefresh={handleRefresh}
-        colors={colors}
-        headerHeight={headerHeight}
-        insets={insets}
-        tabBarHeight={tabBarHeight}
-        transportInfo={account?.transport ?? undefined}
-      />
-    );
-  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
+  const hasTimetableError = Boolean(timetableError) || timetableFailures.length > 0;
+
+  const pageIndexOfDate = useCallback((day: Date) => (
+    isWeekMode ? weekGeometry.pageOfDate(day) : getIndexFromDate(day)
+  ), [isWeekMode, weekGeometry, getIndexFromDate]);
+
+  const dateOfPageIndex = useCallback((pageIndex: number) => (
+    isWeekMode
+      ? weekGeometry.dateOfDayIndex(weekGeometry.dayIndexOfPage(pageIndex))
+      : getDateFromIndex(pageIndex)
+  ), [isWeekMode, weekGeometry, getDateFromIndex]);
+
+  const [settledIndex, setSettledIndex] = useState(() => pageIndexOfDate(date));
+
+  const scrollPage = useSharedValue(settledIndex);
+
+  const pageSpace = isWeekMode
+    ? `week:${weekGeometry.columns}:${weekGeometry.daysPerWeek}:${Math.round(weekGeometry.pageWidth)}`
+    : "list";
+  const previousPageSpace = useRef(pageSpace);
+  useLayoutEffect(() => {
+    if (previousPageSpace.current === pageSpace) {
+      return;
+    }
+    previousPageSpace.current = pageSpace;
+    const index = pageIndexOfDate(date);
+    setSettledIndex(index);
+    scrollPage.value = index;
+  }, [pageSpace, pageIndexOfDate, date, scrollPage]);
+
+  const toolbarLabel = getToolbarLabel(dateOfPageIndex(settledIndex), isWeekMode);
+
+  const calendarAnchor = useMemo(() => ({
+    top: runsIOS26 ? headerHeight : 0,
+    left: TOOLBAR_BUTTON_INSET,
+    width: TOOLBAR_BUTTON_SIZE,
+  }), [headerHeight]);
+
+  const handlePickDate = useCallback((picked: Date) => {
+    handleDateChange(picked);
+    setSettledIndex(pageIndexOfDate(picked));
+  }, [handleDateChange, pageIndexOfDate]);
+
+  const anchorWeekOnPage = useCallback((page: number) => {
+    if (weekGeometry.pageContainsDate(page, date)) {
+      return;
+    }
+    handleDateChange(weekGeometry.dateOfDayIndex(weekGeometry.dayIndexOfPage(page)));
+  }, [weekGeometry, handleDateChange, date]);
+
+  const handleWeekPageSettled = useCallback((page: number) => {
+    setSettledIndex(previous => (previous === page ? previous : page));
+    anchorWeekOnPage(page);
+  }, [anchorWeekOnPage]);
+
+  const handleListSettle = useCallback((index: number) => {
+    setSettledIndex(previous => (previous === index ? previous : index));
+  }, []);
+
+  const labelsOfPage = useCallback((pageIndex: number) => (
+    isWeekMode ? getWeekLabels(weekGeometry, pageIndex) : getDayLabels(getDateFromIndex(pageIndex))
+  ), [isWeekMode, weekGeometry, getDateFromIndex]);
+
+  const openIcals = useCallback(() => {
+    router.push({ pathname: "./calendar/icals", params: {} });
+  }, [router]);
 
   return (
     <>
-      <CalendarHeader
+      <Calendar
+        ref={calendarRef}
         date={date}
-        onDateChange={handleDateChange}
-        onHeaderHeightChange={setHeaderHeight}
-        calendarRef={calendarRef}
-        isLoading={isLoading}
+        onDateChange={handlePickDate}
+        color="#D6502B"
+        anchor={calendarAnchor}
       />
 
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <FlatList
-          ref={flatListRef}
-          data={Array.from({ length: 20001 })}
-          horizontal
-          pagingEnabled={false}
-          showsHorizontalScrollIndicator={false}
-          initialScrollIndex={INITIAL_INDEX}
-          getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
-          renderItem={renderDay}
-          keyExtractor={(_, index) => "renderDay:" + String(index)}
-          onScroll={onScroll}
-          decelerationRate={Platform.OS === 'ios' ? 0.98 : undefined}
-          disableIntervalMomentum={true}
-          scrollEventThrottle={16}
-          onMomentumScrollEnd={onMomentumScrollEnd}
-          snapToInterval={windowWidth}
-          bounces={false}
-          windowSize={4}
-          maxToRenderPerBatch={3}
-          initialNumToRender={3}
-          showsVerticalScrollIndicator={false}
-          removeClippedSubviews
-          extraData={{ manualRefreshing, headerHeight, colors, timetable }}
-        />
+      {isAndroid ? (
+        <Stack.Toolbar placement="left" asChild>
+          <AndroidHeaderButton
+            icon="Calendar"
+            accessibilityLabel={toolbarLabel}
+            onPress={() => calendarRef.current?.toggle()}
+          />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="left">
+          <Stack.Toolbar.Button
+            icon="calendar"
+            onPress={() => calendarRef.current?.toggle()}
+          >
+            {toolbarLabel}
+          </Stack.Toolbar.Button>
+        </Stack.Toolbar>
+      )}
+
+      <Stack.Title asChild>
+        <View style={[styles.titleContainer, { width: (contentWidth ?? screenWidth) - (Platform.OS === "android" ? 72 : 140) }]}>
+          {TITLE_LAYER_OFFSETS.map(offset => {
+            const pageIndex = settledIndex + offset;
+            return (
+              <TitleLayer
+                key={pageIndex}
+                page={scrollPage}
+                pageIndex={pageIndex}
+                labels={labelsOfPage(pageIndex)}
+                slideDistance={(contentWidth ?? screenWidth) * TITLE_SLIDE_RATIO}
+              />
+            );
+          })}
+        </View>
+      </Stack.Title>
+
+      {isAndroid ? (
+        <Stack.Toolbar placement="right" asChild>
+          <AndroidHeaderMenu
+            icon="Dots"
+            accessibilityLabel={t('Tab_Calendar_View_Mode')}
+            actions={[
+              {
+                id: "mode:list",
+                title: t('Tab_Calendar_View_List'),
+                papicon: "List",
+                state: isWeekMode ? "off" : "on",
+              },
+              {
+                id: "mode:week",
+                title: t('Tab_Calendar_View_Week'),
+                subtitle: t('Tab_Calendar_View_Beta'),
+                papicon: "Grid",
+                state: isWeekMode ? "on" : "off",
+              },
+              { id: "icals", title: t('Tab_Calendar_Icals'), papicon: "Calendar" },
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              if (nativeEvent.event === "icals") {
+                openIcals();
+                return;
+              }
+              setViewMode(nativeEvent.event === "mode:week" ? "week" : "list");
+            }}
+          />
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Menu>
+            <Stack.Toolbar.Icon sf="ellipsis" />
+            <Stack.Toolbar.Label>{t('Tab_Calendar_View_Mode')}</Stack.Toolbar.Label>
+            <Stack.Toolbar.Menu inline title={t('Tab_Calendar_View_Mode')}>
+              <Stack.Toolbar.MenuAction
+                icon="list.bullet"
+                isOn={!isWeekMode}
+                onPress={() => setViewMode("list")}
+              >
+                {t('Tab_Calendar_View_List')}
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                icon="calendar.day.timeline.left"
+                isOn={isWeekMode}
+                subtitle={t('Tab_Calendar_View_Beta')}
+                onPress={() => setViewMode("week")}
+              >
+                {t('Tab_Calendar_View_Week')}
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+            <Stack.Toolbar.MenuAction
+              icon="calendar"
+              onPress={openIcals}
+            >
+              {t('Tab_Calendar_Icals')}
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar>
+      )}
+
+      <View style={styles.content} onLayout={handleContentLayout}>
+        {contentWidth === null ? null : isWeekMode ? (
+          <WeekView
+            // Both the page width and the days a page holds define the pager's
+            // scroll space. Remounting on either re-anchors it on the day on
+            // screen instead of reading a stale offset back as a page years away.
+            key={`${weekGeometry.columns}:${Math.round(weekGeometry.pageWidth)}`}
+            date={date}
+            timetable={timetable}
+            geometry={weekGeometry}
+            isRefreshing={manualRefreshing}
+            onRefresh={handleRefresh}
+            hasError={hasTimetableError}
+            scrollPage={scrollPage}
+            onPageCrossed={anchorWeekOnPage}
+            onPageSettled={handleWeekPageSettled}
+            topInset={runsIOS26 ? headerHeight : 0}
+            bottomInset={insets.bottom}
+          />
+        ) : (
+          <DayPager
+            calendar={calendar}
+            timetable={timetable}
+            isRefreshing={manualRefreshing}
+            onRefresh={handleRefresh}
+            hasError={hasTimetableError}
+            transportInfo={account?.transport ?? undefined}
+            settledIndex={settledIndex}
+            onSettle={handleListSettle}
+            scrollPage={scrollPage}
+          />
+        )}
       </View>
     </>
   );
 }
 
+const CalendarScreenWithBoundary = () => (
+  <MainTabErrorBoundary>
+    <TabOneScreen />
+  </MainTabErrorBoundary>
+);
+
+export default CalendarScreenWithBoundary;
+
 const styles = StyleSheet.create({
-  container: {
+  content: {
     flex: 1,
+  },
+  titleContainer: {
+    height: 44,
+  },
+  titleLayer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: Platform.OS === "android" ? "flex-start" : "center",
+    paddingHorizontal: Platform.OS === "android" ? 10 : 0,
+    justifyContent: "center",
+  },
+  titleSubtitle: {
+    marginTop: -2,
   },
 });
 

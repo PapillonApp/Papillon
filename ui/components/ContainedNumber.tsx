@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import Typography from './Typography';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 
 interface ContainedNumberProps {
   children?: React.ReactNode;

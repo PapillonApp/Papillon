@@ -7,19 +7,22 @@ import Typography from "@/ui/new/Typography";
 import NativeSwitch from "@/ui/native/NativeSwitch";
 import { useTranslation } from "react-i18next";
 import Icon from "@/ui/components/Icon";
-import NativePicker from "@/ui/native/NativePicker";
 import { useMemo } from "react";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
 import Picker from "@/ui/components/Picker";
+import { useTheme } from "expo-router/react-navigation";
+import { COURSE_LIVE_ACTIVITY_SUPPORTED } from "@/utils/widgets/courseLiveActivity";
 
 export default function SettingsFeatures() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
   const iOSBottomAccessoryEnabled = settingsStore.iOSBottomAccessoryEnabled ?? true;
   const showTabBarLabels = settingsStore.showTabBarLabels ?? true;
+  const liveActivitiesEnabled = settingsStore.liveActivitiesEnabled ?? true;
   const selectedGradeScale = getGradeDisplayScale(settingsStore.gradesDisplayScale);
 
   const gradeScaleOptions = [
@@ -47,9 +50,10 @@ export default function SettingsFeatures() {
 
   return (
     <List
-      contentInsetAdjustmentBehavior="always"
-      contentContainerStyle={{ padding: 16 }}
-      style={{ flex: 1 }}
+      contentInsetAdjustmentBehavior="automatic"
+      safeHorizontalPadding={16}
+      contentContainerStyle={{ paddingVertical: 16 }}
+      style={{ flex: 1, backgroundColor: colors.overground }}
     >
       <List.Section>
         <List.SectionTitle>
@@ -105,6 +109,37 @@ export default function SettingsFeatures() {
         </List.Item>
       </List.Section>
 
+      {COURSE_LIVE_ACTIVITY_SUPPORTED && (
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>{t("Settings_Features_LockScreen")}</List.Label>
+          </List.SectionTitle>
+
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Clock"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">{t("Settings_Features_LiveActivities")}</Typography>
+            <Typography color="textSecondary" numberOfLines={3}>
+              {t("Settings_Features_LiveActivities_Description")}
+            </Typography>
+            <List.Trailing>
+              <NativeSwitch
+                value={liveActivitiesEnabled}
+                onValueChange={(value) =>
+                  mutateProperty("personalization", {
+                    ...settingsStore,
+                    liveActivitiesEnabled: value,
+                  })
+                }
+              />
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+      )}
+
       <List.Section>
         <List.SectionTitle>
           <List.Label>{t("Settings_Features_Grades")}</List.Label>
@@ -136,6 +171,7 @@ export default function SettingsFeatures() {
           </List.Trailing>
         </List.Item>
       </List.Section>
+
     </List>
   );
 }

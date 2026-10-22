@@ -9,6 +9,7 @@
     {
       "layers" : [
         {
+          "glass" : true,
           "hidden" : false,
           "image-name" : "glass 2.png",
           "name" : "glass 2",

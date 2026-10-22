@@ -1,16 +1,17 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
 import React, { useEffect } from "react";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, View } from "react-native";
 import { useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewProps } from "react-native-webview";
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webViewRef }: {
   title: string
@@ -54,28 +55,33 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
         behavior="height"
         keyboardVerticalOffset={-insets.top + 20}
       >
-        <Stack flex
-          direction="horizontal"
-          height={40}
-          style={{ position: "absolute", left: 75, top: insets.top + 7, zIndex: 2 }}
-          hAlign={"center"}
+        <SafeAreaView
+          mode="margin"
+          edges={{ left: "additive" }}
+          style={{ position: "absolute", left: 0, marginLeft: 75, top: insets.top + 7, zIndex: 2 }}
         >
-          <Typography
-            variant="h5"
-            style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+          <Stack
+            direction="horizontal"
+            height={40}
+            hAlign={"center"}
           >
-            {"Étape " + step}
-          </Typography>
-          <Typography
-            variant="h5"
-            style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
-          >
-            {"sur " + totalSteps}
-          </Typography>
-        </Stack>
+            <Typography
+              variant="h5"
+              style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+            >
+              {"Étape " + step}
+            </Typography>
+            <Typography
+              variant="h5"
+              style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+            >
+              {"sur " + totalSteps}
+            </Typography>
+          </Stack>
+        </SafeAreaView>
         <Animated.View
           style={{
-            padding: 32,
+            paddingVertical: 32,
             backgroundColor: color,
             gap: 20,
             alignItems: "center",
@@ -88,16 +94,18 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
             paddingTop: insets.top,
           }}
         >
-          <Animated.View style={{ opacity: titleOpacity }}>
-            <Typography
-              variant="h3"
-              style={{ color: "#FFFFFF", lineHeight: 28, fontSize: 28 }}
-            >
-              {title}
-            </Typography>
-          </Animated.View>
+          <SafeHorizontalView base={32} style={{ alignSelf: "stretch", alignItems: "center" }}>
+            <Animated.View style={{ opacity: titleOpacity }}>
+              <Typography
+                variant="h3"
+                style={{ color: "#FFFFFF", lineHeight: 28, fontSize: 28 }}
+              >
+                {title}
+              </Typography>
+            </Animated.View>
+          </SafeHorizontalView>
         </Animated.View>
-        <View style={{ flex: 1, padding: 20, paddingBottom: insets.bottom + 20 }}>
+        <SafeHorizontalView base={20} style={{ flex: 1, paddingTop: 20, paddingBottom: insets.bottom + 20 }}>
           <View
             style={{
               width: "100%",
@@ -145,7 +153,7 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
               }}
             />
           </View>
-        </View>
+        </SafeHorizontalView>
         <OnboardingBackButton />
       </KeyboardAvoidingView>
     </ViewContainer>

@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useHeaderHeight } from "@react-navigation/elements";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { router, useNavigation } from "expo-router";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,6 +15,7 @@ import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 
 export interface School {
@@ -60,6 +61,7 @@ const PronoteSearchHeader = memo(({
 
 export default function PronoteLoginMethod() {
   const headerHeight = useHeaderHeight();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -113,11 +115,11 @@ export default function PronoteLoginMethod() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
-        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && schools.length === 0} showElse={schools.length === 0 && !loading} t={t} />}
+        ListHeaderComponent={<SafeHorizontalView base={16}><PronoteSearchHeader city={city} setCity={setCity} loading={loading && schools.length === 0} showElse={schools.length === 0 && !loading} t={t} /></SafeHorizontalView>}
+        safeHorizontalPadding={16}
         contentContainerStyle={{
-          padding: 16,
           flexGrow: 1,
           gap: 10,
           paddingTop: headerHeight + 20,

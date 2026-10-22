@@ -1,5 +1,5 @@
 import { LegendList } from "@legendapp/list";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useCallback, useMemo, useState } from "react";
 import { StyleProp, ViewProps, ViewStyle } from "react-native";
 import Reanimated, { EntryExitTransition, LinearTransition } from "react-native-reanimated";

@@ -23,9 +23,9 @@ import {
   getRecipientsFromCache,
 } from "@/database/useChat";
 import {
-  addPeriodGradesToDatabase,
+  cachePeriodGrades,
   addPeriodsToDatabase,
-  getGradePeriodsFromCache,
+  getCachedPeriodGrades,
   getPeriodsFromCache,
 } from "@/database/useGrades";
 import {
@@ -55,19 +55,51 @@ import {
   Capabilities,
   FetchOptions,
   SchoolServicePlugin,
+  ServiceFailure,
 } from "@/services/shared/types";
 import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
-import { error, log, warn } from "@/utils/logger/logger";
+import { debug, error, log, warn } from "@/utils/logger/logger";
+
+import {
+  AccessDeniedError,
+  AccountDisabledError,
+  AuthenticateError,
+  BadCredentialsError,
+  SessionExpiredError,
+} from "@blockshub/pawnote-lts";
 
 import { AuthenticationError } from "../errors/AuthenticationError";
+import { SecurityChallengeError } from "../errors/SecurityChallengeError";
+import { ServiceUnavailableError } from "../errors/ServiceUnavailableError";
+
+const isPermanentAuthError = (e: unknown): boolean =>
+  e instanceof BadCredentialsError ||
+  e instanceof AuthenticateError ||
+  e instanceof SessionExpiredError ||
+  e instanceof AccessDeniedError ||
+  e instanceof AccountDisabledError;
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
+  private failures = new Map<Capabilities, ServiceFailure[]>();
 
-  constructor(readonly account: Account) {}
+  getFailures(capability: Capabilities): ServiceFailure[] {
+    return this.failures.get(capability) ?? [];
+  }
+
+  constructor(public account: Account) {}
+
+  syncAccount(account: Account): void {
+    this.account = account;
+    for (const id of Object.keys(this.clients)) {
+      if (!account.services.some(service => service.id === id)) {
+        delete this.clients[id];
+      }
+    }
+  }
 
   removeService(id: string): void {
     delete this.clients[id];
@@ -78,38 +110,78 @@ export class AccountManager {
   }
 
   async refreshAllAccounts(): Promise<boolean> {
-    log("We're refreshing all services for the account " + this.account.id);
-
-    this.handleHasInternet();
+    debug("We're refreshing all services for the account " + this.account.id);
+    const hasInternet = await this.hasInternet();
 
     let refreshedAtLeastOne = false;
 
+    const failures: Array<{ service: ServiceAccount; err: unknown }> = [];
+
     for (const service of this.account.services) {
       try {
-        log("Trying to refresh " + service.id);
-        const plugin = this.getServicePluginForAccount(service);
+        debug("Trying to refresh " + service.id);
+        const reusable =
+          service.serviceId === Services.PRONOTE ? this.clients[service.id] : undefined;
+        const plugin = reusable ?? this.getServicePluginForAccount(service);
+
+        if (!hasInternet && plugin.requiresInternet !== false) {
+          warn(`Skipping network service ${service.id} while offline.`);
+          continue;
+        }
+
+        if (reusable && reusable.isTokenValid?.()) {
+          refreshedAtLeastOne = true;
+          debug("Reusing the still valid session of " + service.id);
+          continue;
+        }
 
         if (plugin?.capabilities.includes(Capabilities.REFRESH)) {
           this.clients[service.id] = await plugin.refreshAccount(service.auth);
           refreshedAtLeastOne = true;
-          log("Successfully refreshed " + service.id);
+          debug("Successfully refreshed " + service.id);
         } else {
           this.clients[service.id] = plugin;
-          log(
+          debug(
             "Plugin for " +
               service.id +
               " doesn't support refresh but is available for other capabilities"
           );
         }
       } catch (e) {
-        throw new AuthenticationError(String(e), service)
+        warn(`Refresh failed for ${service.id}: ${e}`);
+        failures.push({ service, err: e });
       }
     }
 
-    log(
+    debug(
       "Finished refreshing process for all services, services refreshed: " +
         Object.keys(this.clients).length
     );
+
+    const challenge = failures.find(f => f.err instanceof SecurityChallengeError);
+    if (challenge) {
+      const err = challenge.err as SecurityChallengeError;
+      throw new SecurityChallengeError(
+        err.securityError,
+        err.session,
+        err.deviceUUID,
+        challenge.service
+      );
+    }
+
+    const authFailure = failures.find(f => isPermanentAuthError(f.err));
+    if (authFailure) {
+      throw new AuthenticationError(String(authFailure.err), authFailure.service);
+    }
+
+    if (!hasInternet && Object.keys(this.clients).length === 0 && this.account.services.length > 0) {
+      throw new Error("Internet not reachable and no offline service is available.");
+    }
+
+    if (!refreshedAtLeastOne && failures.length > 0) {
+      throw new ServiceUnavailableError(String(failures[0].err), failures[0].service);
+    }
+
     return refreshedAtLeastOne;
   }
 
@@ -182,9 +254,9 @@ export class AccountManager {
       {
         multiple: false,
         clientId,
-        fallback: async () => getGradePeriodsFromCache(period.name),
+        fallback: async () => getCachedPeriodGrades(`${clientId}:${kid?.id ?? ""}:${period.name}`),
         saveToCache: async (data: PeriodGrades) => {
-          await addPeriodGradesToDatabase(data, period.name);
+          cachePeriodGrades(data, `${clientId}:${kid?.id ?? ""}:${period.name}`);
         },
       }
     );
@@ -408,7 +480,8 @@ export class AccountManager {
         client.getCanteenBalances ? await client.getCanteenBalances() : [],
       {
         multiple: true,
-        fallback: async () => getBalancesFromCache(),
+        // The cache holds every account's cards: keep this account's only.
+        fallback: async () => (await getBalancesFromCache()).filter(balance => this.account.services.some(service => service.id === balance.createdByAccount)),
         saveToCache: async (data: Balance[]) => {
           await addBalancesToDatabase(data);
         },
@@ -480,10 +553,8 @@ export class AccountManager {
 
   clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
     const client = this.clients[clientId];
-    if (client?.capabilities.includes(capatibility)) {
-      return true;
-    }
-    return false;
+    return !!client?.capabilities.includes(capatibility);
+
   }
 
   getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
@@ -492,18 +563,9 @@ export class AccountManager {
     );
   }
 
-  private async handleHasInternet<T>(
-    options?: FetchOptions<T | T[]>
-  ): Promise<T | T[] | void> {
+  private async hasInternet(): Promise<boolean> {
     const networkState = await Network.getNetworkStateAsync();
-    const hasInternet = networkState.isInternetReachable ?? false;
-    if (!hasInternet) {
-      warn("No internet connection, using fallback if available.");
-      if (options?.fallback) {
-        return await options.fallback();
-      }
-      throw new Error("Internet not reachable and no fallback provided.");
-    }
+    return networkState.isInternetReachable ?? false;
   }
 
   private async fetchData<T>(
@@ -523,60 +585,118 @@ export class AccountManager {
     callback: (client: SchoolServicePlugin) => Promise<T | T[]>,
     options?: FetchOptions<T | T[]> & { multiple?: boolean }
   ): Promise<T | T[]> {
-    const resultFromFallback = await this.handleHasInternet<T>(options);
-    if (resultFromFallback !== undefined) {
-      return resultFromFallback;
-    }
+    const callFallback = async (): Promise<T | T[]> => {
+      const fallbackResult = await options!.fallback!();
+      if (options?.multiple && Array.isArray(fallbackResult)) {
+        return fallbackResult.filter(
+          (item): item is T => item !== null && item !== undefined
+        );
+      }
+      return fallbackResult;
+    };
+
+    const failures: ServiceFailure[] = [];
+
+    const noteFailure = (client: SchoolServicePlugin, reason: unknown) => {
+      warn(
+        `[${client.displayName}] capability ${capability}: ${String(reason)}`,
+        "fetchData"
+      );
+      failures.push({
+        service: client.service,
+        displayName: client.displayName,
+        capability,
+        reason,
+        at: new Date(),
+      });
+    };
+
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
+        // Expected while the manager is published before its first refresh.
         if (!client) {
-          error("Client ID missing");
+          if (options.fallback) {
+            return await callFallback();
+          }
+          throw new Error(`Client ${options.clientId} is not available yet`);
         }
         if (!client.capabilities.includes(capability)) {
-          error(
+          throw error(
             "Capability " +
               capability +
               " not supported by client " +
               options.clientId
           );
         }
-        const result = await callback(client);
+        if (client.requiresInternet !== false && !(await this.hasInternet())) {
+          if (options.fallback) {
+            return await callFallback();
+          }
+          throw new Error("Internet not reachable and no fallback provided.");
+        }
+        let result: T | T[];
+        try {
+          result = await callback(client);
+        } catch (e) {
+          noteFailure(client, e);
+          throw e;
+        }
         if (options.saveToCache) {
           await options.saveToCache(result);
         }
         return result;
       }
 
-      const availableClients = this.getAvailableClients(capability);
+      let availableClients = this.getAvailableClients(capability);
+
+      if (!(await this.hasInternet())) {
+        availableClients = availableClients.filter(client => client.requiresInternet === false);
+        if (availableClients.length === 0 && options?.fallback) {
+          warn("No internet connection, using fallback.");
+          return await callFallback();
+        }
+      }
 
       if (availableClients.length === 0) {
         log(
           `No clients available for capability ${capability}, falling back to cache`
         );
         if (options?.fallback) {
-          return await options.fallback();
+          return await callFallback();
         }
         throw new Error(`No clients available for capability: ${capability}`);
       }
 
       if (options?.multiple) {
-        const results = await Promise.all(
+        const settled = await Promise.allSettled(
           availableClients.map(client => callback(client) as Promise<T[]>)
         );
-        const combinedResult = results.flat();
 
-        if (options?.saveToCache) {
+        settled.forEach((result, index) => {
+          if (result.status === "rejected") {
+            noteFailure(availableClients[index], result.reason);
+          }
+        });
+
+        const combinedResult = settled.flatMap(result =>
+          result.status === "fulfilled" ? result.value : []
+        );
+
+        if (options?.saveToCache && failures.length === 0) {
           await options.saveToCache(combinedResult);
         }
 
         return combinedResult;
       }
     } catch (e) {
+      warn(`capability ${capability} failed: ${String(e)}`, "fetchData");
       if (options?.fallback) {
-        return await options.fallback();
+        return await callFallback();
       }
       throw e;
+    } finally {
+      this.failures.set(capability, failures);
     }
 
     error(
@@ -641,10 +761,10 @@ export class AccountManager {
       return new module.Appscho(service.id);
     }
 
-    if (service.serviceId === Services.LANNION) {
+    if (service.serviceId === Services.MOCK_DATA) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const module = require("@/services/lannion/index");
-      return new module.Lannion(service.id);
+      const module = require("@/services/mock/index");
+      return new module.MockData(service.id);
     }
 
     error(
@@ -678,33 +798,68 @@ const notifyManagerListeners = (manager: AccountManager) => {
   managerListeners.forEach(listener => listener(manager));
 };
 
+const managerInFlight = new Map<string, Promise<AccountManager>>();
+
 export const initializeAccountManager = async (
   accountId?: string
 ): Promise<AccountManager> => {
   if (!accountId) {
     const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
     if (!lastUsedAccount) {
-      error("No account ID provided and no last used account found.");
+      throw error("No account ID provided and no last used account found.");
     }
     accountId = lastUsedAccount;
   }
-  const account = useAccountStore
-    .getState()
-    .accounts.find(acc => acc.id === accountId);
 
-  if (!account) {
-    error("Account not found for ID: " + accountId);
+  const pending = managerInFlight.get(accountId);
+  if (pending) {
+    debug("An initialization is already running for " + accountId + ", joining it.");
+    return pending;
   }
 
-  const manager = new AccountManager(account);
-  await manager.refreshAllAccounts();
-  globalManager = manager;
-  notifyManagerListeners(manager);
-  return manager;
+  const targetId = accountId;
+
+  const task = (async () => {
+    const account = useAccountStore
+      .getState()
+      .accounts.find(acc => acc.id === targetId);
+
+    if (!account) {
+      throw error("Account not found for ID: " + targetId);
+    }
+
+    let manager = globalManager;
+    if (manager && manager.account.id === targetId) {
+      manager.syncAccount(account);
+    } else {
+      manager = new AccountManager(account);
+      // Published before the network refresh: with no clients yet, every
+      // fetch falls back to the local cache, so screens render the last
+      // known data instantly and get the fresh one on the notify below.
+      globalManager = manager;
+      notifyManagerListeners(manager);
+    }
+
+    await manager.refreshAllAccounts();
+    // A newer initialization for another account may have taken over while this
+    // one was refreshing; publishing now would hand screens the stale account.
+    if (globalManager === manager) {
+      notifyManagerListeners(manager);
+    }
+    return manager;
+  })();
+
+  managerInFlight.set(targetId, task);
+
+  try {
+    return await task;
+  } finally {
+    managerInFlight.delete(targetId);
+  }
 };
 
-export const getManager = (): AccountManager => {
-  if (!globalManager) {
+export const getManager = (silent = false): AccountManager => {
+  if (!globalManager && !silent) {
     warn(
       "Account manager not initialized. Call initializeAccountManager first."
     );

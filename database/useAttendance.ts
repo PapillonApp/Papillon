@@ -162,7 +162,7 @@ export async function addAttendanceToDatabase(attendances: SharedAttendance[], p
 }
 
 
-export async function getAttendanceFromCache(period: string): Promise<SharedAttendance> {
+export async function getAttendanceFromCache(period: string): Promise<SharedAttendance | undefined> {
   try {
     const database = getDatabaseInstance();
 
@@ -172,16 +172,23 @@ export async function getAttendanceFromCache(period: string): Promise<SharedAtte
       .fetch();
 
     if (!attendance[0]) {
-      throw new Error("Attendance not found");
+      return undefined;
     }
     const att = attendance[0];
+    const [delays, absences, punishments, observations] = await Promise.all([
+      att.delays.fetch(),
+      att.absences.fetch(),
+      att.punishments.fetch(),
+      att.observations.fetch(),
+    ]);
+
     return {
       createdByAccount: att.createdByAccount,
-      delays: mapDelaysToShared(att.delays, att),
-      absences: mapAbsencesToShared(att.absences, att),
-      punishments: mapPunishmentsToShared(att.punishments),
-      observations: mapObservationsToShared(att.observations),
-      fromCache: true
+      delays: mapDelaysToShared(delays, att),
+      absences: mapAbsencesToShared(absences, att),
+      punishments: mapPunishmentsToShared(punishments),
+      observations: mapObservationsToShared(observations),
+      fromCache: true,
     };
   } catch (err) {
     error("Failed to fetch attendance from cache: " + String(err));

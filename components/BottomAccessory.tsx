@@ -6,15 +6,18 @@ import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { useTheme } from "expo-router/react-navigation";
+import { differenceInCalendarDays, formatDistanceToNowStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
-import { useNavigation } from 'expo-router';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { Link } from 'expo-router';
+import { NativeTabs } from 'expo-router/native-tabs';
 import React from 'react';
 import { ActivityIndicator, Platform, Pressable } from 'react-native';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
+import { getCourseRouteId } from '@/database/useTimetable';
+
 
 function NextCourseAccessory({ placement }) {
   if (Platform.OS !== 'ios') {
@@ -28,169 +31,145 @@ function NextCourseAccessory({ placement }) {
   // if (placement === 'inline') {}
 
   const sbjColor = nextCourse ? getSubjectColor(nextCourse.subject) : theme.colors.primary;
-  const navigation = useNavigation<any>();
+  const nextCourseDay = nextCourse ? startOfDay(nextCourse.from) : null;
+  const daysUntilNextCourse = nextCourseDay
+    ? differenceInCalendarDays(nextCourseDay, startOfDay(new Date()))
+    : 0;
 
-  if(loading) {
-    return (
-      <View
-        style={{
-          height: "100%",
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
-        <ActivityIndicator />
-        <Typography variant="body1" weight="semibold" color="textSecondary">
-          Chargement des cours...
-        </Typography>
-      </View>
-    )
-  }
+  const getNextCourseDistance = (addSuffix: boolean) => {
+    if (!nextCourse) {
+      return '';
+    }
 
-  if(!nextCourse) {
-    return (
-      <View
-        style={{
-          height: "100%",
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
-        <Typography variant="body1" weight="semibold" color="textSecondary">
-          Aucun cours à venir prochainement
-        </Typography>
-      </View>
-    )
-  }
+    if (daysUntilNextCourse >= 1) {
+      return formatDistanceToNowStrict(nextCourseDay as Date, {
+        locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
+        addSuffix,
+        unit: 'day',
+        roundingMethod: "ceil"
+      });
+    }
+
+    return formatDistanceToNowStrict(nextCourse.from, {
+      locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
+      addSuffix,
+    });
+  };
+
+  if(loading) return null;
+
+  if(!nextCourse) return null;
 
   return (
     <>
-      <Pressable
-        onPress={() => {
-          navigation.navigate("(modals)/course", {
-            course: nextCourse,
-            subjectInfo: {
-              id: nextCourse.subject,
-              name: getSubjectName(nextCourse.subject),
-              color: getSubjectColor(nextCourse.subject) || theme.colors.primary,
-              emoji: getSubjectEmoji(nextCourse.subject),
-            },
-          });
-        }}
-        style={{
-          height: "100%",
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          alignItems: "center",
-          justifyContent: "start",
-          flexDirection: "row",
-          gap: 10,
-        }}
+      <Link
+        href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(nextCourse) } }}
+        asChild
       >
-        <View
-          style={{
-            backgroundColor: sbjColor,
-            height: "100%",
-            width: 6,
-            borderRadius: 5,
-          }}
-        />
-        <Typography variant="h4">
-          {getSubjectEmoji(nextCourse.subject)}
-        </Typography>
-        <View
-          style={{
-            flex: 1,
-            gap: 0,
-          }}
-        >
-          <Typography variant="title" numberOfLines={1}>
-            {getSubjectName(nextCourse?.subject)}
+        <Link.AppleZoom>
+          <Pressable
+            style={{
+              height: "100%",
+              paddingVertical: 10,
+              paddingHorizontal: 14,
+              alignItems: "center",
+              justifyContent: "flex-start",
+              flexDirection: "row",
+              gap: 10,
+            }}
+          >
+          <View
+            style={{
+              backgroundColor: sbjColor,
+              height: "100%",
+              width: 6,
+              borderRadius: 5,
+            }}
+          />
+          <Typography variant="h4">
+            {getSubjectEmoji(nextCourse.subject)}
           </Typography>
+          <View
+            style={{
+              flex: 1,
+              gap: 0,
+            }}
+          >
+            <Typography variant="title" numberOfLines={1}>
+              {getSubjectName(nextCourse?.subject)}
+            </Typography>
 
-          {placement === 'inline' ? (
+            {placement === 'inline' ? (
+              <View
+                style={{
+                  marginTop: -2,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 6,
+                  width: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <Icon size={14} fill={sbjColor}>
+                  <Papicons name="Clock" />
+                </Icon>
+                <Typography variant="body2" weight="semibold" color={sbjColor} numberOfLines={1}>
+                  {getNextCourseDistance(true)}
+                </Typography>
+              </View>
+            ) : (
+              <View
+                style={{
+                  marginTop: -2,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 3,
+                  width: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <Icon size={14} opacity={0.5}>
+                  <Papicons name="MapPin" />
+                </Icon>
+                <Typography variant="body2" weight="semibold" color="textSecondary" numberOfLines={1}>
+                  {nextCourse?.room}
+                </Typography>
+                <View style={{ width: 3, height: 3, borderRadius: 8, backgroundColor: theme.colors.text, opacity: 0.5, marginHorizontal: 6 }} />
+                <Icon size={14} opacity={0.5}>
+                  <Papicons name="User" />
+                </Icon>
+                <Typography variant="body2" weight="semibold" color="textSecondary" numberOfLines={1}>
+                  {nextCourse?.teacher}
+                </Typography>
+              </View>
+            )}
+          </View>
+
+          {placement !== 'inline' && (
             <View
               style={{
                 marginTop: -2,
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 6,
-                width: "100%",
-                overflow: "hidden",
               }}
             >
               <Icon size={14} fill={sbjColor}>
                 <Papicons name="Clock" />
               </Icon>
-              <Typography variant="body2" weight="semibold" color={sbjColor} numberOfLines={1}>
-                {formatDistanceToNowStrict(nextCourse.from, {
-                    locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
-                    addSuffix: true
-                  })}
-              </Typography>
-            </View>
-          ) : (
-            <View
-              style={{
-                marginTop: -2,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 3,
-                width: "100%",
-                overflow: "hidden",
-              }}
-            >
-              <Icon size={14} opacity={0.5}>
-                <Papicons name="MapPin" />
-              </Icon>
-              <Typography variant="body2" weight="semibold" color="textSecondary" numberOfLines={1}>
-                {nextCourse?.room}
-              </Typography>
-              <View style={{ width: 3, height: 3, borderRadius: 8, backgroundColor: theme.colors.text, opacity: 0.5, marginHorizontal: 6 }} />
-              <Icon size={14} opacity={0.5}>
-                <Papicons name="User" />
-              </Icon>
-              <Typography variant="body2" weight="semibold" color="textSecondary" numberOfLines={1}>
-                {nextCourse?.teacher}
+              <Typography variant="body1" weight="semibold" color={sbjColor}>
+                {getNextCourseDistance(false)}
               </Typography>
             </View>
           )}
-        </View>
-
-        {placement !== 'inline' && (
-          <View
-            style={{
-              marginTop: -2,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <Icon size={14} fill={sbjColor}>
-              <Papicons name="Clock" />
-            </Icon>
-            <Typography variant="body1" weight="semibold" color={sbjColor}>
-              {formatDistanceToNowStrict(nextCourse.from, {
-                  locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS,
-                  addSuffix: false
-                })}
-            </Typography>
-          </View>
-        )}
-      </Pressable>
+          </Pressable>
+        </Link.AppleZoom>
+      </Link>
 
       <LinearGradient
         colors={[sbjColor, sbjColor + '00']}
-        start={[1, 0]}
-        end={[0, 0]}
+        start={{x: 1, y: 0}}
+        end={{x: 0, y: 0}}
         style={{
           position: 'absolute',
           left: 0,
@@ -205,10 +184,32 @@ function NextCourseAccessory({ placement }) {
   );
 }
 
-export default function BottomAccessory() {
+function BottomAccessory() {
   const placement = NativeTabs.BottomAccessory.usePlacement();
 
   return (
       <NextCourseAccessory placement={placement} />
   );
+}
+
+const BottomAccessoryWithBoundary = () => (
+  <ErrorBoundary fallback={<></>}>
+    <BottomAccessory />
+  </ErrorBoundary>
+);
+
+export default BottomAccessoryWithBoundary;
+
+export function useBottomAccessoryVisible() {
+  const { courses, loading } = useTimetableWidgetData();
+
+  if (Platform.OS !== 'ios') {
+    return false;
+  }
+
+  if (loading) {
+    return false;
+  }
+
+  return courses.length > 0;
 }

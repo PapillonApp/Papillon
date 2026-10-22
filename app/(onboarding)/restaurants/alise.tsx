@@ -15,10 +15,11 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import { t } from "i18next";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Alise } from "@/services/alise";
 import { authenticateWithCredentials } from "alise-api";
 import { initializeAccountManager } from "@/services/shared";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const ANIMATION_DURATION = 100;
 
@@ -100,10 +101,8 @@ export default function AliseLoginWithCredentials() {
         updatedAt: (new Date()).toISOString(),
       });
       store.setLastUsedAccount(accountId);
-      return router.push({
-        pathname: "../end/color",
-        params: { accountId },
-      });
+      router.dismissAll();
+      return router.push("/");
     } catch (error) {
       alert.showAlert({
         title: t("Alert_Auth_Error"),
@@ -118,12 +117,11 @@ export default function AliseLoginWithCredentials() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, marginBottom: insets.bottom }} behavior="padding">
-      <View style={{
+      <SafeHorizontalView base={20} style={{
         alignItems: "center",
         justifyContent: "flex-end",
         borderBottomLeftRadius: 42,
         borderBottomRightRadius: 42,
-        padding: 20,
         paddingTop: insets.top + 20,
         paddingBottom: 34,
         borderCurve: "continuous",
@@ -163,62 +161,64 @@ export default function AliseLoginWithCredentials() {
             {t("ONBOARDING_LOGIN_CREDENTIALS")} Alise
           </Typography>
         </Reanimated.View>
-      </View>
-      <Stack padding={20} gap={10}>
-        <OnboardingInput
-          icon={"Link"}
-          placeholder={t("INPUT_ETABID")}
-          text={siteId}
-          setText={setSiteId}
-          isPassword={false}
-          keyboardType={"default"}
-          inputProps={{
-            autoCapitalize: "none",
-            autoCorrect: false,
-            spellCheck: false,
-          }}
-        />
-        <OnboardingInput
-          icon={"User"}
-          placeholder={t("INPUT_USERNAME")}
-          text={username}
-          setText={setUsername}
-          isPassword={false}
-          keyboardType={"default"}
-          inputProps={{
-            autoCapitalize: "none",
-            autoCorrect: false,
-            spellCheck: false,
-            textContentType: "username",
-          }}
-        />
-        <OnboardingInput
-          icon={"Lock"}
-          placeholder={t("INPUT_PASSWORD")}
-          text={password}
-          setText={setPassword}
-          isPassword={true}
-          keyboardType={"default"}
-          inputProps={{
-            autoCapitalize: "none",
-            autoCorrect: false,
-            spellCheck: false,
-            textContentType: "password",
-            onSubmitEditing: () => {
-              Keyboard.dismiss();
-              loginAlise();
-            },
-            returnKeyType: "done",
-          }}
-        />
-        <Button
-          title={t("LOGIN_BTN")}
-          style={{ backgroundColor: theme.dark ? theme.colors.border : "black" }}
-          size="large"
-          disableAnimation
-          onPress={loginAlise}
-        />
-      </Stack>
+      </SafeHorizontalView>
+      <SafeHorizontalView base={20}>
+        <Stack padding={[0, 20]} gap={10}>
+          <OnboardingInput
+            icon={"Link"}
+            placeholder={t("INPUT_ETABID")}
+            text={siteId}
+            setText={setSiteId}
+            isPassword={false}
+            keyboardType={"default"}
+            inputProps={{
+              autoCapitalize: "none",
+              autoCorrect: false,
+              spellCheck: false,
+            }}
+          />
+          <OnboardingInput
+            icon={"User"}
+            placeholder={t("INPUT_USERNAME")}
+            text={username}
+            setText={setUsername}
+            isPassword={false}
+            keyboardType={"default"}
+            inputProps={{
+              autoCapitalize: "none",
+              autoCorrect: false,
+              spellCheck: false,
+              textContentType: "username",
+            }}
+          />
+          <OnboardingInput
+            icon={"Lock"}
+            placeholder={t("INPUT_PASSWORD")}
+            text={password}
+            setText={setPassword}
+            isPassword={true}
+            keyboardType={"default"}
+            inputProps={{
+              autoCapitalize: "none",
+              autoCorrect: false,
+              spellCheck: false,
+              textContentType: "password",
+              onSubmitEditing: () => {
+                Keyboard.dismiss();
+                loginAlise();
+              },
+              returnKeyType: "done",
+            }}
+          />
+          <Button
+            title={t("LOGIN_BTN")}
+            style={{ backgroundColor: theme.dark ? theme.colors.border : "black" }}
+            size="large"
+            disableAnimation
+            onPress={loginAlise}
+          />
+        </Stack>
+      </SafeHorizontalView>
     </KeyboardAvoidingView>
   );
 }

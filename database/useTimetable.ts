@@ -1,7 +1,7 @@
 import { Model, Q } from "@nozbe/watermelondb";
 import { useEffect, useState } from "react";
 
-import { getICalEventsForWeek } from "@/services/local/ical";
+import { getICalCourseById, getICalEventsForWeek } from "@/services/local/ical";
 import { Course as SharedCourse,CourseDay as SharedCourseDay } from "@/services/shared/timetable"
 import { generateId } from "@/utils/generateId";
 import { warn } from "@/utils/logger/logger";
@@ -12,6 +12,29 @@ import Course from "./models/Timetable";
 import { getDateRangeOfWeek } from "./useHomework";
 import { safeWrite } from "./utils/safeTransaction";
 
+export function getCourseRouteId(course: SharedCourse): string {
+  if (course.createdByAccount.startsWith('ical_')) return course.id;
+  return generateId(
+    course.from.toISOString() +
+      course.to.toISOString() +
+      course.subject +
+      course.teacher +
+      course.createdByAccount
+  );
+}
+
+export async function getCourseById(id: string): Promise<SharedCourse | undefined> {
+  try {
+    const courses = await getDatabaseInstance()
+      .get<Course>('courses')
+      .query(Q.where('courseId', id))
+      .fetch();
+    return courses[0] ? mapCourseToShared(courses[0]) : await getICalCourseById(id);
+  } catch {
+    return getICalCourseById(id);
+  }
+}
+
 export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, date: Date = new Date()) {
   const database = useDatabase();
   const [timetable, setTimetable] = useState<SharedCourseDay[]>([]);
@@ -21,24 +44,34 @@ export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, dat
   const weeksKey = weeks.join(',');
 
   useEffect(() => {
-    const fetchTimetable = async () => {
-      const timetableFetched = await getCoursesFromCache(weeks, date.getFullYear());
-      setTimetable(timetableFetched);
-    };
-    fetchTimetable();
-  }, [refresh, database, weeksKey, date.getFullYear()]);
+    let cancelled = false;
+    let requestId = 0;
+    const year = date.getFullYear();
 
-  useEffect(() => {
-    const icalQuery = database.get('icals').query();
-    const subscription = icalQuery.observe().subscribe(() => {
-      const fetchTimetable = async () => {
-        const timetableFetched = await getCoursesFromCache(weeks, date.getFullYear());
+    const fetchTimetable = async () => {
+      const currentRequest = ++requestId;
+      const timetableFetched = await getCoursesFromCache(weeks, year);
+      if (!cancelled && currentRequest === requestId) {
         setTimetable(timetableFetched);
-      };
-      fetchTimetable();
-    });
-    return () => subscription.unsubscribe();
-  }, [database, weeksKey, date.getFullYear()]);
+      }
+    };
+
+    // Courses written by a sync (e.g. right after adding an account) must show up
+    // without the caller having to bump `refresh`.
+    const { start, end } = getWeeksRange(weeks, year);
+    const courseSubscription = database
+      .get('courses')
+      .query(Q.where('from', Q.between(start.getTime(), end.getTime())))
+      .observe()
+      .subscribe(fetchTimetable);
+    const icalSubscription = database.get('icals').query().observe().subscribe(fetchTimetable);
+
+    return () => {
+      cancelled = true;
+      courseSubscription.unsubscribe();
+      icalSubscription.unsubscribe();
+    };
+  }, [refresh, database, weeksKey, date.getFullYear()]);
 
   return timetable;
 }
@@ -65,9 +98,14 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
             return [oldId, newId];
           }).flat()
         );
+        const refreshedServiceIds = new Set(
+          day.courses.map(course => course.createdByAccount)
+        );
 
         const coursesToDelete = dbCourses.filter(
-          dbCourse => !dayCourseIds.has(dbCourse.courseId)
+          dbCourse =>
+            refreshedServiceIds.has(dbCourse.createdByAccount) &&
+            !dayCourseIds.has(dbCourse.courseId)
         );
 
         for (const course of coursesToDelete) {
@@ -77,7 +115,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
         for (const item of day.courses) {
           // MIGRATION TO AVOID DUPES, DO NOT DELETE
           const oldId = generateId(item.from.toISOString() + item.to.toISOString() + item.subject + item.teacher + item.room + item.createdByAccount);
-          const id = generateId(item.from.toISOString() + item.to.toISOString() + item.subject + item.teacher + item.createdByAccount);
+          const id = getCourseRouteId(item);
 
           const oldExistingRecords = await db.get('courses')
             .query(Q.where('courseId', oldId))
@@ -127,8 +165,10 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
                 teacher: item.teacher ?? course.teacher,
                 group: item.group ?? course.group,
                 backgroundColor: item.backgroundColor ?? course.backgroundColor,
-                status: item.status ?? course.status,
-                customStatus: item.customStatus ?? course.customStatus,
+                // A fresh status always wins: a course that is no longer
+                // cancelled comes back without one.
+                status: item.status,
+                customStatus: item.customStatus,
                 url: item.url ?? course.url,
                 kidName: item.kidName ?? course.kidName,
               });
@@ -142,27 +182,54 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   );
 }
 
-export async function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+// Courses are grouped on the day they fall on in the device's timezone: grouping
+// on the UTC date would file evening courses under the previous day west of UTC.
+function startOfLocalDay(date: Date): number {
+  const day = new Date(date);
+  day.setHours(0, 0, 0, 0);
+  return day.getTime();
+}
+
+function getWeeksRange(weeks: number[], year: number): { start: Date; end: Date } {
+  let start = new Date(8640000000000000);
+  let end = new Date(-8640000000000000);
+
+  for (const w of weeks) {
+    const range = getDateRangeOfWeek(w, year);
+    if (range.start < start) {start = range.start;}
+    if (range.end > end) {end = range.end;}
+  }
+
+  return { start, end };
+}
+
+// Every useTimetable instance's observer fires at once on mount and on each sync write;
+// concurrent calls for the same range share one query instead of each re-reading the DB.
+const inFlightCourses = new Map<string, Promise<SharedCourseDay[]>>();
+
+export function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+  const key = `${year}:${weeks.join(',')}`;
+  let pending = inFlightCourses.get(key);
+  if (!pending) {
+    pending = readCoursesFromCache(weeks, year).finally(() => inFlightCourses.delete(key));
+    inFlightCourses.set(key, pending);
+  }
+  return pending;
+}
+
+async function readCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
-    
-    let minStart = new Date(8640000000000000);
-    let maxEnd = new Date(-8640000000000000);
-    
-    for (const w of weeks) {
-      const { start, end } = getDateRangeOfWeek(w, year);
-      if (start < minStart) {minStart = start;}
-      if (end > maxEnd) {maxEnd = end;}
-    }
+    const { start: minStart, end: maxEnd } = getWeeksRange(weeks, year);
 
     const courses = await database
       .get<Course>('courses')
       .query(Q.where('from', Q.between(minStart.getTime(), maxEnd.getTime())))
       .fetch();
 
-    const dayMap: Record<string, SharedCourse[]> = {};
+    const dayMap: Record<number, SharedCourse[]> = {};
     for (const course of courses) {
-      const dayKey = new Date(course.from).toISOString().split("T")[0];
+      const dayKey = startOfLocalDay(new Date(course.from));
       dayMap[dayKey] = dayMap[dayKey] || [];
       dayMap[dayKey].push(mapCourseToShared(course));
     }
@@ -170,7 +237,7 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
     try {
       const icalEvents = await getICalEventsForWeek(minStart, maxEnd);
       for (const event of icalEvents) {
-        const dayKey = new Date(event.from).toISOString().split("T")[0];
+        const dayKey = startOfLocalDay(event.from);
         dayMap[dayKey] = dayMap[dayKey] || [];
         dayMap[dayKey].push(event);
       }
@@ -181,9 +248,9 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
     for (const day in dayMap) {
       dayMap[day].sort((a, b) => a.from.getTime() - b.from.getTime());
     }
-		
+
     return Object.entries(dayMap).map(([day, courses]) => ({
-      date: new Date(day),
+      date: new Date(Number(day)),
       courses
     }));
   } catch (e) {

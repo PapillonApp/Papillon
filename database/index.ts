@@ -1,5 +1,14 @@
 import { Database } from '@nozbe/watermelondb';
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
+import logger from '@nozbe/watermelondb/utils/common/logger';
+
+// WatermelonDB's internal work-queue diagnostics ("Enqueued writer",
+// "can't be performed yet, because there are N other readers/writers...")
+// are purely informational dev-mode noise, not error reporting — our own
+// database/utils/safeTransaction.ts handles real failure logging separately.
+logger.silence();
+import { File, Paths } from 'expo-file-system';
+import { Platform } from 'react-native';
 
 import { Absence, Attendance, Delay, Observation, Punishment } from '@/database/models/Attendance';
 import CanteenMenu from '@/database/models/CanteenMenu';
@@ -17,8 +26,28 @@ import CanteenHistoryItem from './models/CanteenHistory';
 import Kid from './models/Kid';
 import { mySchema } from './schema';
 
+const appGroupId = 'group.xyz.getpapillon.ios';
+const databaseFilename = 'watermelon.db';
+
+function resolveSharedDbName(): string | undefined {
+  if (Platform.OS !== 'ios') return undefined;
+
+  const sharedContainer = Paths.appleSharedContainers[appGroupId];
+  if (!sharedContainer) return undefined;
+
+  const sharedFile = new File(sharedContainer, databaseFilename);
+  const legacyFile = new File(Paths.document, databaseFilename);
+
+  if (!sharedFile.exists && legacyFile.exists) {
+    legacyFile.copySync(sharedFile);
+  }
+
+  return sharedFile.uri.replace(/^file:\/\//, '');
+}
+
 const adapter = new SQLiteAdapter({
   schema: mySchema,
+  dbName: resolveSharedDbName(),
 });
 
 export const database = new Database({

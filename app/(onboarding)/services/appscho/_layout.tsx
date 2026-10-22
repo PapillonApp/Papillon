@@ -1,19 +1,21 @@
 import React from 'react';
 
 import { Stack } from 'expo-router';
-import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { Platform } from 'react-native';
-import { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
 export default function OnboardingLayout() {
+  const screenOptions = useScreenOptions();
+  const androidHeaderProps = useAndroidHeaderProps();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: false,
-    ...AndroidHeaderProps,
+    ...androidHeaderProps,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
-  }), []);
+  }), [screenOptions, androidHeaderProps]);
 
   return (
     <Stack>

@@ -1,609 +1,375 @@
-import { Papicons } from '@getpapillon/papicons';
-import { LegendList } from '@legendapp/list';
-import { MenuView } from '@react-native-menu/menu';
-import { useTheme } from '@react-navigation/native';
-import { useNavigation } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Link, Stack, useTheme } from 'expo-router';
 import { t } from 'i18next';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, Platform, RefreshControl, View } from 'react-native';
-import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { getManager, subscribeManagerUpdate } from '@/services/shared';
-import { GradeScore, Period, Subject } from "@/services/shared/grade";
-import { useSettingsStore } from "@/stores/settings";
-import ChipButton from '@/ui/components/ChipButton';
-import { CompactGrade } from '@/ui/components/CompactGrade';
-import { Dynamic } from '@/ui/components/Dynamic';
-import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
-import Icon from '@/ui/components/Icon';
-import Item, { Trailing } from '@/ui/components/Item';
-import LegacyList from '@/ui/components/List';
-import Search from '@/ui/components/Search';
-import Stack from '@/ui/components/Stack';
-import TabHeader from '@/ui/components/TabHeader';
-import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
-import LegacyTypography from '@/ui/components/Typography';
-import { useKeyboardHeight } from '@/ui/hooks/useKeyboardHeight';
-import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
-import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { FlatList, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import i18n from '@/utils/i18n';
-import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
-import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
-import { getSubjectName } from "@/utils/subjects/name";
-import { getGradeDisplayScale } from "@/utils/grades/scale";
+import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
+import { useSettingsStore } from '@/stores/settings';
+import { getGradeDisplayScale, formatScoreForDisplay, formatGradeScoreForDisplay } from '@/utils/grades/scale';
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from '@/utils/services/periods';
+import { getSubjectName } from '@/utils/subjects/name';
+import { getSubjectEmoji } from '@/utils/subjects/emoji';
+import { Grade, Period, Subject } from '@/services/shared/grade';
 
-import Averages from './atoms/Averages';
-import FeaturesMap from './atoms/FeaturesMap';
-import { SubjectItem } from './atoms/Subject';
-import { useGradeInfluence } from './hooks/useGradeInfluence';
-import List from '@/ui/new/List';
+import { usePeriodsData } from './hooks/usePeriodsData';
+import { useGradesData } from './hooks/useGradesData';
 import Typography from '@/ui/new/Typography';
-import ActionMenu from '@/ui/components/ActionMenu';
+import Averages from './atoms/Averages';
+import GradesEmptyState from './atoms/GradesEmptyState';
+import GradesLoading from './atoms/GradesLoading';
+import List from '@/ui/new/List';
+import useResizable from '@/ui/utils/Resizable';
+import CompactGrade from '@/ui/new/CompactGrade';
+import { AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeHorizontalView, { SAFE_HORIZONTAL_EDGES } from '@/ui/components/SafeHorizontalView';
 
-const MemoizedSubjectItem = React.memo(SubjectItem);
+const isAndroid = Platform.OS === 'android';
 
-const GradesView: React.FC = () => {
-  // Layout du header
-  const [headerHeight, setHeaderHeight] = useState(0);
+type SortMethod = 'date' | 'alphabetical' | 'averages';
 
-  // Thème
-  const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
-  const bottomTabBarHeight = 0;
-  const navigation = useNavigation();
+const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol; papicon: string }[] => [
+  { value: 'date', label: t('Grades_Sorting_Date'), sf: 'calendar', papicon: 'Calendar' },
+  { value: 'averages', label: t('Grades_Sorting_Averages'), sf: 'chart.xyaxis.line', papicon: 'Grades' },
+  { value: 'alphabetical', label: t('Grades_Sorting_Alphabetical'), sf: 'character', papicon: 'List' },
+];
 
-  // Chargement
-  const [periodsLoading, setPeriodsLoading] = useState(true);
-  const [gradesLoading, setGradesLoading] = useState(true);
-  const loading = periodsLoading || gradesLoading;
+const periodTitle = (period: Period) => {
+  const name = getPeriodName(period.name || '');
+  return isPeriodWithNumber(period.name || '') ? `${name} ${getPeriodNumber(period.name || '')}` : name;
+};
 
-  const [isRefreshing, setIsRefreshing] = useState(false);
+const periodSubtitle = (period: Period) =>
+  `${period.start.toLocaleDateString(i18n.language, { month: 'short', year: 'numeric' })} - ${period.end.toLocaleDateString(i18n.language, { month: 'short', year: 'numeric' })}`;
 
-  // Sortings
-  const settings = useSettingsStore(state => state.personalization);
-  const mutateSettings = useSettingsStore(state => state.mutateProperty);
-  const displayScale = getGradeDisplayScale(settings.gradesDisplayScale);
+const sortSubjects = (subjects: Subject[], method: SortMethod): Subject[] => {
+  const copy = [...subjects];
 
-  const [sortMethod, setSortMethod] = useState<string>(settings.gradesSortMethod || "date");
-
-  useEffect(() => {
-    if (settings.gradesSortMethod) {
-      setSortMethod(settings.gradesSortMethod);
-    }
-  }, [settings.gradesSortMethod]);
-
-  const updateSortMethod = (method: string) => {
-    setSortMethod(method);
-    mutateSettings('personalization', { gradesSortMethod: method });
-  };
-  const sortings = [
-    {
-      label: t("Grades_Sorting_Alphabetical"),
-      value: "alphabetical",
-      papicon: "letter",
-      icon: {
-        ios: "character",
-        android: "ic_alphabetical",
-        papicon: "font",
-      }
-    },
-    {
-      label: t("Grades_Sorting_Date"),
-      value: "date",
-      papicon: "calendar",
-      icon: {
-        ios: "calendar",
-        android: "ic_date",
-        papicon: "calendar",
-      }
-    },
-    {
-      label: t("Grades_Sorting_Averages"),
-      value: "averages",
-      papicon: "grades",
-      icon: {
-        ios: "chart.xyaxis.line",
-        android: "ic_averages",
-        papicon: "grades",
-      }
-    },
-  ];
-
-  // Gestion du scroll
-  const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
-
-  // Manager
-  const manager = getManager();
-
-  // Obtention des périodes
-  const [periods, setPeriods] = useState<Period[]>([]);
-  const [currentPeriod, setCurrentPeriod] = useState<Period>();
-
-  const fetchPeriods = async (managerToUse = manager) => {
-    if (currentPeriod || !managerToUse) { return; }
-    setPeriodsLoading(true);
-
-    const result = await managerToUse.getGradesPeriods();
-    let currentPeriodFound = getCurrentPeriod(result);
-
-    if (settings.gradesPeriodId) {
-      const savedPeriod = result.find(p => p.id === settings.gradesPeriodId);
-      if (savedPeriod) {
-        currentPeriodFound = savedPeriod;
-      }
-    }
-
-    // sort by time, then put Semestre and Trimestre on top
-    const sortedResult = [...result].sort((a, b) => {
-      const isAKey = a.name.startsWith("Semestre") || a.name.startsWith("Trimestre");
-      const isBKey = b.name.startsWith("Semestre") || b.name.startsWith("Trimestre");
-
-      if (isAKey && !isBKey) { return -1; }
-      if (!isAKey && isBKey) { return 1; }
-
-      return a.start.getTime() - b.start.getTime();
-    });
-
-    setPeriods(sortedResult);
-    setCurrentPeriod(currentPeriodFound);
-    setPeriodsLoading(false);
-  };
-
-  useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
-      fetchPeriods(updatedManager);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  // Obtention des notes
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [features, setFeatures] = useState<GradeFeatures | null>(null);
-  const [serviceAverage, setServiceAverage] = useState<number | null>(null);
-  const [serviceRank, setServiceRank] = useState<GradeScore | null>(null);
-
-  const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
-    setGradesLoading(true);
-    if (period && managerToUse) {
-      const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
-
-      if (grades?.features) {
-        setFeatures(grades.features);
-      }
-      if (!grades || !grades.subjects) {
-        setGradesLoading(false);
-        return;
-      }
-      setSubjects(grades.subjects);
-      if (grades.studentOverall && typeof grades.studentOverall.value === 'number') {
-        setServiceAverage(grades.studentOverall.value)
-      } else {
-        setServiceAverage(null);
-      }
-
-      if (grades.rank && typeof grades.rank.value === 'number' && !grades.rank.disabled) {
-        setServiceRank(grades.rank)
-      } else {
-        setServiceRank(null);
-      }
-
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          setGradesLoading(false);
-          setIsRefreshing(false);
-        }, 200);
+  switch (method) {
+    case 'alphabetical':
+      copy.sort((a, b) => getSubjectName(a.name).localeCompare(getSubjectName(b.name)));
+      break;
+    case 'averages':
+      copy.sort((a, b) => (b.studentAverage?.value ?? -1) - (a.studentAverage?.value ?? -1));
+      break;
+    default:
+      copy.sort((a, b) => {
+        const aDate = a.grades?.[0]?.givenAt?.getTime() ?? 0;
+        const bDate = b.grades?.[0]?.givenAt?.getTime() ?? 0;
+        return bDate - aDate;
       });
-    } else {
-      setGradesLoading(false);
-    }
-  };
+  }
 
-  // Fetch grades when current period changes
-  useEffect(() => {
-    fetchGradesForPeriod(currentPeriod);
-  }, [currentPeriod]);
+  return copy;
+};
 
-  const grades = useMemo(() => {
-    return subjects.flatMap((subject) => subject.grades || []);
-  }, [subjects]);
+const GradesView = () => {
+  const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
+  const theme = useTheme();
+  const resize = useResizable();
+  const { width: screenWidth } = useWindowDimensions();
 
-  const getSubjectById = useCallback((id: string) => {
-    return subjects.find((subject) => subject.id === id);
-  }, [subjects]);
+  const { periods, currentPeriod, setCurrentPeriod, refresh: refreshPeriods, loading: loadingPeriods, error: periodsError, failures: periodsFailures } = usePeriodsData();
+  const { subjects, history, averages, isAverageServiceProvided, refresh: refreshGrades, loading: loadingGrades, error: gradesError, failures: gradesFailures } = useGradesData(currentPeriod);
 
-  // Sort
-  // Sort grades in subjects by date descending then sort subjects by latest grade descending
-  const sortedSubjects = useMemo(() => {
-    const subjectsCopy = [...subjects];
-    subjectsCopy.forEach((subject) => {
-      subject.grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
-    });
+  const loading = loadingPeriods || loadingGrades;
+  const failure = gradesFailures[0] ?? periodsFailures[0];
+  const hasError = Boolean(gradesError || periodsError || failure);
 
-    switch (sortMethod) {
-      case "alphabetical":
-        subjectsCopy.sort((a, b) => {
-          const nameA = getSubjectName(a.name).toLowerCase();
-          const nameB = getSubjectName(b.name).toLowerCase();
-          return nameA.localeCompare(nameB);
-        });
-        break;
+  useLoadErrorAlert({
+    subject: "tes notes",
+    error: gradesError ?? periodsError,
+    failures: gradesFailures.length > 0 ? gradesFailures : periodsFailures,
+    hasData: subjects.length > 0,
+  });
 
-      case "averages":
-        subjectsCopy.sort((a, b) => {
-          const aAvg = a.studentAverage.value;
-          const bAvg = b.studentAverage.value;
-          return bAvg - aAvg;
-        });
-        break;
+  const [sortMethod, setSortMethod] = useState<SortMethod>('date');
+  const [searchText, setSearchText] = useState('');
 
-      default:
-        subjectsCopy.sort((a, b) => {
-          const aLatestGrade = a.grades?.[0];
-          const bLatestGrade = b.grades?.[0];
-
-          if (!aLatestGrade && !bLatestGrade) { return 0; }
-          if (!aLatestGrade) { return 1; }
-          if (!bLatestGrade) { return -1; }
-
-          return bLatestGrade.givenAt.getTime() - aLatestGrade.givenAt.getTime();
-        });
-        break;
-    }
-
-    return subjectsCopy;
-  }, [subjects, sortMethod]);
-
-  const sortedGrades = useMemo(() => {
-    const gradesCopy = [...grades];
-    gradesCopy.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
-    return gradesCopy;
-  }, [grades]);
-
-  // Search
-  const [searchText, setSearchText] = useState<string>("");
-  const filteredSubjects = useMemo(() => {
-    if (searchText.trim() === "") {
-      return sortedSubjects;
-    }
-
-    const lowerSearchText = searchText.toLowerCase();
-
-    return sortedSubjects.filter((subject) => {
-      const subjectName = getSubjectName(subject.name).toLowerCase();
-      if (subjectName.includes(lowerSearchText)) {
-        return true;
-      }
-
-      // Also search in grades descriptions
-      const matchingGrades = subject.grades?.filter((grade) => {
-        return grade.description?.toLowerCase().includes(lowerSearchText);
-      });
-
-      return (matchingGrades?.length || 0) > 0;
-    });
-  }, [searchText, sortedSubjects]);
-
-  // Refresh
   const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
+    // Refresh periods first (a new one may have appeared), then the current period's grades.
+    await refreshPeriods();
+    await refreshGrades();
+  }, [refreshPeriods, refreshGrades]);
 
-    if (periods.length === 0) {
-      fetchPeriods();
-    }
+  const sortedSubjects = useMemo(() => sortSubjects(subjects, sortMethod), [subjects, sortMethod]);
 
-    fetchGradesForPeriod(currentPeriod);
-  }, [currentPeriod, periods]);
+  const filteredSubjects = useMemo(() => {
+    if (searchText.trim() === '') { return sortedSubjects; }
 
-  const renderItem = useCallback(({ item }: { item: any }) => {
-    const subject = item as Subject;
-    return (
-      <ErrorBoundary>
-        {/* @ts-expect-error navigation types */}
-        <MemoizedSubjectItem
-          subject={subject}
-          grades={grades}
-          getAvgInfluence={getAvgInfluence}
-          getAvgClassInfluence={getAvgClassInfluence}
-          displayScale={displayScale}
-        />
-      </ErrorBoundary>
-    )
-  }, [grades, displayScale]);
+    const query = searchText.toLowerCase();
+    return sortedSubjects.reduce<Subject[]>((acc, subject) => {
+      const subjectMatches = getSubjectName(subject.name).toLowerCase().includes(query);
 
-  const keyboardHeight = useKeyboardHeight();
+      if (subjectMatches) {
+        acc.push(subject);
+        return acc;
+      }
 
-  const footerStyle = useAnimatedStyle(() => ({
-    height: keyboardHeight.value - bottomTabBarHeight,
-  }));
+      const matchingGrades = (subject.grades ?? []).filter(grade => grade.description?.toLowerCase().includes(query));
+      if (matchingGrades.length > 0) {
+        acc.push({ ...subject, grades: matchingGrades });
+      }
 
-  // influences
-  const { getAvgInfluence, getAvgClassInfluence } = useGradeInfluence(subjects, getSubjectById);
+      return acc;
+    }, []);
+  }, [sortedSubjects, searchText]);
 
-  // header
-  const ListHeader = useMemo(() => ((sortedGrades.length > 0 && searchText.length === 0) ? (
-    <View style={{ marginBottom: 16 }}>
-      <ErrorBoundary>
-        <Averages
-          grades={grades}
-          color={colors.primary}
-          realAverage={serviceAverage || undefined}
-          displayScale={displayScale}
-        />
-      </ErrorBoundary>
+  const sortings = useMemo(() => getSortings(), [i18n.language]);
 
-      {serviceRank && (
-        <LegacyList style={{ marginTop: 8 }}>
-          <Item>
-            <Icon opacity={0.5}>
-              <Papicons name='crown' />
-            </Icon>
+  // 10 last grades (with subject in them (without grades))
+  const recentGrades = useMemo(() => {
+    const allGrades = subjects.flatMap(subject => (subject.grades ?? []).map(grade => ({ ...grade, subject })));
+    allGrades.sort((a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0));
+    return allGrades.slice(0, 10);
+  }, [subjects]);
 
-            <LegacyTypography variant='title'>
-              {t('Grades_Tab_Rank')}
-            </LegacyTypography>
-            <LegacyTypography variant='body1' color='secondary'>
-              {t('Grades_Tab_Rank_Description')}
-            </LegacyTypography>
-
-            <Trailing>
-              <Stack
-                direction='horizontal'
-                gap={4}
-                vAlign='end'
-                hAlign='end'
-              >
-                <LegacyTypography variant='h3' inline color='text'>
-                  {serviceRank.value}
-                </LegacyTypography>
-                <LegacyTypography variant='body1' inline color='secondary'>
-                  /{serviceRank.outOf}
-                </LegacyTypography>
-              </Stack>
-            </Trailing>
-          </Item>
-        </LegacyList>
-      )}
-
-      <View style={{ height: 16 }} />
-
-      <Dynamic
-        animated
-        entering={PapillonAppearIn}
-        exiting={PapillonAppearOut}
-      >
-        <Stack gap={8}>
-          <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-            <Icon size={20}>
-              <Papicons name='star' />
-            </Icon>
-            <LegacyTypography variant='h6' color='text'>
-              {t('Grades_Tab_Latest')}
-            </LegacyTypography>
-          </Stack>
-
-          <LegendList
-            horizontal
-            data={sortedGrades.slice(0, 10)}
-            style={{ overflow: 'visible', height: 140 + 24, width: Dimensions.get('window').width - 20 }}
-            contentContainerStyle={{ gap: 12 }}
-            estimatedItemSize={210 + 12}
-            showsHorizontalScrollIndicator={false}
-            recycleItems={true}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item: grade }) =>
-              <ErrorBoundary fallback={<View style={{ width: 140, height: 140 }} />}>
-                <CompactGrade
-                  key={grade.id + "_compactGrade_header"}
-                  emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
-                  title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
-                  description={grade.description}
-                  score={grade.studentScore?.value || 0}
-                  outOf={grade.outOf?.value || 20}
-                  disabled={grade.studentScore?.disabled}
-                  status={grade.studentScore?.status}
-                  color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
-                  date={grade.givenAt}
-                  hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
-                  onPress={() => {
-                    // @ts-expect-error navigation types
-                    navigation.navigate('(modals)/grade', {
-                      grade: grade,
-                      subjectInfo: {
-                        name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
-                        color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
-                        emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
-                        originalName: getSubjectById(grade.subjectId)?.name || ""
-                      },
-                      avgInfluence: getAvgInfluence(grade),
-                      avgClass: getAvgClassInfluence(grade),
-                    })
-                  }}
-                />
-              </ErrorBoundary>
-            }
-          />
-        </Stack>
-      </Dynamic>
-
-      <ErrorBoundary>
-        <FeaturesMap features={features} displayScale={displayScale} />
-      </ErrorBoundary>
-
-      <Dynamic animated>
-        <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-          <Icon size={20}>
-            <Papicons name='grades' />
-          </Icon>
-          <LegacyTypography variant='h6' color='text'>
-            {t('Grades_Tab_Subjects')}
-          </LegacyTypography>
-        </Stack>
-      </Dynamic>
-    </View>
-  ) : null), [
-    sortedGrades,
-    searchText,
-    grades,
-    colors.primary,
-    serviceAverage,
-    serviceRank,
-    navigation,
-    getSubjectById,
-    getAvgInfluence,
-    getAvgClassInfluence,
-    features,
-    displayScale,
-  ]);
+  const [isSearchbarFocused, setIsSearchbarFocused] = useState(false);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        /* @ts-expect-error colors
-        backgroundColor: colors.overground */
-      }}
-    >
-      {/* Header */}
-      <TabHeader
-        onHeightChanged={setHeaderHeight}
-        /* Nom de la période */
-        title={
-          <ActionMenu
-            onPressAction={({ nativeEvent }) => {
-              const actionId = nativeEvent.event;
-
-              if (actionId.startsWith("period:")) {
-                const selectedPeriodId = actionId.replace("period:", "");
-                const newPeriod = periods.find(period => period.id === selectedPeriodId);
-                setCurrentPeriod(newPeriod);
-                if (newPeriod?.id) {
-                  mutateSettings('personalization', { gradesPeriodId: newPeriod.id });
-                }
-              }
-            }}
-            actions={
-              periods.map((period) => ({
-                id: "period:" + period.id,
-                title: (getPeriodName(period.name || "") + " " + (isPeriodWithNumber(period.name || "") ? getPeriodNumber(period.name || "0") : "")).trim(),
-                subtitle: `${period.start.toLocaleDateString(i18n.language, {
-                  month: "short",
-                  year: "numeric",
-                })
-                  } - ${period.end.toLocaleDateString(i18n.language, {
-                    month: "short",
-                    year: "numeric",
-                  })
-                  } `,
-                state: currentPeriod?.id === period.id ? "on" : "off",
-                image: Platform.select({
-                  ios: (getPeriodNumber(period.name || "0")) + ".calendar"
-                }),
-                imageColor: colors.text,
-              }))
-            }
-          >
-            <TabHeaderTitle
-              color={colors.primary}
-              leading={periods.length > 0 ? getPeriodName(currentPeriod?.name || '') : t("Tab_Grades")}
-              number={isPeriodWithNumber(currentPeriod?.name || '') ? getPeriodNumber(currentPeriod?.name || '') : undefined}
-              loading={loading}
-              chevron={periods.length > 1}
-            />
-          </ActionMenu>
-        }
-        /* Filtres */
-        trailing={
-          <ChipButton
-            onPressAction={({ nativeEvent }) => {
-              const actionId = nativeEvent.event;
-              if (actionId.startsWith("sort:")) {
-                const selectedSorting = actionId.replace("sort:", "");
-                updateSortMethod(selectedSorting);
-              }
-            }}
-            actions={
-              sortings.map((s) => ({
-                id: "sort:" + s.value,
-                title: s.label,
-                state: sortMethod === s.value ? "on" : "off",
-                papicon: s.icon.papicon,
-                image: Platform.select({
-                  ios: s.icon.ios,
-                  android: s.icon.android,
-                }),
-                imageColor: colors.text,
-              }))
-            }
-            icon={sortings.find(s => s.value === sortMethod)?.icon.papicon || 'filter'} chevron
-          >
-            {sortings.find(s => s.value === sortMethod)?.label || t("Grades_Sort")}
-          </ChipButton>
-        }
-        /* Recherche */
-        bottom={<Search placeholder={t('Grades_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
-        shouldCollapseHeader={shouldCollapseHeader}
+    <>
+      <Stack.SearchBar
+        onChangeText={(e) => setSearchText(e.nativeEvent.text)}
+        placeholder={"Rechercher une matière ou une note..."}
+        onFocus={() => setIsSearchbarFocused(true)}
+        onBlur={() => setIsSearchbarFocused(false)}
+        autoCapitalize="none"
+        hideWhenScrolling={true}
       />
 
-
-      <List
-      animated
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: (headerHeight - (Platform.OS === "ios" ? insets.top : 0)) + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
-
-        scrollEventThrottle={16}
-        scrollIndicatorInsets={{ top: headerHeight - insets.top }}
-
-        keyExtractor={(item: any) => item.id}
-        itemLayoutAnimation={LinearTransition.springify()}
-
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            progressViewOffset={headerHeight}
+      {isAndroid ? (
+        <Stack.Toolbar placement="left" asChild>
+          <AndroidHeaderMenu
+            icon="Calendar"
+            accessibilityLabel={currentPeriod ? periodTitle(currentPeriod) : t('Grades_Periods_None')}
+            actions={periods.map(period => ({
+              id: period.id,
+              title: periodTitle(period),
+              subtitle: periodSubtitle(period),
+              papicon: 'Calendar',
+              state: currentPeriod?.id === period.id ? 'on' : 'off',
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const period = periods.find(p => p.id === nativeEvent.event);
+              if (period) {
+                setCurrentPeriod(period);
+              }
+            }}
           />
-        }
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="left">
+          <Stack.Toolbar.Menu>
+            <Stack.Toolbar.Icon sf="calendar" />
+            <Stack.Toolbar.Label>
+              {currentPeriod ? periodTitle(currentPeriod) : t('Grades_Periods_None')}
+            </Stack.Toolbar.Label>
+            {periods.map(period => (
+              <Stack.Toolbar.MenuAction
+                key={period.id}
+                isOn={currentPeriod?.id === period.id}
+                icon={(isPeriodWithNumber(period.name || '') ? `${getPeriodNumber(period.name || '')}.calendar` : 'calendar') as SFSymbol}
+                subtitle={periodSubtitle(period)}
+                onPress={() => setCurrentPeriod(period)}
+              >
+                {periodTitle(period)}
+              </Stack.Toolbar.MenuAction>
+            ))}
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar>
+      )}
 
-        ListHeaderComponent={ListHeader}
+      <Stack.Title asChild>
+        <View style={[styles.titleContainer, { width: screenWidth - (isAndroid ? 72 : 140) }]}>
+          <Typography variant="header" weight="semibold" numberOfLines={1}>
+            {currentPeriod ? periodTitle(currentPeriod) : t('Tab_Grades')}
+          </Typography>
+        </View>
+      </Stack.Title>
 
-        ListFooterComponent={<Reanimated.View style={footerStyle} />}
-
-        ListEmptyComponent={loading ? undefined :
-          <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-            <Stack
-              hAlign="center"
-              vAlign="center"
-              flex
-              style={{ width: "100%" }}
-            >
-              <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-                <Papicons name={"Grades"} />
-              </Icon>
-              <LegacyTypography variant="h4" color="text" align="center">
-                {t('Grades_Empty_Title')}
-              </LegacyTypography>
-              <LegacyTypography variant="body2" color="secondary" align="center">
-                {t('Grades_Empty_Description')}
-              </LegacyTypography>
-            </Stack>
-          </Dynamic>
-        }
-      >
-        {filteredSubjects.map((subject) => (
-          <SubjectItem
-            key={subject.id}
-            subject={subject}
-            grades={grades}
-            getAvgInfluence={getAvgInfluence}
-            getAvgClassInfluence={getAvgClassInfluence}
-            displayScale={displayScale}
+      {isAndroid ? (
+        <Stack.Toolbar placement="right" asChild>
+          <AndroidHeaderMenu
+            icon="Filter"
+            accessibilityLabel="Sort by"
+            actions={sortings.map(sorting => ({
+              id: sorting.value,
+              title: sorting.label,
+              papicon: sorting.papicon,
+              state: sortMethod === sorting.value ? 'on' : 'off',
+            }))}
+            onPressAction={({ nativeEvent }) => setSortMethod(nativeEvent.event as SortMethod)}
           />
-        ))}
-      </List>
-    </View>
-  )
+        </Stack.Toolbar>
+      ) : (
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Menu>
+            <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
+            <Stack.Toolbar.Label>Sort by</Stack.Toolbar.Label>
+            {sortings.map(sorting => (
+              <Stack.Toolbar.MenuAction
+                key={sorting.value}
+                isOn={sortMethod === sorting.value}
+                icon={sorting.sf}
+                onPress={() => setSortMethod(sorting.value)}
+              >
+                {sorting.label}
+              </Stack.Toolbar.MenuAction>
+            ))}
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar>
+      )}
+
+      <View style={{ flex: 1, backgroundColor: Platform.OS === 'ios' ? theme.colors.overground : theme.colors.background }}>
+        <List
+          style={{ flex: 1 }}
+          safeHorizontalPadding={16}
+          contentInsetAdjustmentBehavior="automatic"
+          refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
+          numColumns={resize.isLarge ? 2 : 1}
+          ListEmptyComponent={
+            <SafeHorizontalView base={16}>
+              {loading ? (
+                <GradesLoading />
+              ) : (
+                <GradesEmptyState
+                  hasError={hasError}
+                  serviceName={failure?.displayName}
+                  isSearching={searchText.trim() !== '' && subjects.length > 0}
+                />
+              )}
+            </SafeHorizontalView>
+          }
+          ListHeaderComponent={(
+            isSearchbarFocused ? <></> : (
+              <View
+                style={{
+                  paddingVertical: 16,
+                  gap: 12,
+                }}>
+                <SafeHorizontalView base={16}>
+                  <Averages history={history} realAverage={isAverageServiceProvided ? averages.student?.value : undefined} color={theme.colors.primary} displayScale={displayScale} />
+                </SafeHorizontalView>
+
+                <FlatList
+                  data={recentGrades}
+                  renderItem={({ item: grade }) => (
+                    <Link href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }} asChild>
+                      <Link.Preview />
+                      <Link.Trigger>
+                      <Link.AppleZoom>
+                      <Pressable style={{ overflow: 'visible', margin: -24, padding: 24 }}>
+                          <CompactGrade
+                            grade={grade}
+                            subject={grade.subject}
+                          />
+                      </Pressable>
+                      </Link.AppleZoom>
+                      </Link.Trigger>
+                    </Link>
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                  ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+                  horizontal
+                  // Edge spacers sized natively by the safe area, so the carousel stays full-bleed.
+                  ListHeaderComponent={<SafeAreaView edges={{ left: SAFE_HORIZONTAL_EDGES.left }} style={{ paddingLeft: 16 }} />}
+                  ListFooterComponent={<SafeAreaView edges={{ right: SAFE_HORIZONTAL_EDGES.right }} style={{ paddingRight: 16 }} />}
+                  contentContainerStyle={{ paddingVertical: 24, overflow: 'visible' }}
+                  style={{ overflow: 'visible', marginVertical: -24 }}
+                />
+              </View>
+            )
+          )}
+        >
+          {filteredSubjects.map(subject => {
+            const subjectAverage = formatGradeScoreForDisplay(subject.studentAverage, subject.outOf, displayScale);
+
+            return (
+            <List.Section key={subject.id} id={subject.id}>
+              <List.SectionTitle id={`${subject.id}-title`}>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 2 }}>
+                  <Typography variant="h4" style={{ marginTop: 0 }} inset>{getSubjectEmoji(subject.name)}</Typography>
+
+                  <Typography style={{ flex: 1 }} variant="title" numberOfLines={1} weight='semibold' color="textPrimary">
+                    {getSubjectName(subject.name)}
+                  </Typography>
+
+                  <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
+                    <Typography variant="h5" weight='semibold' color="textSecondary">
+                      {subjectAverage.value}
+                    </Typography>
+                    {subjectAverage.denominator !== '' && (
+                      <Typography variant="caption" color="textSecondary">
+                        {subjectAverage.denominator}
+                      </Typography>
+                    )}
+                  </View>
+                </View>
+              </List.SectionTitle>
+
+              {(subject.grades ?? []).map((grade: Grade) => {
+                const score = grade.studentScore;
+                const isUsable = score && !score.disabled && typeof score.value === 'number';
+                const formattedScore = isUsable
+                  ? formatScoreForDisplay(score!.value, grade.outOf?.value ?? 20, displayScale)
+                  : undefined;
+
+                return (
+                  <List.Item
+                    key={grade.id}
+                    id={grade.id}
+                    href={{ pathname: "/(tabs)/grades/[id]", params: { id: grade.id } }}
+                  >
+                    <View style={{ flex: 1, flexDirection: 'column', gap: 1 }}>
+                      <Typography numberOfLines={1} weight='semibold' variant="title">{grade.description || t("Grade_NoDescription", { subject: getSubjectName(subject.name) })}</Typography>
+                      {grade.givenAt && (
+                        <Typography numberOfLines={1} variant="subtitle" color="textSecondary">
+                          {grade.givenAt.toLocaleDateString(i18n.language, {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          })}
+                        </Typography>
+                      )}
+                    </View>
+
+                    <List.Trailing>
+                      <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 1 }}>
+                        <Typography weight='semibold' variant="h4">
+                          {formattedScore ? formattedScore.value.toFixed(2) : (score?.status ?? 'N/A')}
+                        </Typography>
+                        {formattedScore && formattedScore.denominator && (
+                          <Typography variant="subtitle" color="textSecondary">
+                            {formattedScore.denominator}
+                          </Typography>
+                        )}
+                      </View>
+                    </List.Trailing>
+                  </List.Item>
+                );
+              })}
+            </List.Section>
+            );
+          })}
+        </List>
+      </View>
+    </>
+  );
 };
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    height: 44,
+    // Android headers align their title to the leading edge; iOS centers it.
+    alignItems: isAndroid ? 'flex-start' : 'center',
+    paddingHorizontal: isAndroid ? 10 : 0,
+    justifyContent: 'center',
+  },
+  titleSubtitle: {
+    marginTop: -2,
+  },
+});
 
 export default GradesView;

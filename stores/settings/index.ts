@@ -12,7 +12,8 @@ export const DEFAULT_MATERIAL_YOU_ENABLED =
   Platform.OS === "android" && typeof Platform.Version === "number" && Platform.Version >= 31;
 
 const defaultPersonalization: Personalization = {
-  colorSelected: Colors.PINK,
+  fontFamily: "sn-pro",
+  colorSelected: Colors.GREEN,
   theme: "auto",
   useMaterialYou: DEFAULT_MATERIAL_YOU_ENABLED,
   iOSBottomAccessoryEnabled: true,
@@ -21,15 +22,19 @@ const defaultPersonalization: Personalization = {
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,
   showDevMode: false,
+  mockDataEnabled: false,
+  liveActivityTestMode: false,
+  liveActivitiesEnabled: true,
   magicModelURL: MAGIC_URL,
   gradesDisplayScale: "20",
+  welcomeModalSeen: false,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(
   persist(
     (set, get) => ({
       personalization: defaultPersonalization,
-
+      reset: () => { set({ personalization: defaultPersonalization }) },
       mutateProperty: <T extends keyof SettingsState>(
         section: T,
         updates: Partial<SettingsState[T]>

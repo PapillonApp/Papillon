@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { Platform, ScrollView, View } from "react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import { Switch } from "react-native-gesture-handler";
@@ -37,6 +36,7 @@ import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import ChipButton from "@/ui/components/ChipButton";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import NativeSwitch from "@/ui/native/NativeSwitch";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -153,14 +153,6 @@ export default function QRCodeAndCardsPage() {
 
   return (
     <>
-      <Calendar
-        key={`calendar-${date.toISOString()}`}
-        date={date}
-        onDateChange={handleDateChange}
-        showDatePicker={showDatePicker}
-        setShowDatePicker={setShowDatePicker}
-      />
-
       <LinearGradient
         colors={[getServiceColor(service) + 40, colors.background, colors.background, colors.background]}
         locations={[0, 0.87]}
@@ -181,7 +173,7 @@ export default function QRCodeAndCardsPage() {
         }
         trailing={
           <ChipButton
-            single large
+            single
             icon="cross"
             onPress={() => {
               router.dismiss();
@@ -191,7 +183,7 @@ export default function QRCodeAndCardsPage() {
       />
 
       <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ paddingTop: headerHeight - 12 }}>
-        <View style={{ padding: 15, flex: 1, gap: 20 }}>
+        <SafeHorizontalView base={15} style={{ paddingVertical: 15, flex: 1, gap: 20 }}>
           <Card index={0} service={service} wallet={wallet} disabled inSpecificView />
 
           {qrcode && (
@@ -241,6 +233,14 @@ export default function QRCodeAndCardsPage() {
 
           {hasBookingCapacity && (
             <View>
+              {/* Sits right above the button so the popover's arrow lands on it. */}
+              <Calendar
+                date={date}
+                onDateChange={handleDateChange}
+                color={serviceColor}
+                visible={showDatePicker}
+                onVisibleChange={setShowDatePicker}
+              />
               <AnimatedPressable onPress={() => setShowDatePicker(prev => !prev)}>
                 <Stack hAlign="center" vAlign="center" style={{ padding: 20 }}>
                   <Stack direction="horizontal" gap={5}>
@@ -329,7 +329,7 @@ export default function QRCodeAndCardsPage() {
               </List>
             </View>
           )}
-        </View>
+        </SafeHorizontalView>
       </ScrollView>
     </>
   );

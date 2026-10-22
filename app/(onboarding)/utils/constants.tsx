@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { RelativePathString, UnknownInputParams } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
+import { useSettingsStore } from '@/stores/settings';
+import { openMockDataAccountChooser } from '@/services/mock/account';
 import { t } from 'i18next';
 export interface SupportedService {
   name: string;
@@ -26,8 +28,18 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
   const theme = useTheme();
   const { colors } = theme;
   const { t } = useTranslation()
+  const mockDataEnabled = useSettingsStore(state => state.personalization.mockDataEnabled ?? false);
 
   return [
+    ...(mockDataEnabled ? [{
+      name: "mock-data",
+      title: "Mock Data",
+      type: ["school", "univ"],
+      image: require("@/assets/images/icon.png"),
+      onPress: openMockDataAccountChooser,
+      variant: 'service' as const,
+      color: 'light' as const,
+    }] : []),
     {
       name: "pronote",
       route: "pronote",
@@ -44,7 +56,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       name: "ed",
       route: "ed",
       title: t("ONBOARDING_SERVICE_ED"),
-      type: ["school"],
+      type: ["school", "univ"],
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
         redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
@@ -65,17 +77,6 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       color: 'light' as const,
     },
     {
-      name: "lannion",
-      route: "lannion",
-      title: t("ONBOARDING_SERVICE_LANNION"),
-      hasLimitedSupport: false,
-      image: require("@/assets/images/univ_lannion.png"),
-      type: ["univ"],
-      onPress: () => {
-        redirect({ pathname: './lannion/credentials' });
-      },
-    },
-    {
       name: "univ-lorraine",
       title: t("ONBOARDING_SERVICE_UNIV_LORRAINE"),
       hasLimitedSupport: false,
@@ -104,6 +105,15 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       onPress: () => {
         redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
       },
+    },
+    {
+      name: "appscho",
+      route: "appscho",
+      title: t("ONBOARDING_OTHER_UNIVERSITIES"),
+      image: require("@/assets/images/icon.png"),
+      hasLimitedSupport: false,
+      type: ["univ"],
+      onPress: () => { redirect({ pathname: './appscho/list' }) }
     },
   ]
 }
@@ -122,16 +132,6 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
 
   return [
     {
-      name: "lannion",
-      title: t("ONBOARDING_SERVICE_LANNION"),
-      hasLimitedSupport: false,
-      image: require("@/assets/images/univ_lannion.png"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: './lannion/credentials' });
-      },
-    },
-    {
       name: "univ-lorraine",
       title: t("ONBOARDING_SERVICE_UNIV_LORRAINE"),
       hasLimitedSupport: false,
@@ -161,11 +161,18 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
         redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
       },
     },
+    {
+      name: "appscho",
+      title: t("ONBOARDING_OTHER_UNIVERSITIES"),
+      hasLimitedSupport: false,
+      type: "other",
+      onPress: () => { redirect({ pathname: './appscho/list' }) }
+    },
     /*{
       name: "limited-functions",
       title: t("Feature_Limited"),
       hasLimitedSupport: true,
-      image: require("@/assets/images/univ_lannion.png"),
+      image: require("@/assets/images/icon.png"),
       type: "separator",
       onPress: () => { }
     },

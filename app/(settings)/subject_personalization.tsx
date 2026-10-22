@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -110,9 +110,10 @@ export default function SubjectPersonalization() {
       </NativeHeaderSide>
 
       <List
-        style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16 }}
-        contentInsetAdjustmentBehavior="always"
+        style={{ flex: 1, backgroundColor: colors.overground }}
+        safeHorizontalPadding={16}
+        contentContainerStyle={{ paddingVertical: 16 }}
+        contentInsetAdjustmentBehavior="automatic"
       >
         {subjects.length > 0 ? (
           subjects.map(item =>

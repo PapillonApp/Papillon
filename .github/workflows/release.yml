@@ -8,29 +8,39 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Merge & Release
     if: github.repository == 'PapillonApp/Papillon'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Validate version format
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          if ! echo "${{ inputs.version }}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "::error::Version invalide '${{ inputs.version }}'. Format attendu : x.x.x (ex: 7.2.0)"
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Version invalide '$VERSION'. Format attendu : x.x.x (ex: 7.2.0)"
             exit 1
           fi
 
       - name: Generate app token
         id: app-token
-        uses: actions/create-github-app-token@v3
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
@@ -47,7 +57,7 @@ jobs:
           git push origin main
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
         with:
           token: ${{ steps.app-token.outputs.token }}
           tag_name: v${{ inputs.version }}

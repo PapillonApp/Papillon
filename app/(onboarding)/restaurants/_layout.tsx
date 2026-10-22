@@ -1,20 +1,18 @@
 import React from 'react';
-import { useTranslation } from "react-i18next";
 
 import { Stack } from 'expo-router';
-import { screenOptions } from "@/utils/theme/ScreenOptions";
-import { Platform } from 'react-native';
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
-  const { t } = useTranslation();
+  const screenOptions = useScreenOptions();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerBackVisible: Platform.select({ android: false, default: true }),
+    headerBackVisible: true,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
-  }), []);
+  }), [screenOptions]);
 
   return (
     <Stack>
@@ -24,23 +22,23 @@ export default function OnboardingLayout() {
       />
       <Stack.Screen
         name="turboself"
-        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_TURBOSELF") }}
+        options={{ ...newScreenOptions, headerTitle: "" }}
       />
       <Stack.Screen
         name="turboselfHost"
-        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_TURBOSELF") }}
+        options={{ ...newScreenOptions, headerTitle: "" }}
       />
       <Stack.Screen
         name="ard"
-        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_ARD") }}
+        options={{ ...newScreenOptions, headerTitle: "" }}
       />
       <Stack.Screen
         name="alise"
-        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_ALISE") }}
+        options={{ ...newScreenOptions, headerTitle: "" }}
       />
       <Stack.Screen
         name="izly"
-        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_IZLY") }}
+        options={{ ...newScreenOptions, headerTitle: "" }}
       />
     </Stack>
   );

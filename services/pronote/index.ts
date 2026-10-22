@@ -1,4 +1,4 @@
-import { SessionHandle, TabLocation } from "pawnote";
+import { SessionHandle, TabLocation } from "@blockshub/pawnote-lts";
 
 import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/services/pronote/attendance";
 import { fetchPronoteCanteenMenu } from "@/services/pronote/canteen";
@@ -25,30 +25,43 @@ import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 
+const PRONOTE_TOKEN_TTL_MS = 5 * 60 * 1000;
+
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
   service = Services.PRONOTE;
   capabilities: Capabilities[] = [Capabilities.REFRESH];
   session : SessionHandle | undefined = undefined;
-  tokenExpiration = new Date().getTime() + (5 * 60 * 1000);
+  tokenExpiration = 0;
   authData: Auth = {};
+  private refreshInFlight: Promise<void> | null = null;
 
   constructor(public accountId: string) {}
 
-  private async checkTokenValidty(): Promise<boolean> {
-    const time = new Date().getTime();
-    if (time > this.tokenExpiration) {
-      this.tokenExpiration = new Date().getTime() + (5 * 60 * 1000);
-      await this.refreshAccount(this.authData);
-      return new Date().getTime() <= this.tokenExpiration;
+  isTokenValid(): boolean {
+    return Boolean(this.session) && Date.now() < this.tokenExpiration;
+  }
+
+  private async checkTokenValidty(): Promise<void> {
+    if (this.refreshInFlight) {
+      await this.refreshInFlight;
+      return;
     }
-    return true;
+    if (this.isTokenValid()) return;
+
+    this.refreshInFlight = this.refreshAccount(this.authData)
+      .then(() => {})
+      .finally(() => { this.refreshInFlight = null; });
+
+    await this.refreshInFlight;
   }
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
     const refresh = (await refreshPronoteAccount(this.accountId, credentials));
     this.authData = refresh.auth;
     this.session = refresh.session;
+    this.tokenExpiration = Date.now() + PRONOTE_TOKEN_TTL_MS;
+    this.capabilities = [Capabilities.REFRESH];
 
     const tabCapabilities: Partial<Record<TabLocation, Capabilities | Capabilities[]>> = {
       [TabLocation.Assignments]: Capabilities.HOMEWORK,
@@ -60,7 +73,7 @@ export class Pronote implements SchoolServicePlugin {
       [TabLocation.Timetable]: Capabilities.TIMETABLE,
     };
 
-    for (const tab of this.session.user.authorizations.tabs) {
+    for (const tab of this.session.user?.authorizations?.tabs ?? []) {
       const capability = tabCapabilities[tab];
       if (capability) {
         this.capabilities.push(...(Array.isArray(capability) ? capability : [capability]));

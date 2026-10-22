@@ -1,4 +1,9 @@
-import { assignmentsFromWeek, assignmentStatus, SessionHandle, translateToWeekNumber } from "pawnote";
+import {
+  assignmentsFromWeek,
+  assignmentStatus,
+  SessionHandle,
+  translateToWeekNumber,
+} from "@blockshub/pawnote-lts";
 
 import { getDateRangeOfWeek } from "@/database/useHomework";
 import { Homework, ReturnFormat } from "@/services/shared/homework";
@@ -45,6 +50,7 @@ export async function fetchPronoteHomeworks(session: SessionHandle, accountId: s
 export async function setPronoteHomeworkAsDone(session: SessionHandle, homework: Homework, status?: boolean): Promise<Homework> {
   if (homework.fromCache) {
     error("You can't set data from cache as done.")
+    return homework;
   }
 
   try {
@@ -55,6 +61,6 @@ export async function setPronoteHomeworkAsDone(session: SessionHandle, homework:
   return {
     ...homework,
     isDone: status || !homework.isDone,
-    progress: (status || !homework.isDone) === true ? 1 : 0
+    progress: (status || !homework.isDone) ? 1 : 0
   }
 }

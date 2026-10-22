@@ -1,46 +1,59 @@
-import BottomAccessory from '@/components/BottomAccessory';
+import BottomAccessory, { useBottomAccessoryVisible } from '@/components/BottomAccessory';
+import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
-import { useTheme } from '@react-navigation/native';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import useResizable from "@/ui/utils/Resizable";
+import { useTheme } from "expo-router/react-navigation";
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
+import { Platform, DynamicColorIOS } from 'react-native';
+import { useFont } from '@/utils/theme/fonts';
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
 // Static platform detection - computed once at module load
 const IS_IOS_WITH_PADDING = false;
 const IS_ANDROID = Platform.OS === 'android';
 
-const TAB_LABEL_STYLE = {
-  fontFamily: 'medium',
-  fontSize: Platform.OS === 'ios' ? 12 : 13,
-} as const;
-
-export default function TabLayout() {
+function TabLayoutContent() {
   const theme = useTheme();
+  const font = useFont();
   const { t } = useTranslation();
-
+  const { isLarge } = useResizable();
 
   const settingsStore = useSettingsStore(state => state.personalization);
-  const disabledTabs = settingsStore?.disabledTabs || [];
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const disabledTabs = (lastUsedAccount
+    ? settingsStore?.disabledTabsByAccount?.[lastUsedAccount]
+    : settingsStore?.disabledTabs) || [];
 
   const iOSBottomAccessoryEnabled = settingsStore?.iOSBottomAccessoryEnabled ?? true;
   const showTabBarLabels = settingsStore?.showTabBarLabels ?? true;
   const labelsHidden = Platform.OS === 'ios' ? !showTabBarLabels : false;
+  const isBottomAccessoryVisible = useBottomAccessoryVisible();
+
+  const tabLabelStyle = {
+    fontFamily: font("medium"),
+    fontSize: Platform.OS === 'ios' ? isLarge ? 15 :12 : 13,
+    color: Platform.OS === 'ios' ? DynamicColorIOS({
+      dark: "#FFFFFF",
+      light: "#000000"
+    }) : undefined,
+  } as const;
 
   const shouldRenderBottomAccessory =
-    Platform.OS !== 'ios' || iOSBottomAccessoryEnabled;
+    Platform.OS === 'ios' && runsIOS26 && iOSBottomAccessoryEnabled && isBottomAccessoryVisible;
 
   return (
     <NativeTabs
       tintColor={theme.colors.tint}
-      labelStyle={TAB_LABEL_STYLE}
-      labelVisibilityMode={showTabBarLabels ? "labeled" : "selected"}
+      labelStyle={tabLabelStyle}
+      labelVisibilityMode={showTabBarLabels ? "labeled" : "unlabeled"}
       rippleColor={theme.colors.tint + '22'}
       backgroundColor={Platform.OS === 'android' ? theme.colors.background : undefined}
       sidebarAdaptable
-      minimizeBehavior={iOSBottomAccessoryEnabled ? "onScrollDown" : "never"}
+      minimizeBehavior={shouldRenderBottomAccessory ? "onScrollDown" : "never"}
       disableTransparentOnScrollEdge
-      titlePositionAdjustment={runsIOS26 ? { vertical: 6, horizontal: 0 } : undefined}
+      titlePositionAdjustment={runsIOS26 ? { vertical: 0, horizontal: 0 } : undefined}
     >
       {shouldRenderBottomAccessory && (
         <NativeTabs.BottomAccessory>
@@ -64,10 +77,14 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Label hidden={labelsHidden}>{t("Tab_Grades")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={IS_IOS_WITH_PADDING ? require('@/assets/icons/pie_padding.png') : require('@/assets/icons/pie.png')} renderingMode='template' />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="news" hidden={disabledTabs.includes('news')}>
-        <NativeTabs.Trigger.Label hidden={labelsHidden}>{t("Tab_News")}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon src={IS_IOS_WITH_PADDING ? require('@/assets/icons/newspaper_padding.png') : require('@/assets/icons/newspaper.png')} renderingMode='template' />
-      </NativeTabs.Trigger>
     </NativeTabs>
+  );
+}
+
+export default function TabLayout() {
+  return (
+    <MainTabErrorBoundary>
+      <TabLayoutContent />
+    </MainTabErrorBoundary>
   );
 }

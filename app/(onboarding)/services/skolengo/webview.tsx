@@ -2,12 +2,12 @@ import * as Linking from "expo-linking";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView } from "react-native";
+import { Alert, KeyboardAvoidingView } from "react-native";
 import { AuthFlow, ChallengeMethod, School } from "skolengojs";
 
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
-import { log } from "@/utils/logger/logger";
+import { error, log } from "@/utils/logger/logger";
 import uuid from "@/utils/uuid/uuid";
 
 import OnboardingWebView from "../../components/OnboardingWebView";
@@ -15,38 +15,17 @@ import OnboardingWebView from "../../components/OnboardingWebView";
 export default function WebViewScreen() {
   const navigation = useNavigation();
   const [loginURL, setLoginURL] = useState<string | undefined>(undefined);
-  const [flow, setFlow] = useState<AuthFlow>();
   const { ref } = useLocalSearchParams();
   const parsedRef = typeof ref === "string" ? JSON.parse(ref) : {};
   const school = new School(parsedRef.id, parsedRef.name, parsedRef.emsCode, parsedRef.OIDCWellKnown, parsedRef.location, parsedRef.homepage);
 
-  useEffect(() => {
-    const handleDeepLink = (event: { url: string }) => {
-      const url = event.url;
-      const scheme = url.split(":")[0];
-      if (scheme === "skoapp-prod") {
-        log("[Skolengo] Activation link received:", url);
-        handleRequest(url);
-      } else {
-        log("[Skolengo] Ignoring link:", url);
-      }
-    };
-
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        handleDeepLink({ url });
-      }
-    });
-
-    Linking.addEventListener("url", handleDeepLink);
-  }, []);
-
   const flowRef = useRef<AuthFlow | null>(null);
+  const consumedCodeRef = useRef<string | null>(null);
+  const { t } = useTranslation();
 
   const initLogin = useCallback(async () => {
-    const flow = await school.initializeLogin(ChallengeMethod.PLAIN);
+    const flow = await school.initializeLogin(ChallengeMethod.S256);
     flowRef.current = flow;
-    setFlow(flow);
     setLoginURL(flow.loginURL);
   }, []);
 
@@ -54,18 +33,20 @@ export default function WebViewScreen() {
     initLogin();
   }, [initLogin]);
 
-  const handleRequest = async (url: string) => {
-    if (url.startsWith("skoapp-prod://")) {
-      const code = url.match(/code=([^&]*)/)
-      const state = url.match(/state=([^&]*)/)
+  const handleRequest = useCallback(async (url: string) => {
+    if (!url.startsWith("skoapp-prod://")) { return true; }
 
-      if (!code || !state) { return false; }
-      if (!flowRef.current) {
-        return false;
-      }
-      const auth = await flowRef.current.finalizeLogin(code[1], state[1])
+    const code = url.match(/code=([^&]*)/)?.[1];
+    const state = url.match(/state=([^&]*)/)?.[1];
+    if (!code || !state || !flowRef.current) { return false; }
+
+    if (consumedCodeRef.current === code) { return false; }
+    consumedCodeRef.current = code;
+
+    try {
+      const auth = await flowRef.current.finalizeLogin(code, state);
       const store = useAccountStore.getState();
-      const id = uuid()
+      const id = uuid();
 
       const account: Account = {
         id,
@@ -95,34 +76,46 @@ export default function WebViewScreen() {
         updatedAt: (new Date()).toISOString()
       }
 
-      store.addAccount(account)
-      store.setLastUsedAccount(id)
+      store.addAccount(account);
+      store.setLastUsedAccount(id);
 
       const parent = navigation.getParent();
-              if (parent) {
-                parent.goBack();
-                
-                const parentsParent = parent.getParent();
-                if (parentsParent) {
-                  parentsParent.goBack();
-                }
-              }
-      
-              router.back();
-              router.dismissAll();
-              return router.push("/");
+      if (parent) {
+        parent.goBack();
+        parent.getParent()?.goBack();
+      }
+      router.back();
+      router.dismissAll();
+      router.push("/");
+    } catch (err) {
+      consumedCodeRef.current = null;
+      error("[Skolengo] Failed to finalize login: " + String(err));
+      Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
     }
-    return true;
-  };
+    return false;
+  }, [navigation, t]);
 
-  const { t } = useTranslation();
+  useEffect(() => {
+    const handleDeepLink = ({ url }: { url: string }) => {
+      if (url.split(":")[0] === "skoapp-prod") {
+        log("[Skolengo] Activation link received:", url);
+        handleRequest(url);
+      }
+    };
+
+    const listener = Linking.addEventListener("url", handleDeepLink);
+    return () => listener.remove();
+  }, [handleRequest]);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
       <OnboardingWebView
         source={loginURL ? { uri: loginURL } : { html: `<h1>${t("ONBOARDING_LOADING")}</h1>` }}
         onShouldStartLoadWithRequest={(request) => {
-          handleRequest(request.url)
+          if (request.url.startsWith("skoapp-prod://")) {
+            handleRequest(request.url);
+            return false;
+          }
           return true;
         }}
       />

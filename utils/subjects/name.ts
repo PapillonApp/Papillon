@@ -18,6 +18,8 @@ export function getSubjectName(subject: string): string {
   const foundFormat = getSubjectFormat(subject);
 
   const prettyName = foundFormat?.pretty || subject;
-  useAccountStore.getState().setSubjectName(cleanedName, prettyName);
+  setTimeout(() => {
+    useAccountStore.getState().setSubjectName(cleanedName, prettyName);
+  }, 0);
   return prettyName;
 }

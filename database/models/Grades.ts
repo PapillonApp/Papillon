@@ -3,7 +3,7 @@
 import { Model } from '@nozbe/watermelondb';
 import { children, field, relation } from "@nozbe/watermelondb/decorators";
 
-import { GradeScore } from '@/services/shared/grade';
+import { GradeScore, SkillScore } from "@/services/shared/grade";
 
 import Subject from './Subject';
 
@@ -41,12 +41,13 @@ export class Grade extends Model {
   @field('correctionFile') correctionFile?: string;
   @field('bonus') bonus?: boolean;
   @field('optional') optional?: boolean;
-  @field('coefficient') coefficient: number;
-	@field('outOf') outOfRaw: string;
-	@field('studentScore') studentScoreRaw: string;
-	@field('averageScore') averageScoreRaw: string;
-	@field('minScore') minScoreRaw: string;
-	@field('maxScore') maxScoreRaw: string;
+  @field('coefficient') coefficient?: number;
+	@field('outOf') outOfRaw?: string;
+	@field('studentScore') studentScoreRaw?: string;
+	@field('averageScore') averageScoreRaw?: string;
+	@field('minScore') minScoreRaw?: string;
+	@field('maxScore') maxScoreRaw?: string;
+  @field('skills') skillsRaw?: string;
 
 	get outOf(): GradeScore {
 	  return JSON.parse(this.outOfRaw || '{}');
@@ -67,6 +68,10 @@ export class Grade extends Model {
 	get maxScore(): GradeScore {
 	  return JSON.parse(this.maxScoreRaw || '{}');
 	}
+
+  get skills(): SkillScore[] {
+    return JSON.parse(this.skillsRaw || '[]');
+  }
 }
 
 export class PeriodGrades extends Model {

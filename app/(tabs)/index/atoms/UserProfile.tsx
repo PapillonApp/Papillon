@@ -1,14 +1,15 @@
 import { Papicons } from '@getpapillon/papicons';
-import { MenuView } from '@react-native-menu/menu';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import { useRouter } from 'expo-router';
-import React from 'react';
+import { Link, useRouter } from 'expo-router';
+import React, { useEffect, useMemo } from 'react';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { Pressable } from 'react-native';
+import Reanimated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { initializeAccountManager } from '@/services/shared';
 import { useAccountStore } from '@/stores/account';
+import { useSettingsStore } from '@/stores/settings';
 import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
@@ -17,20 +18,39 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { useUserProfileData } from '../hooks/useUserProfileData';
 import { t } from 'i18next';
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
+import { menuAvatarURI } from '@/utils/generative';
 import ActionMenu from '@/ui/components/ActionMenu';
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
 
-const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
+const UserProfile = ({ subtitle, onPress, loading }: { subtitle?: string, onPress?: () => void, loading?: boolean }) => {
   const router = useRouter();
   const { firstName, lastName, initials, profilePicture, level, establishment } = useUserProfileData() ?? {};
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const theme = useTheme();
 
+  // Spinner slot width/gap animated on the UI thread so the row (and glass pill) reflows smoothly
+  const loadingProgress = useSharedValue(loading ? 1 : 0);
+  useEffect(() => {
+    loadingProgress.value = withTiming(loading ? 1 : 0, { duration: 300, easing: Easing.bezier(0.3, 0.3, 0, 1) });
+  }, [loading, loadingProgress]);
+  const spinnerSlotStyle = useAnimatedStyle(() => ({
+    width: loadingProgress.value * 18,
+    marginRight: (loadingProgress.value - 1) * 6,
+  }));
+
+  // Only re-render avatar files when the accounts change, not on every render
+  const avatarURIs = useMemo(
+    () => Object.fromEntries(accounts.map(account => [account.id, menuAvatarURI(account.id, account.customisation?.profilePicture)])),
+    [accounts]
+  );
+
   const AccountsMenuItems = (accounts && accounts.length > 0) && accounts.map((account) => ({
     id: account.id,
     title: account.firstName + ' ' + account.lastName,
     subtitle: formatSchoolName(account.schoolName ?? ""),
     state: account.id === lastUsedAccount ? 'on' : 'off',
+    imageUri: avatarURIs[account.id],
   })) || [];
 
   return (
@@ -40,24 +60,26 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
         hAlign="center"
         gap={10}
       >
-        <Pressable onPress={() => router.push('/(modals)/profile')}>
-          <UserProfileItemContainer
-            glassType="clear"
-            isInteractive={true}
-            glassTintColor="transparent"
+            <UserProfileItemContainer
+              glassType="clear"
+              isInteractive={true}
+              glassTintColor="transparent"
             glassOpacity={0}
             style={{
               borderRadius: 300,
               zIndex: 999999,
             }}
           >
+        <Link asChild href="/(modals)/profile">
+          <Pressable>
             <Avatar
               size={40}
               initials={initials}
               imageUrl={profilePicture}
             />
-          </UserProfileItemContainer>
         </Pressable>
+        </Link>
+          </UserProfileItemContainer>
 
         <UserProfileItemContainer>
           <ActionMenu
@@ -72,30 +94,48 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 return;
               }
 
+              if (nativeEvent.event === "workspaces" || !accounts.some(account => account.id === nativeEvent.event)) {
+                return;
+              }
+
               const store = useAccountStore.getState();
+              const settingsStore = useSettingsStore.getState();
+              const currentAccountId = store.lastUsedAccount;
+              const currentDisabledTabs = settingsStore.personalization.disabledTabs ?? [];
+              const nextDisabledTabsByAccount = {
+                ...(settingsStore.personalization.disabledTabsByAccount ?? {}),
+                ...(currentAccountId ? { [currentAccountId]: currentDisabledTabs } : {}),
+              };
+              const disabledTabsForAccount = nextDisabledTabsByAccount[nativeEvent.event] ?? [];
+              settingsStore.mutateProperty("personalization", {
+                disabledTabsByAccount: nextDisabledTabsByAccount,
+                disabledTabs: disabledTabsForAccount,
+              });
               store.setLastUsedAccount(nativeEvent.event);
-              await initializeAccountManager();
+              try {
+                await initializeAccountManager();
+              } catch (err) {
+                console.error("Failed to switch account:", err);
+              }
             }}
             actions={[
-              ...Platform.OS === "ios" ? [{
+              ...(Platform.OS === "ios" ? [{
                 id: 'workspaces',
                 title: '',
                 displayInline: true,
                 subactions: AccountsMenuItems,
-              }] : AccountsMenuItems,
+              }] : AccountsMenuItems),
               {
                 id: 'edit',
                 title: t('Home_Edit_Profile'),
                 image: 'person.crop.circle',
                 papicon: 'user',
-                imageColor: theme.colors.text,
               },
               {
                 id: 'add',
                 title: t('Home_Add_Profile'),
                 image: 'plus',
                 papicon: 'add',
-                imageColor: theme.colors.text,
               },
             ]}
           >
@@ -104,6 +144,9 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 <Typography nowrap color='white' variant='navigation' weight='bold' style={{ maxWidth: Dimensions.get('window').width - 230 }}>
                   {firstName && lastName ? `${firstName} ${lastName}` : "Mon compte"}
                 </Typography>
+                <Reanimated.View style={[{ height: 18, alignItems: 'center' }, spinnerSlotStyle]}>
+                  {loading && <ActivityIndicator size={18} strokeWidth={2.5} color="white" />}
+                </Reanimated.View>
                 <Papicons name="chevrondown" size={20} color="white" opacity={0.5} style={{ marginRight: 0 }} />
               </Stack>
               {subtitle &&

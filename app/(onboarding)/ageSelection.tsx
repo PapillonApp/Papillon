@@ -1,5 +1,4 @@
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, StatusBar, View } from "react-native";
@@ -10,6 +9,7 @@ import Stack from "@/ui/components/Stack";
 import Button from "@/ui/new/Button";
 import Divider from "@/ui/new/Divider";
 import Typography from "@/ui/new/Typography";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 import HighSchoolIllustration from "./components/ageSelection/illustrations/highSchool";
 import MiddleSchoolIllustration from "./components/ageSelection/illustrations/middleSchool";
@@ -71,23 +71,49 @@ export default function AgeSelection() {
 
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} translucent />
-          
+      <StatusBar
+        barStyle={theme.dark ? "light-content" : "dark-content"}
+        translucent
+      />
+
       <FlatList
         ListHeaderComponent={() => (
-          <Stack>
-            <Typography variant="h2">{t("ONBOARDING_AGE_TITLE")}</Typography>
-            <Typography variant="action" color="textSecondary">{t("ONBOARDING_AGE_DESCRIPTION")}</Typography>
-            <Divider height={6} ghost />
-          </Stack>
+          <SafeHorizontalView base={20}>
+            <Stack
+              style={{
+                alignSelf: "center",
+                width: "100%",
+                maxWidth: 500,
+              }}
+            >
+              <Typography variant="h2">{t("ONBOARDING_AGE_TITLE")}</Typography>
+              <Typography variant="action" color="textSecondary">
+                {t("ONBOARDING_AGE_DESCRIPTION")}
+              </Typography>
+              <Divider height={6} ghost />
+            </Stack>
+          </SafeHorizontalView>
         )}
-        data={LEVELS.map((level) => ("labelKey" in level ? { ...level, label: t(level.labelKey) } : level))}
-        renderItem={({ item }) => <OnboardingSelector item={item} selected={selectedLevel} setSelected={setSelectedLevel} />}
+        data={LEVELS.map(level =>
+          "labelKey" in level ? { ...level, label: t(level.labelKey) } : level
+        )}
+        renderItem={({ item }) => (
+          <SafeHorizontalView base={20}>
+            <OnboardingSelector
+              item={item}
+              selected={selectedLevel}
+              setSelected={setSelectedLevel}
+            />
+          </SafeHorizontalView>
+        )}
         contentContainerStyle={{
-          padding: 20,
           flexGrow: 1,
           gap: 10,
-          paddingTop: headerHeight + 20
+          paddingTop: headerHeight + 20,
+          paddingBottom: 20,
+          width: "100%",
+          maxWidth: 500,
+          marginHorizontal: 'auto'
         }}
         initialNumToRender={2}
         maxToRenderPerBatch={2}
@@ -95,24 +121,28 @@ export default function AgeSelection() {
         style={{ flex: 1 }}
       />
 
-      <View
+      <SafeHorizontalView
+        base={20}
         style={{
-          padding: 20,
+          paddingTop: 20,
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
-          borderTopWidth: 1
+          borderTopWidth: 1,
+          alignItems: 'center'
         }}
       >
         <Button
           label={t("ONBOARDING_CONTINUE")}
           onPress={() => {
             navigation.navigate("serviceSelection", {
-              type: LEVELS.find((level) => level.key === selectedLevel)?.type
-            })
+              type: LEVELS.find(level => level.key === selectedLevel)?.type,
+            });
           }}
           disabled={!selectedLevel}
+          fullWidth
+          maxWidth={500}
         />
-      </View>
+      </SafeHorizontalView>
     </View>
   );
 }

@@ -1,4 +1,9 @@
-import { news as PawnoteNews, NewsInformation, newsInformationAcknowledge, SessionHandle } from "pawnote";
+import {
+  news as PawnoteNews,
+  NewsInformation,
+  newsInformationAcknowledge,
+  SessionHandle,
+} from "@blockshub/pawnote-lts";
 
 import { News } from "@/services/shared/news";
 import { error } from "@/utils/logger/logger";
@@ -49,5 +54,5 @@ export async function setPronoteNewsAsAcknowledged(
     };
   }
 
-  error("Reference for news item is missing.", "setPronoteNewsAsAcknowledged");
+  throw error("Reference for news item is missing.", "setPronoteNewsAsAcknowledged");
 }

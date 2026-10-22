@@ -1,5 +1,4 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import { router } from "expo-router";
 import React from "react";
 import { Alert, Image, ScrollView } from "react-native";
@@ -15,9 +14,11 @@ import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { formatSchoolName } from "@/utils/format/formatSchoolName";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
-import ActionMenu from "@/ui/components/ActionMenu";
+import ActionMenu, { type NativeActionEvent } from "@/ui/components/ActionMenu";
+import { useTheme } from "expo-router/react-navigation";
 
 export default function AccountsView() {
+  const { colors } = useTheme();
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
   const account = accounts.find(a => a.id === lastUsedAccount);
@@ -67,30 +68,21 @@ export default function AccountsView() {
   };
 
   return (
-    <ScrollView
+    <List
+      style={{ flex: 1, backgroundColor: colors.overground }}
       contentInsetAdjustmentBehavior="automatic"
+      safeHorizontalPadding={16}
       contentContainerStyle={{
-        padding: 16,
+        paddingVertical: 16,
         gap: 16,
       }}
     >
-      <Stack
-        direction="horizontal"
-        gap={8}
-        hAlign="center"
-        style={{
-          opacity: 0.5,
-        }}
-      >
-        <Icon size={20}>
-          <Papicons name="user" />
-        </Icon>
-        <Typography variant="title" color="textSecondary">
-          Profils utilisateur
-        </Typography>
-      </Stack>
+      <List.Section>
+        <List.SectionTitle>
+          <Icon size={20} opacity={0.6}><Papicons name="User" /></Icon>
+          <List.Label>Profils utilisateur</List.Label>
+        </List.SectionTitle>
 
-      <List>
         {accounts.map(account => (
           <List.Item key={account.id}>
             <List.Leading>
@@ -114,6 +106,11 @@ export default function AccountsView() {
               {account.className ? account.className + " " : ""}
               {formatSchoolName(account.schoolName ?? "")}
             </Typography>
+            {account.id === lastUsedAccount && (
+              <Typography color="primary" variant="body2">
+                Compte actuellement utilisé
+              </Typography>
+            )}
             <List.Trailing>
               <ActionMenu
                 actions={[
@@ -130,7 +127,7 @@ export default function AccountsView() {
                 }}
               >
                 <Icon opacity={0.7}>
-                  <Papicons name="Menu" />
+                  <Papicons name="Dots" />
                 </Icon>
               </ActionMenu>
             </List.Trailing>
@@ -153,25 +150,15 @@ export default function AccountsView() {
             Nouveau compte
           </Typography>
         </List.Item>
-      </List>
+      </List.Section>
 
-      <Stack
-        direction="horizontal"
-        gap={8}
-        hAlign="center"
-        style={{
-          opacity: 0.5,
-        }}
-      >
-        <Icon size={20}>
-          <Papicons name="card" />
-        </Icon>
-        <Typography variant="title" color="textSecondary">
-          Services et cartes
-        </Typography>
-      </Stack>
 
-      <List>
+      <List.Section>
+        <List.SectionTitle>
+          <Icon size={20} opacity={0.6}><Papicons name="Card" /></Icon>
+          <List.Label>Services et cartes</List.Label>
+        </List.SectionTitle>
+
         {services?.map(service => (
           <List.Item key={service.id}>
             <List.Leading>
@@ -214,7 +201,7 @@ export default function AccountsView() {
                 }}
               >
                 <Icon opacity={0.7}>
-                  <Papicons name="Menu" />
+                  <Papicons name="Dots" />
                 </Icon>
               </ActionMenu>
             </List.Trailing>
@@ -224,6 +211,7 @@ export default function AccountsView() {
           onPress={() =>
             router.navigate({
               pathname: "/(onboarding)/restaurants/method",
+              params: { action: "addService" },
             })
           }
         >
@@ -236,7 +224,7 @@ export default function AccountsView() {
             Ajouter un nouveau service
           </Typography>
         </List.Item>
-      </List>
-    </ScrollView>
+      </List.Section>
+    </List>
   );
 }

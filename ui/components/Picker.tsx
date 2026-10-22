@@ -5,7 +5,7 @@ import Typography from "../new/Typography";
 import { ListTouchable } from "../new/List";
 import { LiquidGlassView } from "@sbaiahmed1/react-native-blur";
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 type PickerProps = {
   options: string[]

@@ -1,5 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
-import { t } from 'i18next';
+import { useState, useCallback } from 'react';
 import { Homework } from "@/services/shared/homework";
 import { getSubjectName } from "@/utils/subjects/name";
 
@@ -22,10 +21,92 @@ export interface HomeworkSection {
   data: Homework[];
 }
 
-export const useTaskFilters = (
-  homeworksFromCache: Homework[],
-  homework: Record<string, Homework>
-) => {
+export interface TaskFilterOptions {
+  searchTerm: string;
+  sortMethod: SortMethod;
+  showUndoneOnly?: boolean;
+}
+
+// Pure, so every week rendered by the pager can build its own sections from the
+// filters shared by the screen without duplicating hook state per page.
+export const buildHomeworkSections = (
+  homeworks: Homework[],
+  { searchTerm, sortMethod, showUndoneOnly = false }: TaskFilterOptions
+): HomeworkSection[] => {
+  const uniqueIds = new Set<string>();
+  let data = homeworks.filter(hw => {
+    if (hw.id) {
+      if (!uniqueIds.has(hw.id)) {
+        uniqueIds.add(hw.id);
+        return true;
+      }
+      return false;
+    }
+    return true;
+  });
+
+  if (showUndoneOnly) {
+    data = data.filter(h => !h.isDone);
+  }
+
+  if (searchTerm.trim().length > 0) {
+    const term = normalize(searchTerm);
+    data = data.filter(h => {
+      const cleanContent = h.content.replace(/<[^>]*>/g, "");
+      const normalizedContent = normalize(cleanContent);
+      const normalizedSubject = normalize(h.subject);
+      const normalizedSubjectName = normalize(getSubjectName(h.subject));
+      return (
+        normalizedContent.includes(term) ||
+        normalizedSubject.includes(term) ||
+        normalizedSubjectName.includes(term)
+      );
+    });
+  }
+
+  if (sortMethod === 'date') {
+    data.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  } else if (sortMethod === 'subject') {
+    data.sort((a, b) => a.subject.localeCompare(b.subject));
+  } else if (sortMethod === 'done') {
+    data.sort((a, b) => Number(a.isDone) - Number(b.isDone));
+  }
+
+  const isSearching = searchTerm.trim().length > 0;
+
+  if (sortMethod === 'date' && !isSearching) {
+    const sectionMap = new Map<string, HomeworkSection>();
+
+    data.forEach((hw) => {
+      const hwDate = new Date(hw.dueDate);
+      const dateKey = hwDate.toDateString();
+      const headerId = `header-${dateKey}`;
+
+      if (!sectionMap.has(dateKey)) {
+        sectionMap.set(dateKey, {
+          id: headerId,
+          title: formatDateHeader(hwDate),
+          date: hwDate,
+          data: []
+        });
+      }
+
+      sectionMap.get(dateKey)!.data.push(hw);
+    });
+
+    return Array.from(sectionMap.values());
+  }
+
+  return [
+    {
+      id: 'all',
+      title: '',
+      data
+    }
+  ];
+};
+
+export const useTaskFilters = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showUndoneOnly, setShowUndoneOnly] = useState(false);
   const [sortMethod, setSortMethod] = useState<SortMethod>("date");
@@ -40,85 +121,6 @@ export const useTaskFilters = (
     });
   }, []);
 
-  const sections = useMemo<HomeworkSection[]>(() => {
-    const mergedData = homeworksFromCache.map(cached => {
-      const fresh = cached.id && homework[cached.id];
-      return fresh || cached;
-    });
-
-    const uniqueIds = new Set<string>();
-    let data = mergedData.filter(hw => {
-      if (hw.id) {
-        if (!uniqueIds.has(hw.id)) {
-          uniqueIds.add(hw.id);
-          return true;
-        }
-        return false;
-      }
-      return true;
-    });
-
-    if (showUndoneOnly) {
-      data = data.filter(h => !h.isDone);
-    }
-
-    if (searchTerm.trim().length > 0) {
-      const term = normalize(searchTerm);
-      data = data.filter(h => {
-        const cleanContent = h.content.replace(/<[^>]*>/g, "");
-        const normalizedContent = normalize(cleanContent);
-        const normalizedSubject = normalize(h.subject);
-        const normalizedSubjectName = normalize(getSubjectName(h.subject));
-        return (
-          normalizedContent.includes(term) ||
-          normalizedSubject.includes(term) ||
-          normalizedSubjectName.includes(term)
-        );
-      });
-    }
-
-    if (sortMethod === 'date') {
-      data.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-    } else if (sortMethod === 'subject') {
-      data.sort((a, b) => a.subject.localeCompare(b.subject));
-    } else if (sortMethod === 'done') {
-      data.sort((a, b) => Number(a.isDone) - Number(b.isDone));
-    }
-
-    const isSearching = searchTerm.trim().length > 0;
-
-    if (sortMethod === 'date' && !isSearching) {
-      const sectionMap = new Map<string, HomeworkSection>();
-
-      data.forEach((hw) => {
-        const hwDate = new Date(hw.dueDate);
-        const dateKey = hwDate.toDateString();
-        const headerId = `header-${dateKey}`;
-
-        if (!sectionMap.has(dateKey)) {
-          sectionMap.set(dateKey, {
-            id: headerId,
-            title: formatDateHeader(hwDate),
-            date: hwDate,
-            data: []
-          });
-        }
-
-        sectionMap.get(dateKey)!.data.push(hw);
-      });
-
-      return Array.from(sectionMap.values());
-    }
-
-    return [
-      {
-        id: 'all',
-        title: '',
-        data
-      }
-    ];
-  }, [homeworksFromCache, homework, showUndoneOnly, searchTerm, sortMethod]);
-
   return {
     searchTerm,
     setSearchTerm,
@@ -128,6 +130,5 @@ export const useTaskFilters = (
     setSortMethod,
     collapsedGroups,
     toggleGroup,
-    sections,
   };
 };

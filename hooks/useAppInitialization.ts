@@ -2,93 +2,109 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import Countly from 'countly-sdk-react-native-bridge';
-import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
 
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
+import { configureTips, resetTipsDatastore, showAllTips } from '@/modules/papillon-tips';
 import { initializeAccountManager } from '@/services/shared';
 import { useSettingsStore } from '@/stores/settings';
+import { useTipsStore } from '@/stores/tips';
 import i18n from '@/utils/i18n';
 import { checkConsent } from '@/utils/logger/consent';
-import { log, warn } from '@/utils/logger/logger';
+import { warn } from '@/utils/logger/logger';
+import { posthog } from '@/utils/logger/posthog';
 import ModelManager from '@/utils/magic/ModelManager';
+import { MAGIC_AVAILABLE } from '@/utils/magic/tflite';
 import { FONT_CONFIG } from '@/constants/LayoutScreenOptions';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-let secrets = { APP_KEY: "", SALT: "", SERVER_URL: "" };
-
-try {
-  secrets = require('../secrets.json') ?? { APP_KEY: "", SALT: "", SERVER_URL: "" };
-} catch {
-  warn("No secrets.json file found, Countly will not be initialized properly.");
-}
-
-const APP_KEY = secrets.APP_KEY;
-const SALT = secrets.SALT;
-const SERVER_URL = secrets.SERVER_URL ?? "https://analytics.papillon.bzh";
-
 export function useAppInitialization() {
   const [fontsLoaded, fontsError] = useFonts(FONT_CONFIG);
-  const [isDatabaseReady, setIsDatabaseReady] = useState(false);
-  
+
   // Settings
   const customLanguage = useSettingsStore(state => state.personalization.language);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
   const selectedTheme = useSettingsStore(state => state.personalization.theme);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-  // Initialize Theme if not set
-  if (!selectedTheme) {
-    mutateProperty('personalization', {
-      theme: "auto"
-    });
-  }
+  useEffect(() => {
+    if (!selectedTheme) {
+      mutateProperty('personalization', {
+        theme: "auto"
+      });
+    }
+  }, [mutateProperty, selectedTheme]);
 
   // Language Initialization
   useEffect(() => {
-    if (customLanguage) {
+    if (customLanguage && i18n.language !== customLanguage) {
       i18n.changeLanguage(customLanguage).catch((error) => {
         console.error("Error changing language:", error);
       });
     }
   }, [customLanguage]);
 
-  // Database Initialization
+  // TipKit Initialization
+  // Has to happen before any tip is asked whether it should show, and exactly
+  // once per process. `immediate` because our tips point at something on screen
+  // right now — holding one back for an hour would point at nothing.
+  //
+  // A reset asked for from the debug menu is carried out here rather than
+  // there: TipKit only lets its datastore be wiped before it is configured, so
+  // this launch is the first chance to honour it.
   useEffect(() => {
-    async function initDatabase() {
-      try {
-        await initializeDatabaseOnStartup();
-      } catch (err) {
-        warn(`Database initialization failed: ${err}`);
-      } finally {
-        setIsDatabaseReady(true);
-      }
-    }
+    const setUpTips = async () => {
+      const { pendingDatastoreReset, clearPendingDatastoreReset, forceAll } =
+        useTipsStore.getState();
 
-    initDatabase();
+      if (pendingDatastoreReset) {
+        await resetTipsDatastore();
+        clearPendingDatastoreReset();
+      }
+
+      await configureTips('immediate');
+
+      if (forceAll) {
+        await showAllTips();
+      }
+    };
+
+    setUpTips().catch(err => {
+      warn(`TipKit configuration failed: ${err}`);
+    });
+  }, []);
+
+  // Database Initialization
+  // The WatermelonDB adapter is constructed synchronously at module load
+  // (see database/index.ts), so it's already usable before this effect runs.
+  // initializeDatabaseOnStartup() only runs diagnostic health checks, so it
+  // does not need to gate app readiness / the splash screen.
+  useEffect(() => {
+    initializeDatabaseOnStartup().catch(err => {
+      warn(`Database initialization failed: ${err}`);
+    });
   }, []);
 
   // AppState Monitoring
   const appState = useRef<AppStateStatus>(AppState.currentState);
-  const [lastBackground, setLastBackground] = useState<Date | null>(null);
+  const lastBackgroundRef = useRef<number | null>(null);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (appState.current.match(/inactive|background/) && nextAppState === "active") {
-        if (lastBackground) {
-          const now = new Date();
-          const durationMs = now.getTime() - lastBackground.getTime();
+        if (lastBackgroundRef.current) {
+          const now = Date.now();
+          const durationMs = now - lastBackgroundRef.current;
 
           if (durationMs > 5 * 60 * 1000) {
-            initializeAccountManager();
+            initializeAccountManager().catch(e => warn(`Background account refresh failed: ${e}`));
           }
         }
       }
 
       if (nextAppState === "background") {
-        setLastBackground(new Date());
+        lastBackgroundRef.current = Date.now();
       }
 
       appState.current = nextAppState;
@@ -97,47 +113,28 @@ export function useAppInitialization() {
     return () => {
       subscription.remove();
     };
-  }, [lastBackground]);
+  }, []);
 
   // Magic/ModelManager Initialization
   useEffect(() => {
-    if (magicEnabled) {
+    if (MAGIC_AVAILABLE && magicEnabled) {
       ModelManager.safeInit();
     }
   }, [magicEnabled]);
 
-  // Countly Initialization
+  // PostHog Consent Sync
   useEffect(() => {
-    async function initializeCountly() {
+    async function syncPostHogConsent() {
       const consent = await checkConsent();
-      log(`Countly Consent: ${JSON.stringify(consent)}`);
 
-      const countlyConfig = new CountlyConfig(SERVER_URL, APP_KEY);
-      countlyConfig.setRequiresConsent(true);
-      countlyConfig.setLoggingEnabled(false);
-      countlyConfig.enableCrashReporting();
-      countlyConfig.enableParameterTamperingProtection(SALT);
-
-      if (consent.given) {
-        if (consent.advanced) {
-          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
-        }
-
-        if (consent.optional) {
-          countlyConfig.giveConsent(["sessions", "crashes", "users"]);
-        }
-
-        if (consent.required) {
-          countlyConfig.giveConsent(["sessions"]);
-        }
-
-        if (consent.required || consent.optional || consent.advanced) {
-          await Countly.initWithConfig(countlyConfig);
-        }
+      if (consent.given && consent.level !== "none") {
+        await posthog.optIn();
+      } else {
+        await posthog.optOut();
       }
     }
 
-    initializeCountly();
+    syncPostHogConsent();
   }, []);
 
   // Error Handling for Fonts
@@ -147,20 +144,8 @@ export function useAppInitialization() {
 
   useEffect(handleError, [handleError]);
 
-  // Splash Screen Handling
-  const hideSplashScreen = useCallback(async () => {
-    if (fontsLoaded && isDatabaseReady) {
-      // We don't hide it here anymore, FakeSplash handles the visual transition
-      // But we could signal readiness
-    }
-  }, [fontsLoaded, isDatabaseReady]);
-
-  useEffect(() => {
-    hideSplashScreen();
-  }, [hideSplashScreen]);
-
   return {
-    isAppReady: isDatabaseReady && fontsLoaded,
+    isAppReady: fontsLoaded,
     fontsLoaded,
     fontsError
   };

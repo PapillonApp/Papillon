@@ -9,50 +9,54 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { useMagicPrediction } from '../hooks/useMagicPrediction';
-import { useNavigation } from 'expo-router';
+import { Link } from 'expo-router';
+import { getHomeworkRouteId } from '@/database/useHomework';
 
 interface TaskItemProps {
   item: Homework;
   index: number;
   fromCache?: boolean;
+  /** Off for rows the week pager mounts off-screen — nobody sees them appear. */
+  animated?: boolean;
   setAsDone: (item: Homework, done: boolean) => void;
 }
 
 const TaskItem = memo(
   ({
     item,
-    fromCache = false,
+    animated = true,
     setAsDone
   }: TaskItemProps) => {
-    const navigation = useNavigation();
     const cleanContent = useMemo(() => item.content.replace(/<[^>]*>/g, ""), [item.content]);
     const magic = useMagicPrediction(cleanContent);
 
     return (
       <Reanimated.View
         style={{ marginBottom: 10 }}
-        entering={PapillonAppearIn}
-        exiting={PapillonAppearOut}
+        entering={animated ? PapillonAppearIn : undefined}
+        exiting={animated ? PapillonAppearOut : undefined}
       >
-        <Task
-          subject={getSubjectName(item.subject)}
-          emoji={getSubjectEmoji(item.subject)}
-          title={""}
-          color={getSubjectColor(item.subject)}
-          description={item.content}
-          date={new Date(item.dueDate)}
-          completed={item.isDone}
-          hasAttachments={item.attachments.length > 0}
-          isCustom={item.custom}
-          magic={magic}
-          onToggle={() => setAsDone(item, !item.isDone)}
-          onPress={() =>
-            // @ts-ignore Modal types
-            navigation.navigate("(modals)/tasks/task", {
-              task: item
-            })
-          }
-        />
+        <Link
+          href={{
+            pathname: "/(tabs)/tasks/[id]",
+            params: { id: getHomeworkRouteId(item) },
+          }}
+          asChild
+        >
+          <Task
+            subject={getSubjectName(item.subject)}
+            emoji={getSubjectEmoji(item.subject)}
+            title={""}
+            color={getSubjectColor(item.subject)}
+            description={item.content}
+            date={new Date(item.dueDate)}
+            completed={item.isDone}
+            hasAttachments={item.attachments.length > 0}
+            isCustom={item.custom}
+            magic={magic}
+            onToggle={() => setAsDone(item, !item.isDone)}
+          />
+        </Link>
       </Reanimated.View>
     );
   }

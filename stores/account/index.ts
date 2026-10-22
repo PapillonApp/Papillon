@@ -2,16 +2,39 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { log } from "@/utils/logger/logger";
+import { trackAdvancedEvent, trackOptionalEvent } from "@/utils/logger/analytics";
 import { initializeTransport } from "@/utils/transport";
+import { generateAvatar, loadAvatarFont } from "@/utils/generative";
 
-import { createMMKVStorage } from '../global'
-import { AccountsStorage, Auth, TransportAddress } from "./types";
+import { createEncryptedMMKVStorage } from '../global'
+import { useSettingsStore } from '../settings'
+import { Account, AccountsStorage, Auth, TransportAddress } from "./types";
+
+// Some services return an HTML error page (base64 "<!DOCTYPE html>") instead of an image
+const isValidPicture = (pp?: string) => !!pp && !pp.startsWith("PCFET0NUWVBFIGh0bWw+");
+
+const withAvatar = (account: Account): Account =>
+  isValidPicture(account.customisation?.profilePicture)
+    ? account
+    : {
+      ...account,
+      customisation: {
+        subjects: account.customisation?.subjects ?? {},
+        profilePicture: generateAvatar(account.firstName),
+      },
+    };
 
 export const useAccountStore = create<AccountsStorage>()(
   persist(
     (set, get) => ({
       lastUsedAccount: "",
       accounts: [],
+      reset: () => {
+        set({
+          lastUsedAccount: "",
+          accounts: [],
+        });
+      },
       removeAccount: account => {
         const accounts = get().accounts.filter(a => a.id !== account.id);
         const lastUsedAccount = get().lastUsedAccount;
@@ -24,7 +47,11 @@ export const useAccountStore = create<AccountsStorage>()(
               : lastUsedAccount,
         });
       },
-      addAccount: account => set({ accounts: [...get().accounts, account] }),
+      addAccount: account => {
+        set({ accounts: [...get().accounts, withAvatar(account)] });
+        useSettingsStore.getState().mutateProperty("personalization", { welcomeModalSeen: false });
+        trackOptionalEvent("new_account_logged_in");
+      },
       updateServiceAuthData: (serviceId: string, authData: Auth) =>
         set({
           accounts: get().accounts.map(account => {
@@ -44,7 +71,7 @@ export const useAccountStore = create<AccountsStorage>()(
             return account;
           }),
         }),
-      addServiceToAccount: (accountId, service) =>
+      addServiceToAccount: (accountId, service) => {
         set({
           accounts: get().accounts.map(account => {
             if (account.id === accountId) {
@@ -55,7 +82,9 @@ export const useAccountStore = create<AccountsStorage>()(
             }
             return account;
           }),
-        }),
+        });
+        trackAdvancedEvent("external_account_added");
+      },
       removeServiceFromAccount: serviceId =>
         set({
           accounts: get().accounts.map(account => {
@@ -77,7 +106,7 @@ export const useAccountStore = create<AccountsStorage>()(
               return {
                 ...account,
                 customisation: {
-                  profilePicture,
+                  profilePicture: isValidPicture(profilePicture) ? profilePicture : generateAvatar(account.firstName),
                   subjects: account.customisation?.subjects ?? {},
                 },
               };
@@ -100,7 +129,56 @@ export const useAccountStore = create<AccountsStorage>()(
         }),
       setLastUsedAccount: (accountId: string) =>
         set({ lastUsedAccount: accountId }),
-      setSubjectColor: (subject: string, color: string) =>
+      recordTeamModalHomeLaunch: (accountId: string) => {
+        let shouldShow = false;
+
+        set({
+          accounts: get().accounts.map(account => {
+            if (account.id !== accountId || account.teamModal?.shown) {
+              return account;
+            }
+
+            const homeLaunchCount =
+              (account.teamModal?.homeLaunchCount ?? 0) + 1;
+            shouldShow = homeLaunchCount >= 3;
+
+            return {
+              ...account,
+              teamModal: {
+                homeLaunchCount,
+                shown: shouldShow,
+                widgetDismissed: false,
+              },
+            };
+          }),
+        });
+
+        return shouldShow;
+      },
+      dismissTeamWidget: (accountId: string) =>
+        set({
+          accounts: get().accounts.map(account => {
+            if (account.id !== accountId || !account.teamModal) {
+              return account;
+            }
+
+            return {
+              ...account,
+              teamModal: {
+                ...account.teamModal,
+                widgetDismissed: true,
+              },
+            };
+          }),
+        }),
+      setSubjectColor: (subject: string, color: string) => {
+        const current = get().accounts.find(
+          account => account.id === get().lastUsedAccount
+        );
+        // Nothing to change: skip the write so subscribers are not re-rendered.
+        if (!current || current.customisation?.subjects?.[subject]?.color === color) {
+          return;
+        }
         set({
           accounts: get().accounts.map(account => {
             if (account.id === get().lastUsedAccount) {
@@ -124,7 +202,8 @@ export const useAccountStore = create<AccountsStorage>()(
             }
             return account;
           }),
-        }),
+        });
+      },
       setSubjectEmoji: (subject: string, emoji: string) =>
         set({
           accounts: get().accounts.map(account => {
@@ -207,7 +286,7 @@ export const useAccountStore = create<AccountsStorage>()(
                     longitude: -1,
                     latitude: -1,
                   },
-                  defaultApp: account.transport?.defaultApp ?? "transit",
+                  defaultApp: account.transport?.defaultApp ?? "google_maps",
                 },
               };
             }
@@ -239,7 +318,7 @@ export const useAccountStore = create<AccountsStorage>()(
                 transport: {
                   ...account.transport,
                   enabled: true,
-                  defaultApp: account.transport?.defaultApp ?? "transit",
+                  defaultApp: account.transport?.defaultApp ?? "google_maps",
                   homeAddress: address,
                 },
               };
@@ -256,7 +335,7 @@ export const useAccountStore = create<AccountsStorage>()(
                 transport: {
                   ...account.transport,
                   enabled: true,
-                  defaultApp: account.transport?.defaultApp ?? "transit",
+                  defaultApp: account.transport?.defaultApp ?? "google_maps",
                   schoolAddress: address,
                 },
               };
@@ -282,10 +361,21 @@ export const useAccountStore = create<AccountsStorage>()(
     }),
     {
       name: "account-storage",
-      storage: createMMKVStorage<AccountsStorage>(
+      // Legacy static key, only used to migrate existing installs to a per-device key
+      storage: createEncryptedMMKVStorage<AccountsStorage>(
         "account-storage",
         "3f64fc8d-472d-43d5-ba11-461020e2423b"
       ),
+      onRehydrateStorage: () => state => {
+        // Loaded at startup so avatars generated later (new accounts, "remove photo") use SN Pro too
+        loadAvatarFont()
+          .catch(() => {})
+          .finally(() => {
+            state?.accounts
+              .filter(a => !isValidPicture(a.customisation?.profilePicture))
+              .forEach(a => state.setAccountProfilePicture(a.id, ""));
+          });
+      },
     }
   )
 );

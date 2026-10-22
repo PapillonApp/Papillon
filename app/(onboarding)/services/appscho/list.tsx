@@ -1,5 +1,5 @@
 import { Image, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useMemo, useState } from "react";
 import Reanimated, {
   FadeInDown
@@ -11,7 +11,7 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { RelativePathString, router } from "expo-router";
-import { INSTANCES } from "appscho";
+import { INSTANCES } from "@blockshub/blockscho";
 
 
 const UNIVERSITY_LOGOS: { [key: string]: any } = {

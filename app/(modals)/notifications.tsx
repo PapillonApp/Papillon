@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useTranslation } from "react-i18next";
 
 import Stack from "@/ui/components/Stack";

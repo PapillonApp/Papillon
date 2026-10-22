@@ -2,22 +2,68 @@ import { useAccountStore } from "@/stores/account";
 
 import { cleanSubjectName } from "./utils";
 
+// Colors already queued for persistence, keyed by account then subject. Render
+// can call getSubjectColor many times before the store write lands; without
+// this each call would queue its own write.
+const pendingColors = new Map<string, string>();
+
+function hashString(value: string): number {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Deterministic for a given subject and set of already used colors, so
+ * repeated renders never see the color change. Starts from a hash of the
+ * subject and walks the palette to the first color no other subject uses.
+ */
+function pickColor(subject: string, usedColors: string[]): string {
+  const start = hashString(subject) % Colors.length;
+  for (let i = 0; i < Colors.length; i++) {
+    const color = Colors[(start + i) % Colors.length];
+    if (!usedColors.includes(color)) {
+      return color;
+    }
+  }
+  return Colors[start];
+}
+
 export function getSubjectColor(subject: string): string {
   const cleanedName = cleanSubjectName(subject)
-  const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
-  const subjectProperties = useAccountStore.getState().accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects[cleanedName]
+  const { lastUsedAccount, accounts } = useAccountStore.getState();
+  const account = accounts.find(a => a.id === lastUsedAccount);
+  const subjects = account?.customisation?.subjects;
+  const subjectProperties = subjects?.[cleanedName];
   if (subjectProperties && subjectProperties.color && subjectProperties.color !== "") {
     return subjectProperties.color;
   }
 
-  const subjects = useAccountStore.getState().accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects
-  const ignoredColors = Object.values(subjects ?? {}).map(item => item.color)
+  const pendingKey = `${lastUsedAccount}:${cleanedName}`;
+  const pending = pendingColors.get(pendingKey);
+  if (pending) {
+    return pending;
+  }
 
-  const color = getRandomColor(ignoredColors)
+  const usedColors = [
+    ...Object.values(subjects ?? {}).map(item => item.color),
+    ...[...pendingColors.entries()]
+      .filter(([key]) => key.startsWith(`${lastUsedAccount}:`))
+      .map(([, value]) => value),
+  ];
+  const color = pickColor(cleanedName ?? "", usedColors);
 
-  setTimeout(() => {
-    useAccountStore.getState().setSubjectColor(cleanedName, color)
-  }, 0)
+  // Without a matching account the write cannot stick; persisting would only
+  // churn the store and re-render every subscriber.
+  if (account) {
+    pendingColors.set(pendingKey, color);
+    setTimeout(() => {
+      pendingColors.delete(pendingKey);
+      useAccountStore.getState().setSubjectColor(cleanedName, color)
+    }, 0)
+  }
 
   return color;
 }

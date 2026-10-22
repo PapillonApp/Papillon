@@ -1,10 +1,20 @@
 import { Papicons } from "@getpapillon/papicons";
 import MaskedView from "@react-native-masked-view/masked-view";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Haptics from "expo-haptics";
-import { router, useGlobalSearchParams } from "expo-router";
-import { AuthenticateError, createSessionHandle, loginQrCode, SecurityError } from "pawnote";
+import { router } from "expo-router";
+import {
+  AuthenticateError,
+  createSessionHandle,
+  DoubleAuthMode,
+  finishLoginManually,
+  loginQrCode,
+  RefreshInformation,
+  SecurityError,
+  securitySave,
+  securitySource,
+} from "@blockshub/pawnote-lts";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
@@ -17,9 +27,12 @@ import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
+import { setPendingPronoteChallenge } from "@/utils/pronote/challenge";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import * as Device from "expo-device";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -38,6 +51,8 @@ export default function PronoteLoginWithQR() {
 
   const codeInput = React.createRef<TextInput>();
   const [QRData, setQRData] = useState<string | null>(null);
+
+  const deviceName: string = Device.deviceName ?? "Pronote" 
 
   async function loginQR() {
     setScanned(false);
@@ -60,24 +75,34 @@ export default function PronoteLoginWithQR() {
       };
 
       const session = createSessionHandle(customFetcher);
-      const refresh = await loginQrCode(session, {
-        qr: data,
-        pin: QRValidationCode,
-        deviceUUID: accountID
-      }).catch((error) => {
+      let refresh: RefreshInformation | undefined;
+      try {
+        refresh = await loginQrCode(session, {
+          qr: data,
+          pin: QRValidationCode,
+          deviceUUID: accountID
+        })
+      } catch(error) {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          router.push({
-            pathname: "/(onboarding)/services/pronote/2fa",
-            params: {
-              error: JSON.stringify(error),
-              session: JSON.stringify(session),
-              deviceId: accountID
-            }
-          });
-        } else {
-          throw error;
+          if (error.handle.shouldEnterSource && !error.handle.shouldEnterPIN) {
+            const mode: DoubleAuthMode = DoubleAuthMode.MGDA_NotificationSeulement;
+            const source = deviceName.length > 30 ? "Pronote" : deviceName;
+            await securitySource(session, source);
+            await securitySave(session, error.handle, { mode, deviceName: source });
+
+            const context = error.handle.context;
+            refresh = await finishLoginManually(
+              session,
+              context.authentication,
+              context.identity,
+              context.initialUsername,
+            );
+          } else {
+            setPendingPronoteChallenge({ session, error, deviceUUID: accountID });
+            router.push("/(onboarding)/services/pronote/challenge");
+          }
         }
-      });
+      }
 
       if (!refresh) { throw AuthenticateError; }
 
@@ -106,6 +131,7 @@ export default function PronoteLoginWithQR() {
             accessToken: refresh.token,
             refreshToken: refresh.token,
             additionals: {
+              ...refresh,
               instanceURL: refresh.url,
               kind: refresh.kind,
               username: refresh.username,
@@ -122,12 +148,7 @@ export default function PronoteLoginWithQR() {
       useAccountStore.getState().setLastUsedAccount(accountID)
       setTimeout(() => {
         setLoadingModalVisible(false);
-        router.push({
-          pathname: "../end/color",
-          params: {
-            accountId: accountID
-          }
-        });
+        return router.replace('/');
       }, 1000);
     } catch (error) {
       console.error(error);
@@ -141,10 +162,7 @@ export default function PronoteLoginWithQR() {
     }
   }, [permission?.granted, requestPermission]);
 
-  const handleBarCodeScanned = ({
-    type,
-    data,
-  }: {
+  const handleBarCodeScanned = ({ data }: {
     type: string;
     data: string;
   }) => {
@@ -173,8 +191,6 @@ export default function PronoteLoginWithQR() {
       keyboardDidHideListener?.remove();
     };
   }, []);
-
-  const local = useGlobalSearchParams();
 
   const { t } = useTranslation();
 
@@ -223,10 +239,10 @@ export default function PronoteLoginWithQR() {
 
           <View style={{ flex: 1 }} />
 
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{
               width: "100%",
-              paddingHorizontal: 16,
               paddingBottom: insets.bottom,
               gap: 8,
             }}
@@ -238,7 +254,7 @@ export default function PronoteLoginWithQR() {
                 router.back();
               }}
             />
-          </View>
+          </SafeHorizontalView>
         </View>
       </Modal>
 
@@ -258,13 +274,13 @@ export default function PronoteLoginWithQR() {
           behavior="padding"
           keyboardVerticalOffset={insets.top}
         >
-          <View
+          <SafeHorizontalView
+            base={20}
             style={{
               justifyContent: "center",
               alignItems: "center",
               marginBottom: 24,
               paddingVertical: 16,
-              paddingHorizontal: 20,
               borderBottomColor: colors.border,
               borderBottomWidth: 0.5,
             }}
@@ -279,7 +295,7 @@ export default function PronoteLoginWithQR() {
             >
               {t("ONBOARDING_QRCODE_VALIDATION")}
             </Typography>
-          </View>
+          </SafeHorizontalView>
 
           <Reanimated.View
             entering={FadeInUp.duration(250)}
@@ -337,10 +353,10 @@ export default function PronoteLoginWithQR() {
             />
           </View>
 
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{
               width: "100%",
-              paddingHorizontal: 16,
               paddingBottom: insets.bottom + 16,
               gap: 8,
             }}
@@ -359,7 +375,7 @@ export default function PronoteLoginWithQR() {
                 setPinModalVisible(false);
               }}
             />
-          </View>
+          </SafeHorizontalView>
         </KeyboardAvoidingView>
       </Modal>
 

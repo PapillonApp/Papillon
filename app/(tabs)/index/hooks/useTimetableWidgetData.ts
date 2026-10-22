@@ -1,60 +1,198 @@
-import { useState, useEffect, useMemo } from "react";
-import { useAccountStore } from "@/stores/account";
+import { useEffect, useMemo, useState } from "react";
+import { createMMKV } from "react-native-mmkv";
+
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
-import { Course as SharedCourse } from "@/services/shared/timetable";
+import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
+import { useAccountStore } from "@/stores/account";
 
-export const useTimetableWidgetData = () => {
-  const now = new Date();
-  const weekNumber = getWeekNumberFromDate(now);
+const widgetCacheStorage = createMMKV({ id: "home-widget-cache" });
 
-  const [loading, setLoading] = useState(false);
+const REFRESH_INTERVAL_MS = 30_000;
+
+const NO_COURSES: SharedCourse[] = [];
+
+export type UpcomingCourseDay = {
+  date: Date;
+  courses: SharedCourse[];
+};
+
+type CachedCourse = Omit<SharedCourse, "from" | "to"> & {
+  from: number;
+  to: number;
+};
+
+type TimetableWidgetCache = {
+  fetchedAt: number;
+  courses: CachedCourse[];
+};
+
+const serializeCourse = (course: SharedCourse): CachedCourse => ({
+  ...course,
+  from: course.from.getTime(),
+  to: course.to.getTime()
+});
+
+const deserializeCourse = (course: CachedCourse): SharedCourse => ({
+  ...course,
+  from: new Date(course.from),
+  to: new Date(course.to)
+});
+
+const startOfLocalDay = (date: Date): Date => {
+  const day = new Date(date);
+  day.setHours(0, 0, 0, 0);
+  return day;
+};
+
+const sameCourses = (a: SharedCourse[], b: SharedCourse[]) =>
+  a.length === b.length &&
+  a.every((course, index) => {
+    const other = b[index];
+    return (
+      course.id === other.id &&
+      course.from.getTime() === other.from.getTime() &&
+      course.to.getTime() === other.to.getTime() &&
+      course.status === other.status &&
+      course.customStatus === other.customStatus
+    );
+  });
+
+const sameDays = (a: UpcomingCourseDay[], b: UpcomingCourseDay[]) =>
+  a.length === b.length &&
+  a.every(
+    (day, index) =>
+      day.date.getTime() === b[index].date.getTime() &&
+      sameCourses(day.courses, b[index].courses)
+  );
+
+export const useTimetableWidgetData = (options: { showCancelled?: boolean } = {}) => {
+  const showCancelled = options.showCancelled ?? false;
+  const [now, setNow] = useState(() => new Date());
+  const [loading, setLoading] = useState(true);
+  const [upcomingDays, setUpcomingDays] = useState<UpcomingCourseDay[]>([]);
+
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const account = accounts.find((a) => a.id === lastUsedAccount);
+  // Scoped by `showCancelled` so callers that keep cancelled courses don't seed
+  // the ones that filter them out.
+  const cacheKey = useMemo(
+    () =>
+      account?.id
+        ? `widget:timetable:${account.id}:${showCancelled ? "all" : "active"}`
+        : undefined,
+    [account?.id, showCancelled]
+  );
 
   const services = useMemo(() =>
     account?.services?.map((service: { id: string }) => service.id) ?? [],
     [account?.services]
   );
 
-  const [courses, setCourses] = useState<SharedCourse[]>([]);
+  const currentYear = now.getFullYear();
+  // Past weeks are never shown; -1 because getWeekNumberFromDate and getDateRangeOfWeek
+  // don't agree on which day a week starts.
+  const firstWeek = Math.max(1, getWeekNumberFromDate(now) - 1);
+  const remainingWeeks = useMemo(
+    () => Array.from({ length: 55 - firstWeek }, (_, index) => firstWeek + index),
+    [firstWeek]
+  );
+  const yearWeeks = useMemo(
+    () => Array.from({ length: 54 }, (_, index) => index + 1),
+    []
+  );
+  const nextYearDate = useMemo(() => new Date(currentYear + 1, 0, 1), [currentYear]);
 
-  const timetableData = useTimetable(undefined, weekNumber);
+  const currentYearTimetable = useTimetable(undefined, remainingWeeks, now);
+  const nextYearTimetable = useTimetable(undefined, yearWeeks, nextYearDate);
+
   const weeklyTimetable = useMemo(() =>
-    timetableData.map(day => ({
-      ...day,
-      courses: day.courses.filter(course =>
-        services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
-      )
-    })).filter(day => day.courses.length > 0),
-    [timetableData, services]
+    [...currentYearTimetable, ...nextYearTimetable]
+      .map(day => ({
+        ...day,
+        courses: day.courses.filter(course =>
+          services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
+        )
+      }))
+      .filter(day => day.courses.length > 0),
+    [currentYearTimetable, nextYearTimetable, services]
   );
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, REFRESH_INTERVAL_MS);
 
-      let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+    return () => clearInterval(interval);
+  }, []);
 
-      if (dayCourse.length === 0) {
-        const futureDays = weeklyTimetable
-          .filter(day => day.date.getTime() > today.getTime())
-          .sort((a, b) => a.date.getTime() - b.date.getTime());
+  // Seeds the last known day of courses so consumers have something to render
+  // before the database query resolves.
+  useEffect(() => {
+    setUpcomingDays([]);
 
-        if (futureDays.length > 0) {
-          dayCourse = futureDays[0].courses;
-        }
-      }
-
-      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
-      setCourses(dayCourse);
+    if (!cacheKey) {
       setLoading(false);
-    };
-    fetchData();
-  }, [weeklyTimetable]);
+      return;
+    }
 
-  return { courses };
+    const cachedRaw = widgetCacheStorage.getString(cacheKey);
+    if (!cachedRaw) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const cached = JSON.parse(cachedRaw) as TimetableWidgetCache;
+      const courses = cached.courses
+        .map(deserializeCourse)
+        .filter((course) => course.to.getTime() > Date.now())
+        .filter((course) => showCancelled || course.status !== CourseStatus.CANCELED)
+        .sort((a, b) => a.from.getTime() - b.from.getTime());
+
+      if (courses.length > 0) {
+        setUpcomingDays([{ date: startOfLocalDay(courses[0].from), courses }]);
+      }
+    } catch {
+      widgetCacheStorage.remove(cacheKey);
+    } finally {
+      setLoading(false);
+    }
+  }, [cacheKey, showCancelled]);
+
+  useEffect(() => {
+    // An empty timetable also means "not read yet", so the seeded cache is kept
+    // instead of being flashed away on every mount.
+    if (weeklyTimetable.length === 0) {
+      return;
+    }
+
+    const nowTimestamp = now.getTime();
+    const days = weeklyTimetable
+      .map((day) => ({
+        date: day.date,
+        courses: day.courses
+          .filter((course) => course.to.getTime() > nowTimestamp)
+          .filter((course) => showCancelled || course.status !== CourseStatus.CANCELED)
+          .sort((a, b) => a.from.getTime() - b.from.getTime())
+      }))
+      .filter((day) => day.courses.length > 0)
+      .sort((a, b) => a.courses[0].from.getTime() - b.courses[0].from.getTime());
+
+    setUpcomingDays((previous) => (sameDays(previous, days) ? previous : days));
+    setLoading(false);
+
+    if (cacheKey) {
+      const payload: TimetableWidgetCache = {
+        fetchedAt: Date.now(),
+        courses: (days[0]?.courses ?? []).map(serializeCourse)
+      };
+      widgetCacheStorage.set(cacheKey, JSON.stringify(payload));
+    }
+  }, [weeklyTimetable, now, cacheKey, showCancelled]);
+
+  const courses = upcomingDays[0]?.courses ?? NO_COURSES;
+
+  return { courses, upcomingDays, loading };
 };

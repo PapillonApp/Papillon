@@ -3,13 +3,14 @@ import { Pressable, View } from 'react-native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
+import { Link } from 'expo-router';
 
 interface HomeTopBarButtonProps {
   icon: string;
-  onPress?: () => void;
+  route?: string;
 }
 
-const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) => {
+const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route }) => {
   return (
     <LiquidGlassView
       glassType="clear"
@@ -21,8 +22,8 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) =>
         borderRadius: 30,
       }}
     >
+      <Link asChild prefetch href={route ?? "/(features)/soon"}>
       <Pressable
-        onPressIn={onPress}
         style={{
           width: '100%',
           height: '100%',
@@ -34,6 +35,7 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) =>
           <Papicons name={icon} />
         </Icon>
       </Pressable>
+      </Link>
     </LiquidGlassView>
   );
 };

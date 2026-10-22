@@ -1,191 +1,301 @@
-import { Client, SchoolLifeAttendanceItem,SchoolLifeAttendanceItemType, SchoolLifeConductItem } from "@blockshub/blocksdirecte";
+import { Client, SchoolLifeAttendanceItem, SchoolLifeAttendanceItemType, SchoolLifeConductItem } from "@blockshub/blocksdirecte";
 
-import { error, warn } from "@/utils/logger/logger";
+import { warn } from "@/utils/logger/logger";
 
 import { Absence, Attendance, Delay, Punishment } from "../shared/attendance";
+import { Period } from "../shared/grade";
 import { durationToMinutes } from "../skolengo/attendance";
+import { fetchEDGradePeriods } from "./grades";
 
-export async function fetchEDAttendance(session: Client, accountId: string): Promise<Attendance> {
+const FRENCH_MONTHS: Record<string, number> = {
+  janvier: 0,
+  fevrier: 1,
+  mars: 2,
+  avril: 3,
+  mai: 4,
+  juin: 5,
+  juillet: 6,
+  aout: 7,
+  septembre: 8,
+  octobre: 9,
+  novembre: 10,
+  decembre: 11,
+};
+
+export async function fetchEDAttendance(session: Client, accountId: string, periodName?: string): Promise<Attendance> {
   try {
-    const attendance = await session.schoollife.getSchoolLife()
-    const punishments = mapEcoleDirectePunishments(attendance.sanctionsEncouragements, accountId);
-    const absences = mapEcoleDirecteAbsences(attendance.absencesRetards, accountId);
-    const delays = mapEcoleDirecteDelays(attendance.absencesRetards, accountId);
+    const attendance = await session.schoollife.getSchoolLife();
+    const selectedPeriod = periodName
+      ? await getSelectedPeriod(session, accountId, periodName)
+      : undefined;
+    const schoolLifeItems = filterAttendanceItemsByPeriod(attendance.absencesRetards, selectedPeriod);
+    const conductItems = filterConductItemsByPeriod(attendance.sanctionsEncouragements, selectedPeriod);
+
     return {
-      absences: absences,
-      punishments,
-      delays,
+      absences: mapEcoleDirecteAbsences(schoolLifeItems, accountId),
+      punishments: mapEcoleDirectePunishments(conductItems, accountId),
+      delays: mapEcoleDirecteDelays(schoolLifeItems, accountId),
       observations: [],
       createdByAccount: accountId
-    }
+    };
   } catch (error) {
-    warn(String(error))
+    warn(String(error));
     return {
       absences: [],
       punishments: [],
       delays: [],
       observations: [],
       createdByAccount: accountId
-    }
+    };
   }
+}
+
+export async function fetchEDAttendancePeriods(session: Client, accountId: string): Promise<Period[]> {
+  const periods = await fetchEDGradePeriods(session, accountId);
+
+  return periods.filter(period => {
+    const normalized = normalizeLabel(period.name);
+    return normalized.length > 0
+      && !normalized.startsWith("releve")
+      && normalized !== "annee";
+  });
 }
 
 function mapEcoleDirecteAbsences(data: SchoolLifeAttendanceItem[], accountId: string): Absence[] {
   return data
     .filter(item => item.typeElement === SchoolLifeAttendanceItemType.ABSENCE)
-    .map(item => {
-      const { start, end } = mapStringToDates(item.displayDate);
-      return {
-        id: String(item.id),
-        from: start,
-        to: end,
-        reason: item.motif,
-        justified: item.justifie,
-        timeMissed: durationToMinutes(start.getTime(), end.getTime()),
-        createdByAccount: accountId
-      };
+    .flatMap(item => {
+      try {
+        const { start, end } = mapStringToDates(item.displayDate);
+        return [{
+          id: String(item.id),
+          from: start,
+          to: end,
+          reason: item.motif,
+          justified: item.justifie,
+          timeMissed: durationToMinutes(start.getTime(), end.getTime()),
+          createdByAccount: accountId
+        }];
+      } catch (error) {
+        warn(`Skipping invalid ED absence ${String(item.id)}: ${String(error)}`, "mapEcoleDirecteAbsences");
+        return [];
+      }
     });
 }
 
 function mapEcoleDirecteDelays(data: SchoolLifeAttendanceItem[], accountId: string): Delay[] {
   return data
     .filter(item => item.typeElement === SchoolLifeAttendanceItemType.DELAY)
-    .map(item => {
-      const { start, end } = mapStringToDates(item.displayDate);
-      return {
-        id: String(item.id),
-        givenAt: new Date(item.date),
-        reason: item.motif,
-        justified: item.justifie,
-        duration: durationToMinutes(start.getTime(), end.getTime()),
-        createdByAccount: accountId
-      };
+    .flatMap(item => {
+      try {
+        const { start, end } = mapStringToDates(item.displayDate);
+        return [{
+          id: String(item.id),
+          givenAt: parseFlexibleDate(item.date) ?? start,
+          reason: item.motif,
+          justified: item.justifie,
+          duration: durationToMinutes(start.getTime(), end.getTime()),
+          createdByAccount: accountId
+        }];
+      } catch (error) {
+        warn(`Skipping invalid ED delay ${String(item.id)}: ${String(error)}`, "mapEcoleDirecteDelays");
+        return [];
+      }
     });
 }
 
 function mapEcoleDirectePunishments(data: SchoolLifeConductItem[], accountId: string): Punishment[] {
-  return data.map(item => ({
-    id: String(item.id),
-    givenAt: new Date(item.dateDeroulement),
-    givenBy: [item.auteur.prenom, item.auteur.nom].join(" "),
-    exclusion: false,
-    duringLesson: false,
-    homework: {
-      text: item.aFaire,
-      documents: []
-    },
-    reason: {
-      text: item.motif,
-      circumstances: item.commentaire,
-      documents: []
-    },
-    nature: "",
-    duration: mapStringToDuration(item.displayDate) ?? 0,
-    createdByAccount: accountId
-  }))
+  return data.flatMap(item => {
+    const givenAt = parseFlexibleDate(item.dateDeroulement);
+
+    if (!givenAt) {
+      warn(`Skipping invalid ED punishment ${String(item.id)}: invalid date`, "mapEcoleDirectePunishments");
+      return [];
+    }
+
+    return [{
+      id: String(item.id),
+      givenAt,
+      givenBy: [item.auteur.prenom, item.auteur.nom].join(" ").trim(),
+      exclusion: false,
+      duringLesson: false,
+      homework: {
+        text: item.aFaire,
+        documents: []
+      },
+      reason: {
+        text: item.motif,
+        circumstances: item.commentaire,
+        documents: []
+      },
+      nature: "",
+      duration: mapStringToDuration(item.displayDate) ?? 0,
+      createdByAccount: accountId
+    }];
+  });
 }
 
 function mapStringToDates(str: string): { start: Date, end: Date } {
-  const months: Record<string, number> = {
-    "janvier": 1,
-    "février": 2,
-    "mars": 3,
-    "avril": 4,
-    "mai": 5,
-    "juin": 6,
-    "juillet": 7,
-    "août": 8,
-    "septembre": 9,
-    "octobre": 10,
-    "novembre": 11,
-    "décembre": 12
-  };
+  const normalized = normalizeFrenchText(str);
+  const rangeMatch = normalized.match(/^du [^ ]+ (\d{1,2}) ([^ ]+) (\d{4}) au [^ ]+ (\d{1,2}) ([^ ]+) (\d{4})$/i);
 
-  if (str.includes("du")) {
-    const splittedStr = str.split(" ");
-
-    const duIndex = splittedStr.indexOf("du");
-    const auIndex = splittedStr.indexOf("au");
-
-    if (duIndex !== -1 && auIndex !== -1) {
-      const dayStart = parseInt(splittedStr[duIndex + 2]);
-      const monthStart = months[splittedStr[duIndex + 3]] ?? 0;
-      const yearStart = parseInt(splittedStr[duIndex + 4]);
-
-      const dayEnd = parseInt(splittedStr[auIndex + 2]);
-      const monthEnd = months[splittedStr[auIndex + 3]] ?? 0;
-      const yearEnd = parseInt(splittedStr[auIndex + 4]);
-
-      const startDate = new Date(yearStart, monthStart - 1, dayStart);
-      const endDate = new Date(yearEnd, monthEnd - 1, dayEnd);
-
-      return {
-        start: startDate,
-        end: endDate
-      }
-    }
+  if (rangeMatch) {
+    return {
+      start: createFrenchDate(rangeMatch[1], rangeMatch[2], rangeMatch[3], "00:00"),
+      end: createFrenchDate(rangeMatch[4], rangeMatch[5], rangeMatch[6], "23:59")
+    };
   }
 
-  if (str.includes("le")) {
-    const parts = str.split("à");
-    let startDate: string;
-    let endDate: string;
+  const singleDayMatch = normalized.match(/^le [^ ]+ (\d{1,2}) ([^ ]+) (\d{4})(?: de (\d{2}:\d{2}) a (\d{2}:\d{2}))?$/i);
 
-    if (!str.includes(":")) {
-      startDate = `${parts[0].replace("le", "").trim()} de 00:00`;
-      endDate = `${parts[0].split("de")[0].replace("le", "").trim()} de 23:59`;
-    } else {
-      startDate = parts[0].replace("le", "").trim();
-      endDate = `${parts[0].split("de")[0].replace("le", "").trim()} de ${parts[1].trim()}`;
-    }
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    return { start, end }
+  if (singleDayMatch) {
+    return {
+      start: createFrenchDate(singleDayMatch[1], singleDayMatch[2], singleDayMatch[3], singleDayMatch[4] ?? "00:00"),
+      end: createFrenchDate(singleDayMatch[1], singleDayMatch[2], singleDayMatch[3], singleDayMatch[5] ?? "23:59")
+    };
   }
 
-  throw error("Invalid Display Date", "mapStringToDates");
+  throw new Error(`Invalid display date: ${str}`);
 }
 
 function mapStringToDuration(str: string): number | undefined {
-  const months: Record<string, number> = {
-    "janvier": 1,
-    "février": 2,
-    "mars": 3,
-    "avril": 4,
-    "mai": 5,
-    "juin": 6,
-    "juillet": 7,
-    "août": 8,
-    "septembre": 9,
-    "octobre": 10,
-    "novembre": 11,
-    "décembre": 12
-  };
+  try {
+    const { start, end } = mapStringToDates(str);
+    const durationMs = end.getTime() - start.getTime();
+    return Math.floor(durationMs / (1000 * 60 * 60 * 24)) + 1;
+  } catch {
+    return undefined;
+  }
+}
 
-  if (str.includes("du")) {
-    const splittedStr = str.split(" ");
+async function getSelectedPeriod(session: Client, accountId: string, periodName: string): Promise<Period | undefined> {
+  const periods = await fetchEDAttendancePeriods(session, accountId);
+  return periods.find(period => period.name === periodName);
+}
 
-    const duIndex = splittedStr.indexOf("du");
-    const auIndex = splittedStr.indexOf("au");
-
-    if (duIndex !== -1 && auIndex !== -1) {
-      const dayStart = parseInt(splittedStr[duIndex + 2]);
-      const monthStart = months[splittedStr[duIndex + 3]] ?? 0;
-      const yearStart = parseInt(splittedStr[duIndex + 4]);
-
-      const dayEnd = parseInt(splittedStr[auIndex + 2]);
-      const monthEnd = months[splittedStr[auIndex + 3]] ?? 0;
-      const yearEnd = parseInt(splittedStr[auIndex + 4]);
-
-      const startDate = new Date(yearStart, monthStart - 1, dayStart);
-      const endDate = new Date(yearEnd, monthEnd - 1, dayEnd);
-
-      const durationMs = endDate.getTime() - startDate.getTime();
-      const durationDays = Math.floor(durationMs / (1000 * 60 * 60 * 24)) + 1;
-      return durationDays;
-    }
+function filterAttendanceItemsByPeriod(
+  items: SchoolLifeAttendanceItem[],
+  selectedPeriod?: Period
+): SchoolLifeAttendanceItem[] {
+  if (!selectedPeriod) {
+    return items;
   }
 
-  throw error("Invalid Display Date", "mapStringToDuration");
+  return items.filter(item => isDateWithinPeriod(parseFlexibleDate(item.date), selectedPeriod));
+}
+
+function filterConductItemsByPeriod(
+  items: SchoolLifeConductItem[],
+  selectedPeriod?: Period
+): SchoolLifeConductItem[] {
+  if (!selectedPeriod) {
+    return items;
+  }
+
+  return items.filter(item => isDateWithinPeriod(parseFlexibleDate(item.dateDeroulement), selectedPeriod));
+}
+
+function isDateWithinPeriod(date: Date | undefined, period: Period): boolean {
+  if (!date || Number.isNaN(date.getTime())) {
+    return false;
+  }
+
+  const periodStart = new Date(period.start.getFullYear(), period.start.getMonth(), period.start.getDate(), 0, 0, 0, 0);
+  const periodEnd = new Date(period.end.getFullYear(), period.end.getMonth(), period.end.getDate(), 23, 59, 59, 999);
+
+  return date.getTime() >= periodStart.getTime() && date.getTime() <= periodEnd.getTime();
+}
+
+function parseFlexibleDate(value?: string): Date | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  const isoDateOnly = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  if (isoDateOnly) {
+    const parsed = new Date(
+      Number(isoDateOnly[1]),
+      Number(isoDateOnly[2]) - 1,
+      Number(isoDateOnly[3]),
+      0,
+      0,
+      0,
+      0
+    );
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+  }
+
+  const slashDate = trimmed.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+  if (slashDate) {
+    const parsed = new Date(
+      Number(slashDate[3]),
+      Number(slashDate[2]) - 1,
+      Number(slashDate[1]),
+      0,
+      0,
+      0,
+      0
+    );
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+  }
+
+  const parsed = new Date(trimmed);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+}
+
+function createFrenchDate(day: string, month: string, year: string, time: string): Date {
+  const normalizedMonth = normalizeLabel(month);
+  const monthIndex = FRENCH_MONTHS[normalizedMonth];
+
+  if (monthIndex === undefined) {
+    throw new Error(`Unsupported french month: ${month}`);
+  }
+
+  const [hours, minutes] = time.split(":").map(Number);
+  const parsed = new Date(Number(year), monthIndex, Number(day), hours, minutes, 0, 0);
+
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error(`Invalid french date: ${day} ${month} ${year} ${time}`);
+  }
+
+  return parsed;
+}
+
+function normalizeWhitespace(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function normalizeFrenchText(value: string): string {
+  return normalizeWhitespace(normalizeLabel(value));
+}
+
+function normalizeLabel(value: string): string {
+  return repairMojibake(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function repairMojibake(value: string): string {
+  return value
+    .replace(/Ã©/g, "e")
+    .replace(/Ã¨/g, "e")
+    .replace(/Ãª/g, "e")
+    .replace(/Ã«/g, "e")
+    .replace(/Ã /g, "a")
+    .replace(/Ã¢/g, "a")
+    .replace(/Ã¹/g, "u")
+    .replace(/Ã»/g, "u")
+    .replace(/Ã´/g, "o")
+    .replace(/Ã¶/g, "o")
+    .replace(/Ã¯/g, "i")
+    .replace(/Ã®/g, "i")
+    .replace(/Ã§/g, "c")
+    .replace(/Å“/g, "oe")
+    .replace(/’/g, "'")
+    .replace(/`/g, "'");
 }

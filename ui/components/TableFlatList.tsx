@@ -1,6 +1,5 @@
 import { LegendList } from '@legendapp/list';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useTheme } from '@react-navigation/native';
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import { FlatList, FlatListProps, PressableProps, StyleProp, ViewStyle } from 'react-native';

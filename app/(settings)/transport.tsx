@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import * as React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -58,12 +58,13 @@ export default function TransportView() {
 
   return (
     <List
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.overground }}
+      safeHorizontalPadding={20}
       contentContainerStyle={{
-        padding: 20,
         paddingTop: 16,
+        paddingBottom: 20,
       }}
-      contentInsetAdjustmentBehavior="always"
+      contentInsetAdjustmentBehavior="automatic"
     >
       <List.View style={{ marginBottom: 15 }}>
         <SettingsHeader
@@ -166,7 +167,7 @@ export default function TransportView() {
                 }}
               />
             </List.Leading>
-            {(transport?.defaultApp ?? "transit") === service.id && (
+            {(transport?.defaultApp ?? "google_maps") === service.id && (
               <List.Trailing>
                 <Papicons name={"Check"} fill={"#E8901C"} />
               </List.Trailing>

@@ -3,20 +3,6 @@ import { Platform } from "react-native";
 import { TransportAddress } from "@/stores/account/types";
 
 export const AvailableTransportServices = [
-  {
-    id: "transit",
-    name: "Transit",
-    icon: require(`@/assets/images/transport/transit.png`),
-    baseUrlScheme: "transit://",
-    generateDeeplink: (
-      from: TransportAddress,
-      to: TransportAddress,
-      isDeparture: boolean,
-      targetTime: number
-    ): string => {
-      return `transit://directions?from=${from.firstTitle === "current_location" ? "" : `${from.address}`}&to=${to.address}&${isDeparture ? `arrive_by=${targetTime}` : `leave_at=${targetTime}`}`;
-    },
-  },
   Platform.OS === "ios" && {
     id: "apple_maps",
     name: "Apple Maps",

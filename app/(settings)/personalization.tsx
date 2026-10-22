@@ -6,7 +6,7 @@ import Typography from "@/ui/new/Typography";
 import Icon from "@/ui/components/Icon";
 import { Papicons, PapillonApp } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import AppColorsSelector from "@/components/AppColorsSelector";
 import { AppColors } from "@/utils/colors";
 import LinearGradient from "react-native-linear-gradient";
@@ -15,12 +15,20 @@ import { useAccountStore } from "@/stores/account";
 import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from "@/stores/settings";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
-import { useHeaderHeight } from "@react-navigation/elements";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 import List from "@/ui/new/List";
 import NativeSwitch from "@/ui/native/NativeSwitch";
+import Picker from "@/ui/components/Picker";
+import { trackOptionalEvent } from "@/utils/logger/analytics";
 
+const FONT_OPTIONS = [
+  { label: "SN Pro", value: "sn-pro" as const },
+  { label: "Fixel Text", value: "fixel-text" as const },
+  { label: "Oxanium", value: "oxanium" as const },
+  { label: "Courgette", value: "courgette" as const },
+  { label: "IBM Plex Serif", value: "ibm-plex-serif" as const },
+];
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
@@ -30,6 +38,11 @@ const PersonalizationSettings = () => {
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const useMaterialYou = settingsStore.useMaterialYou ?? DEFAULT_MATERIAL_YOU_ENABLED;
+  const selectedFontFamily = settingsStore.fontFamily ?? "sn-pro";
+  const selectedFontIndex = Math.max(
+    FONT_OPTIONS.findIndex(option => option.value === selectedFontFamily),
+    0
+  );
 
   const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
   const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
@@ -63,9 +76,10 @@ const PersonalizationSettings = () => {
         />
       </Dynamic>
       <List
-        contentContainerStyle={{ padding: 16 }}
-        contentInsetAdjustmentBehavior="always"
-        style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0 }}
+        safeHorizontalPadding={16}
+        contentContainerStyle={{ paddingVertical: 16 }}
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0, backgroundColor: theme.colors.overground }}
       >
         {!useMaterialYou &&
           <List.Section>
@@ -132,7 +146,12 @@ const PersonalizationSettings = () => {
                 hAlign={"center"}
                 vAlign={"center"}
               >
-                <AnimatedPressable onPress={() => setSelectedTheme("light")}
+                <AnimatedPressable onPress={() => {
+                  if (selectedTheme !== "light") {
+                    trackOptionalEvent("color_theme_changed", { theme: "light" });
+                  }
+                  setSelectedTheme("light");
+                }}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
@@ -147,7 +166,12 @@ const PersonalizationSettings = () => {
                     />
                   </Stack>
                 </AnimatedPressable>
-                <AnimatedPressable onPress={() => setSelectedTheme("dark")}
+                <AnimatedPressable onPress={() => {
+                  if (selectedTheme !== "dark") {
+                    trackOptionalEvent("color_theme_changed", { theme: "dark" });
+                  }
+                  setSelectedTheme("dark");
+                }}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
@@ -162,7 +186,12 @@ const PersonalizationSettings = () => {
                     />
                   </Stack>
                 </AnimatedPressable>
-                <AnimatedPressable onPress={() => setSelectedTheme("auto")}
+                <AnimatedPressable onPress={() => {
+                  if (selectedTheme !== "auto") {
+                    trackOptionalEvent("color_theme_changed", { theme: "auto" });
+                  }
+                  setSelectedTheme("auto");
+                }}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
@@ -175,6 +204,28 @@ const PersonalizationSettings = () => {
                   </Stack>
                 </AnimatedPressable>
               </Stack>
+            </List.Trailing>
+          </List.Item>
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Palette"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">Police</Typography>
+            <Typography variant="body1" color="textSecondary">
+              Modifier la police de caractères
+            </Typography>
+            <List.Trailing>
+              <Picker
+                options={FONT_OPTIONS.map(option => option.label)}
+                selectedIndex={selectedFontIndex}
+                onValueChange={(index) => {
+                  const option = FONT_OPTIONS[index];
+                  if (!option) return;
+                  mutateProperty("personalization", { fontFamily: option.value });
+                }}
+              />
             </List.Trailing>
           </List.Item>
         </List.Section>

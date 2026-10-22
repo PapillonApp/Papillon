@@ -1,4 +1,4 @@
-import { geolocation } from "pawnote";
+import { geolocation } from "@blockshub/pawnote-lts";
 import { School as SkolengoSkool,SearchSchools } from "skolengojs";
 import { t } from "i18next";
 
@@ -89,12 +89,4 @@ export async function fetchSchools(service: Services, alert: ReturnType<typeof u
 
 
   return [];
-}
-
-type SchoolItem = {
-  title: string,
-  description: string,
-  initials: string,
-  distance: number,
-  onPress: () => void
 }

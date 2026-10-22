@@ -1,24 +1,30 @@
+import { TipIds } from "@/constants/Tips"
 import { useAccountStore } from "@/stores/account"
+import { retireTip } from "@/stores/tips"
 import { useSettingsStore } from "@/stores/settings"
 import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
 import Stack from "@/ui/components/Stack"
+import { Stack as ExpoStack } from 'expo-router';
 import Typography from "@/ui/components/Typography"
-import { useTheme } from "@react-navigation/native"
-import React, { useEffect, useState } from "react"
-import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation"
+import React, { useEffect, useMemo, useRef, useState } from "react"
+import { Dimensions, FlatList, Image, Platform, Pressable, RefreshControl, View } from "react-native"
 import { File, Directory, Paths } from 'expo-file-system';
 import ActivityIndicator from "@/components/ActivityIndicator"
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader"
-import Icon from "@/ui/components/Icon"
 import { router } from "expo-router";
-import { Papicons } from "@getpapillon/papicons"
+import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems"
+import { Dices, EllipsisVertical, Image as ImageIcon, RefreshCw, X } from "lucide-react-native"
 import { t } from "i18next";
 
 import * as ImagePicker from 'expo-image-picker';
-import ActionMenu from "@/ui/components/ActionMenu"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import NativeSegmentedControl from "@/ui/native/NativeSegmentedControl"
+import { generateMeshGradient } from "@/utils/generative"
+import { applyGradientWallpaper, setAccountWallpaper, useAccountWallpaper, Gradient, GRADIENT_HEIGHT, GRADIENT_PALETTE, GRADIENT_WIDTH, isGradient, randomGradient, randomSeed } from "@/utils/gradientWallpaper"
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
+
 
 interface Collection {
   name: string;
@@ -29,21 +35,23 @@ interface Collection {
 
 const WallpaperModal = () => {
   const { colors } = useTheme()
+  const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
 
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCollections = async () => {
+  const fetchCollections = async (isRefresh = false) => {
     try {
-      setLoading(true);
+      if (isRefresh) setRefreshing(true);
       const response = await fetch(COLLECTIONS_SOURCE);
       const data = await response.json();
       setCollections(data);
     } catch (error) {
       setError(error as string);
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   }
 
@@ -51,29 +59,48 @@ const WallpaperModal = () => {
     fetchCollections();
   }, []);
 
+  // Getting here is the whole point of the home tip pointing at the palette
+  // button, however the user got here. Retire it rather than leave it waiting
+  // to be closed by hand.
+  useEffect(() => {
+    retireTip(TipIds.homeWallpaper);
+  }, []);
+
 
 
   const [currentlyDownloading, setCurrentlyDownloading] = useState<string[]>([]);
 
-  const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
+  const accountWallpaper = useAccountWallpaper();
 
-  const currentWallpaper = settingsStore.wallpaper;
+  const currentWallpaper = accountWallpaper.wallpaper;
   const selectedId = currentWallpaper?.id;
   const hasCustomWallpaper = selectedId?.startsWith("custom:") ?? false;
 
   const flatListRef = React.useRef<FlatList>(null);
 
+  const [tab, setTab] = useState<"gradient" | "images">(currentWallpaper && !isGradient(currentWallpaper) ? "images" : "gradient");
+  const [listHeight, setListHeight] = useState(0);
+  // Automatic insets break when toggling scrolling between tabs: clear the transparent iOS header ourselves
+  const listTopPadding = Platform.OS === "ios" ? headerHeight : 20;
+
+  // Bring the selected collection into view when the list appears, not on every selection:
+  // a tapped row is already visible, and the first row never needs scrolling
   useEffect(() => {
-    if (collections.length > 0 && currentWallpaper) {
+    if (tab === "images" && collections.length > 0 && currentWallpaper) {
       const collectionIndex = collections.findIndex((collection) => collection.images.find((image) => image.id === currentWallpaper.id));
-      if (collectionIndex !== -1) {
+      if (collectionIndex > 0) {
         setTimeout(() => {
-          flatListRef.current?.scrollToIndex({ index: collectionIndex, animated: true });
-        }, 500);
+          flatListRef.current?.scrollToIndex({
+            index: collectionIndex,
+            animated: true,
+            viewOffset: Platform.OS === "ios" ? headerHeight : 0,
+          });
+        }, 10);
       }
     }
-  }, [collections, currentWallpaper]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, collections]);
 
   const wallpaperDirectory = new Directory(Paths.document, "wallpapers");
 
@@ -82,7 +109,7 @@ const WallpaperModal = () => {
 
     const wallpaperFile = new File(wallpaperDirectory, fileName);
     if (wallpaperFile.exists) {
-      mutateProperty("personalization", {
+      setAccountWallpaper({
         wallpaper: {
           id: wallpaper.id,
           path: {
@@ -100,7 +127,7 @@ const WallpaperModal = () => {
       wallpaperDirectory.create();
     }
     File.downloadFileAsync(wallpaper.url!, wallpaperFile).then((result) => {
-      mutateProperty("personalization", {
+      setAccountWallpaper({
         wallpaper: {
           id: wallpaper.id,
           path: {
@@ -135,7 +162,7 @@ const WallpaperModal = () => {
 
         sourceFile.copy(destFile);
 
-        mutateProperty("personalization", {
+        setAccountWallpaper({
           wallpaper: {
             id: `custom:${Date.now()}`,
             path: {
@@ -150,17 +177,99 @@ const WallpaperModal = () => {
     }
   }
 
+  const [gradient, setGradient] = useState<Gradient>(() => accountWallpaper.wallpaperGradient ?? randomGradient());
+  const applyTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const pendingGradient = useRef<Gradient | null>(null);
+
+  const flushGradient = () => {
+    clearTimeout(applyTimeout.current);
+    if (pendingGradient.current) applyGradientWallpaper(pendingGradient.current);
+    pendingGradient.current = null;
+  };
+
+  // Closing the modal mid-debounce must still apply what the preview shows
+  useEffect(() => () => flushGradient(), []);
+
+  const updateGradient = (next: Gradient) => {
+    setGradient(next);
+    // Home renders gradients from these params: update them now, the PNG on disk can follow
+    setAccountWallpaper({ wallpaperGradient: next });
+    pendingGradient.current = next;
+    clearTimeout(applyTimeout.current);
+    applyTimeout.current = setTimeout(flushGradient, 250);
+  };
+
+  const randomizeGradient = () => updateGradient(randomGradient());
+
+  const shuffleGradient = () => updateGradient({ ...gradient, seed: randomSeed() });
+
+  const changeTab = (next: "gradient" | "images") => {
+    setTab(next);
+    if (next === "gradient" && !isGradient(currentWallpaper)) {
+      applyGradientWallpaper(gradient);
+    }
+    if (next === "images" && isGradient(currentWallpaper)) {
+      clearTimeout(applyTimeout.current);
+      pendingGradient.current = null;
+      if (accountWallpaper.lastImageWallpaper) {
+        setAccountWallpaper({ wallpaper: accountWallpaper.lastImageWallpaper });
+        const gradientFile = currentWallpaper?.path?.name && new File(wallpaperDirectory, currentWallpaper.path.name);
+        if (gradientFile && gradientFile.exists) gradientFile.delete();
+      }
+    }
+  };
+
+  const downloadsSize = (wallpaperDirectory.info().size / (1024 * 1024)).toFixed(2) + " MB";
+
+  const clearWallpaper = () => {
+    setAccountWallpaper({ wallpaper: undefined })
+  };
+
+  const clearDownloads = () => {
+    wallpaperDirectory.delete();
+    // Downloads are shared by every account: drop all references to them
+    mutateProperty("personalization", {
+      wallpaper: undefined,
+      lastImageWallpaper: undefined,
+      wallpapersByAccount: {}
+    })
+  };
+
   return (
     <>
+      <ExpoStack.Title asChild>
+        <View style={{ width: Math.min(Dimensions.get("window").width - (Platform.OS === "android" ? 200 : 140), 280) }}>
+          <NativeSegmentedControl
+            options={[t("Modal_Wallpaper_Tab_Gradient"), t("Modal_Wallpaper_Tab_Images")]}
+            selectedIndex={tab === "gradient" ? 0 : 1}
+            onChange={(index) => changeTab(index === 0 ? "gradient" : "images")}
+          />
+        </View>
+      </ExpoStack.Title>
+
       <FlatList
         ref={flatListRef}
-        data={collections}
+        data={tab === "images" ? collections : []}
+        onLayout={(e) => setListHeight(e.nativeEvent.layout.height)}
+        // The gradient editor fills the visible sheet (the preview stretches), so there's nothing to scroll
+        scrollEnabled={tab === "images"}
+        ListHeaderComponent={tab === "gradient" ? (
+          <View
+            style={{
+              paddingHorizontal: 16,
+              height: listHeight > 0 ? listHeight - listTopPadding - insets.bottom : undefined,
+            }}
+          >
+            <GradientEditor value={gradient} onChange={updateGradient} />
+          </View>
+        ) : null}
         style={{
           flex: 1,
         }}
         contentContainerStyle={{
           gap: 16,
-          paddingTop: Platform.OS === 'android' ? 20 : 72
+          paddingTop: listTopPadding,
+          paddingBottom: insets.bottom
         }}
         renderItem={({ item, index }) => (
           <View>
@@ -203,101 +312,169 @@ const WallpaperModal = () => {
             />
           </View>
         )}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={fetchCollections}
-            progressViewOffset={72}
-          />
-        }
+        contentInsetAdjustmentBehavior="never"
       />
 
-      <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + (hasCustomWallpaper ? "true" : "false")}>
-        {Platform.OS === 'android' ? (
-          <NativeHeaderPressable onPress={() => router.back()}>
-            <Icon size={28}>
-              <Papicons name="Cross" />
-            </Icon>
-          </NativeHeaderPressable>
-        ) : (
-          <NativeHeaderPressable onPress={() => uploadCustomWallpaper()}>
-            <Icon size={28} fill={hasCustomWallpaper ? colors.primary : undefined}>
-              <Papicons name="Gallery" />
-            </Icon>
-          </NativeHeaderPressable>
-        )}
-      </NativeHeaderSide>
-
-      <NativeHeaderSide side="Right" key={currentWallpaper?.id + ":" + wallpaperDirectory.exists}>
-        {Platform.OS === 'android' && (
-          <NativeHeaderPressable onPress={() => uploadCustomWallpaper()}>
-            <Icon size={28} fill={hasCustomWallpaper ? colors.primary : undefined}>
-              <Papicons name="Gallery" />
-            </Icon>
-          </NativeHeaderPressable>
-        )}
-        <ActionMenu
-          actions={[
-            {
-              id: "background:clear",
-              title: t("Modal_Wallpaper_Clear"),
-              imageColor: "#FF0000",
-              image: Platform.select({
-                ios: "trash.fill"
-              }),
-              attributes: { "destructive": true, "disabled": !currentWallpaper }
-            },
-            {
-              id: "background:downloads",
-              title: t("Modal_Wallpaper_Downloads"),
-              imageColor: colors.text,
-              image: Platform.select({
-                ios: "square.and.arrow.down"
-              }),
-              displayInline: false,
-              subactions: [
-                {
-                  title: t("Modal_Wallpaper_Downloads_Size"),
-                  subtitle: (wallpaperDirectory.info().size / (1024 * 1024)).toFixed(2) + " MB"
-                },
-                {
-                  id: "downloads:clear",
-                  title: t("Modal_Wallpaper_ClearDownloads"),
-                  imageColor: "#FF0000",
-                  image: Platform.select({
-                    ios: "trash.fill"
-                  }),
-                  attributes: { "destructive": true, "disabled": !wallpaperDirectory.exists }
-                }
-              ]
-            },
-          ]}
-          placement="below"
-          onPressAction={({ nativeEvent }) => {
-            const action = nativeEvent.event;
-            if (action === "downloads:clear") {
-              wallpaperDirectory.delete();
-              mutateProperty("personalization", {
-                wallpaper: undefined
-              })
-            }
-            if (action === "background:clear") {
-              mutateProperty("personalization", {
-                wallpaper: undefined
-              })
-            }
-          }}
-        >
-          <NativeHeaderPressable>
-            <Icon size={28}>
-              <Papicons name="Gears" />
-            </Icon>
-          </NativeHeaderPressable>
-        </ActionMenu>
-      </NativeHeaderSide>
+      {Platform.OS === "android" ? (
+        <>
+          <ExpoStack.Toolbar placement="left" asChild>
+            <AndroidHeaderButton icon={<X size={24} color={colors.text} />} accessibilityLabel={t("CANCEL_BTN")} onPress={() => router.back()} />
+          </ExpoStack.Toolbar>
+          <ExpoStack.Toolbar placement="right" asChild>
+            <View style={{ flexDirection: "row" }}>
+              {tab === "gradient" ? (
+                <AndroidHeaderButton icon={<Dices size={24} color={colors.text} />} onPress={randomizeGradient} />
+              ) : (
+                <AndroidHeaderButton icon={<ImageIcon size={24} color={hasCustomWallpaper ? colors.primary : colors.text} />} onPress={uploadCustomWallpaper} />
+              )}
+              {tab === "gradient" ? (
+                <AndroidHeaderButton
+                  icon={<RefreshCw size={24} color={colors.text} />}
+                  accessibilityLabel={t("Modal_Wallpaper_Gradient_Shuffle")}
+                  onPress={shuffleGradient}
+                />
+              ) : (
+                <AndroidHeaderMenu
+                  icon={<EllipsisVertical size={24} color={colors.text} />}
+                  actions={[
+                    {
+                      id: "background:clear",
+                      title: t("Modal_Wallpaper_Clear"),
+                      imageColor: "#FF0000",
+                      attributes: { "destructive": true, "disabled": !currentWallpaper }
+                    },
+                    {
+                      id: "background:downloads",
+                      title: t("Modal_Wallpaper_Downloads"),
+                      imageColor: colors.text,
+                      displayInline: false,
+                      subactions: [
+                        {
+                          title: t("Modal_Wallpaper_Downloads_Size"),
+                          subtitle: downloadsSize
+                        },
+                        {
+                          id: "downloads:clear",
+                          title: t("Modal_Wallpaper_ClearDownloads"),
+                          imageColor: "#FF0000",
+                          attributes: { "destructive": true, "disabled": !wallpaperDirectory.exists }
+                        }
+                      ]
+                    },
+                  ]}
+                  onPressAction={({ nativeEvent }) => {
+                    if (nativeEvent.event === "downloads:clear") clearDownloads();
+                    if (nativeEvent.event === "background:clear") clearWallpaper();
+                  }}
+                />
+              )}
+            </View>
+          </ExpoStack.Toolbar>
+        </>
+      ) : (
+        <>
+          <ExpoStack.Toolbar placement="left">
+            {tab === "gradient" ? (
+              <ExpoStack.Toolbar.Button icon="dice" onPress={randomizeGradient} />
+            ) : (
+              <ExpoStack.Toolbar.Button
+                icon="photo"
+                tintColor={hasCustomWallpaper ? colors.primary : undefined}
+                onPress={uploadCustomWallpaper}
+              />
+            )}
+          </ExpoStack.Toolbar>
+          <ExpoStack.Toolbar placement="right">
+            {tab === "gradient" ? (
+              <ExpoStack.Toolbar.Button icon="arrow.triangle.2.circlepath" onPress={shuffleGradient}>
+                {t("Modal_Wallpaper_Gradient_Shuffle")}
+              </ExpoStack.Toolbar.Button>
+            ) : (
+              <ExpoStack.Toolbar.Menu>
+                <ExpoStack.Toolbar.Icon sf="ellipsis" />
+                <ExpoStack.Toolbar.MenuAction
+                  icon="trash.fill"
+                  destructive
+                  disabled={!currentWallpaper}
+                  onPress={clearWallpaper}
+                >
+                  {t("Modal_Wallpaper_Clear")}
+                </ExpoStack.Toolbar.MenuAction>
+                <ExpoStack.Toolbar.Menu title={t("Modal_Wallpaper_Downloads")} icon="square.and.arrow.down">
+                  <ExpoStack.Toolbar.MenuAction disabled subtitle={downloadsSize}>
+                    {t("Modal_Wallpaper_Downloads_Size")}
+                  </ExpoStack.Toolbar.MenuAction>
+                  <ExpoStack.Toolbar.MenuAction
+                    icon="trash.fill"
+                    destructive
+                    disabled={!wallpaperDirectory.exists}
+                    onPress={clearDownloads}
+                  >
+                    {t("Modal_Wallpaper_ClearDownloads")}
+                  </ExpoStack.Toolbar.MenuAction>
+                </ExpoStack.Toolbar.Menu>
+              </ExpoStack.Toolbar.Menu>
+            )}
+          </ExpoStack.Toolbar>
+        </>
+      )}
     </>
   )
 }
+
+const GradientEditor = ({ value, onChange }: { value: Gradient, onChange: (gradient: Gradient) => void }) => {
+  const { colors } = useTheme();
+
+  // Same seed and aspect ratio as the full-size render, so the preview matches the result
+  const preview = useMemo(() => {
+    const image = generateMeshGradient(value.colors, value.seed, Math.round(GRADIENT_WIDTH / 4), GRADIENT_HEIGHT / 4);
+    return image ? `data:image/png;base64,${image.encodeToBase64()}` : undefined;
+  }, [value]);
+
+  const toggleColor = (color: string) => {
+    const current = value.colors;
+    if (current.includes(color)) {
+      if (current.length > 1) onChange({ ...value, colors: current.filter((c) => c !== color) });
+    } else if (current.length < 4) {
+      onChange({ ...value, colors: [...current, color] });
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, gap: 16 }}>
+      <Image
+        source={{ uri: preview }}
+        resizeMode="cover"
+        style={{ width: "100%", flex: 1, minHeight: 120, borderRadius: 16, borderCurve: "continuous" }}
+      />
+
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
+        {GRADIENT_PALETTE.map((color) => {
+          const selected = value.colors.includes(color);
+          return (
+            <Pressable
+              key={color}
+              onPress={() => toggleColor(color)}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: selected }}
+              accessibilityLabel={color}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                padding: 3,
+                borderWidth: 2,
+                borderColor: selected ? colors.primary : "transparent",
+              }}
+            >
+              <View style={{ flex: 1, borderRadius: 20, backgroundColor: color, borderWidth: 1, borderColor: colors.border }} />
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+};
 
 const WallpaperImage = ({ item, onPress, selectedId, isDownloading }: { item: WallpaperCollection, onPress: () => void, selectedId: string, isDownloading: boolean }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -305,7 +482,7 @@ const WallpaperImage = ({ item, onPress, selectedId, isDownloading }: { item: Wa
 
   return (
 
-    <AnimatedPressable
+    <Pressable
       onPress={onPress}
     >
       <View
@@ -346,7 +523,7 @@ const WallpaperImage = ({ item, onPress, selectedId, isDownloading }: { item: Wa
           onLoad={() => setImageLoaded(true)}
         />
       </View>
-    </AnimatedPressable>
+    </Pressable>
   );
 };
 

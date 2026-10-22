@@ -1,13 +1,16 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
+import { Href, Link } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
-import Reanimated, { createAnimatedComponent, LinearTransition } from 'react-native-reanimated';
+import Reanimated, { LinearTransition } from 'react-native-reanimated';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Animation } from "../utils/Animation";
+import { useDragSafePress } from "../utils/useDragSafePress";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Typography from "./Typography";
-import { LegendList } from "@legendapp/list";
+import { SAFE_HORIZONTAL_EDGES } from "../components/SafeHorizontalView";
 
 type MarkerProps = {
   children?: React.ReactNode;
@@ -17,6 +20,7 @@ type ListItemProps = MarkerProps & {
   id?: string;
   animated?: boolean;
   onPress?: () => void;
+  href?: Href;
   containerStyle?: any;
   style?: any;
   entering?: any;
@@ -116,6 +120,43 @@ const renderListRow = ({
   const ItemComponent = listAnimated ? Reanimated.View : View;
   const entering = itemProps.entering ?? (itemProps.animated ? PapillonAppearIn : undefined);
   const exiting = itemProps.exiting ?? (itemProps.animated ? PapillonAppearOut : undefined);
+  const row = (
+    <View
+      style={[
+        styles.row,
+        isFirst && styles.first,
+        isLast && styles.last,
+        {
+          backgroundColor: colors.item,
+          overflow: "hidden",
+          ...itemProps.style,
+        },
+        Platform.OS === "android"
+          ? {
+              borderTopLeftRadius: isFirst ? 20 : 8,
+              borderTopRightRadius: isFirst ? 20 : 8,
+              borderBottomLeftRadius: isLast ? 20 : 8,
+              borderBottomRightRadius: isLast ? 20 : 8,
+            }
+          : null,
+      ]}
+    >
+      {leading && <View style={styles.leading}>{leading}</View>}
+      <View style={styles.body}>{main}</View>
+      {trailing && <View style={styles.trailing}>{trailing}</View>}
+    </View>
+  );
+  const separator =
+    Platform.OS === "ios" && !isLast ? (
+      <View style={[styles.separatorContainer, { backgroundColor: colors.item }]}>
+        <View style={[styles.separator, { backgroundColor: colors.border }]} />
+      </View>
+    ) : null;
+  const touchable = (
+    <ListTouchable {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}>
+      {row}
+    </ListTouchable>
+  );
 
   return (
     <ItemComponent
@@ -129,14 +170,7 @@ const renderListRow = ({
           : {
               borderColor: colors.border,
               backgroundColor: colors.border,
-              borderLeftWidth: 1,
-              borderRightWidth: 1,
-              borderBottomWidth: 1,
-              borderTopWidth: isFirst ? 1 : 0,
-              shadowColor: "#000000",
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.1,
-              shadowRadius: 2,
+              borderWidth: 0,
               elevation: 1,
               overflow: "visible",
               ...itemProps.containerStyle,
@@ -146,32 +180,14 @@ const renderListRow = ({
       entering={entering}
       exiting={exiting}
     >
-      <ListTouchable {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}>
-        <View
-          style={[
-            styles.row,
-            isFirst && styles.first,
-            isLast && styles.last,
-            {
-              backgroundColor: colors.item,
-              overflow: "hidden",
-              ...itemProps.style,
-            },
-            Platform.OS === "android"
-              ? {
-                  borderTopLeftRadius: isFirst ? 20 : 8,
-                  borderTopRightRadius: isFirst ? 20 : 8,
-                  borderBottomLeftRadius: isLast ? 20 : 8,
-                  borderBottomRightRadius: isLast ? 20 : 8,
-                }
-              : null,
-          ]}
-        >
-          {leading && <View style={styles.leading}>{leading}</View>}
-          <View style={styles.body}>{main}</View>
-          {trailing && <View style={styles.trailing}>{trailing}</View>}
-        </View>
-      </ListTouchable>
+      {itemProps.href ? (
+        <Link href={itemProps.href} asChild>
+          {touchable}
+        </Link>
+      ) : (
+        touchable
+      )}
+      {separator}
     </ItemComponent>
   );
 };
@@ -271,13 +287,24 @@ const RawRuntimeRenderer: React.FC<{
 
 const MemoizedRawRuntimeRenderer = React.memo(RawRuntimeRenderer);
 
-const List = ({ children, animated = false, gap = 12, ...rest }) => {
+const List = ({
+  children,
+  animated = false,
+  gap = 12,
+  numColumns = 1,
+  // When set, cells get this horizontal padding plus the left/right safe area,
+  // applied natively so it follows window resizes without a JS re-render.
+  safeHorizontalPadding,
+  ...rest
+}) => {
   const theme = useTheme();
   const { colors } = theme;
 
   const data = useMemo(() => {
     const parseItem = (item, index) => {
-      const { leading, trailing, main } = splitItemChildren(item.props.children);
+      const { leading, trailing, main } = splitItemChildren(
+        item.props.children
+      );
 
       return {
         kind: "item",
@@ -301,7 +328,7 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
       let label = null;
       const main = [];
 
-      React.Children.forEach(sectionTitle.props.children, (child) => {
+      React.Children.forEach(sectionTitle.props.children, child => {
         if (!child) {
           return;
         }
@@ -368,34 +395,54 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
       if (isType(child, Section, "List.Section")) {
         flushImplicit();
         const sectionId = child.props?.id || `section-${index}`;
-        const sectionChildren = React.Children.toArray(child.props.children).filter(Boolean);
+        const sectionChildren = React.Children.toArray(
+          child.props.children
+        ).filter(Boolean);
         const sectionEntries = [];
         let sectionItemCursor = 0;
 
         sectionChildren.forEach((sectionChild, sectionChildIndex) => {
           if (isType(sectionChild, SectionTitle, "List.SectionTitle")) {
-            sectionEntries.push(parseSectionTitle(sectionChild, `${index}-title-${sectionChildIndex}`, sectionId));
+            sectionEntries.push(
+              parseSectionTitle(
+                sectionChild,
+                `${index}-title-${sectionChildIndex}`,
+                sectionId
+              )
+            );
             return;
           }
 
           if (isType(sectionChild, ViewItem, "List.View")) {
-            sectionEntries.push(parseViewItem(sectionChild, `${index}-view-${sectionChildIndex}`, sectionId));
+            sectionEntries.push(
+              parseViewItem(
+                sectionChild,
+                `${index}-view-${sectionChildIndex}`,
+                sectionId
+              )
+            );
             return;
           }
 
           if (isType(sectionChild, Item, "List.Item")) {
-            sectionEntries.push(parseItem(sectionChild, `${index}-${sectionItemCursor}`));
+            sectionEntries.push(
+              parseItem(sectionChild, `${index}-${sectionItemCursor}`)
+            );
             sectionItemCursor += 1;
             return;
           }
 
-          sectionEntries.push(parseRawItem(sectionChild, `${index}-raw-${sectionChildIndex}`));
+          sectionEntries.push(
+            parseRawItem(sectionChild, `${index}-raw-${sectionChildIndex}`)
+          );
         });
 
-        const sectionItems = sectionEntries.filter((entry) => entry.kind === "item" || entry.kind === "raw");
+        const sectionItems = sectionEntries.filter(
+          entry => entry.kind === "item" || entry.kind === "raw"
+        );
         const sectionItemsWithFlags = withSectionFlags(sectionItems, sectionId);
         let sectionItemIndex = 0;
-        const normalizedSectionEntries = sectionEntries.map((entry) => {
+        const normalizedSectionEntries = sectionEntries.map(entry => {
           if (entry.kind !== "item" && entry.kind !== "raw") {
             return entry;
           }
@@ -404,7 +451,34 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
           return normalized;
         });
 
-        output.push(...normalizedSectionEntries);
+        const entries = normalizedSectionEntries.map((entry, entryIndex) => {
+          if (entry.kind === "sectionTitle") {
+            return {
+              ...entry,
+              gapBefore: entryIndex === 0 ? 0 : gap,
+            };
+          }
+
+          if (entry.kind === "view") {
+            return { ...entry, gapBefore: 0 };
+          }
+
+          const previous = normalizedSectionEntries[entryIndex - 1];
+          if (
+            entry.isFirstInSection &&
+            previous?.kind === "sectionTitle"
+          ) {
+            return { ...entry, gapBefore: 6 };
+          }
+
+          return { ...entry, gapBefore: 0 };
+        });
+
+        output.push({
+          kind: "section",
+          id: sectionId,
+          entries,
+        });
         return;
       }
 
@@ -418,7 +492,9 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
         if (!implicitSectionId) {
           implicitSectionId = `section-implicit-${index}`;
         }
-        implicitItems.push(parseItem(child, `${index}-${implicitItems.length}`));
+        implicitItems.push(
+          parseItem(child, `${index}-${implicitItems.length}`)
+        );
         return;
       }
 
@@ -434,7 +510,10 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
     flushImplicit();
 
     return output.map((entry, index) => {
-      if (index === 0) {
+      // In a multi-column layout, every item in the first visual row starts at
+      // the top. Applying the inter-section gap to the second item would
+      // stagger the columns before masonry positioning even begins.
+      if (index < numColumns) {
         return { ...entry, gapBefore: 0 };
       }
 
@@ -445,6 +524,10 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
 
       if (entry.kind === "view") {
         return { ...entry, gapBefore: 0 };
+      }
+
+      if (entry.kind === "section") {
+        return { ...entry, gapBefore: gap };
       }
 
       if (entry.isFirstInSection && previous.kind === "sectionTitle") {
@@ -460,53 +543,91 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
 
       return { ...entry, gapBefore: 0 };
     });
-  }, [children, gap]);
+  }, [children, gap, numColumns]);
 
-  const ListComponent = Reanimated.FlatList;
+  const ListComponent = FlashList;
 
-  const keyExtractor = useCallback((item) => item.id, []);
+  const keyExtractor = useCallback(item => item.id, []);
 
-  const renderItem = useCallback(({ item }) => {
-    if (item.kind === "sectionTitle") {
-      return (
-        <View style={[styles.sectionTitleContainer, { marginTop: item.gapBefore }]}>
-          {item.main}
-          {item.label && (
-            <Typography variant="body1" weight="semibold" color="textSecondary">
-              {item.label}
-            </Typography>
-          )}
-        </View>
-      );
-    }
+  const renderItem = useCallback(
+    ({ item }) => {
+      const renderEntry = entry => {
+        if (entry.kind === "sectionTitle") {
+          return (
+            <View
+              style={[
+                styles.sectionTitleContainer,
+                { marginTop: entry.gapBefore },
+              ]}
+            >
+              {entry.main}
+              {entry.label && (
+                <Typography
+                  variant="body1"
+                  weight="semibold"
+                  color="textSecondary"
+                >
+                  {entry.label}
+                </Typography>
+              )}
+            </View>
+          );
+        }
 
-    if (item.kind === "view") {
-      return <View style={item.viewProps.style}>{item.main}</View>;
-    }
+        if (entry.kind === "view") {
+          return <View style={entry.viewProps.style}>{entry.main}</View>;
+        }
 
-    if (item.kind === "raw") {
-      return <MemoizedRawRuntimeRenderer item={item} animated={animated} colors={colors} />;
-    }
+        if (entry.kind === "raw") {
+          return (
+            <MemoizedRawRuntimeRenderer
+              item={entry}
+              animated={animated}
+              colors={colors}
+            />
+          );
+        }
 
-    return renderListRow({
-      itemProps: item.itemProps,
-      leading: item.leading,
-      trailing: item.trailing,
-      main: item.main,
-      isFirst: item.isFirstInSection,
-      isLast: item.isLastInSection,
-      gapBefore: item.gapBefore,
-      listAnimated: animated,
-      colors,
-    });
-  }, [animated, colors]);
+        return renderListRow({
+          itemProps: entry.itemProps,
+          leading: entry.leading,
+          trailing: entry.trailing,
+          main: entry.main,
+          isFirst: entry.isFirstInSection,
+          isLast: entry.isLastInSection,
+          gapBefore: entry.gapBefore,
+          listAnimated: animated,
+          colors,
+        });
+      };
+
+      if (item.kind === "section") {
+        return (
+          <View style={{ marginTop: item.gapBefore }}>
+            {item.entries.map(entry => (
+              <React.Fragment key={entry.id}>
+                {renderEntry(entry)}
+              </React.Fragment>
+            ))}
+          </View>
+        );
+      }
+
+      return renderEntry(item);
+    },
+    [animated, colors]
+  );
 
   const contentContainerStyle = useMemo(
     () => [rest.contentContainerStyle, styles.listContentContainer],
-    [rest.contentContainerStyle],
+    [rest.contentContainerStyle]
   );
-  const listStyle = useMemo(() => [rest.style, styles.list], [rest.style]);
-  const removeClippedSubviews = rest.removeClippedSubviews ?? Platform.OS === "android";
+  const listStyle = useMemo(
+    () => StyleSheet.flatten([rest.style, styles.list]),
+    [rest.style]
+  );
+  const removeClippedSubviews =
+    rest.removeClippedSubviews ?? Platform.OS === "android";
   const initialNumToRender = rest.initialNumToRender ?? 10;
   const maxToRenderPerBatch = rest.maxToRenderPerBatch ?? 10;
   const updateCellsBatchingPeriod = rest.updateCellsBatchingPeriod ?? 16;
@@ -516,11 +637,49 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
 
   return (
     <ListComponent
-      showsVerticalScrollIndicator={Platform.OS === "ios" ? rest.showsVerticalScrollIndicator ?? true : false}
-      itemLayoutAnimation={animated ? Animation(LinearTransition, "list") : undefined}
+      showsVerticalScrollIndicator={
+        Platform.OS === "ios"
+          ? (rest.showsVerticalScrollIndicator ?? true)
+          : false
+      }
+      itemLayoutAnimation={
+        animated ? Animation(LinearTransition, "list") : undefined
+      }
       data={data}
       keyExtractor={keyExtractor}
-      renderItem={renderItem}
+      renderItem={item => {
+        const isFirstColumn = item.index % numColumns === 0;
+        const isLastColumn = item.index % numColumns === numColumns - 1;
+        const innerPadding = numColumns > 1 ? gap / 2 : 0;
+
+        if (safeHorizontalPadding !== undefined) {
+          return (
+            <SafeAreaView
+              edges={{
+                left: isFirstColumn ? SAFE_HORIZONTAL_EDGES.left : "off",
+                right: isLastColumn ? SAFE_HORIZONTAL_EDGES.right : "off",
+              }}
+              style={{
+                paddingLeft: isFirstColumn ? safeHorizontalPadding : innerPadding,
+                paddingRight: isLastColumn ? safeHorizontalPadding : innerPadding,
+              }}
+            >
+              {renderItem(item)}
+            </SafeAreaView>
+          );
+        }
+
+        return (
+          <View
+            style={{
+              paddingLeft: isFirstColumn ? 0 : innerPadding,
+              paddingRight: isLastColumn ? 0 : innerPadding,
+            }}
+          >
+            {renderItem(item)}
+          </View>
+        );
+      }}
       {...rest}
       removeClippedSubviews={removeClippedSubviews}
       initialNumToRender={initialNumToRender}
@@ -529,6 +688,8 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
       windowSize={windowSize}
       {...nonAnimatedListPerfProps}
       contentContainerStyle={contentContainerStyle}
+      numColumns={numColumns}
+      masonry={numColumns > 1}
       style={listStyle}
     />
   );
@@ -545,12 +706,16 @@ export const ListTouchable = React.memo(({ ...props }) => {
   }, []);
 
   const handlePress = useCallback((event) => {
+    parentBlockPress?.();
     if (blockOwnPressRef.current) {
       blockOwnPressRef.current = false;
       return;
     }
     props.onPress?.(event);
-  }, [props.onPress]);
+  }, [props.onPress, parentBlockPress]);
+
+  // A press that drifted was a scroll or a page swipe; it must not fire.
+  const dragSafe = useDragSafePress(handlePress, props.onPressIn);
 
   if (!hasOnPress) {
     return (
@@ -567,10 +732,8 @@ export const ListTouchable = React.memo(({ ...props }) => {
           background={TouchableNativeFeedback.Ripple(theme.colors.text + "22", true)}
           useForeground
           {...props}
-          onPress={(event) => {
-            parentBlockPress?.();
-            handlePress(event);
-          }}
+          onPressIn={dragSafe.onPressIn}
+          onPress={dragSafe.onPress}
         >
           {props.children}
         </TouchableNativeFeedback>
@@ -583,10 +746,8 @@ export const ListTouchable = React.memo(({ ...props }) => {
       <TouchableOpacity
         activeOpacity={0.5}
         {...props}
-        onPress={(event) => {
-          parentBlockPress?.();
-          handlePress(event);
-        }}
+        onPressIn={dragSafe.onPressIn}
+        onPress={dragSafe.onPress}
       >
         {props.children}
       </TouchableOpacity>
@@ -610,6 +771,8 @@ const styles = StyleSheet.create({
   leading: { marginRight: 16 },
   body: { flex: 1 },
   trailing: { marginLeft: 16 },
+  separatorContainer: {},
+  separator: { height: 0.5, marginHorizontal: 16 },
   sectionTitleContainer: { paddingHorizontal: Platform.OS === "android" ? 16 : 4, paddingVertical: 6, paddingBottom: Platform.OS === "android" ? 6 : 4, flexDirection: "row", alignItems: "center", gap: Platform.OS === "android" ? 10 : 8, marginRight: 6 },
   first: {
     borderTopLeftRadius: 20,

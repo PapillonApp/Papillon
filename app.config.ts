@@ -1,32 +1,29 @@
-import PackageJSON from "./package.json" with { type: 'json' };
+import PackageJSON from "./package.json" with { type: "json" };
 
-const androidPreVersion = PackageJSON.version.replaceAll(".", "")
-const androidVersionCode = androidPreVersion.length == 3 ? parseInt(androidPreVersion + "00") : androidPreVersion.length == 4 ? parseInt(androidPreVersion + "0") : parseInt(androidPreVersion)
+// versionCode: seconds since 2020-01-01 UTC — unique, strictly increasing, well under the 2.1e9 cap
+const androidVersionCode = Math.floor(Date.now() / 1000) - 1577836800;
 
 export default {
   expo: {
     name: "Papillon",
     slug: "papillon",
     version: PackageJSON.version,
-    orientation: "portrait",
+    orientation: "default",
     icon: "./assets/images/icon.png",
     scheme: ["papillon", "izly", "skoapp-prod"],
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
-    newArchEnabled: true,
-    splash: {
-      image: "./assets/images/splash.png",
-      resizeMode: "cover",
-      backgroundColor: "#003A21",
-    },
     ios: {
+      appleTeamId: "7RXNP6V83P",
       appStoreUrl:
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       bundleIdentifier: "xyz.getpapillon.ios",
       associatedDomains: ["applinks:getpapillon.xyz"],
       icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
+      deploymentTarget: "17.6",
       infoPlist: {
+        AppGroupIdentifier: "group.xyz.getpapillon",
         CFBundleURLTypes: [
           {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
@@ -74,7 +71,13 @@ export default {
           "et",
         ],
         CADisableMinimumFrameDurationOnPhone: true,
-        LSApplicationQueriesSchemes: ["transit", "maps"],
+        LSApplicationQueriesSchemes: ["maps"],
+      },
+      entitlements: {
+        "com.apple.security.application-groups": [
+          "group.xyz.getpapillon",
+          "group.xyz.getpapillon.ios",
+        ],
       },
       supportsTablet: true,
       config: {
@@ -84,19 +87,17 @@ export default {
     android: {
       versionCode: androidVersionCode,
       package: "xyz.getpapillon.app",
+      blockedPermissions: [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+      ],
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
         monochromeImage: "./assets/images/monochrome-icon.png",
       },
-      edgeToEdgeEnabled: true,
-      splash: {
-        image: "./assets/images/splash_android.png",
-        resizeMode: "cover",
-        backgroundColor: "#003A21",
-      },
       supportsTablet: true,
-      predictiveBackGestureEnabled: true
+      predictiveBackGestureEnabled: false,
     },
     web: {
       bundler: "metro",
@@ -105,12 +106,26 @@ export default {
     },
     plugins: [
       "expo-router",
+      "expo-status-bar",
       "expo-font",
       "expo-video",
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          enableBackgroundPlayback: false,
+        },
+      ],
       "expo-localization",
       "expo-asset",
       "@react-native-community/datetimepicker",
+      [
+        "expo-splash-screen",
+        {
+          backgroundColor: "#29947A",
+          image: "./assets/images/logotype.png",
+          imageWidth: 240,
+        },
+      ],
       [
         "expo-image-picker",
         {
@@ -119,14 +134,6 @@ export default {
         },
       ],
       "expo-web-browser",
-      [
-        "react-native-fast-tflite",
-        {
-          enableCoreMLDelegate: true,
-          enableAndroidGpuLibraries: true,
-        },
-      ],
-      "react-native-bottom-tabs",
       "expo-secure-store",
       [
         "expo-location",
@@ -157,9 +164,14 @@ export default {
               { name: "SDWebImage", modular_headers: true },
               { name: "SDWebImageSVGCoder", modular_headers: true },
             ],
+            buildReactNativeFromSource: false,
+            ccacheEnabled: true,
           },
         },
       ],
+      "@getpapillon/papillonkit",
+      "./plugins/with-ios-native-files",
+      "./plugins/with-android-gradle-properties-newline",
     ],
     experiments: {
       typedRoutes: true,

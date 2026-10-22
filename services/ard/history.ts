@@ -1,4 +1,4 @@
-// import { Client } from "pawrd";
+import { Client } from "@blockshub/blocksrd";
 import { CanteenHistoryItem } from "../shared/canteen";
 import { error } from "@/utils/logger/logger";
 
@@ -6,7 +6,6 @@ export async function fetchARDHistory(
   session: Client,
   accountId: string
 ): Promise<CanteenHistoryItem[]> {
-  return [];
   const uid = await session.getOnlinePayments().then((payments) => payments.user.uid);
   if (!uid) {
     error("An error occured during UID retrieving")

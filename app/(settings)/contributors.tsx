@@ -9,6 +9,7 @@ import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { Contributor, getContributors } from "@/utils/github/contributors";
+import { useTheme } from "expo-router/react-navigation";
 
 const TEAM_LOGINS = [
   "ecnivtwelve",
@@ -20,6 +21,7 @@ const TEAM_LOGINS = [
 ];
 
 export default function SettingsContributors() {
+  const { colors } = useTheme();
   const [contributors, setContributors] = useState<Contributor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -70,9 +72,10 @@ export default function SettingsContributors() {
 
   return (
     <List
-      contentInsetAdjustmentBehavior="always"
-      contentContainerStyle={{ padding: 16, gap: 12 }}
-      style={{ flex: 1 }}
+      contentInsetAdjustmentBehavior="automatic"
+      safeHorizontalPadding={16}
+      contentContainerStyle={{ paddingVertical: 16, gap: 12 }}
+      style={{ flex: 1, backgroundColor: colors.overground }}
     >
       {isLoading && (
         <List.View
