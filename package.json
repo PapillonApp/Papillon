@@ -97,7 +97,7 @@
     "react-native-qrcode-svg": "^6.3.15",
     "react-native-reanimated": "4.7.0",
     "react-native-safe-area-context": "~5.9.1",
-    "react-native-screens": "~4.28.0",
+    "react-native-screens": "~4.30.0",
     "react-native-svg": "15.15.5",
     "react-native-web": "^0.21.2",
     "react-native-webview": "14.0.1",
