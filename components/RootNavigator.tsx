@@ -177,6 +177,14 @@ function RootNavigatorContent() {
         />
 
         <Stack.Screen
+          name="(modals)/tasks/custom"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+          }}
+        />
+
+        <Stack.Screen
           name="(modals)/team"
           options={{
             headerShown: false,

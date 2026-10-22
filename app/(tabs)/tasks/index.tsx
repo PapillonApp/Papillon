@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { useHeaderHeight, useTheme } from 'expo-router/react-navigation';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -304,6 +304,8 @@ const TasksView: React.FC = () => {
     [weekPickerAnchor.top]
   );
 
+  const openNewTask = useCallback(() => router.push("/(modals)/tasks/custom"), []);
+
   const closeWeekPicker = useCallback(() => setShowWeekPicker(false), [setShowWeekPicker]);
 
   const handlePickWeek = useCallback((week: number) => {
@@ -355,20 +357,24 @@ const TasksView: React.FC = () => {
 
       {isAndroid ? (
         <Stack.Toolbar placement="right" asChild>
-          <AndroidHeaderMenu
-            icon="Filter"
-            accessibilityLabel={t('Task_Sorting_Title')}
-            actions={sortings.map(sorting => ({
-              id: sorting.value,
-              title: sorting.label,
-              papicon: sorting.papicon,
-              state: sortMethod === sorting.value ? 'on' : 'off',
-            }))}
-            onPressAction={({ nativeEvent }) => setSortMethod(nativeEvent.event as SortMethod)}
-          />
+          <View style={styles.toolbarRow}>
+            <AndroidHeaderButton icon="Plus" accessibilityLabel={t('Task_New_Title')} onPress={openNewTask} />
+            <AndroidHeaderMenu
+              icon="Filter"
+              accessibilityLabel={t('Task_Sorting_Title')}
+              actions={sortings.map(sorting => ({
+                id: sorting.value,
+                title: sorting.label,
+                papicon: sorting.papicon,
+                state: sortMethod === sorting.value ? 'on' : 'off',
+              }))}
+              onPressAction={({ nativeEvent }) => setSortMethod(nativeEvent.event as SortMethod)}
+            />
+          </View>
         </Stack.Toolbar>
       ) : (
         <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Button icon="plus" accessibilityLabel={t('Task_New_Title')} onPress={openNewTask} />
           <Stack.Toolbar.Menu>
             <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
             <Stack.Toolbar.Label>{t('Task_Sorting_Title')}</Stack.Toolbar.Label>
@@ -480,6 +486,9 @@ const styles = StyleSheet.create({
   },
   titleSubtitle: {
     marginTop: -2,
+  },
+  toolbarRow: {
+    flexDirection: "row",
   },
 });
 
