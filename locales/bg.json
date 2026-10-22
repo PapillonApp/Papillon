@@ -1,7 +1,6 @@
 {
   "Global_Back": "Назад",
   "Global_DatePrefix": "на",
-
   "Tab_Home": "Начало",
   "Tab_Calendar": "Програма",
   "Tab_Tasks": "Задачи",
@@ -16,7 +15,6 @@
   "Tab_Page": "Страница",
   "Tab_Settings": "Настройки",
   "Tab_News": "Новини",
-
   "ONBOARDING_MAIN_TITLE": "Приложението за управление на твоя училищен живот",
   "ONBOARDING_MAIN_DESCRIPTION": "Свържи училищните си приложения, за да имаш достъп до оценките, програмата, задачите и още много в интерфейса на Papillon!",
   "ONBOARDING_START_BTN": "Започни",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "ПИН код",
   "SEARCH_UNIV_PLACEHOLDER": "Търсене на инстанция...",
   "ONBOARDING_LOADING_LOGIN": "Вписване...",
-
   "WAITING": "Изчакване",
   "IZLY_SMS_SEND": "Току-що получи линк за вход, кликни върху него и следвай стъпките.",
   "STEP": "Стъпка",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Вход",
   "CONFIRM_BTN": "Потвърди",
   "CANCEL_BTN": "Отказ",
-
   "Tab_New_Event": "Ново събитие",
-
   "Tab_Calendar_Icals": "Управление на iCal",
   "Tab_Calendar_Icals_Description": "Управлявай твоите iCal URL адреси",
-
   "Tab_Calendar_Icals_Add_URL": "Добави iCal URL",
   "Tab_Calendar_Icals_Manage_Title": "Управление на {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Добавяй или изтривай iCal URL адреси за синхронизация с календара ти.",
   "Tab_Calendar_Icals_Add_Title": "Липсва заглавие",
   "Tab_Calendar_Icals_Add_Description": "Дай име на този iCal URL, за да го добавиш.",
   "Tab_Calendar_Icals_Empty": "Няма добавени iCal URL адреси",
-
   "TabUnderConstruction_Title": "Този раздел е в процес на изграждане.",
   "TabUnderConstruction_Details": "Върни се по-късно за актуализации.",
-
   "TabDevModeNotice_Title": "Режим за разработчици",
   "TabDevModeNotice_Details": "Пълна тестова среда за разработчици.",
-
   "Alert_TechnicalDetails": "Технически детайли",
-
   "Online_Course": "Онлайн",
   "Evaluated_Course": "Изпитване/Тест",
   "Edited_Course": "Променен час",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Неизвестна стая",
   "Event_DeleteEvent": "Изтрий събитието",
   "Event_Confirm_DeleteEvent": "Сигурен ли си, че искаш да изтриеш това събитие?",
-
   "Course_Separator_Lunch_Default": "Обедна почивка",
   "Course_Separator_Lunch_Alt_1": "Приятен апетит!",
   "Course_Separator_Lunch_Alt_2": "Мням!",
-
   "Course_Separator_Morning_Default": "Сутрешна почивка",
   "Course_Separator_Morning_Alt_1": "Време за сън!",
   "Course_Separator_Morning_Alt_2": "Закуска",
-
   "Course_Separator_Evening_Default": "Следобедна почивка",
   "Course_Separator_Evening_Alt_1": "Време за почивка!",
   "Course_Separator_Evening_Alt_2": "Време за следобедна закуска!",
-
   "Course_Separator_Night_Default": "Вечерна почивка",
   "Course_Separator_Night_Alt_1": "Време за сън!",
   "Course_Separator_Night_Alt_2": "Вече е нощ!",
-
   "Context_Delete": "Изтрий",
   "Context_Cancel": "Отказ",
   "Context_Edit": "Промени",
   "Context_Add": "Добави",
-
   "Form_Title": "Заглавие",
   "Form_Location": "Местоположение",
   "Form_Organizer": "Организатор",
   "Form_Start": "Начало",
   "Form_End": "Край",
-
   "Confirm_DeleteEvent": "Сигурен ли си, че искаш да изтриеш това събитие?",
-
   "Home_Welcome_Name": "Здравей, {{name}} {{emoji}}",
   "Home_Display_More": "Покажи повече",
   "Home_Cards_Button_Description_Plurial": "налични",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Нямаш оставащи часове за днес",
   "Home_Planned_One": "Имаш един оставащ час за днес",
   "Home_Planned_Number": "Имаш още {{number}} часа за днес",
-
   "Home_Widget_NextCourses": "Следващи часове",
   "Home_Widget_NewGrades": "Нови оценки",
   "Home_Widget_NewHomeworks": "Задачи за изпълнение",
-
   "Home_Widget_NoCourses": "Няма предстоящи часове",
   "Home_Widget_NoCourses_Description": "Няма планирани часове за днес.",
-
   "Home_Cards_Button_Title": "Карти",
   "Home_Cards_Button_Description_None": "Няма карти",
   "Home_Cards_Button_Description_Singular": "Една карта",
   "Home_Cards_Button_Description_Number": "{{number}} карти",
-
   "Home_Chats_Button_Title": "Съобщения",
   "Home_Chats_Button_Description_None": "Няма съобщения",
   "Home_Chats_Button_Description_Singular": "Едно съобщение",
   "Home_Chats_Button_Description_Number": "{{number}} съобщения",
-
   "Home_Attendance_Title": "Отсъствия",
   "Home_Attendance_Button_Description_None": "Няма отсъствия",
   "Home_Attendance_Button_Description_Singular": "Едно отсъствие",
   "Home_Attendance_Button_Description_Number": "{{number}} отсъствия",
-
   "Home_Menu_Button_Title": "Меню",
   "Home_Menu_Button_Description": "Меню за деня",
-
   "Tab_Calendar_Empty": "Няма намерени събития",
   "Tab_Calendar_Empty_Description": "Добави събитие или синхронизирай календара си, за да започнеш.",
-
   "Modal_Course_Title": "Моят час",
   "Modal_Course_StartsIn": "Започва след",
   "Modal_Course_StartedAgo": "Завършил преди",
   "Modal_Course_Ongoing": "Започнал преди",
   "Modal_Course_Group": "Група",
   "Modal_Course_Group_Full": "Клас",
-
   "Modal_Course_Details": "Детайли за часа",
   "Modal_Course_Teacher": "Учител",
   "Modal_Course_Room": "Стая",
   "Modal_Course_Duration": "Продължителност",
-
   "Modal_Course_Time": "График на часа",
   "Modal_Course_Start": "Начало",
   "Modal_Course_End": "Край",
-
   "Tasks_Search_Placeholder": "Търсене на задачи",
   "Tasks_LeftHomeworks_Title": "оставащи задачи",
   "Tasks_LeftHomeworks_Time": "тази седмица",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Завършени задачи",
   "Task_Show_Title": "Покажи",
   "Settings_General": "Общи",
-
   "Latest_Grades": "Нови оценки",
   "Grades_Search_Placeholder": "Търсене на оценка, предмет",
-
   "Grades_Avg_Methods": "Методи на изчисление",
   "Grades_Avg_All_Title": "Общ успех",
   "Grades_Avg_All_Short": "Общ успех",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Изчислява средната стойност на успехите по отделните предмети",
   "Grades_Avg_Median_Title": "Медиана",
   "Grades_Avg_Median_Short": "Медиана",
-
   "Grades_Avg_More": "Научи повече",
   "Grades_Avg_KnowMore": "Научи повече",
   "Grades_Avg_KnowMore_Description": "Разбери методите за изчисляване на общия успех",
-
   "Grades_SubjectInfo": "Информация за предмета",
   "Grades_SubjectInfo_NbGrades": "{{number}} оценки",
   "SubjectInfo_StudentAverage_Label": "Успех на ученика",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Най-високият успех в групата",
   "SubjectInfo_MinAverage_Label": "Минимален успех",
   "SubjectInfo_MinAverage_Description": "Най-ниският успех в групата",
-
   "Grades_Semester": "Срок",
   "Grades_Trimester": "Триместър",
   "Grades_OutPeriod": "Извън периода",
   "Grades_Year": "Година",
   "Grades_MockExamBac": "Пробен изпит",
   "Grades_MockExamBrevet": "Пробно външно оценяване",
-
   "Grades_Method_AllGrades": "Всички предмети",
   "Grades_Method_Weighted": "Тежест (Коефициент)",
-
   "Grades_Sort": "Сортиране",
   "Grades_Sorting_Alphabetical": "Азбучен ред",
   "Grades_Sorting_Averages": "Успех",
   "Grades_Sorting_Date": "Дата",
-
   "Grades_Menu_SortBy": "Сортиране по",
   "Grades_Menu_AverageBy": "Успех по",
   "NoAverage": "Няма успех",
-
   "Grades_Empty_Title": "Няма оценки",
   "Grades_Empty_Description": "Все още нямаш оценки за този период.",
-
   "Grade_NoDescription": "Задание по {{subject}}",
-
   "Grades_Tab_Subjects": "Предмети",
   "Grades_Tab_Latest": "Нови оценки",
-
   "Profile_Attendance_Title": "Присъствия",
   "Profile_Attendance_Denominator_Single": "отсъствие",
   "Profile_Attendance_Denominator_Plural": "отсъствия",
-
   "Profile_Discussions_Title": "Дискусии",
   "Profile_Discussions_Denominator_Single": "непрочетено",
   "Profile_Discussions_Denominator_Plural": "непрочетени",
-
   "Profile_News_Title": "Новини",
   "Profile_News_Denominator_Single": "нова",
   "Profile_News_Denominator_Plural": "нови",
   "Profile_News_Open": "Отвори",
   "Profile_News_Loading_Title": "Зареждане на новини...",
   "Profile_News_Author_Unknown": "Неизвестен автор",
-
   "Profile_Cards_Title": "QR код и карти",
-
   "Modal_Grades_Title": "Детайли на оценката",
   "Modal_Grades_BestGrade": "Най-висока оценка в групата",
-
   "Grades_Details_Title": "Детайли",
   "Grades_NormalizedGrade_Title": "Оценка по скала 20",
   "Grades_NormalizedGrade_Description": "Стойност на оценката, приравнена към скала от 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "Ср. на групата",
   "Grades_Tab_Rank": "Класиране",
   "Grades_Tab_Rank_Description": "Позиция в групата",
-
   "News_Search_Placeholder": "Търсене на новина",
   "News_Empty_Title": "Няма новини",
   "News_Empty_Description": "Не са намерени новини във вашето училище.",
   "News_Search_NoResults": "Няма намерени новини",
   "News_Search_NoResults_Description": "Няма намерени новини за вашето търсене.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Мека и елегантна тема",
-
   "News_Theme_Reading_Title": "Четене",
   "News_Theme_Reading_Description": "Тема, създадена за четене",
-
   "Attendance_Hours_Missed": "Пропуснати часове",
   "Attendance_Hours_Unjustified": "Неизвинени часове",
   "Attendance_Missing": "Отсъствия",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Няма причина",
   "Attendance_NoEvent_Title": "Няма събития",
   "Attendance_NoEvent_Description": "Няма регистрирани отсъствия или закъснения за този период.",
-
   "Settings_Account_Title": "Моят акаунт",
   "Settings_Account_Description": "Моят акаунт",
   "Settings_Services_Title": "Свързани акаунти",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Промени езика",
   "Settings_Tabs_Title": "Раздели",
   "Settings_Tabs_Description": "Скрий раздели от менюто",
-
   "Settings_Personalization_Title_Card": "Персонализиране",
   "Settings_Personalization_Subtitle_Card": "Теми, предмети...",
   "Settings_SubjectPersonalization_Title": "Персонализиране на предметите",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Докладвай за бъг",
   "Settings_About_Issue_Description": "Докладвай за срещнат проблем",
   "Settings_About_Dependency_Version": "Версия на зависимостите",
-
   "Alert_No_Technical": "Няма налична техническа информация.",
   "Alert_Auth_Error": "Грешка при автентификация",
   "Alert_Auth_Bad_Creds": "Данните, които въведе, са грешни или се опитваш да влезеш с родителски акаунт. Този тип акаунти все още не се поддържат от Papillon.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon не успява да получи информация от тази PRONOTE инстанция, все още ли е валидна?",
   "Alert_No_Pos": "Невъзможно определяне на местоположението",
   "Alert_Connexion_Fail": "Невъзможна връзка",
-
   "Feature_Limited": "Ограничени функции",
   "Feature_Soon": "Очаквайте скоро!",
   "Feature_Soon_Notification": "Работим усилено, за да ви предложим тази функция в бъдеща актуализация.",
   "Feature_Add_Card": "Добави нова карта от раздел Профил в лентата за навигация",
-
   "Webview_Wait": "Малко търпение...",
-
   "Profile_QRCards": "QR код и карти",
   "Profile_QRCards_Subtitle": "{{count}} карти",
   "Profile_Cards_Loading_History": "Зареждане на история на трансакциите",
   "Profile_Cards_Loading_History_Description": "Това може да отнеме момент...",
-
   "Settings_Cards_Banner_Title": "Карти",
   "Settings_Cantineen_Subtitle_Card": "Столова, достъп",
   "Settings_Cards_Banner_Description": "Добави картите си за столова и транспорт, за да имаш достъп до тях навсякъде от телефона си чрез Papillon",
   "Settings_Cards_None_Title": "Няма карти",
   "Settings_Cards_Add_Button": "Добави",
-
   "Settings_Cards_None_Description": "Добави карта, за да виждаш баланса си за столовата, да сканираш QR кода си и още",
   "Settings_Subjects_None_Title": "Няма предмети",
   "Settings_Subjects_None_Description": "Разгледай различните раздели на приложението, за да можеш да персонализираш предметите.",
   "Settings_Subjects_Reset_Title": "Нулиране",
   "Settings_Subjects_Reset_Message": "Наистина ли искаш да нулираш всички предмети?",
   "Settings_Subjects_Reset_Button": "Нулиране",
-
   "Settings_Donator": "Дарители",
   "Settings_Donator_Description": "Виж списъка с дарителите",
   "Settings_App_Version": "Версия на приложението",
-
   "Profile_Cards_Scan_Orientation": "Насочи QR кода към скенера на терминала",
   "Profile_Cards_No_Reservation": "Няма резервация",
   "Profile_Cards_No_Available_Reservation": "Изглежда, че не можеш да резервираш за този ден.",
   "Profile_Cards_History": "История",
   "Magic_Important": "Може би е важно",
-
   "OnBoarding_Step": "Стъпка ",
   "OnBoarding_Step_Of": "от ",
-
   "Consent_Advanced_Title": "Искам да помогна на Papillon",
   "Consent_Advanced_Description": "Събираме по-подробна информация за твоето ползване.",
   "Consent_Required_Title": "Само най-важното",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Служи единствено за подобряване на приложението",
   "Consent_Arg2": "Анонимно и без връзка с твоята самоличност",
   "Consent_Arg3": "Нямаме достъп до твоите акаунти",
-
   "Changelog_Title": "Бележки към версията",
-
   "Tasks_Sorting_Methods_DueDate": "Краен срок",
   "Tasks_Sorting_Methods_Subject": "Предмети",
   "Tasks_Sorting_Methods_Done": "Незавършени",
   "Tasks_ThisWeek": "Тази седмица",
-
   "Task_Undone": "Незавършена",
   "Task_Done": "Завършена",
-
   "Modal_Wallpaper_Title": "Персонализиране на тапета",
   "Modal_Profile_Title": "Персонализиране на профила",
-
   "Modal_Task_Status": "Статус на задачата",
   "Modal_Task_Description": "Описание на задачата",
   "Modal_Task_Attachments": "Прикачени файлове",
-
   "Today": "Днес",
   "Yesterday": "Вчера",
-  "Tomorrow": "Утре"
+  "Tomorrow": "Утре",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

@@ -367,5 +367,7 @@
   "Modal_Task_Attachments": "Pezhioù-stag",
   "Today": "Hiziv",
   "Yesterday": "Dec'h",
-  "Tomorrow": "warc'hoazh"
+  "Tomorrow": "warc'hoazh",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

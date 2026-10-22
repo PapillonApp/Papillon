@@ -6,6 +6,7 @@ export function mapCourseToShared(course: Course): SharedCourse {
   return {
     subject: course.subject,
     id: course.courseId,
+    externalId: course.externalId,
     fromCache: true,
     createdByAccount: course.createdByAccount,
     type: course.type,
@@ -19,6 +20,9 @@ export function mapCourseToShared(course: Course): SharedCourse {
     status: course.status,
     customStatus: course.customStatus,
     url: course.url,
-    kidName: course.kidName
-  }
+    kidName: course.kidName,
+    isSigned: course.isSigned,
+    canSign: course.canSign,
+    isStudentPresent: course.isStudentPresent,
+  };
 }

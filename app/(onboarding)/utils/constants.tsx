@@ -77,6 +77,17 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       color: 'light' as const,
     },
     {
+      name: "edusign",
+      title: t("ONBOARDING_SERVICE_EDUSIGN"),
+      type: ["univ"],
+      image: require("@/assets/images/service_edusign.png"),
+      onPress: () => {
+        redirect({ pathname: './services/edusign/credentials' });
+      },
+      variant: 'service' as const,
+      color: 'light' as const,
+    },
+    {
       name: "univ-lorraine",
       title: t("ONBOARDING_SERVICE_UNIV_LORRAINE"),
       hasLimitedSupport: false,
@@ -131,6 +142,16 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
   const { t } = useTranslation();
 
   return [
+    {
+      name: "edusign",
+      title: t("ONBOARDING_SERVICE_EDUSIGN"),
+      hasLimitedSupport: false,
+      image: require("@/assets/images/service_edusign.png"),
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: './services/edusign/credentials' });
+      },
+    },
     {
       name: "univ-lorraine",
       title: t("ONBOARDING_SERVICE_UNIV_LORRAINE"),
