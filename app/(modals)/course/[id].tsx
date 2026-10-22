@@ -21,12 +21,8 @@ import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { useSettingsStore } from "@/stores/settings";
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import {
-  COURSE_LIVE_ACTIVITY_SUPPORTED,
-  type CourseLiveActivityPreviewMode,
-  previewCourseLiveActivity,
-  stopCourseLiveActivity
-} from "@/utils/widgets/courseLiveActivity";
+import * as PapillonKit from "@getpapillon/papillonkit";
+import type { LiveActivityPreviewMode } from "@getpapillon/papillonkit";
 
 import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -55,10 +51,8 @@ export default function CourseModal() {
   const liveActivitiesEnabled = useSettingsStore(
     state => state.personalization.liveActivitiesEnabled ?? true
   );
-  // The settings switch is the master one: with the feature off there is
-  // nothing for the trigger to produce that the next sync would not take down.
   const canTriggerLiveActivity =
-    COURSE_LIVE_ACTIVITY_SUPPORTED && liveActivityTestMode && liveActivitiesEnabled;
+    PapillonKit.features.liveActivities && liveActivityTestMode && liveActivitiesEnabled;
 
   useEffect(() => {
     let cancelled = false;
@@ -89,9 +83,9 @@ export default function CourseModal() {
     emoji: getSubjectEmoji(course.subject),
     color: getSubjectColor(course.subject),
   };
-  const triggerLiveActivity = async (mode: CourseLiveActivityPreviewMode) => {
+  const triggerLiveActivity = async (mode: LiveActivityPreviewMode) => {
     try {
-      await previewCourseLiveActivity(course, mode);
+      await PapillonKit.liveActivities.preview(mode, course.id);
     } catch (cause) {
       Alert.alert("Live Activity", `Impossible de la démarrer : ${String(cause)}`);
     }
@@ -277,7 +271,7 @@ export default function CourseModal() {
                   <Papicons name="Clock" />
                 </Icon>
               </List.Leading>
-              <Typography variant="title">Déclencher — bientôt</Typography>
+              <Typography variant="title">Aperçu : commence bientôt</Typography>
               <Typography variant="body1" color="textSecondary">
                 Ce cours commence dans 15 minutes.
               </Typography>
@@ -286,16 +280,28 @@ export default function CourseModal() {
             <List.Item onPress={() => triggerLiveActivity("ongoing")}>
               <List.Leading>
                 <Icon>
-                  <Papicons name="Clock" />
+                  <Papicons name="Play" />
                 </Icon>
               </List.Leading>
-              <Typography variant="title">Déclencher — en cours</Typography>
+              <Typography variant="title">Aperçu : en cours</Typography>
               <Typography variant="body1" color="textSecondary">
                 Ce cours a commencé il y a 5 minutes.
               </Typography>
             </List.Item>
 
-            <List.Item onPress={() => stopCourseLiveActivity()}>
+            <List.Item onPress={() => triggerLiveActivity("endingSoon")}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="AlertCircle" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">Aperçu : se termine bientôt</Typography>
+              <Typography variant="body1" color="textSecondary">
+                Ce cours se termine dans 2 minutes.
+              </Typography>
+            </List.Item>
+
+            <List.Item onPress={() => PapillonKit.liveActivities.stop()}>
               <List.Leading>
                 <Icon>
                   <Papicons name="Cross" />

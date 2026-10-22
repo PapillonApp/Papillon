@@ -17,7 +17,7 @@ export type CheckResult = {
   duration?: number;
 };
 
-export type CheckSection = "Module" | "Données" | "Siri et Spotlight" | "Widgets" | "Apple Intelligence";
+export type CheckSection = "Module" | "Données" | "Siri et Spotlight" | "Widgets" | "Live Activity" | "Apple Intelligence";
 
 export type CheckContext = {
   snapshot?: DebugSnapshot;
@@ -34,7 +34,14 @@ export type Check = {
   run: (context: CheckContext) => Promise<string | void>;
 };
 
-export const CHECK_SECTIONS: CheckSection[] = ["Module", "Données", "Siri et Spotlight", "Widgets", "Apple Intelligence"];
+export const CHECK_SECTIONS: CheckSection[] = [
+  "Module",
+  "Données",
+  "Siri et Spotlight",
+  "Widgets",
+  "Live Activity",
+  "Apple Intelligence",
+];
 
 class Skip extends Error {
   readonly skipped = true;
@@ -485,6 +492,53 @@ const widgetChecks: Check[] = [
   widgetDiagnosticsCheck("Tasks", "Widget Tâches"),
 ];
 
+const LIVE_ACTIVITY_LEAD_MS = 15 * 60 * 1000;
+
+const liveActivityChecks: Check[] = [
+  {
+    id: "live-activity-sync",
+    section: "Live Activity",
+    title: "liveActivities.sync()",
+    run: async () => {
+      const status = await PapillonKit.liveActivities.sync();
+      ensure(status, "sync() a renvoyé null.");
+      ensure(!status.lastError, status.lastError ?? "");
+      if (status.testMode) skip("Mode test actif : la synchronisation automatique est en pause.");
+      if (!status.enabled) skip("Désactivées dans les réglages de Papillon.");
+      if (!status.authorized) skip("Refusées dans Réglages > Papillon.");
+      return `${status.planned} cours prévu${status.planned > 1 ? "s" : ""}, ${status.activities.length} activité${status.activities.length > 1 ? "s" : ""}${status.schedulesAhead ? ", programmées d'avance" : ""}`;
+    },
+  },
+  {
+    id: "live-activity-current",
+    section: "Live Activity",
+    title: "Le cours en cours ou imminent est affiché",
+    run: async () => {
+      const status = await PapillonKit.liveActivities.getStatus();
+      ensure(status, "getStatus() a renvoyé null.");
+      if (status.testMode || !status.enabled || !status.authorized) skip("Live Activities inactives sur cet appareil.");
+      const account = currentAccount() ?? skip("Aucun compte actif.");
+      const now = Date.now();
+      const rows = await database
+        .get<Course>("courses")
+        .query(
+          Q.where("createdByAccount", Q.oneOf(account.services.map(service => service.id))),
+          Q.where("to", Q.gt(now)),
+          Q.where("from", Q.lte(now + LIVE_ACTIVITY_LEAD_MS))
+        )
+        .fetch();
+      const current = rows.filter(course => course.status !== CourseStatus.CANCELED);
+      if (current.length === 0) skip("Aucun cours en cours ni dans les 15 prochaines minutes.");
+      const ids = current.map(course => course.courseId);
+      const shown = status.activities.find(
+        activity => !activity.preview && ids.includes(activity.courseId) && activity.state !== "pending"
+      );
+      ensure(shown, `Aucune Live Activity pour ${current.map(course => course.subject).join(", ")}.`);
+      return `${shown.subject}, affichée depuis ${new Date(shown.showsAt).toLocaleTimeString("fr-FR")}`;
+    },
+  },
+];
+
 const intelligenceChecks: Check[] = [
   {
     id: "availability",
@@ -604,6 +658,7 @@ export function buildChecks(): Check[] {
     ...dataChecks,
     ...(PapillonKit.features.siri ? siriChecks : siriFallbackChecks),
     ...(PapillonKit.features.widgets ? widgetChecks : []),
+    ...(PapillonKit.features.liveActivities ? liveActivityChecks : []),
     ...(PapillonKit.features.intelligence ? intelligenceChecks : intelligenceFallbackChecks),
   ];
 }

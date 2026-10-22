@@ -24,6 +24,7 @@ const SECTION_ICONS: Record<CheckSection, string> = {
   Données: "User",
   "Siri et Spotlight": "Search",
   Widgets: "Grid",
+  "Live Activity": "Clock",
   "Apple Intelligence": "Sparkles",
 };
 
