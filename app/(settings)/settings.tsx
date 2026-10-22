@@ -23,6 +23,7 @@ import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
 import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
 import { trackOptionalEvent } from "@/utils/logger/analytics";
+import { clearDownloads } from "@/stores/downloads";
 
 import packagejson from "../../package.json"
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
@@ -65,11 +66,25 @@ export default function SettingsIndex() {
     for (const account of accounts) {
       useAccountStore.getState().removeAccount(account);
     }
+    clearDownloads();
     router.replace("/(onboarding)/welcome");
 
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [
+    {
+      title: t("Settings_More"),
+      content: [
+        {
+          title: t("Settings_Downloads_Title"),
+          description: t("Settings_Downloads_Description"),
+          papicon: <Papicons name={"Folder"} />,
+          icon: <InfoIcon />,
+          color: "#29947A",
+          onPress: () => router.navigate("/(settings)/downloads"),
+        },
+      ]
+    },
     {
       title: t("Settings_More"),
       content: [
