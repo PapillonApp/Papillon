@@ -48,10 +48,10 @@ const PapillonWeightedAvg = (grades: Grade[], key: ScoreProperty = "studentScore
 
   if (calcOutOfSum > 0) {
     const result = Math.min((calcGradesSum / calcOutOfSum) * 20, 20);
-    return isNaN(result) ? 0 : result;
+    return isNaN(result) ? -1 : result;
   }
 
-  return 0;
+  return -1;
 };
 
 export default PapillonWeightedAvg;

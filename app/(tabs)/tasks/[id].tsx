@@ -1,29 +1,31 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "expo-router/react-navigation";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
+import { Stack as ExpoStack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 
+import { AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
 import ModalOverhead from "@/components/ModalOverhead";
-import { getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
+import { deleteHomeworkFromDatabase, getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { formatHTML } from "@/utils/format/html";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { Platform } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { Homework } from "@/services/shared/homework";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { View } from "react-native";
 
 const Task = () => {
@@ -34,24 +36,42 @@ const Task = () => {
   const [task, setTask] = useState<Homework>();
   const [loading, setLoading] = useState(true);
   const [isDone, setIsDone] = useState(false);
+  const taskRef = useRef<Homework>(undefined);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    getHomeworkById(id)
-      .then(result => {
-        if (!cancelled) {
+  // Read on every focus rather than once: a custom task can be edited or
+  // deleted from its modal while this screen sits underneath. Service tasks
+  // cannot change from here, so they are not fetched again.
+  useFocusEffect(
+    useCallback(() => {
+      if (taskRef.current && !taskRef.current.custom) {
+        return;
+      }
+
+      let cancelled = false;
+      getHomeworkById(id)
+        .then(result => {
+          if (cancelled) {
+            return;
+          }
+          // Editing a custom task moves it to a new id, so this one is gone.
+          if (!result && taskRef.current) {
+            router.back();
+            return;
+          }
+          taskRef.current = result;
           setTask(result);
           setIsDone(result?.isDone ?? false);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setLoading(false);
+          }
+        });
+      return () => {
+        cancelled = true;
+      };
+    }, [id, router])
+  );
 
   const formatedTask = formatHTML(task?.content ?? "")
 
@@ -62,13 +82,37 @@ const Task = () => {
   }
 
   const setAsDone = async (done: boolean) => {
-    const manager = getManager();
     if (!task) return;
-    await manager?.setHomeworkCompletion(task, done);
+    // A custom task has no service to sync its state with.
+    if (!task.custom) {
+      const manager = getManager();
+      await manager?.setHomeworkCompletion(task, done);
+    }
 
-    updateHomeworkIsDone(id, done);
+    await updateHomeworkIsDone(id, done);
     setIsDone(done);
   }
+
+  const editTask = () => {
+    if (!task) {
+      return;
+    }
+    router.push({
+      pathname: "/(modals)/tasks/custom",
+      params: {
+        replacedId: id,
+        subject: task.subject,
+        date: String(new Date(task.dueDate).getTime()),
+        description: task.content,
+        done: isDone ? "1" : "0",
+      },
+    });
+  };
+
+  const deleteTask = async () => {
+    await deleteHomeworkFromDatabase(id);
+    router.back();
+  };
 
   const insets = useSafeAreaInsets();
   const finalHeaderHeight = Platform.select({
@@ -88,13 +132,42 @@ const Task = () => {
     <>
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <NativeHeaderPressable onPress={() => router.back()}>
-            <Icon size={28}>
-              <Papicons name="ArrowLeft" />
-            </Icon>
-          </NativeHeaderPressable>
+          <HeaderBackButton onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
+
+      {task.custom && (Platform.OS === "android" ? (
+        <ExpoStack.Toolbar placement="right" asChild>
+          <AndroidHeaderMenu
+            icon="Dots"
+            accessibilityLabel={t("Task_Custom_Actions")}
+            actions={[
+              { id: "edit", title: t("Task_Custom_Edit"), papicon: "PenAlt" },
+              { id: "delete", title: t("Task_Custom_Delete"), papicon: "Trash", attributes: { destructive: true } },
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              if (nativeEvent.event === "edit") {
+                editTask();
+              } else if (nativeEvent.event === "delete") {
+                deleteTask();
+              }
+            }}
+          />
+        </ExpoStack.Toolbar>
+      ) : (
+        <ExpoStack.Toolbar placement="right">
+          <ExpoStack.Toolbar.Menu>
+            <ExpoStack.Toolbar.Icon sf="ellipsis" />
+            <ExpoStack.Toolbar.Label>{t("Task_Custom_Actions")}</ExpoStack.Toolbar.Label>
+            <ExpoStack.Toolbar.MenuAction icon="pencil" onPress={editTask}>
+              {t("Task_Custom_Edit")}
+            </ExpoStack.Toolbar.MenuAction>
+            <ExpoStack.Toolbar.MenuAction icon="trash" destructive onPress={deleteTask}>
+              {t("Task_Custom_Delete")}
+            </ExpoStack.Toolbar.MenuAction>
+          </ExpoStack.Toolbar.Menu>
+        </ExpoStack.Toolbar>
+      ))}
 
       {Platform.OS !== "android" && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.colors.overground, zIndex: -10 }}>
@@ -114,27 +187,30 @@ const Task = () => {
         </View>
       )}
 
-<SafeAreaView style={{ flex: 1 }} edges={["left", "right"]}>
       <List
         contentInsetAdjustmentBehavior="automatic"
+        safeHorizontalPadding={16}
         ListHeaderComponent={
-          <ModalOverhead
-            emoji={subjectInfo.emoji}
-            subject={subjectInfo.name}
-            subjectVariant="header"
-            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
-            date={new Date(task.dueDate)}
-            style={{
-              marginVertical: 0,
-              paddingTop: finalHeaderHeight,
-            }}
-          />
+          <SafeHorizontalView base={16}>
+            <ModalOverhead
+              emoji={subjectInfo.emoji}
+              subject={subjectInfo.name}
+              subjectVariant="header"
+              color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
+              custom={task.custom}
+              date={new Date(task.dueDate)}
+              style={{
+                marginVertical: 0,
+                paddingTop: finalHeaderHeight,
+              }}
+            />
+          </SafeHorizontalView>
         }
         style={{
           backgroundColor: "transparent",
         }}
         contentContainerStyle={{
-          padding: 16,
+          paddingVertical: 16,
         }}
       >
         <List.Section>
@@ -213,7 +289,6 @@ const Task = () => {
           </List.Section>
         )}
       </List>
-      </SafeAreaView>
     </>
   );
 };

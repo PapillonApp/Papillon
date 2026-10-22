@@ -9,6 +9,7 @@ import Stack from '@/ui/components/Stack';
 import Button from '@/ui/new/Button';
 import TextInput from '@/ui/new/TextInput';
 import Typography from '@/ui/new/Typography';
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 interface LoginViewProps {
   color: string;
@@ -86,11 +87,12 @@ export default function LoginView({
   };
 
   return (
-    <View
+    <SafeHorizontalView
+      base={20}
       style={{
         justifyContent: "center",
         alignItems: "center",
-        padding: 20,
+        paddingVertical: 20,
       }}
     >
       <View
@@ -194,6 +196,6 @@ export default function LoginView({
           />
         ))}
       </Stack>
-    </View>
+    </SafeHorizontalView>
   );
 }

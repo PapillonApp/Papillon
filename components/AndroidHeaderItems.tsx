@@ -1,11 +1,10 @@
-import type { MenuAction, NativeActionEvent } from "@react-native-menu/menu";
 import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { Papicons } from "@getpapillon/papicons";
 
-import ActionMenu from "@/ui/components/ActionMenu";
+import ActionMenu, { type MenuAction, type NativeActionEvent } from "@/ui/components/ActionMenu";
 
 // Android header items are plain React Native views rather than
 // `Stack.Toolbar` items. The toolbar's Android backend hosts its children in a
@@ -19,15 +18,17 @@ import ActionMenu from "@/ui/components/ActionMenu";
 // search icon the stack adds next to them.
 const ITEM_SIZE = 48;
 
-/** `ActionMenu` reads `papicon` off its actions; the upstream type omits it. */
-export type AndroidHeaderMenuAction = MenuAction & { papicon?: string };
+export type AndroidHeaderMenuAction = MenuAction;
+
+// `icon` is a Papicons name, or any element (e.g. a Lucide icon) rendered as is
+type HeaderIcon = string | React.ReactElement;
 
 export function AndroidHeaderButton({
   icon,
   onPress,
   accessibilityLabel,
 }: {
-  icon: string;
+  icon: HeaderIcon;
   onPress: () => void;
   accessibilityLabel?: string;
 }) {
@@ -42,7 +43,7 @@ export function AndroidHeaderButton({
       android_ripple={{ color: `${tint}22`, borderless: true, radius: ITEM_SIZE / 2 }}
       style={styles.item}
     >
-      <Papicons name={icon} size={24} color={tint} />
+      {typeof icon === "string" ? <Papicons name={icon} size={24} color={tint} /> : icon}
     </Pressable>
   );
 }
@@ -53,7 +54,7 @@ export function AndroidHeaderMenu({
   onPressAction,
   accessibilityLabel,
 }: {
-  icon: string;
+  icon: HeaderIcon;
   actions: AndroidHeaderMenuAction[];
   onPressAction: (event: NativeActionEvent) => void;
   accessibilityLabel?: string;
@@ -63,7 +64,7 @@ export function AndroidHeaderMenu({
   return (
     <ActionMenu actions={actions} onPressAction={onPressAction} placement="below">
       <View accessibilityRole="button" accessibilityLabel={accessibilityLabel} style={styles.item}>
-        <Papicons name={icon} size={24} color={String(colors.text)} />
+        {typeof icon === "string" ? <Papicons name={icon} size={24} color={String(colors.text)} /> : icon}
       </View>
     </ActionMenu>
   );

@@ -14,7 +14,6 @@ export interface HomeHeaderButtonItem {
   icon: string;
   color: string;
   description: string;
-  onPress?: () => void;
   route?: string;
   params?: Record<string, string>;
 }
@@ -52,12 +51,12 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
 
     <Link
       asChild
+      prefetch
       href={{
         pathname: item.route ?? "/(features)/soon",
         params: item.params,
       }}
     >
-    <Link.AppleZoom>
       <Pressable
         style={styles.headerBtn}
       >
@@ -91,7 +90,6 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           <Typography nowrap variant="title" color={colors.text + "75"} style={{ lineHeight: 0 }}>{item.description}</Typography>
         </View>
       </Pressable>
-      </Link.AppleZoom>
     </Link>
     </LiquidGlassView >
   );

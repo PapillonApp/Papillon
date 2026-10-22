@@ -118,55 +118,91 @@ const getDateRangeOfWeek = (weekNumber: number, year: number) => {
   return { start, end };
 };
 
+type CourseSlot = {
+  from: [number, number];
+  to: [number, number];
+  status?: CourseStatus;
+  additionalInfo?: string;
+  group?: string;
+};
+
+// Chaque jour a son propre emploi du temps : cours de deux heures, récréations
+// de 15 minutes, pauses méridiennes décalées (1h ou 2h), cours annulés et
+// créneaux qui se chevauchent.
+const DAY_SLOTS: CourseSlot[][] = [
+  // Lundi — deux blocs de 2h, pause méridienne d'1h à 11h15
+  [
+    { from: [8, 0], to: [10, 0] },
+    { from: [10, 15], to: [11, 15] },
+    { from: [12, 15], to: [14, 15] },
+    { from: [14, 30], to: [15, 30], status: CourseStatus.EDITED },
+  ],
+  // Mardi — matinée fractionnée, pause méridienne de 2h à 12h30
+  [
+    { from: [8, 0], to: [9, 0] },
+    { from: [9, 15], to: [10, 15] },
+    {
+      from: [10, 30],
+      to: [12, 30],
+      status: CourseStatus.EVALUATED,
+      additionalInfo: "Évaluation prévue",
+    },
+    // Chevauchement complet : groupe dédoublé sur le même créneau
+    { from: [10, 30], to: [12, 30], group: "Groupe B" },
+    { from: [14, 30], to: [16, 30] },
+  ],
+  // Mercredi — matinée seule, deux blocs de 2h
+  [
+    { from: [8, 0], to: [10, 0] },
+    { from: [10, 15], to: [12, 15], status: CourseStatus.CANCELED },
+  ],
+  // Jeudi — pause méridienne de 2h à 11h15, fin de journée à 16h30
+  [
+    { from: [8, 0], to: [9, 0] },
+    { from: [9, 15], to: [11, 15] },
+    { from: [13, 15], to: [14, 15], status: CourseStatus.CANCELED },
+    { from: [14, 30], to: [16, 30] },
+    // Chevauchement partiel : l'option déborde sur le cours précédent
+    { from: [15, 30], to: [17, 0], group: "Option" },
+  ],
+  // Vendredi — pause méridienne d'1h à 12h30
+  [
+    { from: [8, 0], to: [9, 0] },
+    { from: [9, 15], to: [11, 15], status: CourseStatus.CANCELED },
+    { from: [11, 30], to: [12, 30] },
+    { from: [13, 30], to: [15, 30], status: CourseStatus.EDITED },
+  ],
+];
+
 export function generateMockTimetable(
   accountId: string,
   weekNumber: number,
   referenceDate: Date
 ): CourseDay[] {
   const { start } = getDateRangeOfWeek(weekNumber, referenceDate.getFullYear());
-  const slots = [
-    [8, 0, 9, 0],
-    [9, 10, 10, 10],
-    [10, 25, 11, 25],
-    [13, 30, 14, 30],
-    [14, 40, 15, 40],
-  ];
 
-  return Array.from({ length: 5 }, (_, dayIndex) => {
+  return DAY_SLOTS.map((slots, dayIndex) => {
     const date = addDays(start, dayIndex);
-    const courses = slots.map(
-      ([fromHour, fromMinute, toHour, toMinute], slotIndex) => {
-        const lessonIndex =
-          (dayIndex * 3 + slotIndex * 2 + weekNumber) % LESSONS.length;
-        const lesson = LESSONS[lessonIndex];
-        const from = atTime(date, fromHour, fromMinute);
-        const to = atTime(date, toHour, toMinute);
-        const isEvaluated = dayIndex === 1 && slotIndex === 1;
-        const isEdited = dayIndex === 3 && slotIndex === 3;
-        const isCanceled = dayIndex === 4 && slotIndex === 4;
+    const courses = slots.map((slot, slotIndex) => {
+      const lessonIndex =
+        (dayIndex * 3 + slotIndex * 2 + weekNumber) % LESSONS.length;
+      const lesson = LESSONS[lessonIndex];
 
-        return {
-          id: `mock-course-${referenceDate.getFullYear()}-${weekNumber}-${dayIndex}-${slotIndex}`,
-          subject: lesson.subject,
-          teacher: lesson.teacher,
-          room: lesson.room,
-          backgroundColor: lesson.color,
-          group: slotIndex % 3 === 0 ? "Seconde 2" : undefined,
-          additionalInfo: isEvaluated ? "Évaluation prévue" : undefined,
-          status: isEvaluated
-            ? CourseStatus.EVALUATED
-            : isEdited
-              ? CourseStatus.EDITED
-              : isCanceled
-                ? CourseStatus.CANCELED
-                : undefined,
-          type: CourseType.LESSON,
-          from,
-          to,
-          createdByAccount: accountId,
-        };
-      }
-    );
+      return {
+        id: `mock-course-${referenceDate.getFullYear()}-${weekNumber}-${dayIndex}-${slotIndex}`,
+        subject: lesson.subject,
+        teacher: lesson.teacher,
+        room: lesson.room,
+        backgroundColor: lesson.color,
+        group: slot.group ?? (slotIndex % 3 === 0 ? "Seconde 2" : undefined),
+        additionalInfo: slot.additionalInfo,
+        status: slot.status,
+        type: CourseType.LESSON,
+        from: atTime(date, slot.from[0], slot.from[1]),
+        to: atTime(date, slot.to[0], slot.to[1]),
+        createdByAccount: accountId,
+      };
+    });
 
     return { date: atTime(date, 0), courses };
   });

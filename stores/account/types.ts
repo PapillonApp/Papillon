@@ -140,5 +140,7 @@ export enum Services {
   MULTI,
   ALISE,
   APPSCHO,
+  // 9 is reserved: it was the removed Lannion service, and accounts still using
+  // it are signed out (REMOVED_SERVICE_ID in useHomeData). Never reuse it.
   MOCK_DATA = 10,
 }

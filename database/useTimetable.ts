@@ -44,24 +44,34 @@ export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, dat
   const weeksKey = weeks.join(',');
 
   useEffect(() => {
-    const fetchTimetable = async () => {
-      const timetableFetched = await getCoursesFromCache(weeks, date.getFullYear());
-      setTimetable(timetableFetched);
-    };
-    fetchTimetable();
-  }, [refresh, database, weeksKey, date.getFullYear()]);
+    let cancelled = false;
+    let requestId = 0;
+    const year = date.getFullYear();
 
-  useEffect(() => {
-    const icalQuery = database.get('icals').query();
-    const subscription = icalQuery.observe().subscribe(() => {
-      const fetchTimetable = async () => {
-        const timetableFetched = await getCoursesFromCache(weeks, date.getFullYear());
+    const fetchTimetable = async () => {
+      const currentRequest = ++requestId;
+      const timetableFetched = await getCoursesFromCache(weeks, year);
+      if (!cancelled && currentRequest === requestId) {
         setTimetable(timetableFetched);
-      };
-      fetchTimetable();
-    });
-    return () => subscription.unsubscribe();
-  }, [database, weeksKey, date.getFullYear()]);
+      }
+    };
+
+    // Courses written by a sync (e.g. right after adding an account) must show up
+    // without the caller having to bump `refresh`.
+    const { start, end } = getWeeksRange(weeks, year);
+    const courseSubscription = database
+      .get('courses')
+      .query(Q.where('from', Q.between(start.getTime(), end.getTime())))
+      .observe()
+      .subscribe(fetchTimetable);
+    const icalSubscription = database.get('icals').query().observe().subscribe(fetchTimetable);
+
+    return () => {
+      cancelled = true;
+      courseSubscription.unsubscribe();
+      icalSubscription.unsubscribe();
+    };
+  }, [refresh, database, weeksKey, date.getFullYear()]);
 
   return timetable;
 }
@@ -155,8 +165,10 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
                 teacher: item.teacher ?? course.teacher,
                 group: item.group ?? course.group,
                 backgroundColor: item.backgroundColor ?? course.backgroundColor,
-                status: item.status ?? course.status,
-                customStatus: item.customStatus ?? course.customStatus,
+                // A fresh status always wins: a course that is no longer
+                // cancelled comes back without one.
+                status: item.status,
+                customStatus: item.customStatus,
                 url: item.url ?? course.url,
                 kidName: item.kidName ?? course.kidName,
               });
@@ -178,18 +190,37 @@ function startOfLocalDay(date: Date): number {
   return day.getTime();
 }
 
-export async function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+function getWeeksRange(weeks: number[], year: number): { start: Date; end: Date } {
+  let start = new Date(8640000000000000);
+  let end = new Date(-8640000000000000);
+
+  for (const w of weeks) {
+    const range = getDateRangeOfWeek(w, year);
+    if (range.start < start) {start = range.start;}
+    if (range.end > end) {end = range.end;}
+  }
+
+  return { start, end };
+}
+
+// Every useTimetable instance's observer fires at once on mount and on each sync write;
+// concurrent calls for the same range share one query instead of each re-reading the DB.
+const inFlightCourses = new Map<string, Promise<SharedCourseDay[]>>();
+
+export function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+  const key = `${year}:${weeks.join(',')}`;
+  let pending = inFlightCourses.get(key);
+  if (!pending) {
+    pending = readCoursesFromCache(weeks, year).finally(() => inFlightCourses.delete(key));
+    inFlightCourses.set(key, pending);
+  }
+  return pending;
+}
+
+async function readCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
-    
-    let minStart = new Date(8640000000000000);
-    let maxEnd = new Date(-8640000000000000);
-    
-    for (const w of weeks) {
-      const { start, end } = getDateRangeOfWeek(w, year);
-      if (start < minStart) {minStart = start;}
-      if (end > maxEnd) {maxEnd = end;}
-    }
+    const { start: minStart, end: maxEnd } = getWeeksRange(weeks, year);
 
     const courses = await database
       .get<Course>('courses')

@@ -1,1 +1,0 @@
-export { useWidgetSync } from "./useWidgetSync";

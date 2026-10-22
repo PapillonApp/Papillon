@@ -28,7 +28,7 @@ const PapillonMedian = (grades: Grade[]): number => {
     });
 
   if (validGrades.length === 0) {
-    return 0;
+    return -1;
   }
 
   validGrades.sort((a, b) => a - b);

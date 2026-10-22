@@ -8,6 +8,7 @@ import Item from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export default function SettingsServices() {
   const accountStore = useAccountStore();
@@ -15,41 +16,43 @@ export default function SettingsServices() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: 16 }}
-      contentInsetAdjustmentBehavior="always"
+      contentContainerStyle={{ paddingVertical: 16 }}
+      contentInsetAdjustmentBehavior="automatic"
       style={{ width: '100%', height: '100%' }}
     >
-      {accountStore.lastUsedAccount && (
-        <List>
-          <Item>
-            <Typography variant="caption" color="secondary">
-              {t('Settings_Services_Title_LastAccountUsed')}
-            </Typography>
-            <Typography variant="title">
-              {accountStore.lastUsedAccount}
-            </Typography>
-          </Item>
-        </List>
-      )}
+      <SafeHorizontalView base={16}>
+        {accountStore.lastUsedAccount && (
+          <List>
+            <Item>
+              <Typography variant="caption" color="secondary">
+                {t('Settings_Services_Title_LastAccountUsed')}
+              </Typography>
+              <Typography variant="title">
+                {accountStore.lastUsedAccount}
+              </Typography>
+            </Item>
+          </List>
+        )}
 
-      {accountStore.accounts.length === 0 && (
-        <Stack
-          vAlign="center"
-          hAlign="center"
-          padding={16}
-          gap={0}
-        >
-          <Icon opacity={0.5} style={{ marginBottom: 8 }}>
-            <UserX2Icon size={36} />
-          </Icon>
-          <Typography variant="h4" align="center">
-            Aucun compte lié
-          </Typography>
-          <Typography variant="body1" color="secondary" align="center">
-            Ajoute un compte en appuyant sur le bouton ci-dessus.
-          </Typography>
-        </Stack>
-      )}
+        {accountStore.accounts.length === 0 && (
+          <Stack
+            vAlign="center"
+            hAlign="center"
+            padding={16}
+            gap={0}
+          >
+            <Icon opacity={0.5} style={{ marginBottom: 8 }}>
+              <UserX2Icon size={36} />
+            </Icon>
+            <Typography variant="h4" align="center">
+              Aucun compte lié
+            </Typography>
+            <Typography variant="body1" color="secondary" align="center">
+              Ajoute un compte en appuyant sur le bouton ci-dessus.
+            </Typography>
+          </Stack>
+        )}
+      </SafeHorizontalView>
     </ScrollView>
   );
 }

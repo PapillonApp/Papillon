@@ -59,11 +59,12 @@ export default function TransportView() {
   return (
     <List
       style={{ flex: 1, backgroundColor: theme.colors.overground }}
+      safeHorizontalPadding={20}
       contentContainerStyle={{
-        padding: 20,
         paddingTop: 16,
+        paddingBottom: 20,
       }}
-      contentInsetAdjustmentBehavior="always"
+      contentInsetAdjustmentBehavior="automatic"
     >
       <List.View style={{ marginBottom: 15 }}>
         <SettingsHeader

@@ -13,6 +13,7 @@ import { checkConsent } from '@/utils/logger/consent';
 import { warn } from '@/utils/logger/logger';
 import { posthog } from '@/utils/logger/posthog';
 import ModelManager from '@/utils/magic/ModelManager';
+import { MAGIC_AVAILABLE } from '@/utils/magic/tflite';
 import { FONT_CONFIG } from '@/constants/LayoutScreenOptions';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -116,7 +117,7 @@ export function useAppInitialization() {
 
   // Magic/ModelManager Initialization
   useEffect(() => {
-    if (magicEnabled) {
+    if (MAGIC_AVAILABLE && magicEnabled) {
       ModelManager.safeInit();
     }
   }, [magicEnabled]);

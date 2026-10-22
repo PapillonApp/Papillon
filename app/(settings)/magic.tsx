@@ -120,8 +120,9 @@ export default function SettingsMagic() {
   return (
     <List
       style={{ flex: 1, backgroundColor: colors.overground }}
-      contentContainerStyle={{ padding: 20 }}
-      contentInsetAdjustmentBehavior="always"
+      safeHorizontalPadding={20}
+      contentContainerStyle={{ paddingVertical: 20 }}
+      contentInsetAdjustmentBehavior="automatic"
     >
       <List.View style={{ marginBottom: 20 }}>
         <SettingsHeader

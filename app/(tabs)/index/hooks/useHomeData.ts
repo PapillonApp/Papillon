@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { t } from 'i18next';
 import { instance } from "@blockshub/pawnote-lts";
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { getWeekNumberFromDate } from '@/database/useHomework';
 import { AuthenticationError } from '@/services/errors/AuthenticationError';
@@ -26,6 +26,7 @@ export const useHomeData = () => {
   const settingsstore = useSettingsStore(state => state.personalization);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
   const removeAccount = useAccountStore(state => state.removeAccount);
+  const [syncing, setSyncing] = useState(false);
 
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
@@ -34,8 +35,11 @@ export const useHomeData = () => {
       return;
     }
     const date = new Date();
-    const weekNumber = getWeekNumberFromDate(date);
-    await manager.getWeeklyTimetable(weekNumber, date);
+    await manager.getWeeklyTimetable(getWeekNumberFromDate(date), date);
+    // Next week too, so upcoming courses (e.g. Monday's, seen on a Friday) are
+    // already cached on the next launch. Sequential: Pronote numbers its requests.
+    const nextWeek = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
+    await manager.getWeeklyTimetable(getWeekNumberFromDate(nextWeek), nextWeek);
   }, []);
 
   const fetchGrades = useCallback(async () => {
@@ -52,7 +56,7 @@ export const useHomeData = () => {
     }
   }, []);
 
-  const initialize = useCallback(async () => {
+  const initialize = useCallback(async (force = false) => {
     if (!lastUsedAccount) {
       return;
     }
@@ -83,10 +87,11 @@ export const useHomeData = () => {
       return;
     }
 
-    if (Date.now() - (lastHomeSync.get(lastUsedAccount) ?? 0) < HOME_SYNC_TTL_MS) {
+    if (!force && Date.now() - (lastHomeSync.get(lastUsedAccount) ?? 0) < HOME_SYNC_TTL_MS) {
       return;
     }
 
+    setSyncing(true);
     try {
       await initializeAccountManager(lastUsedAccount);
       debug("Refreshed Manager received");
@@ -215,10 +220,16 @@ export const useHomeData = () => {
           technical: String(error),
         });
       }
+    } finally {
+      setSyncing(false);
     }
   }, [alert, fetchEDT, fetchGrades, settingsstore.showAlertAtLogin, lastUsedAccount, removeAccount]);
 
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  const refresh = useCallback(() => initialize(true), [initialize]);
+
+  return { syncing, refresh };
 };
