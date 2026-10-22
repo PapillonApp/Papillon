@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "index.js",
-  "version": "8.5.5",
+  "version": "8.6.0",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -27,7 +27,7 @@
     "@eslint/js": "^9.39.1",
     "@expo/ui": "~58.0.8",
     "@getpapillon/papicons": "^0.2.3",
-    "@getpapillon/papillonkit": "^1.2.0",
+    "@getpapillon/papillonkit": "^1.2.1",
     "@legendapp/list": "^2.0.15",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-async-storage/async-storage": "2.2.0",
