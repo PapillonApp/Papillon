@@ -116,11 +116,6 @@
 	<string>Allow $(PRODUCT_NAME) to access your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your location</string>
-	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
-	<dict>
-		<key>ExpoLocationFullAccuracy</key>
-		<string>Allow $(PRODUCT_NAME) to access your precise location</string>
-	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Papillon utilise ton emplacement pour trouver les établissements autour de toi.</string>
 	<key>NSMicrophoneUsageDescription</key>

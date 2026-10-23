@@ -31,23 +31,42 @@ function getOrCreateDeviceKey(keyName: string): string {
   return key;
 }
 
-export function createEncryptedMMKV(id: string, legacyKey?: string): MMKV | null {
+// Opening an MMKV file with the wrong key discards its content, so every path
+// below must open the file with the key it is actually encrypted with.
+export function createEncryptedMMKV(id: string, legacyKey?: string): MMKV {
   const keyName = `mmkv-key.${id}`;
   const migratedName = `mmkv-key.${id}.migrated`;
 
+  let key: string | null = null;
+  let migrated = false;
   try {
-    const key = getOrCreateDeviceKey(keyName);
-
-    if (SecureStore.getItem(migratedName, SECURE_STORE_OPTIONS) === "1") {
-      return createMMKV({ id, encryptionKey: key, encryptionType: "AES-256" });
-    }
-
-    const mmkv = createMMKV({ id, encryptionKey: legacyKey });
-    mmkv.encrypt(key, "AES-256");
-    SecureStore.setItem(migratedName, "1", SECURE_STORE_OPTIONS);
-    return mmkv;
+    key = getOrCreateDeviceKey(keyName);
+    migrated = SecureStore.getItem(migratedName, SECURE_STORE_OPTIONS) === "1";
   } catch (error) {
-    console.error(`Unable to open encrypted MMKV "${id}":`, error);
-    return null;
+    console.error(`Secure storage unavailable for MMKV "${id}":`, error);
   }
+
+  if (key && migrated) {
+    return createMMKV({ id, encryptionKey: key, encryptionType: "AES-256" });
+  }
+
+  // Not migrated yet (or secure storage unavailable): the file still uses the legacy key
+  const mmkv = createMMKV({ id, encryptionKey: legacyKey });
+  if (!key) {return mmkv;}
+
+  try {
+    mmkv.encrypt(key, "AES-256");
+  } catch (error) {
+    console.error(`Unable to migrate MMKV "${id}", keeping the legacy key:`, error);
+    return mmkv;
+  }
+
+  try {
+    SecureStore.setItem(migratedName, "1", SECURE_STORE_OPTIONS);
+  } catch (error) {
+    // Without the flag, the next launch would open the file with the legacy key: roll back
+    console.error(`Unable to save migration flag for MMKV "${id}", rolling back:`, error);
+    mmkv.encrypt(legacyKey ?? "");
+  }
+  return mmkv;
 }
