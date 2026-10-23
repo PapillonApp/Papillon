@@ -43,10 +43,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # Bun blocks untrusted postinstall scripts; Skia's copies its prebuilt libs into libs/android
-      - name: Install Skia prebuilt libraries
-        run: node node_modules/@shopify/react-native-skia/scripts/install-libs.js
-
       - name: Create secrets.json
         env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
