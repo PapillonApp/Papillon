@@ -12,6 +12,7 @@ export const resources: Record<string, { load: () => object; emoji: string; labe
   it: { load: () => require("@/locales/it.json"), emoji: "🇮🇹", label: "Italiano" },
   tr: { load: () => require("@/locales/tr.json"), emoji: "🇹🇷", label: "Türkçe" },
   br: { load: () => require("@/locales/br.json"), emoji: "🏁", label: "Brezhoneg" },
+  eu: { load: () => require("@/locales/eu.json"), emoji: "EU", label: "Euskara" },
   pt: { load: () => require("@/locales/pt.json"), emoji: "🇵🇹", label: "Português" },
   ja: { load: () => require("@/locales/ja.json"), emoji: "🇯🇵", label: "日本語" },
   ru: { load: () => require("@/locales/ru.json"), emoji: "🇷🇺", label: "Русский" },
