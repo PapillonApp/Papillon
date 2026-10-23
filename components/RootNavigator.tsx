@@ -18,6 +18,14 @@ import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { useAndroidHeaderProps } from './AndroidHeaderBackground';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
 
+const DEVMODE_SUBSCREENS = [
+  { name: "(dev)/logs", title: "Journaux" },
+  { name: "(dev)/network", title: "Requêtes réseau" },
+  { name: "(dev)/papillonkit", title: "PapillonKit" },
+  { name: "(dev)/papillonkit-tests", title: "Tests PapillonKit" },
+  { name: "(dev)/magic", title: "Papillon Magic+" },
+];
+
 function RootNavigatorContent() {
   const theme = useTheme();
   const androidHeaderProps = useAndroidHeaderProps();
@@ -57,7 +65,7 @@ function RootNavigatorContent() {
         />
         <Stack.Screen
           name="(settings)"
-          options={{ headerShown: false, presentation: "formSheet" }}
+          options={{ headerShown: false, presentation: Platform.OS === "android" ? "card" : "formSheet" }}
         />
         <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
         <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
@@ -71,16 +79,23 @@ function RootNavigatorContent() {
           name="(dev)/request"
           options={DEVMODE_REQUESTS_SCREEN_OPTIONS}
         />
+        {DEVMODE_SUBSCREENS.map(screen => (
+          <Stack.Screen
+            key={screen.name}
+            name={screen.name}
+            options={{ ...DEVMODE_SCREEN_OPTIONS, headerTitle: screen.title }}
+          />
+        ))}
         <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
         <Stack.Screen
           name="(modals)/wallpaper"
           options={{
-            presentation: "formSheet",
-            sheetGrabberVisible: true,
+            presentation: Platform.OS === "android" ? "card" : "formSheet",
+            sheetGrabberVisible: false,
             sheetAllowedDetents: [0.5, 1],
             headerLargeTitle: false,
-            sheetLargestUndimmedDetentIndex: 0,
+            sheetLargestUndimmedDetentIndex: "none",
             headerTransparent: Platform.OS === "ios",
             headerTitle: t("Modal_Wallpaper_Title"),
             contentStyle: {
@@ -93,7 +108,7 @@ function RootNavigatorContent() {
         <Stack.Screen
           name="(modals)/profile"
           options={{
-            presentation: "formSheet",
+            presentation: Platform.OS === "android" ? "card" : "formSheet",
             headerLargeTitle: false,
             headerTitle: t("Modal_Profile_Title"),
             ...androidHeaderProps,
@@ -158,6 +173,14 @@ function RootNavigatorContent() {
             headerTitle: t("Tab_News"),
             headerTransparent: runsIOS26,
             headerLargeTitle: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="(modals)/tasks/custom"
+          options={{
+            headerShown: false,
+            presentation: "modal",
           }}
         />
 

@@ -44,8 +44,9 @@ const LanguagePersonalization = () => {
   return (
     <List
       style={{ flex: 1, backgroundColor: colors.overground }}
-      contentContainerStyle={{ padding: 16 }}
-      contentInsetAdjustmentBehavior="always"
+      safeHorizontalPadding={16}
+      contentContainerStyle={{ paddingVertical: 16 }}
+      contentInsetAdjustmentBehavior="automatic"
     >
       {languages.map(lang => {
         const isSelected = i18n.language === lang.id;

@@ -9,7 +9,7 @@
     "babel.config.js",
     "scripts/**/*.js",
     "papillon-intents.config.ts",
-    "widgets/useWidgetSync.ios.ts"
+    "utils/widgets/useCalendarWidgetFeed.ios.ts"
   ],
   "project": [
     "**/*.{ts,tsx,js,jsx}"

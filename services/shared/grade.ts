@@ -54,7 +54,6 @@ export interface SkillScore {
 
 export interface GradeScore {
   value: number;
-  outOf?: number;
   status?: string;
   disabled?: boolean;
 }

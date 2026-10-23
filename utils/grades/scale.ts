@@ -60,3 +60,16 @@ export const formatScoreForDisplay = (
     denominator: `/${outOf}`,
   };
 };
+
+export const formatGradeScoreForDisplay = (
+  score: { value: number; status?: string; disabled?: boolean } | undefined,
+  outOf: { value: number } | undefined,
+  scale: GradeDisplayScale,
+): { value: string; denominator: string } => {
+  if (!score || score.disabled || typeof score.value !== "number") {
+    return { value: score?.status ?? "N/A", denominator: "" };
+  }
+
+  const formatted = formatScoreForDisplay(score.value, outOf?.value || 20, scale);
+  return { value: formatted.value.toFixed(2), denominator: formatted.denominator };
+};

@@ -192,8 +192,9 @@ export default function SettingsAbout() {
   return (
     <List
       style={{ flex: 1, backgroundColor: theme.colors.overground }}
-      contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 20 }}
-      contentInsetAdjustmentBehavior="always"
+      safeHorizontalPadding={20}
+      contentContainerStyle={{ paddingTop: 20, paddingBottom: insets.bottom + 20 }}
+      contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
     >
       <List.View style={{ marginBottom: 10 }}>

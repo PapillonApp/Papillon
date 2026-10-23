@@ -6,23 +6,15 @@ brew install cocoapods
 echo "===== Installing Node.js ====="
 brew install node@22
 brew link --overwrite --force node@22
-echo "===== Installing Bun ====="
-brew install bun
 
 # Install dependencies
-echo "===== Running bun install ====="
+echo "===== Running npm install ====="
 cd ../..
-bun install
-echo "===== Checking Skia prebuilt binaries ====="
-if [ ! -d node_modules/@shopify/react-native-skia/libs/ios ]; then
-  echo "Skia libs missing, running install-skia"
-  npx install-skia
-fi
+npm install --legacy-peer-deps
 echo "===== Logging package.json ====="
 cat package.json
 echo "===== Adding secrets ====="
 printf "{\"POSTHOG_API_KEY\":\"%s\",\"POSTHOG_HOST\":\"%s\"}" "$POSTHOG_API_KEY" "$POSTHOG_HOST" >> secrets.json
-cat secrets.json
 echo "===== Running expo prebuild ====="
 npx expo prebuild --no-install
 echo "===== Running git restore ====="

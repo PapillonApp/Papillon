@@ -11,6 +11,7 @@ import { generateId } from "@/utils/generateId";
 import { error } from '@/utils/logger/logger';
 import { trackAdvancedEvent } from '@/utils/logger/analytics';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
+import { useFocusEffect } from "expo-router";
 
 // Cache reads are coalesced over this window: fetching five weeks would
 // otherwise re-query every one of them five times over.
@@ -80,9 +81,14 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     for (const [key, list] of Object.entries(cacheByWeek)) {
       const week = Number(key);
       const items = list
-        .filter(h => services.includes(h.createdByAccount))
+        // Custom tasks belong to the account itself rather than to one of its
+        // services.
+        .filter(h => h.custom ? h.createdByAccount === account?.id : services.includes(h.createdByAccount))
         .map(cached => {
-          const merged = (cached.id ? homework[cached.id] : undefined) ?? cached;
+          // The cache owns isDone: the overlay dates from the last fetch, and a
+          // task can be ticked elsewhere since (e.g. from its detail screen).
+          const overlay = cached.id ? homework[cached.id] : undefined;
+          const merged = overlay ? { ...overlay, isDone: cached.isDone } : cached;
           const id = merged.id ?? homeworkKey(merged);
           const previous = previousItems.get(id);
           const item = previous && isSameHomework(previous, merged) ? previous : merged;
@@ -97,7 +103,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     itemCache.current = nextItems;
     weekCache.current = nextWeeks;
     return nextWeeks;
-  }, [cacheByWeek, homework, services]);
+  }, [cacheByWeek, homework, services, account?.id]);
 
   // A week is fetched from the service once per session; `inFlightWeeks` keeps a
   // swipe back and forth from queueing the same request twice.
@@ -116,6 +122,9 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
       setRefreshTrigger(p => p + 1);
     }, REFRESH_COALESCE_MS);
   }, []);
+
+  // Back from a task's detail screen: re-read what it may have changed.
+  useFocusEffect(scheduleRefresh);
 
   useEffect(() => () => {
     if (refreshTimer.current) {
@@ -203,10 +212,13 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
       const id = homeworkKey(item);
 
       try {
-        const manager = getManager();
-        await manager.setHomeworkCompletion(item, done)
+        // A custom task has no service to sync its state with.
+        if (!item.custom) {
+          const manager = getManager();
+          await manager.setHomeworkCompletion(item, done)
+        }
 
-        updateHomeworkIsDone(id, done);
+        await updateHomeworkIsDone(id, done);
 
         // The optimistic entry is what flips the checkbox: the database write
         // and its cache read land a moment later.
@@ -234,7 +246,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
             technical: String(err)
           });
 
-        updateHomeworkIsDone(id, !done);
+        await updateHomeworkIsDone(id, !done);
         setHomework(prev => ({
           ...prev,
           [id]: {

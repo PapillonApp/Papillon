@@ -72,8 +72,9 @@ export default function SettingsContributors() {
 
   return (
     <List
-      contentInsetAdjustmentBehavior="always"
-      contentContainerStyle={{ padding: 16, gap: 12 }}
+      contentInsetAdjustmentBehavior="automatic"
+      safeHorizontalPadding={16}
+      contentContainerStyle={{ paddingVertical: 16, gap: 12 }}
       style={{ flex: 1, backgroundColor: colors.overground }}
     >
       {isLoading && (

@@ -6,7 +6,7 @@ import { useTheme } from "expo-router/react-navigation";
 import adjust from '@/utils/adjustColor';
 import { Text } from 'react-native';
 
-import { formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
 import i18n from '@/utils/i18n';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,9 +29,29 @@ interface TaskProps {
   date: Date;
   completed: boolean;
   hasAttachments: boolean;
+  isCustom?: boolean;
   magic?: string;
   onToggle: () => void;
   onPress?: () => void;
+}
+
+export function formatDistanceDay(date: Date): string {
+  // if yesterday, today or tomorrow
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  if (date.toDateString() === yesterday.toDateString()) {
+    return i18n.t("Yesterday").toLowerCase();
+  } else if (date.toDateString() === today.toDateString()) {
+    return i18n.t("Today").toLowerCase();
+  } else if (date.toDateString() === tomorrow.toDateString()) {
+    return i18n.t("Tomorrow").toLowerCase();
+  }
+
+  return formatDistanceStrict(startOfDay(date), startOfDay(new Date()), { addSuffix: true, unit: "day", locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
 }
 
 const Task: React.FC<TaskProps> = React.memo(({
@@ -43,6 +63,7 @@ const Task: React.FC<TaskProps> = React.memo(({
   date,
   completed,
   hasAttachments,
+  isCustom = false,
   magic,
   onToggle,
   onPress
@@ -50,25 +71,6 @@ const Task: React.FC<TaskProps> = React.memo(({
   const theme = useTheme();
   const tintedColor = useMemo(() => adjust(color, theme.dark ? 0.3 : -0.3), [color, theme.dark]);
   const formattedDescription = useMemo(() => formatHTML(description), [description]);
-
-  function formatDistanceDay(date: Date): string {
-    // if yesterday, today or tomorrow
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
-    if (date.toDateString() === yesterday.toDateString()) {
-      return i18n.t("Yesterday").toLowerCase();
-    } else if (date.toDateString() === today.toDateString()) {
-      return i18n.t("Today").toLowerCase();
-    } else if (date.toDateString() === tomorrow.toDateString()) {
-      return i18n.t("Tomorrow").toLowerCase();
-    }
-
-    return formatDistanceToNow(date, { addSuffix: true, locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
-  }
 
   return (
     <ListTouchable onPress={onPress}>
@@ -99,7 +101,7 @@ const Task: React.FC<TaskProps> = React.memo(({
             </Text>
             {/* Name */}
             <Stack inline flex direction="horizontal" gap={4} hAlign='center'>
-              <Typography nowrap variant='body1' weight='semibold' color={tintedColor}>
+              <Typography nowrap variant='body1' weight='semibold' color={tintedColor} style={{ flexShrink: 1 }}>
                 {subject}
               </Typography>
 
@@ -107,6 +109,12 @@ const Task: React.FC<TaskProps> = React.memo(({
               {hasAttachments && (
                 <Icon size={18} fill={tintedColor}>
                   <Papicons name="link" />
+                </Icon>
+              )}
+
+              {isCustom && (
+                <Icon size={18} fill={tintedColor}>
+                  <Papicons name="PenAlt" />
                 </Icon>
               )}
             </Stack>

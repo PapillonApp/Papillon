@@ -28,6 +28,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { warn } from "@/utils/logger/logger";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 interface SubjectInfo {
   name: string;
@@ -219,8 +220,10 @@ export default function GradesModal() {
       <List
         style={{ flex: 1 }}
         contentInsetAdjustmentBehavior="automatic"
+        safeHorizontalPadding={16}
         ListHeaderComponent={
-          <View
+          <SafeHorizontalView
+            base={16}
             style={{
               alignItems: "center",
               justifyContent: "center",
@@ -351,12 +354,10 @@ export default function GradesModal() {
                 </Stack>
               </Stack>
             )}
-          </View>
+          </SafeHorizontalView>
         }
         contentContainerStyle={{
-          padding: 16,
-          paddingLeft: insets.left + 16,
-          paddingRight: insets.right + 16,
+          paddingVertical: 16,
           width: '100%',
           maxWidth: 900,
           alignSelf: 'center',

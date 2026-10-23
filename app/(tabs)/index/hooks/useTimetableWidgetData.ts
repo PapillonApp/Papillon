@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createMMKV } from "react-native-mmkv";
 
+import { getWeekNumberFromDate } from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
@@ -90,13 +91,20 @@ export const useTimetableWidgetData = (options: { showCancelled?: boolean } = {}
   );
 
   const currentYear = now.getFullYear();
+  // Past weeks are never shown; -1 because getWeekNumberFromDate and getDateRangeOfWeek
+  // don't agree on which day a week starts.
+  const firstWeek = Math.max(1, getWeekNumberFromDate(now) - 1);
+  const remainingWeeks = useMemo(
+    () => Array.from({ length: 55 - firstWeek }, (_, index) => firstWeek + index),
+    [firstWeek]
+  );
   const yearWeeks = useMemo(
     () => Array.from({ length: 54 }, (_, index) => index + 1),
     []
   );
   const nextYearDate = useMemo(() => new Date(currentYear + 1, 0, 1), [currentYear]);
 
-  const currentYearTimetable = useTimetable(undefined, yearWeeks, now);
+  const currentYearTimetable = useTimetable(undefined, remainingWeeks, now);
   const nextYearTimetable = useTimetable(undefined, yearWeeks, nextYearDate);
 
   const weeklyTimetable = useMemo(() =>

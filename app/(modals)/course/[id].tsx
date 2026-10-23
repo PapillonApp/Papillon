@@ -1,11 +1,11 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from "expo-router/react-navigation";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
 import * as DateLocale from 'date-fns/locale';
 import i18n, { t } from "i18next";
 import React, { useEffect, useState } from "react";
-import { Platform, View } from "react-native";
+import { Alert, Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead from "@/components/ModalOverhead";
@@ -15,10 +15,14 @@ import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
+import { useSettingsStore } from "@/stores/settings";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import * as PapillonKit from "@getpapillon/papillonkit";
+import type { LiveActivityPreviewMode } from "@getpapillon/papillonkit";
 
 import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,6 +45,14 @@ export default function CourseModal() {
   });
   const [course, setCourse] = useState<SharedCourse>();
   const [loading, setLoading] = useState(true);
+  const liveActivityTestMode = useSettingsStore(
+    state => state.personalization.liveActivityTestMode ?? false
+  );
+  const liveActivitiesEnabled = useSettingsStore(
+    state => state.personalization.liveActivitiesEnabled ?? true
+  );
+  const canTriggerLiveActivity =
+    PapillonKit.features.liveActivities && liveActivityTestMode && liveActivitiesEnabled;
 
   useEffect(() => {
     let cancelled = false;
@@ -71,6 +83,14 @@ export default function CourseModal() {
     emoji: getSubjectEmoji(course.subject),
     color: getSubjectColor(course.subject),
   };
+  const triggerLiveActivity = async (mode: LiveActivityPreviewMode) => {
+    try {
+      await PapillonKit.liveActivities.preview(mode, course.id);
+    } catch (cause) {
+      Alert.alert("Live Activity", `Impossible de la démarrer : ${String(cause)}`);
+    }
+  };
+
   const item = course;
   const startTime = Math.floor(course.from.getTime() / 1000);
   const endTime = Math.floor(course.to.getTime() / 1000);
@@ -79,11 +99,7 @@ export default function CourseModal() {
     <View style={{ flex: 1, backgroundColor: colors.overground }}>
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <NativeHeaderPressable onPress={() => router.back()}>
-            <Icon size={28}>
-              <Papicons name="Cross" />
-            </Icon>
-          </NativeHeaderPressable>
+          <HeaderBackButton onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
 
@@ -105,29 +121,32 @@ export default function CourseModal() {
 
       <List
         contentInsetAdjustmentBehavior="automatic"
+        safeHorizontalPadding={16}
         ListHeaderComponent={
-          <ModalOverhead
-            subject={getSubjectName(item.subject)}
-            title={item.customStatus || getStatusText(item.status)}
-            color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
-            emoji={subjectInfo.emoji}
-            subjectVariant="h3"
-            date={new Date(startTime * 1000)}
-            dateFormat={{
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-            }}
-            style={{
-              marginBottom: 24,
-              paddingTop: finalHeaderHeight,
-            }}
-          />
+          <SafeHorizontalView base={16}>
+            <ModalOverhead
+              subject={getSubjectName(item.subject)}
+              title={item.customStatus || getStatusText(item.status)}
+              color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
+              emoji={subjectInfo.emoji}
+              subjectVariant="h3"
+              date={new Date(startTime * 1000)}
+              dateFormat={{
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              }}
+              style={{
+                marginBottom: 24,
+                paddingTop: finalHeaderHeight,
+              }}
+            />
+          </SafeHorizontalView>
         }
         style={{ backgroundColor: "transparent", zIndex: 2 }}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{ paddingVertical: 16 }}
       >
         {getStatusText(course.status) ? (
           <List.Section>
@@ -152,7 +171,7 @@ export default function CourseModal() {
           <List.Item>
             <List.Leading>
               <Icon>
-                <Papicons name="Logout" />
+                <Papicons name="Login" />
               </Icon>
             </List.Leading>
             <Typography variant="title">{t("Modal_Course_Start")}</Typography>
@@ -177,7 +196,7 @@ export default function CourseModal() {
           <List.Item>
             <List.Leading>
               <Icon>
-                <Papicons name="Login" />
+                <Papicons name="Logout" />
               </Icon>
             </List.Leading>
             <Typography variant="title">{t("Modal_Course_End")}</Typography>
@@ -239,6 +258,59 @@ export default function CourseModal() {
             </Typography>
           </List.Item>
         </List.Section>
+
+        {canTriggerLiveActivity && (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>Live Activity (dev)</List.Label>
+            </List.SectionTitle>
+
+            <List.Item onPress={() => triggerLiveActivity("upcoming")}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Clock" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">Aperçu : commence bientôt</Typography>
+              <Typography variant="body1" color="textSecondary">
+                Ce cours commence dans 15 minutes.
+              </Typography>
+            </List.Item>
+
+            <List.Item onPress={() => triggerLiveActivity("ongoing")}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Play" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">Aperçu : en cours</Typography>
+              <Typography variant="body1" color="textSecondary">
+                Ce cours a commencé il y a 5 minutes.
+              </Typography>
+            </List.Item>
+
+            <List.Item onPress={() => triggerLiveActivity("endingSoon")}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="AlertCircle" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">Aperçu : se termine bientôt</Typography>
+              <Typography variant="body1" color="textSecondary">
+                Ce cours se termine dans 2 minutes.
+              </Typography>
+            </List.Item>
+
+            <List.Item onPress={() => PapillonKit.liveActivities.stop()}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Cross" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">Arrêter la Live Activity</Typography>
+            </List.Item>
+          </List.Section>
+        )}
       </List>
     </View>
   );

@@ -1,5 +1,5 @@
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useTheme } from "expo-router/react-navigation";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import * as Localization from "expo-localization";
 import { useRouter } from "expo-router";
 import { CalendarDays, Check, Clock4Icon, MapPinIcon, TypeIcon, User2Icon, X } from "lucide-react-native";
@@ -108,11 +108,15 @@ export default function NewEventScreen() {
   return (
     <>
       <NativeHeaderSide side="Left">
-        <NativeHeaderPressable onPress={() => { router.back() }}>
-          <Icon>
-            <X />
-          </Icon>
-        </NativeHeaderPressable>
+        {Platform.OS === "android" ? (
+          <HeaderBackButton onPress={() => router.back()} />
+        ) : (
+          <NativeHeaderPressable onPress={() => { router.back() }}>
+            <Icon>
+              <X />
+            </Icon>
+          </NativeHeaderPressable>
+        )}
       </NativeHeaderSide>
 
       <NativeHeaderSide

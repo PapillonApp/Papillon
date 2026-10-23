@@ -72,8 +72,9 @@ const SettingsTabs = () => {
 
   return (
     <List
-      contentInsetAdjustmentBehavior="always"
-      contentContainerStyle={{ padding: 16 }}
+      contentInsetAdjustmentBehavior="automatic"
+      safeHorizontalPadding={16}
+      contentContainerStyle={{ paddingVertical: 16 }}
       style={{ flex: 1, backgroundColor: colors.overground }}
     >
       {tabs.map(tab => (

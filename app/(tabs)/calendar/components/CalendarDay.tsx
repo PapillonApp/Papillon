@@ -1,11 +1,12 @@
 import { Link } from "expo-router";
 import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
-import { FlatList, RefreshControl, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { TransportStorage } from "@/stores/account/types";
 import Course from "@/ui/components/Course";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { Colors, getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectName } from '@/utils/subjects/name';
 
@@ -14,11 +15,16 @@ import { getCourseRouteId } from '@/database/useTimetable';
 
 interface CalendarDayProps {
   dayDate: Date;
+  /**
+   * Width of one page of the pager. Handed down rather than read off the window:
+   * on iPad the tab bar becomes a sidebar, so the screen is narrower than the
+   * window it sits in.
+   */
+  width: number;
   courses: SharedCourse[];
   isRefreshing: boolean;
   onRefresh: () => void;
   colors: { primary: string, background: string };
-  insets: any;
   tabBarHeight: number;
   transportInfo?: TransportStorage;
   /** The timetable could not be loaded: an empty day means "unknown", not "free". */
@@ -47,8 +53,7 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
   return true;
 }
 
-export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, insets, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
-  const { width: windowWidth } = useWindowDimensions();
+export const CalendarDay = React.memo(({ dayDate, width, courses, isRefreshing, onRefresh, colors, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
 
@@ -113,14 +118,13 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
   const isEmpty = enrichedEvents.length === 0;
 
   return (
-    <View style={{ width: windowWidth, flex: 1 }}>
+    <View style={{ width, flex: 1 }}>
       <FlatList
         data={enrichedEvents}
-        style={[styles.container, insets.left > 0 ? { marginLeft: insets.left } : null]}
+        style={styles.container}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
-          paddingHorizontal: 12,
           paddingVertical: 12,
           gap: 4,
           paddingBottom: tabBarHeight + 6,
@@ -135,44 +139,52 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
           />
         }
         keyExtractor={item => item.id || `${item.type}-${item.from || item.targetTime}`}
-        ListEmptyComponent={<EmptyCalendar hasError={hasError} />}
+        ListEmptyComponent={
+          <SafeHorizontalView base={12}>
+            <EmptyCalendar hasError={hasError} />
+          </SafeHorizontalView>
+        }
         renderItem={({ item }: { item: SharedCourse }) => {
           if ((item as any).type === "separator") {
             return (
-              <Course
-                id={item.id}
-                name="Pause"
-                variant="separator"
-                start={Math.floor(item.from.getTime() / 1000)}
-                end={Math.floor(item.to.getTime() / 1000)}
-                showTimes={false}
-              />
+              <SafeHorizontalView base={12}>
+                <Course
+                  id={item.id}
+                  name="Pause"
+                  variant="separator"
+                  start={Math.floor(item.from.getTime() / 1000)}
+                  end={Math.floor(item.to.getTime() / 1000)}
+                  showTimes={false}
+                />
+              </SafeHorizontalView>
             );
           }
 
           return (
-            <Link
-              href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(item) } }}
-              asChild
-            >
-              <Course
-                id={item.id}
-                name={getSubjectName(item.subject)}
-                teacher={item.teacher}
-                room={item.room}
-                color={getSubjectColor(item.subject) || Colors[0]}
-                status={{
-                  label: item.customStatus
-                    ? item.customStatus
-                    : getStatusText(item.status),
-                  canceled: item.status === CourseStatus.CANCELED,
-                }}
-                variant="primary"
-                start={Math.floor(item.from.getTime() / 1000)}
-                end={Math.floor(item.to.getTime() / 1000)}
-                readonly={!!item.createdByAccount}
-              />
-            </Link>
+            <SafeHorizontalView base={12}>
+              <Link
+                href={{ pathname: "/(modals)/course/[id]", params: { id: getCourseRouteId(item) } }}
+                asChild
+              >
+                <Course
+                  id={item.id}
+                  name={getSubjectName(item.subject)}
+                  teacher={item.teacher}
+                  room={item.room}
+                  color={getSubjectColor(item.subject) || Colors[0]}
+                  status={{
+                    label: item.customStatus
+                      ? item.customStatus
+                      : getStatusText(item.status),
+                    canceled: item.status === CourseStatus.CANCELED,
+                  }}
+                  variant="primary"
+                  start={Math.floor(item.from.getTime() / 1000)}
+                  end={Math.floor(item.to.getTime() / 1000)}
+                  readonly={!!item.createdByAccount}
+                />
+              </Link>
+            </SafeHorizontalView>
           );
         }}
       />
@@ -181,10 +193,10 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
 }, (prevProps, nextProps) => {
   return (
     prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
+    prevProps.width === nextProps.width &&
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.hasError === nextProps.hasError &&
     prevProps.onRefresh === nextProps.onRefresh &&
-    prevProps.insets.left === nextProps.insets.left &&
     areCoursesEquivalent(prevProps.courses, nextProps.courses)
   );
 });

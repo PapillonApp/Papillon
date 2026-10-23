@@ -1,8 +1,8 @@
-import { Stack } from 'expo-router';
-import { useHeaderHeight } from 'expo-router/react-navigation';
+import { router, Stack } from 'expo-router';
+import { useHeaderHeight, useTheme } from 'expo-router/react-navigation';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
@@ -159,6 +159,7 @@ const TasksView: React.FC = () => {
     windowWidth,
     INITIAL_INDEX,
   } = useWeekSelection();
+  const { colors } = useTheme();
 
   const weeksToLoad = useMemo(
     () => PAGE_OFFSETS.map(offset => selectedWeek + offset),
@@ -189,8 +190,8 @@ const TasksView: React.FC = () => {
 
   const [pageOffsets, setPageOffsets] = useState(INITIAL_PAGE_OFFSETS);
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => setPageOffsets(PAGE_OFFSETS));
-    return () => task.cancel();
+    const handle = setTimeout(() => setPageOffsets(PAGE_OFFSETS), 0);
+    return () => clearTimeout(handle);
   }, []);
 
   // The header is rebuilt natively whenever its options change, so the toolbar
@@ -303,6 +304,8 @@ const TasksView: React.FC = () => {
     [weekPickerAnchor.top]
   );
 
+  const openNewTask = useCallback(() => router.push("/(modals)/tasks/custom"), []);
+
   const closeWeekPicker = useCallback(() => setShowWeekPicker(false), [setShowWeekPicker]);
 
   const handlePickWeek = useCallback((week: number) => {
@@ -354,20 +357,24 @@ const TasksView: React.FC = () => {
 
       {isAndroid ? (
         <Stack.Toolbar placement="right" asChild>
-          <AndroidHeaderMenu
-            icon="Filter"
-            accessibilityLabel={t('Task_Sorting_Title')}
-            actions={sortings.map(sorting => ({
-              id: sorting.value,
-              title: sorting.label,
-              papicon: sorting.papicon,
-              state: sortMethod === sorting.value ? 'on' : 'off',
-            }))}
-            onPressAction={({ nativeEvent }) => setSortMethod(nativeEvent.event as SortMethod)}
-          />
+          <View style={styles.toolbarRow}>
+            <AndroidHeaderButton icon="Plus" accessibilityLabel={t('Task_New_Title')} onPress={openNewTask} />
+            <AndroidHeaderMenu
+              icon="Filter"
+              accessibilityLabel={t('Task_Sorting_Title')}
+              actions={sortings.map(sorting => ({
+                id: sorting.value,
+                title: sorting.label,
+                papicon: sorting.papicon,
+                state: sortMethod === sorting.value ? 'on' : 'off',
+              }))}
+              onPressAction={({ nativeEvent }) => setSortMethod(nativeEvent.event as SortMethod)}
+            />
+          </View>
         </Stack.Toolbar>
       ) : (
         <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Button icon="plus" accessibilityLabel={t('Task_New_Title')} onPress={openNewTask} />
           <Stack.Toolbar.Menu>
             <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
             <Stack.Toolbar.Label>{t('Task_Sorting_Title')}</Stack.Toolbar.Label>
@@ -400,19 +407,21 @@ const TasksView: React.FC = () => {
                     { width: windowWidth, left: (index - INITIAL_INDEX) * windowWidth },
                   ]}
                 >
-                  <TasksWeekPage
-                    week={week}
-                    homeworks={homeworkByWeek[week]}
-                    animateItems={index === INITIAL_INDEX}
-                    searchTerm={searchTerm}
-                    sortMethod={sortMethod}
-                    collapsedGroups={collapsedGroups}
-                    toggleGroup={toggleGroup}
-                    isRefreshing={refreshingWeek === week}
-                    onRefresh={handleRefresh}
-                    setAsDone={setAsDone}
-                    hasError={hasHomeworkError}
-                  />
+                  <View style={{ flex: 1, backgroundColor: colors.overground }}>
+                    <TasksWeekPage
+                      week={week}
+                      homeworks={homeworkByWeek[week]}
+                      animateItems={index === INITIAL_INDEX}
+                      searchTerm={searchTerm}
+                      sortMethod={sortMethod}
+                      collapsedGroups={collapsedGroups}
+                      toggleGroup={toggleGroup}
+                      isRefreshing={refreshingWeek === week}
+                      onRefresh={handleRefresh}
+                      setAsDone={setAsDone}
+                      hasError={hasHomeworkError}
+                    />
+                  </View>
                 </View>
               );
             })}
@@ -477,6 +486,9 @@ const styles = StyleSheet.create({
   },
   titleSubtitle: {
     marginTop: -2,
+  },
+  toolbarRow: {
+    flexDirection: "row",
   },
 });
 

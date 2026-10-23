@@ -10,7 +10,7 @@ import { useTheme } from "expo-router/react-navigation";
 import { differenceInCalendarDays, formatDistanceToNowStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
 import { Link } from 'expo-router';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import React from 'react';
 import { ActivityIndicator, Platform, Pressable } from 'react-native';
 import { View } from 'react-native';

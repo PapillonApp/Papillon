@@ -111,8 +111,9 @@ export default function SubjectPersonalization() {
 
       <List
         style={{ flex: 1, backgroundColor: colors.overground }}
-        contentContainerStyle={{ padding: 16 }}
-        contentInsetAdjustmentBehavior="always"
+        safeHorizontalPadding={16}
+        contentContainerStyle={{ paddingVertical: 16 }}
+        contentInsetAdjustmentBehavior="automatic"
       >
         {subjects.length > 0 ? (
           subjects.map(item =>
