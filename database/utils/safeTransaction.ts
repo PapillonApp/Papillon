@@ -8,8 +8,9 @@ export async function safeWrite<T>(
   timeoutMs: number = 10000,
   operationName: string = 'unnamed'
 ): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => {
+    timer = setTimeout(() => {
       reject(new Error(`🍉 Database write operation "${operationName}" timed out after ${timeoutMs}ms`));
     }, timeoutMs);
   });
@@ -21,8 +22,10 @@ export async function safeWrite<T>(
     ]);
     return result;
   } catch (err) {
-    error(`🍉 Failed safe write operation "${operationName}":`, String(err));
+    error(`🍉 Failed safe write operation "${operationName}": ${String(err)}`);
     throw err;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -32,8 +35,9 @@ export async function safeRead<T>(
   timeoutMs: number = 5000,
   operationName: string = 'unnamed'
 ): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => {
+    timer = setTimeout(() => {
       reject(new Error(`🍉 Database read operation "${operationName}" timed out after ${timeoutMs}ms`));
     }, timeoutMs);
   });
@@ -46,8 +50,10 @@ export async function safeRead<T>(
     info(`🍉 Completed safe read operation: ${operationName}`);
     return result;
   } catch (err) {
-    error(`🍉 Failed safe read operation "${operationName}":`, String(err));
+    error(`🍉 Failed safe read operation "${operationName}": ${String(err)}`);
     throw err;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -86,7 +92,7 @@ export async function executeBatchedOperations<T>(
         await new Promise(resolve => setTimeout(resolve, delayMs));
       }
     } catch (err) {
-      error(`🍉 Failed batch ${i + 1} for ${operationName}:`, String(err));
+      error(`🍉 Failed batch ${i + 1} for ${operationName}: ${String(err)}`);
       throw err;
     }
   }
