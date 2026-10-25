@@ -4,6 +4,12 @@
 
 <h3 align="center"> 🦋 C'est quoi Papillon ? </h3> <p align="center"> Papillon est un client alternatif des services de vie scolaire conventionnels (Pronote, ÉcoleDirecte, Skolengo) ainsi que des services universitaires communs (Scodoc, Appscho, etc.). À l'aide de librairies externes, Papillon affiche les données de votre compte dans une interface moderne et intuitive. </p>
 
+<p align="center">
+  <img width="272" height="381" src="https://github.com/user-attachments/assets/aa3751a8-ca4f-49db-8be8-aac2c61012be" />
+  <img width="272" height="381" src="https://github.com/user-attachments/assets/64696d7d-754a-4080-9809-d22c5947263a" />
+  <img width="272" height="381" src="https://github.com/user-attachments/assets/4f0a251b-8fbf-465f-8a28-c170ea6c0974" />
+</p>
+
 #
 
 <h3 align="center"> 🛠️ Contribuer au projet </h3> <p align="center"> Si tu veux filer un coup de main, t'es au bon endroit ! Que tu sois dev, designer, traducteur·rice ou juste curieux·se, il y a de la place pour toi. </p> <p align="center"> <a href="https://docs.papillon.bzh/developper/compile"><img alt="Compiler" src="https://img.shields.io/badge/🧱_Compiler_l'app-2f6fed?style=for-the-badge"></a> <a href="https://docs.papillon.bzh/ui"><img alt="Papillon UI" src="https://img.shields.io/badge/🎨_Papillon_UI-8b5cf6?style=for-the-badge"></a> <a href="https://discord.gg/wVKWBRTbfh"><img alt="Discord" src="https://img.shields.io/badge/💬_Rejoindre_le_Discord-5865F2?style=for-the-badge"></a> </p>
