@@ -349,8 +349,7 @@ const Course = React.memo((props: CourseProps) => {
                     alignItems: "center",
                     gap: 5,
                     minWidth: 0,
-                    flexGrow: 0,
-                    flexShrink: 0,
+                    flexShrink: 1,
                   }}
                 >
                   <Icon
@@ -364,50 +363,56 @@ const Course = React.memo((props: CourseProps) => {
                     lineBreakStrategyIOS={"none"}
                     variant="body1"
                     weight="semibold"
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                     style={[styles.room, { color: textColor }]}
                     skeleton={skeleton}
                   >
                     {room || t("No_Course_Room")}
                   </Typography>
                 </View>
-                <View
-                  style={[
-                    styles.separator,
-                    {
-                      backgroundColor: skeleton
-                        ? colors.text + "20"
-                        : textColor,
-                      marginHorizontal: 8,
-                    },
-                  ]}
-                />
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 5,
-                    flex: 1,
-                  }}
-                >
-                  <Icon
-                    papicon
-                    size={20}
-                    fill={skeleton ? colors.text + "20" : textColor}
-                  >
-                    <Papicons name="User" />
-                  </Icon>
-                  <Typography
-                    lineBreakStrategyIOS={"push-out"}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    variant="body1"
-                    weight="semibold"
-                    style={[styles.teacher, { color: textColor }]}
-                    skeleton={skeleton}
-                  >
-                    {teacher}
-                  </Typography>
-                </View>
+                {teacher ? (
+                  <>
+                    <View
+                      style={[
+                        styles.separator,
+                        {
+                          backgroundColor: skeleton
+                            ? colors.text + "20"
+                            : textColor,
+                          marginHorizontal: 8,
+                        },
+                      ]}
+                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 5,
+                        flex: 1,
+                      }}
+                    >
+                      <Icon
+                        papicon
+                        size={20}
+                        fill={skeleton ? colors.text + "20" : textColor}
+                      >
+                        <Papicons name="User" />
+                      </Icon>
+                      <Typography
+                        lineBreakStrategyIOS={"push-out"}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        variant="body1"
+                        weight="semibold"
+                        style={[styles.teacher, { color: textColor }]}
+                        skeleton={skeleton}
+                      >
+                        {teacher}
+                      </Typography>
+                    </View>
+                  </>
+                ) : null}
               </Stack>
             )}
 
