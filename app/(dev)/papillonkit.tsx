@@ -24,6 +24,15 @@ const INTELLIGENCE_LABELS: Record<string, string> = {
   unsupported: "Non supportée",
 };
 
+const ACTIVITY_STATES: Record<string, string> = {
+  pending: "Programmée",
+  active: "Affichée",
+  stale: "À mettre à jour",
+  ended: "Terminée",
+  dismissed: "Retirée",
+  unknown: "Inconnue",
+};
+
 const WIDGETS = [
   { kind: "Calendar", title: "Emploi du temps" },
   { kind: "Tasks", title: "Tâches" },
@@ -75,6 +84,24 @@ export default function PapillonKitScreen() {
       await load();
     });
 
+  const syncLiveActivity = () =>
+    run("activity-sync", async () => {
+      await PapillonKit.liveActivities.sync();
+      await load();
+    });
+
+  const previewLiveActivity = () =>
+    run("activity-preview", async () => {
+      await PapillonKit.liveActivities.preview("ongoing");
+      await load();
+    });
+
+  const stopLiveActivity = () =>
+    run("activity-stop", async () => {
+      await PapillonKit.liveActivities.stop();
+      await load();
+    });
+
   const clearIndex = () =>
     confirmDestructive(
       "Vider l'index Spotlight",
@@ -91,9 +118,11 @@ export default function PapillonKitScreen() {
     features.siri ? "Siri" : null,
     features.intelligence ? "Apple Intelligence" : null,
     features.widgets ? "widgets" : null,
+    features.liveActivities ? "Live Activities" : null,
   ].filter(Boolean);
 
   const lastRefresh = snapshot?.lastRefresh;
+  const liveActivity = snapshot?.liveActivity;
   const courses = snapshot?.upcomingCourses ?? [];
   const homework = snapshot?.upcomingHomework ?? [];
 
@@ -324,6 +353,106 @@ export default function PapillonKitScreen() {
                 </List.Item>
               );
             })}
+          </List.Section>
+        ) : null}
+
+        {liveActivity ? (
+          <List.Section id="live-activity">
+            <List.SectionTitle>
+              <Papicons name="Clock" color={muted} />
+              <List.Label>Live Activity</List.Label>
+            </List.SectionTitle>
+            <List.Item>
+              <Typography variant="action">Autorisation iOS</Typography>
+              <List.Trailing>
+                <Typography variant="body1" color={liveActivity.authorized ? "textSecondary" : FAILED}>
+                  {liveActivity.authorized ? "Accordée" : "Refusée dans Réglages"}
+                </Typography>
+              </List.Trailing>
+            </List.Item>
+            <List.Item>
+              <Typography variant="action">Réglage dans Papillon</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {liveActivity.schedulesAhead
+                  ? "Les prochains cours sont programmés d'avance."
+                  : "Seul le cours en cours ou imminent est affiché."}
+              </Typography>
+              <List.Trailing>
+                <Typography variant="body1" color="textSecondary">
+                  {liveActivity.testMode ? "Mode test" : liveActivity.enabled ? "Activé" : "Désactivé"}
+                </Typography>
+              </List.Trailing>
+            </List.Item>
+            <List.Item>
+              <Typography variant="action">Dernière synchronisation</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {liveActivity.lastSync
+                  ? `${formatTime(liveActivity.lastSync)} · ${liveActivity.planned} cours prévu${liveActivity.planned > 1 ? "s" : ""}${liveActivity.nextSync ? ` · prochaine à ${formatTime(liveActivity.nextSync)}` : ""}`
+                  : "Pas encore synchronisée depuis le lancement"}
+              </Typography>
+              {liveActivity.lastError ? (
+                <Typography variant="body2" color={FAILED}>
+                  {liveActivity.lastError}
+                </Typography>
+              ) : null}
+            </List.Item>
+            {liveActivity.activities.map(activity => (
+              <List.Item key={activity.id} id={activity.id}>
+                <Typography variant="action" numberOfLines={1}>
+                  {`${activity.subject}${activity.preview ? " (aperçu)" : ""}`}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" numberOfLines={1}>
+                  {`Affichée dès ${formatTime(activity.showsAt)} · cours ${formatTime(activity.startsAt)} à ${formatTime(activity.endsAt)}`}
+                </Typography>
+                <List.Trailing>
+                  <Typography variant="body1" color="textSecondary">
+                    {ACTIVITY_STATES[activity.state] ?? activity.state}
+                  </Typography>
+                </List.Trailing>
+              </List.Item>
+            ))}
+            <List.Item onPress={syncLiveActivity}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="ArrowDownBox" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Synchroniser maintenant</Typography>
+              {running === "activity-sync" ? (
+                <List.Trailing>
+                  <ActivityIndicator />
+                </List.Trailing>
+              ) : null}
+            </List.Item>
+            <List.Item onPress={previewLiveActivity}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Play" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Aperçu avec un cours de démonstration</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Remplacé à la prochaine synchronisation, sauf en mode test.
+              </Typography>
+              {running === "activity-preview" ? (
+                <List.Trailing>
+                  <ActivityIndicator />
+                </List.Trailing>
+              ) : null}
+            </List.Item>
+            <List.Item onPress={stopLiveActivity}>
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Cross" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="action">Arrêter les Live Activities</Typography>
+              {running === "activity-stop" ? (
+                <List.Trailing>
+                  <ActivityIndicator />
+                </List.Trailing>
+              ) : null}
+            </List.Item>
           </List.Section>
         ) : null}
 
