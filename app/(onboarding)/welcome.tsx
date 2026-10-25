@@ -16,6 +16,8 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 
+import { consumeSecurityLogoutNotice } from "@/stores/global/encryption";
+
 export default function Welcome() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -37,6 +39,22 @@ export default function Welcome() {
   const openDevMenu = () => {
     router.push("/devmode");
   }
+
+  React.useEffect(() => {
+    if (!consumeSecurityLogoutNotice()) {return;}
+    router.navigate({
+      pathname: "/alert",
+      params: {
+        data: JSON.stringify({
+          title: t("SecurityLogout_Title"),
+          description: t("SecurityLogout_Description"),
+          icon: "Lock",
+          color: "#0E7CCB",
+          customButton: { label: t("SecurityLogout_Button") },
+        }),
+      },
+    });
+  }, []);
 
   const player = useVideoPlayer({
       assetId: require('@/assets/video/welcome.mp4'),

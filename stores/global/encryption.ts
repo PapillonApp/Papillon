@@ -10,7 +10,17 @@ const SECURE_STORE_OPTIONS: SecureStore.SecureStoreOptions = {
   keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
 };
 
-const toPath = (uri: string) => decodeURIComponent(uri.replace(/^file:\/\//, ""));
+const SECURITY_LOGOUT_NOTICE = "security-logout-notice";
+
+// True once if the accounts could not be recovered, so the user is told why they are logged out
+export function consumeSecurityLogoutNotice(): boolean {
+  const storage = createMMKV();
+  const pending = storage.getBoolean(SECURITY_LOGOUT_NOTICE) === true;
+  if (pending) {storage.remove(SECURITY_LOGOUT_NOTICE);}
+  return pending;
+}
+
+const toPath =(uri: string) => decodeURIComponent(uri.replace(/^file:\/\//, ""));
 
 const isReadable = (json?: string): boolean => {
   if (!json) {return false;}
@@ -69,7 +79,11 @@ function recoverDeviceKeyFile(mmkv: MMKV, id: string) {
 
     // Unreadable with either key: start from a clean file so new logins are saved
     mmkv.clearAll();
-    if (recovered) {mmkv.set(id, recovered);}
+    if (recovered) {
+      mmkv.set(id, recovered);
+    } else {
+      createMMKV().set(SECURITY_LOGOUT_NOTICE, true);
+    }
   }
 
   SecureStore.setItem(migratedName, "reverted", SECURE_STORE_OPTIONS);
