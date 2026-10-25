@@ -1,7 +1,6 @@
 {
   "Global_Back": "Zpět",
   "Global_DatePrefix": "dne",
-
   "Tab_Home": "Domů",
   "Tab_Calendar": "Rozvrh",
   "Tab_Tasks": "Úkoly",
@@ -16,7 +15,6 @@
   "Tab_Page": "Stránka",
   "Tab_Settings": "Nastavení",
   "Tab_News": "Novinky",
-
   "ONBOARDING_MAIN_TITLE": "Aplikace pro správu tvého školního života",
   "ONBOARDING_MAIN_DESCRIPTION": "Propoj své školní aplikace a měj známky, rozvrh, úkoly a mnoho dalšího v rozhraní Papillon!",
   "ONBOARDING_START_BTN": "Začít",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "PIN kód",
   "SEARCH_UNIV_PLACEHOLDER": "Hledat instanci...",
   "ONBOARDING_LOADING_LOGIN": "Přihlašování...",
-
   "WAITING": "Čekejte",
   "IZLY_SMS_SEND": "Právě jsi obdržel odkaz k přihlášení, klikni na něj a postupuj podle kroků.",
   "STEP": "Krok",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Přihlásit se",
   "CONFIRM_BTN": "Potvrdit",
   "CANCEL_BTN": "Zrušit",
-
   "Tab_New_Event": "Nová událost",
-
   "Tab_Calendar_Icals": "Správa iCal",
   "Tab_Calendar_Icals_Description": "Spravuj své iCal URL adresy",
-
   "Tab_Calendar_Icals_Add_URL": "Přidat iCal URL",
   "Tab_Calendar_Icals_Manage_Title": "Spravovat {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Přidej nebo odstraň iCal URL pro synchronizaci s tvým rozvrhem.",
   "Tab_Calendar_Icals_Add_Title": "Chybí název",
   "Tab_Calendar_Icals_Add_Description": "Pojmenuj tuto iCal URL pro její přidání.",
   "Tab_Calendar_Icals_Empty": "Žádné přidané iCal URL",
-
   "TabUnderConstruction_Title": "Tato karta se připravuje.",
   "TabUnderConstruction_Details": "Vrať se později pro aktualizace.",
-
   "TabDevModeNotice_Title": "Vývojářský režim",
   "TabDevModeNotice_Details": "Kompletní testovací prostředí pro vývojáře.",
-
   "Alert_TechnicalDetails": "Technické detaily",
-
   "Online_Course": "Online",
   "Evaluated_Course": "Hodnocení/Test",
   "Edited_Course": "Změněná lekce",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Neznámá učebna",
   "Event_DeleteEvent": "Smazat událost",
   "Event_Confirm_DeleteEvent": "Opravdu chceš tuto událost smazat?",
-
   "Course_Separator_Lunch_Default": "Polední přestávka",
   "Course_Separator_Lunch_Alt_1": "Dobrou chuť!",
   "Course_Separator_Lunch_Alt_2": "Mňam!",
-
   "Course_Separator_Morning_Default": "Dopolední přestávka",
   "Course_Separator_Morning_Alt_1": "Šup do hajan!",
   "Course_Separator_Morning_Alt_2": "Snídaně",
-
   "Course_Separator_Evening_Default": "Odpolední přestávka",
   "Course_Separator_Evening_Alt_1": "Čas na pauzu!",
   "Course_Separator_Evening_Alt_2": "Čas na svačinu!",
-
   "Course_Separator_Night_Default": "Večerní přestávka",
   "Course_Separator_Night_Alt_1": "Šup do hajan!",
   "Course_Separator_Night_Alt_2": "Už je noc!",
-
   "Context_Delete": "Smazat",
   "Context_Cancel": "Zrušit",
   "Context_Edit": "Upravit",
   "Context_Add": "Přidat",
-
   "Form_Title": "Název",
   "Form_Location": "Umístění",
   "Form_Organizer": "Organizátor",
   "Form_Start": "Začátek",
   "Form_End": "Konec",
-
   "Confirm_DeleteEvent": "Opravdu chceš tuto událost smazat?",
-
   "Home_Welcome_Name": "Ahoj, {{name}} {{emoji}}",
   "Home_Display_More": "Zobrazit více",
   "Home_Cards_Button_Description_Plurial": "k dispozici",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Dnes už nemáš žádné další lekce",
   "Home_Planned_One": "Dnes ti zbývá jedna lekce",
   "Home_Planned_Number": "Dnes ti zbývá {{number}} lekcí",
-
   "Home_Widget_NextCourses": "Následující lekce",
   "Home_Widget_NewGrades": "Nové známky",
   "Home_Widget_NewHomeworks": "Úkoly k vypracování",
-
   "Home_Widget_NoCourses": "Žádné nadcházející lekce",
   "Home_Widget_NoCourses_Description": "Na dnešek nejsou naplánovány žádné lekce.",
-
   "Home_Cards_Button_Title": "Karty",
   "Home_Cards_Button_Description_None": "Žádná karta",
   "Home_Cards_Button_Description_Singular": "Jedna karta",
   "Home_Cards_Button_Description_Number": "{{number}} karet",
-
   "Home_Chats_Button_Title": "Zprávy",
   "Home_Chats_Button_Description_None": "Žádná zpráva",
   "Home_Chats_Button_Description_Singular": "Jedna zpráva",
   "Home_Chats_Button_Description_Number": "{{number}} zpráv",
-
   "Home_Attendance_Title": "Absence",
   "Home_Attendance_Button_Description_None": "Žádná absence",
   "Home_Attendance_Button_Description_Singular": "Jedna absence",
   "Home_Attendance_Button_Description_Number": "{{number}} absencí",
-
   "Home_Menu_Button_Title": "Menu",
   "Home_Menu_Button_Description": "Dnešní jídelníček",
-
   "Tab_Calendar_Empty": "Nenalezeny žádné události",
   "Tab_Calendar_Empty_Description": "Přidej událost nebo synchronizuj svůj rozvrh, abys mohl začít.",
-
   "Modal_Course_Title": "Moje lekce",
   "Modal_Course_StartsIn": "Začíná za",
   "Modal_Course_StartedAgo": "Skončilo před",
   "Modal_Course_Ongoing": "Probíhá již",
   "Modal_Course_Group": "Skupina",
   "Modal_Course_Group_Full": "Třída",
-
   "Modal_Course_Details": "Detaily lekce",
   "Modal_Course_Teacher": "Vyučující",
   "Modal_Course_Room": "Učebna",
   "Modal_Course_Duration": "Délka",
-
   "Modal_Course_Time": "Čas lekce",
   "Modal_Course_Start": "Začátek",
   "Modal_Course_End": "Konec",
-
   "Tasks_Search_Placeholder": "Hledat úkoly",
   "Tasks_LeftHomeworks_Title": "zbývající úkoly",
   "Tasks_LeftHomeworks_Time": "tento týden",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Hotové úkoly",
   "Task_Show_Title": "Zobrazit",
   "Settings_General": "Obecné",
-
   "Latest_Grades": "Nové známky",
   "Grades_Search_Placeholder": "Hledat známku, předmět",
-
   "Grades_Avg_Methods": "Metody výpočtu",
   "Grades_Avg_All_Title": "Celkový průměr",
   "Grades_Avg_All_Short": "Celk. průměr",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Vypočítá vážený průměr z průměrů jednotlivých předmětů",
   "Grades_Avg_Median_Title": "Medián",
   "Grades_Avg_Median_Short": "Medián",
-
   "Grades_Avg_More": "Zjistit více",
   "Grades_Avg_KnowMore": "Zjistit více",
   "Grades_Avg_KnowMore_Description": "Pochopte metody výpočtu celkového průměru",
-
   "Grades_SubjectInfo": "Informace o předmětu",
   "Grades_SubjectInfo_NbGrades": "{{number}} známka/y",
   "SubjectInfo_StudentAverage_Label": "Průměr žáka",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Nejlepší průměr ve skupině",
   "SubjectInfo_MinAverage_Label": "Minimální průměr",
   "SubjectInfo_MinAverage_Description": "Nejslabší průměr ve skupině",
-
   "Grades_Semester": "Pololetí",
   "Grades_Trimester": "Trimestr",
   "Grades_OutPeriod": "Mimo období",
   "Grades_Year": "Rok",
   "Grades_MockExamBac": "Maturita nanečisto",
   "Grades_MockExamBrevet": "Zkoušky nanečisto",
-
   "Grades_Method_AllGrades": "Všechny předměty",
   "Grades_Method_Weighted": "Váha (Koeficient)",
-
   "Grades_Sort": "Seřadit",
   "Grades_Sorting_Alphabetical": "Abecedně",
   "Grades_Sorting_Averages": "Podle průměru",
   "Grades_Sorting_Date": "Podle data",
-
   "Grades_Menu_SortBy": "Seřadit podle",
   "Grades_Menu_AverageBy": "Průměr podle",
   "NoAverage": "Žádný průměr",
-
   "Grades_Empty_Title": "Žádné známky",
   "Grades_Empty_Description": "V tomto období jsi zatím nebyl hodnocen.",
-
   "Grade_NoDescription": "Úkol z předmětu {{subject}}",
-
   "Grades_Tab_Subjects": "Předměty",
   "Grades_Tab_Latest": "Nové známky",
-
   "Profile_Attendance_Title": "Docházka",
   "Profile_Attendance_Denominator_Single": "absence",
   "Profile_Attendance_Denominator_Plural": "absencí",
-
   "Profile_Discussions_Title": "Diskuse",
   "Profile_Discussions_Denominator_Single": "nepřečteno",
   "Profile_Discussions_Denominator_Plural": "nepřečtených",
-
   "Profile_News_Title": "Novinky",
   "Profile_News_Denominator_Single": "nová",
   "Profile_News_Denominator_Plural": "nové",
   "Profile_News_Open": "Otevřít",
   "Profile_News_Loading_Title": "Načítání novinek...",
   "Profile_News_Author_Unknown": "Neznámý autor",
-
   "Profile_Cards_Title": "QR kód a karty",
-
   "Modal_Grades_Title": "Detail známky",
   "Modal_Grades_BestGrade": "Nejlepší známka ve skupině",
-
   "Grades_Details_Title": "Detaily",
   "Grades_NormalizedGrade_Title": "Známka v přepočtu na 20",
   "Grades_NormalizedGrade_Description": "Hodnota známky převedená na stupnici 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "Průměr sk.",
   "Grades_Tab_Rank": "Pořadí",
   "Grades_Tab_Rank_Description": "Pozice ve skupině",
-
   "News_Search_Placeholder": "Hledat novinku",
   "News_Empty_Title": "Žádné novinky",
   "News_Empty_Description": "Ve tvé škole nebyly nalezeny žádné novinky.",
   "News_Search_NoResults": "Žádná novinka nenalezena",
   "News_Search_NoResults_Description": "Pro tvé vyhledávání nebyly nalezeny žádné výsledky.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Jemný a elegantní motiv",
-
   "News_Theme_Reading_Title": "Čtení",
   "News_Theme_Reading_Description": "Motiv navržený pro pohodlné čtení",
-
   "Attendance_Hours_Missed": "Zameškané hodiny",
   "Attendance_Hours_Unjustified": "Neomluvené hodiny",
   "Attendance_Missing": "Absence",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Bez důvodu",
   "Attendance_NoEvent_Title": "Žádná událost",
   "Attendance_NoEvent_Description": "Pro toto období nejsou zaznamenány žádné absence ani zpoždění.",
-
   "Settings_Account_Title": "Můj účet",
   "Settings_Account_Description": "Můj účet",
   "Settings_Services_Title": "Propojené účty",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Změnit jazyk",
   "Settings_Tabs_Title": "Karty",
   "Settings_Tabs_Description": "Skrýt karty z menu",
-
   "Settings_Personalization_Title_Card": "Personalizace",
   "Settings_Personalization_Subtitle_Card": "Motivy, předměty...",
   "Settings_SubjectPersonalization_Title": "Personalizovat předměty",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Nahlásit chybu",
   "Settings_About_Issue_Description": "Nahlásit nalezenou chybu",
   "Settings_About_Dependency_Version": "Verze závislostí",
-
   "Alert_No_Technical": "Nejsou k dispozici žádné technické informace.",
   "Alert_Auth_Error": "Chyba autentizace",
   "Alert_Auth_Bad_Creds": "Zadané údaje jsou nesprávné nebo se pokoušíš přihlásit rodičovským účtem. Tento typ účtu zatím není v Papillonu podporován.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon nemůže získat informace z této instance PRONOTE, je stále platná?",
   "Alert_No_Pos": "Nelze získat polohu",
   "Alert_Connexion_Fail": "Připojení se nezdařilo",
-
   "Feature_Limited": "Omezené funkce",
   "Feature_Soon": "Již brzy!",
   "Feature_Soon_Notification": "Tvrdě pracujeme na tom, abychom ti tuto funkci nabídli v budoucí aktualizaci.",
   "Feature_Add_Card": "Přidej novou kartu v záložce Profil v navigačním panelu",
-
   "Webview_Wait": "Chvilku strpení...",
-
   "Profile_QRCards": "QR kód a karty",
   "Profile_QRCards_Subtitle": "{{count}} karta/y",
   "Profile_Cards_Loading_History": "Načítání historie transakcí",
   "Profile_Cards_Loading_History_Description": "To může chvilku trvat...",
-
   "Settings_Cards_Banner_Title": "Karty",
   "Settings_Cantineen_Subtitle_Card": "Jídelna, přístup",
   "Settings_Cards_Banner_Description": "Přidej své karty na obědy a dopravu, abys k nim měl přístup kdekoli ze svého telefonu v Papillonu",
   "Settings_Cards_None_Title": "Žádné karty",
   "Settings_Cards_Add_Button": "Přidat",
-
   "Settings_Cards_None_Description": "Přidej kartu pro sledování zůstatku v jídelně, skenování QR kódu a další",
   "Settings_Subjects_None_Title": "Žádné předměty",
   "Settings_Subjects_None_Description": "Procházej různé karty aplikace, aby bylo možné předměty přizpůsobit.",
   "Settings_Subjects_Reset_Title": "Resetovat",
   "Settings_Subjects_Reset_Message": "Opravdu chceš resetovat nastavení všech předmětů?",
   "Settings_Subjects_Reset_Button": "Resetovat",
-
   "Settings_Donator": "Dárci",
   "Settings_Donator_Description": "Zobrazit seznam dárců",
   "Settings_App_Version": "Verze aplikace",
-
   "Profile_Cards_Scan_Orientation": "Namiř QR kód na čtečku terminálu",
   "Profile_Cards_No_Reservation": "Žádná rezervace",
   "Profile_Cards_No_Available_Reservation": "Vypadá to, že na tento den nemůžeš rezervovat.",
   "Profile_Cards_History": "Historie",
   "Magic_Important": "Možná důležité",
-
   "OnBoarding_Step": "Krok ",
   "OnBoarding_Step_Of": "z ",
-
   "Consent_Advanced_Title": "Chci pomoci Papillonu",
   "Consent_Advanced_Description": "Sbíráme podrobnější informace o tvém používání.",
   "Consent_Required_Title": "Jen to podstatné",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Slouží výhradně ke zlepšování aplikace",
   "Consent_Arg2": "Anonymní a nespojené s tvou identitou",
   "Consent_Arg3": "Nemáme přístup k tvým účtům",
-
   "Changelog_Title": "Poznámky k vydání",
-
   "Tasks_Sorting_Methods_DueDate": "Datum odevzdání",
   "Tasks_Sorting_Methods_Subject": "Předměty",
   "Tasks_Sorting_Methods_Done": "Nedokončeno",
   "Tasks_ThisWeek": "Tento týden",
-
   "Task_Undone": "Nedokončeno",
   "Task_Done": "Hotovo",
-
   "Modal_Wallpaper_Title": "Upravit tapetu",
   "Modal_Profile_Title": "Upravit profil",
-
   "Modal_Task_Status": "Stav úkolu",
   "Modal_Task_Description": "Popis úkolu",
   "Modal_Task_Attachments": "Přílohy",
-
   "Today": "Dnes",
   "Yesterday": "Včera",
-  "Tomorrow": "Zítra"
+  "Tomorrow": "Zítra",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

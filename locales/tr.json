@@ -1,7 +1,6 @@
 {
   "Global_Back": "Geri",
   "Global_DatePrefix": "O",
-
   "Tab_Home": "Ana Sayfa",
   "Tab_Calendar": "Dersler",
   "Tab_Tasks": "Ödevler",
@@ -16,7 +15,6 @@
   "Tab_Page": "Sayfa",
   "Tab_Settings": "Ayarlar",
   "Tab_News": "Haberler",
-
   "ONBOARDING_MAIN_TITLE": "Okul hayatını yöneten uygulama",
   "ONBOARDING_MAIN_DESCRIPTION": "Notlarına, derslerine, ödevlerine ve çok daha fazlasına Papillon arayüzünden erişmek için okul uygulamalarını bağla!",
   "ONBOARDING_START_BTN": "Başla",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "PIN Kodu",
   "SEARCH_UNIV_PLACEHOLDER": "Sunucu ara...",
   "ONBOARDING_LOADING_LOGIN": "Giriş yapılıyor...",
-
   "WAITING": "Bekleniyor",
   "IZLY_SMS_SEND": "Giriş yapmak için bir bağlantı aldın, üzerine tıkla ve adımları takip et.",
   "STEP": "Adım",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Giriş yap",
   "CONFIRM_BTN": "Onayla",
   "CANCEL_BTN": "İptal",
-
   "Tab_New_Event": "Yeni etkinlik",
-
   "Tab_Calendar_Icals": "iCal Yönetimi",
   "Tab_Calendar_Icals_Description": "iCal URL'lerini yönet",
-
   "Tab_Calendar_Icals_Add_URL": "iCal URL'si ekle",
   "Tab_Calendar_Icals_Manage_Title": "{{title}} Yönetimi",
   "Tab_Calendar_Icals_Manage_Description": "Takviminle senkronize edilecek iCal URL'lerini ekle veya sil.",
   "Tab_Calendar_Icals_Add_Title": "Başlık eksik",
   "Tab_Calendar_Icals_Add_Description": "Bu iCal URL'sini eklemek için bir isim ver.",
   "Tab_Calendar_Icals_Empty": "Eklenmiş iCal URL'si yok",
-
   "TabUnderConstruction_Title": "Bu sekme yapım aşamasında.",
   "TabUnderConstruction_Details": "Güncellemeler için daha sonra tekrar gel.",
-
   "TabDevModeNotice_Title": "Geliştirici Modu",
   "TabDevModeNotice_Details": "Geliştiriciler için tam test ortamı.",
-
   "Alert_TechnicalDetails": "Teknik detaylar",
-
   "Online_Course": "Çevrimiçi",
   "Evaluated_Course": "Değerlendirme",
   "Edited_Course": "Ders değiştirildi",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Sınıf bilinmiyor",
   "Event_DeleteEvent": "Etkinliği sil",
   "Event_Confirm_DeleteEvent": "Bu etkinliği silmek istediğinden emin misin?",
-
   "Course_Separator_Lunch_Default": "Öğle arası",
   "Course_Separator_Lunch_Alt_1": "Afiyet olsun!",
   "Course_Separator_Lunch_Alt_2": "Nefis!",
-
   "Course_Separator_Morning_Default": "Sabah arası",
   "Course_Separator_Morning_Alt_1": "Uyku vakti!",
   "Course_Separator_Morning_Alt_2": "Kahvaltı",
-
   "Course_Separator_Evening_Default": "Öğleden sonra arası",
   "Course_Separator_Evening_Alt_1": "Mola zamanı!",
   "Course_Separator_Evening_Alt_2": "Atıştırmalık saati!",
-
   "Course_Separator_Night_Default": "Gece arası",
   "Course_Separator_Night_Alt_1": "Uyku vakti!",
   "Course_Separator_Night_Alt_2": "Hava karardı!",
-
   "Context_Delete": "Sil",
   "Context_Cancel": "İptal",
   "Context_Edit": "Düzenle",
   "Context_Add": "Ekle",
-
   "Form_Title": "Başlık",
   "Form_Location": "Konum",
   "Form_Organizer": "Düzenleyen",
   "Form_Start": "Başlangıç",
   "Form_End": "Bitiş",
-
   "Confirm_DeleteEvent": "Bu etkinliği silmek istediğinden emin misin?",
-
   "Home_Welcome_Name": "Merhaba, {{name}} {{emoji}}",
   "Home_Display_More": "Daha fazla göster",
   "Home_Cards_Button_Description_Plurial": "mevcut",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Bugün için kalan dersin yok",
   "Home_Planned_One": "Bugün için kalan 1 dersin var",
   "Home_Planned_Number": "Bugün için kalan {{number}} dersin var",
-
   "Home_Widget_NextCourses": "Sıradaki dersler",
   "Home_Widget_NewGrades": "Yeni notlar",
   "Home_Widget_NewHomeworks": "Yapılacak ödevler",
-
   "Home_Widget_NoCourses": "Gelecek ders yok",
   "Home_Widget_NoCourses_Description": "Bugün için planlanmış ders bulunmuyor.",
-
   "Home_Cards_Button_Title": "Kartlar",
   "Home_Cards_Button_Description_None": "Kart yok",
   "Home_Cards_Button_Description_Singular": "1 kart",
   "Home_Cards_Button_Description_Number": "{{number}} kart",
-
   "Home_Chats_Button_Title": "Mesajlar",
   "Home_Chats_Button_Description_None": "Mesaj yok",
   "Home_Chats_Button_Description_Singular": "1 mesaj",
   "Home_Chats_Button_Description_Number": "{{number}} mesaj",
-
   "Home_Attendance_Title": "Devamsızlık",
   "Home_Attendance_Button_Description_None": "Devamsızlık yok",
   "Home_Attendance_Button_Description_Singular": "1 devamsızlık",
   "Home_Attendance_Button_Description_Number": "{{number}} devamsızlık",
-
   "Home_Menu_Button_Title": "Menü",
   "Home_Menu_Button_Description": "Günün menüsü",
-
   "Tab_Calendar_Empty": "Etkinlik bulunamadı",
   "Tab_Calendar_Empty_Description": "Başlamak için bir etkinlik ekle veya takvimini senkronize et.",
-
   "Modal_Course_Title": "Dersim",
   "Modal_Course_StartsIn": "Başlamasına kalan süre",
   "Modal_Course_StartedAgo": "Bitişinden beri",
   "Modal_Course_Ongoing": "Başlangıcından beri",
   "Modal_Course_Group": "Grup",
   "Modal_Course_Group_Full": "Sınıf",
-
   "Modal_Course_Details": "Ders detayları",
   "Modal_Course_Teacher": "Öğretmen",
   "Modal_Course_Room": "Sınıf / Oda",
   "Modal_Course_Duration": "Süre",
-
   "Modal_Course_Time": "Ders saatleri",
   "Modal_Course_Start": "Başlangıç",
   "Modal_Course_End": "Bitiş",
-
   "Tasks_Search_Placeholder": "Ödev ara",
   "Tasks_LeftHomeworks_Title": "kalan ödev",
   "Tasks_LeftHomeworks_Time": "bu hafta",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Tamamlanan ödevler",
   "Task_Show_Title": "Göster",
   "Settings_General": "Genel",
-
   "Latest_Grades": "Yeni notlar",
   "Grades_Search_Placeholder": "Bir not veya ders ara",
-
   "Grades_Avg_Methods": "Hesaplama yöntemleri",
   "Grades_Avg_All_Title": "Genel ortalama",
   "Grades_Avg_All_Short": "Gen. ortalama",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Ders ortalamalarının ağırlıklı ortalamasını hesaplar",
   "Grades_Avg_Median_Title": "Medyan",
   "Grades_Avg_Median_Short": "Medyan",
-
   "Grades_Avg_More": "Daha fazla bilgi",
   "Grades_Avg_KnowMore": "Daha fazla bilgi",
   "Grades_Avg_KnowMore_Description": "Genel ortalama hesaplama yöntemlerini anla",
-
   "Grades_SubjectInfo": "Ders bilgileri",
   "Grades_SubjectInfo_NbGrades": "{{number}} not",
   "SubjectInfo_StudentAverage_Label": "Öğrenci ortalaması",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Grubun en iyi ortalaması",
   "SubjectInfo_MinAverage_Label": "En düşük ortalama",
   "SubjectInfo_MinAverage_Description": "Grubun en düşük ortalaması",
-
   "Grades_Semester": "Dönem",
   "Grades_Trimester": "Trimester",
   "Grades_OutPeriod": "Dönem dışı",
   "Grades_Year": "Yıl",
   "Grades_MockExamBac": "Deneme sınavı (Bac)",
   "Grades_MockExamBrevet": "Deneme sınavı (Brevet)",
-
   "Grades_Method_AllGrades": "Tüm dersler",
   "Grades_Method_Weighted": "Ağırlıklandırma",
-
   "Grades_Sort": "Sırala",
   "Grades_Sorting_Alphabetical": "Alfabetik",
   "Grades_Sorting_Averages": "Ortalamalar",
   "Grades_Sorting_Date": "Tarih",
-
   "Grades_Menu_SortBy": "Sıralama ölçütü",
   "Grades_Menu_AverageBy": "Ortalama ölçütü",
   "NoAverage": "Ortalama yok",
-
   "Grades_Empty_Title": "Not yok",
   "Grades_Empty_Description": "Bu dönem için henüz notun girilmemiş.",
-
   "Grade_NoDescription": "{{subject}} ödevi",
-
   "Grades_Tab_Subjects": "Dersler",
   "Grades_Tab_Latest": "Yeni notlar",
-
   "Profile_Attendance_Title": "Devamsızlık",
   "Profile_Attendance_Denominator_Single": "devamsızlık",
   "Profile_Attendance_Denominator_Plural": "devamsızlık",
-
   "Profile_Discussions_Title": "Mesajlaşmalar",
   "Profile_Discussions_Denominator_Single": "okunmamış",
   "Profile_Discussions_Denominator_Plural": "okunmamış",
-
   "Profile_News_Title": "Haberler",
   "Profile_News_Denominator_Single": "yeni",
   "Profile_News_Denominator_Plural": "yeni",
   "Profile_News_Open": "Aç",
   "Profile_News_Loading_Title": "Haberler yükleniyor...",
   "Profile_News_Author_Unknown": "Bilinmeyen yazar",
-
   "Profile_Cards_Title": "QR Kod ve Kartlar",
-
   "Modal_Grades_Title": "Not detayları",
   "Modal_Grades_BestGrade": "Grubun en iyi notu",
-
   "Grades_Details_Title": "Detaylar",
   "Grades_NormalizedGrade_Title": "20 üzerinden not",
   "Grades_NormalizedGrade_Description": "Notun 20'lik sisteme dönüştürülmüş değeri",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "Grup ort.",
   "Grades_Tab_Rank": "Sıralama",
   "Grades_Tab_Rank_Description": "Gruptaki konumun",
-
   "News_Search_Placeholder": "Haber ara",
   "News_Empty_Title": "Haber yok",
   "News_Empty_Description": "Okulunda herhangi bir haber bulunamadı.",
   "News_Search_NoResults": "Haber bulunamadı",
   "News_Search_NoResults_Description": "Aramanızla eşleşen haber bulunamadı.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Yumuşak ve şık bir tema",
-
   "News_Theme_Reading_Title": "Okuma",
   "News_Theme_Reading_Description": "Okuma için tasarlanmış bir tema",
-
   "Attendance_Hours_Missed": "Kaçırılan saatler",
   "Attendance_Hours_Unjustified": "Özürsüz saatler",
   "Attendance_Missing": "Devamsızlıklar",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Neden belirtilmemiş",
   "Attendance_NoEvent_Title": "Olay yok",
   "Attendance_NoEvent_Description": "Bu dönem için kaydedilmiş devamsızlık veya gecikme yok.",
-
   "Settings_Account_Title": "Hesabım",
   "Settings_Account_Description": "Hesabım",
   "Settings_Services_Title": "Bağlı hesaplar",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Dili değiştir",
   "Settings_Tabs_Title": "Sekmeler",
   "Settings_Tabs_Description": "Menüden sekmeleri gizle",
-
   "Settings_Personalization_Title_Card": "Kişiselleştirme",
   "Settings_Personalization_Subtitle_Card": "Temalar, dersler...",
   "Settings_SubjectPersonalization_Title": "Dersleri kişiselleştir",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Hata bildir",
   "Settings_About_Issue_Description": "Karşılaştığın bir hatayı raporla",
   "Settings_About_Dependency_Version": "Bağımlılık versiyonları",
-
   "Alert_No_Technical": "Teknik bilgi mevcut değil.",
   "Alert_Auth_Error": "Kimlik doğrulama hatası",
   "Alert_Auth_Bad_Creds": "Girdiğin bilgiler yanlış veya bir veli hesabıyla bağlanmaya çalışıyorsun. Veli hesapları henüz Papillon tarafından desteklenmiyor.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon bu PRONOTE sunucusundan bilgi alamıyor, sunucu hala geçerli mi?",
   "Alert_No_Pos": "Konum alınamadı",
   "Alert_Connexion_Fail": "Bağlantı başarısız",
-
   "Feature_Limited": "Sınırlı özellikler",
   "Feature_Soon": "Yakında geliyor!",
   "Feature_Soon_Notification": "Bu özelliği gelecekteki bir güncellemede sunmak için çok çalışıyoruz.",
   "Feature_Add_Card": "Gezinti çubuğundaki Profil sekmesinden yeni bir kart ekle",
-
   "Webview_Wait": "Biraz sabır...",
-
   "Profile_QRCards": "QR Kod ve Kartlar",
   "Profile_QRCards_Subtitle": "{{count}} kart",
   "Profile_Cards_Loading_History": "İşlem geçmişi yükleniyor",
   "Profile_Cards_Loading_History_Description": "Bu biraz zaman alabilir...",
-
   "Settings_Cards_Banner_Title": "Kartlar",
   "Settings_Cantineen_Subtitle_Card": "Yemekhane, erişim",
   "Settings_Cards_Banner_Description": "Yemekhane ve ulaşım kartlarını ekle, Papillon üzerinden telefonunla her yerden eriş",
   "Settings_Cards_None_Title": "Kart yok",
   "Settings_Cards_Add_Button": "Ekle",
-
   "Settings_Cards_None_Description": "Yemekhane bakiyeni görmek, QR kodunu taratmak ve daha fazlası için bir kart ekle",
   "Settings_Subjects_None_Title": "Ders yok",
   "Settings_Subjects_None_Description": "Dersleri özelleştirmek için uygulamanın farklı sekmelerine göz at.",
   "Settings_Subjects_Reset_Title": "Sıfırla",
   "Settings_Subjects_Reset_Message": "Tüm ders ayarlarını sıfırlamak istediğinden emin misin?",
   "Settings_Subjects_Reset_Button": "Sıfırla",
-
   "Settings_Donator": "Bağışçılar",
   "Settings_Donator_Description": "Bağışçı listesini gör",
   "Settings_App_Version": "Uygulama versiyonu",
-
   "Profile_Cards_Scan_Orientation": "QR kodunu okuyucuya doğru tut",
   "Profile_Cards_No_Reservation": "Rezervasyon yok",
   "Profile_Cards_No_Available_Reservation": "Görünüşe göre bugün rezervasyon yapamazsın.",
   "Profile_Cards_History": "Geçmiş",
   "Magic_Important": "Önemli olabilir",
-
   "OnBoarding_Step": "Adım ",
   "OnBoarding_Step_Of": "/ ",
-
   "Consent_Advanced_Title": "Papillon'a yardım etmek istiyorum",
   "Consent_Advanced_Description": "Kullanımın hakkında daha detaylı bilgi topluyoruz.",
   "Consent_Required_Title": "Sadece temel bilgiler",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Yalnızca uygulamayı geliştirmek için kullanılır",
   "Consent_Arg2": "Anonimdir ve kimliğinle ilişkilendirilmez",
   "Consent_Arg3": "Hesaplarına erişimimiz yoktur",
-
   "Changelog_Title": "Güncelleme notları",
-
   "Tasks_Sorting_Methods_DueDate": "Teslim tarihi",
   "Tasks_Sorting_Methods_Subject": "Dersler",
   "Tasks_Sorting_Methods_Done": "Tamamlanmamış",
   "Tasks_ThisWeek": "Bu hafta",
-
   "Task_Undone": "Tamamlanmamış",
   "Task_Done": "Tamamlandı",
-
   "Modal_Wallpaper_Title": "Duvar kağıdını kişiselleştir",
   "Modal_Profile_Title": "Profili kişiselleştir",
-
   "Modal_Task_Status": "Ödev durumu",
   "Modal_Task_Description": "Ödev açıklaması",
   "Modal_Task_Attachments": "Ekler",
-
   "Today": "Bugün",
   "Yesterday": "Dün",
-  "Tomorrow": "Yarın"
+  "Tomorrow": "Yarın",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

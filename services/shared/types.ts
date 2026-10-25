@@ -6,8 +6,10 @@ import { SessionHandle } from "@blockshub/pawnote-lts";
 import { Client as ArdClient } from "@blockshub/blocksrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Client as TurboselfClient } from "turboself-api";
+import type { LinksignClient } from "@studentsphere/linksign";
 
 import { Appscho } from "@/services/appscho";
+import type { Edusign } from "@/services/edusign";
 import type { MockData } from "@/services/mock";
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
@@ -58,6 +60,7 @@ export interface SchoolServicePlugin {
   requiresInternet?: boolean;
   session:
     | any
+    | LinksignClient
     | Identification
     | MultiClient
     | SessionHandle
@@ -70,7 +73,19 @@ export interface SchoolServicePlugin {
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | MockData>;
+  ) => Promise<
+    | Pronote
+    | Skolengo
+    | EcoleDirecte
+    | Multi
+    | TurboSelf
+    | ARD
+    | Izly
+    | Alise
+    | Appscho
+    | MockData
+    | Edusign
+  >;
   isTokenValid?: () => boolean;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
@@ -105,6 +120,14 @@ export interface SchoolServicePlugin {
   getCanteenQRCodes?: () => Promise<QRCode>;
   getCanteenBookingWeek?: (weekNumber: number) => Promise<BookingDay[]>;
   setMealAsBooked?: (meal: Booking, booked?: boolean) => Promise<Booking>;
+  signAttendance?: (params: AttendanceSignParams) => Promise<unknown>;
+}
+
+export interface AttendanceSignParams {
+  courseId?: string;
+  code?: string;
+  qrCodeData?: string;
+  signature: string;
 }
 
 /*
@@ -129,6 +152,7 @@ export enum Capabilities {
   CANTEEN_HISTORY,
   CANTEEN_BOOKINGS,
   CANTEEN_QRCODE,
+  SIGN,
 }
 
 /**

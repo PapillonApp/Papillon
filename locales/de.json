@@ -567,5 +567,7 @@
   "Settings_Features_GradeScale_Description": "Standardmäßige Notenskala in der Oberfläche",
   "Global_Experimental": "Experimentell",
   "Grades_Skills_Title": "Kompetenzen",
-  "Tab_Search": "Suche"
+  "Tab_Search": "Suche",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }
