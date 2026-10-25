@@ -289,7 +289,8 @@ const GradesView = () => {
             return (
             <List.Section key={subject.id} id={subject.id}>
               <List.SectionTitle id={`${subject.id}-title`}>
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 2 }}>
+                <Link href={{ pathname: "/(tabs)/grades/subject/[id]", params: { id: subject.id, period: currentPeriod?.id } }} asChild>
+                <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 2 }}>
                   <Typography variant="h4" style={{ marginTop: 0 }} inset>{getSubjectEmoji(subject.name)}</Typography>
 
                   <Typography style={{ flex: 1 }} variant="title" numberOfLines={1} weight='semibold' color="textPrimary">
@@ -306,7 +307,8 @@ const GradesView = () => {
                       </Typography>
                     )}
                   </View>
-                </View>
+                </Pressable>
+                </Link>
               </List.SectionTitle>
 
               {(subject.grades ?? []).map((grade: Grade) => {

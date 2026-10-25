@@ -44,7 +44,8 @@ export async function getHomeworkById(id: string): Promise<SharedHomework | unde
     .fetch();
   const cachedHomework = records[0] ? mapHomeworkToShared(records[0]) : undefined;
 
-  if (!cachedHomework) return undefined;
+  // A custom task only exists in the database: no service can refresh it.
+  if (!cachedHomework || cachedHomework.custom) return cachedHomework;
 
   try {
     const { getManager } = await import("@/services/shared");
@@ -167,8 +168,11 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
     homeworkIds.push(oldId, id);
   }
 
+  // Custom tasks never come back from a service, so a refresh must not sweep
+  // them away as stale.
   const homeworksToDelete = dbHomeworks.filter(
     dbHomework =>
+      !dbHomework.custom &&
       refreshedServiceIds.has(dbHomework.createdByAccount) &&
       !homeworkIds.includes(dbHomework.homeworkId)
   );
@@ -246,6 +250,87 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
       );
     }
   }
+}
+
+/**
+ * Saves a task the user wrote themselves. Unlike `addHomeworkToDatabase`, the
+ * rest of the week is left alone: there is no service response to diff it
+ * against. The id derives from the subject, content and due date, so editing
+ * any of them moves the task to a new id; `replacedId` is the one it leaves.
+ */
+export async function saveCustomHomework(
+  homework: SharedHomework,
+  replacedId?: string
+): Promise<string> {
+  const db = getDatabaseInstance();
+  const id = getHomeworkRouteId(homework);
+  const fields = {
+    subject: homework.subject,
+    content: homework.content,
+    dueDate: homework.dueDate.getTime(),
+    isDone: homework.isDone,
+    returnFormat: homework.returnFormat,
+    attachments: JSON.stringify(homework.attachments),
+    evaluation: homework.evaluation,
+    custom: true,
+    createdByAccount: homework.createdByAccount,
+    kidName: homework.kidName,
+    fromCache: true,
+  };
+
+  await safeWrite(
+    db,
+    async () => {
+      if (replacedId && replacedId !== id) {
+        const previous = await db
+          .get<Homework>("homework")
+          .query(Q.where("homeworkId", replacedId))
+          .fetch();
+        for (const record of previous) {
+          await record.destroyPermanently();
+        }
+      }
+
+      const existing = await db
+        .get<Homework>("homework")
+        .query(Q.where("homeworkId", id))
+        .fetch();
+
+      if (existing.length > 0) {
+        await existing[0].update(record => {
+          Object.assign(record, fields);
+        });
+      } else {
+        await db.get<Homework>("homework").create(record => {
+          Object.assign(record, { homeworkId: id, ...fields });
+        });
+      }
+    },
+    10000,
+    "saveCustomHomework"
+  );
+
+  return id;
+}
+
+export async function deleteHomeworkFromDatabase(homeworkId: string) {
+  const db = getDatabaseInstance();
+
+  const existing = await db
+    .get<Homework>("homework")
+    .query(Q.where("homeworkId", homeworkId))
+    .fetch();
+
+  await safeWrite(
+    db,
+    async () => {
+      for (const record of existing) {
+        await record.destroyPermanently();
+      }
+    },
+    10000,
+    "deleteHomeworkFromDatabase"
+  );
 }
 
 export async function updateHomeworkIsDone(

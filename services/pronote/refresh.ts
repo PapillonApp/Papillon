@@ -66,7 +66,27 @@ const buildTokenParams = (stored: Auth, deviceUUID: string): TokenAuthentication
   } as TokenAuthenticationParams;
 };
 
-export async function refreshPronoteAccount(
+const refreshInFlight = new Map<string, Promise<{auth: Auth, session: SessionHandle}>>();
+
+// PRONOTE tokens are single-use: two logins with the same token make the second one
+// fail and look like a logout. Every caller for an account shares the same login.
+export function refreshPronoteAccount(
+  accountId: string,
+  credentials: Auth
+): Promise<{auth: Auth, session: SessionHandle}> {
+  const pending = refreshInFlight.get(accountId);
+  if (pending) {
+    return pending;
+  }
+
+  const task = loginWithStoredToken(accountId, credentials).finally(() => {
+    refreshInFlight.delete(accountId);
+  });
+  refreshInFlight.set(accountId, task);
+  return task;
+}
+
+async function loginWithStoredToken(
   accountId: string,
   credentials: Auth
 ): Promise<{auth: Auth, session: SessionHandle}> {
@@ -82,7 +102,8 @@ export async function refreshPronoteAccount(
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const handle = createSessionHandle(customFetcher);
-    const stored = attempt === 0 ? credentials : readStoredAuth(accountId, credentials);
+    // The caller's copy can be outdated if another login already rotated the token
+    const stored = readStoredAuth(accountId, credentials);
     const deviceUUID = String(stored.additionals?.["deviceUUID"] || "");
     const loginParams = buildTokenParams(stored, deviceUUID);
 

@@ -129,48 +129,6 @@ export const useAccountStore = create<AccountsStorage>()(
         }),
       setLastUsedAccount: (accountId: string) =>
         set({ lastUsedAccount: accountId }),
-      recordTeamModalHomeLaunch: (accountId: string) => {
-        let shouldShow = false;
-
-        set({
-          accounts: get().accounts.map(account => {
-            if (account.id !== accountId || account.teamModal?.shown) {
-              return account;
-            }
-
-            const homeLaunchCount =
-              (account.teamModal?.homeLaunchCount ?? 0) + 1;
-            shouldShow = homeLaunchCount >= 3;
-
-            return {
-              ...account,
-              teamModal: {
-                homeLaunchCount,
-                shown: shouldShow,
-                widgetDismissed: false,
-              },
-            };
-          }),
-        });
-
-        return shouldShow;
-      },
-      dismissTeamWidget: (accountId: string) =>
-        set({
-          accounts: get().accounts.map(account => {
-            if (account.id !== accountId || !account.teamModal) {
-              return account;
-            }
-
-            return {
-              ...account,
-              teamModal: {
-                ...account.teamModal,
-                widgetDismissed: true,
-              },
-            };
-          }),
-        }),
       setSubjectColor: (subject: string, color: string) => {
         const current = get().accounts.find(
           account => account.id === get().lastUsedAccount
@@ -361,7 +319,7 @@ export const useAccountStore = create<AccountsStorage>()(
     }),
     {
       name: "account-storage",
-      // Legacy static key, only used to migrate existing installs to a per-device key
+      // Static key shared with PapillonKit, never change it
       storage: createEncryptedMMKVStorage<AccountsStorage>(
         "account-storage",
         "3f64fc8d-472d-43d5-ba11-461020e2423b"

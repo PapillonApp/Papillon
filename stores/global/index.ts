@@ -11,13 +11,8 @@ classRegistry.set('Skolengo', SkolengoSession);
 export const createMMKVStorage = <T>(id: string): PersistStorage<T> =>
   wrapMMKV<T>(createMMKV({ id }));
 
-export const createEncryptedMMKVStorage = <T>(id: string, legacyKey?: string): PersistStorage<T> => {
-  const mmkv = createEncryptedMMKV(id, legacyKey);
-  if (!mmkv) {
-    return { getItem: () => null, setItem: () => {}, removeItem: () => {} };
-  }
-  return wrapMMKV<T>(mmkv);
-};
+export const createEncryptedMMKVStorage = <T>(id: string, legacyKey?: string): PersistStorage<T> =>
+  wrapMMKV<T>(createEncryptedMMKV(id, legacyKey));
 
 const wrapMMKV = <T>(mmkv: MMKV): PersistStorage<T> => {
   return {

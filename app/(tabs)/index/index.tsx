@@ -3,7 +3,7 @@ import { useIsFocused } from "expo-router/react-navigation";
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
-import { FlatList, Image, Platform, RefreshControl, StatusBar, View } from 'react-native';
+import { FlatList, Platform, RefreshControl, StatusBar, View } from 'react-native';
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -31,7 +31,6 @@ import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import Icon from '@/ui/components/Icon';
 import Button from '@/ui/new/Button';
-import { ListTouchable } from '@/ui/new/List';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -44,12 +43,9 @@ const HomeScreen = () => {
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const initializeTransport = useAccountStore((state) => state.initializeTransport);
   const account = accounts.find(a => a.id === lastUsedAccount);
-  const recordTeamModalHomeLaunch = useAccountStore(state => state.recordTeamModalHomeLaunch);
-  const dismissTeamWidget = useAccountStore(state => state.dismissTeamWidget);
   const router = useRouter();
   const welcomeModalSeen = useSettingsStore(state => state.personalization.welcomeModalSeen);
   const mutateSettings = useSettingsStore(state => state.mutateProperty);
-  const countedTeamModalAccount = React.useRef<string | null>(null);
 
   React.useEffect(() => {
     if (accounts.length === 0) {
@@ -78,17 +74,6 @@ const HomeScreen = () => {
     });
   }, [focused, accounts.length, router]);
 
-  React.useEffect(() => {
-    if (!account?.id || countedTeamModalAccount.current === account.id) {
-      return;
-    }
-
-    countedTeamModalAccount.current = account.id;
-    if (recordTeamModalHomeLaunch(account.id)) {
-      router.navigate("/(modals)/team");
-    }
-  }, [account?.id, recordTeamModalHomeLaunch, router]);
-
   const { syncing, refresh } = useHomeData();
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
@@ -114,54 +99,7 @@ const HomeScreen = () => {
     () => <GradesWidget history={history} averages={averages} />,
     [history, averages]
   );
-  const renderTeam = React.useCallback(
-    () => (
-      <ListTouchable onPress={() => router.navigate("/(modals)/team")} style={{ width: "100%", borderBottomLeftRadius: 12, borderBottomRightRadius: 12, overflow: "hidden" }}>
-      <Stack direction="horizontal" hAlign='center'>
-        <MaskedView
-          style={{ width: "35%", height: 110 }}
-          maskElement={
-            <LinearGradient
-              colors={["#000", "#0000"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ width: "100%", height: "100%" }}
-            />
-          }
-        >
-        <Image
-          source={require('@/assets/images/team.jpg')}
-          style={{
-            width: "100%",
-            height: "100%",
-            resizeMode: "cover",
-          }}
-        />
-        </MaskedView>
-      <View style={{ flex: 1, paddingRight: 16, justifyContent: "center", gap: 3 }}>
-        <Typography variant="body1" weight="bold" color="text">
-          Rejoignez la communauté !
-        </Typography>
-        <Typography variant="body2" style={{ opacity: 0.5 }}>
-          Suivez les nouveautés et fonctionnalités développés par nos soins.
-        </Typography>
-      </View>
-      </Stack>
-      </ListTouchable>
-    ),
-    []
-  );
-
   const data: HomeWidgetItem[] = React.useMemo(() => [
-    {
-      icon: <Papicons name="User" />,
-      title: "Derrière Papillon",
-      hidden: !account?.teamModal?.shown || account.teamModal.widgetDismissed === true,
-      onDismiss: account
-        ? () => dismissTeamWidget(account.id)
-        : undefined,
-      render: renderTeam,
-    },
     {
       icon: <Papicons name={"Calendar"} />,
       title: timetableTitle,
@@ -176,7 +114,7 @@ const HomeScreen = () => {
       hidden: gradesWidgetHidden,
       render: renderGrades
     }
-  ], [account, courses.length, dismissTeamWidget, gradesWidgetHidden, renderGrades, renderTeam, renderTimeTable, timetableTitle]);
+  ], [courses.length, gradesWidgetHidden, renderGrades, renderTimeTable, timetableTitle]);
 
   const visibleWidgets = React.useMemo(
     () => data.filter(item => !item.hidden && (!item.dev || __DEV__)),

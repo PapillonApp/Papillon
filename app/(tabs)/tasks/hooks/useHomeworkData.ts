@@ -81,7 +81,9 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     for (const [key, list] of Object.entries(cacheByWeek)) {
       const week = Number(key);
       const items = list
-        .filter(h => services.includes(h.createdByAccount))
+        // Custom tasks belong to the account itself rather than to one of its
+        // services.
+        .filter(h => h.custom ? h.createdByAccount === account?.id : services.includes(h.createdByAccount))
         .map(cached => {
           // The cache owns isDone: the overlay dates from the last fetch, and a
           // task can be ticked elsewhere since (e.g. from its detail screen).
@@ -101,7 +103,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     itemCache.current = nextItems;
     weekCache.current = nextWeeks;
     return nextWeeks;
-  }, [cacheByWeek, homework, services]);
+  }, [cacheByWeek, homework, services, account?.id]);
 
   // A week is fetched from the service once per session; `inFlightWeeks` keeps a
   // swipe back and forth from queueing the same request twice.
@@ -210,8 +212,11 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
       const id = homeworkKey(item);
 
       try {
-        const manager = getManager();
-        await manager.setHomeworkCompletion(item, done)
+        // A custom task has no service to sync its state with.
+        if (!item.custom) {
+          const manager = getManager();
+          await manager.setHomeworkCompletion(item, done)
+        }
 
         await updateHomeworkIsDone(id, done);
 

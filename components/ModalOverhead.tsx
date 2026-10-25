@@ -1,3 +1,6 @@
+import { Papicons } from "@getpapillon/papicons";
+
+import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography, { Variant } from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
@@ -13,6 +16,7 @@ const ModalOverhead = ({
   emoji,
   subject,
   subjectVariant = "title",
+  custom = false,
   title,
   date,
   dateFormat,
@@ -24,6 +28,7 @@ const ModalOverhead = ({
   emoji: string;
   subject: string;
   subjectVariant?: Variant;
+  custom?: boolean;
   title?: string;
   date?: Date;
   dateFormat?: Intl.DateTimeFormatOptions;
@@ -67,7 +72,7 @@ const ModalOverhead = ({
           {overtitle}
         </Typography>
       )}
-      {subject && (
+      {subject && !custom && (
         <Typography
           variant={subjectVariant}
           align="center"
@@ -75,6 +80,21 @@ const ModalOverhead = ({
         >
           {subject}
         </Typography>
+      )}
+      {subject && custom && (
+        <Stack direction="horizontal" hAlign="center" vAlign="center" gap={6}>
+          <Typography
+            variant={subjectVariant}
+            align="center"
+            color={adjust(color, theme.dark ? 0.3 : -0.3)}
+            style={{ flexShrink: 1 }}
+          >
+            {subject}
+          </Typography>
+          <Icon size={18} fill={adjust(color, theme.dark ? 0.3 : -0.3)}>
+            <Papicons name="PenAlt" />
+          </Icon>
+        </Stack>
       )}
       {title && (
         <Typography variant="body1" align="center">
