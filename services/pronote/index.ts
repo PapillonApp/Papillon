@@ -49,38 +49,47 @@ export class Pronote implements SchoolServicePlugin {
     }
     if (this.isTokenValid()) return;
 
-    this.refreshInFlight = this.refreshAccount(this.authData)
-      .then(() => {})
-      .finally(() => { this.refreshInFlight = null; });
-
-    await this.refreshInFlight;
+    await this.refreshAccount(this.authData);
   }
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
-    const refresh = (await refreshPronoteAccount(this.accountId, credentials));
-    this.authData = refresh.auth;
-    this.session = refresh.session;
-    this.tokenExpiration = Date.now() + PRONOTE_TOKEN_TTL_MS;
-    this.capabilities = [Capabilities.REFRESH];
-
-    const tabCapabilities: Partial<Record<TabLocation, Capabilities | Capabilities[]>> = {
-      [TabLocation.Assignments]: Capabilities.HOMEWORK,
-      [TabLocation.Discussions]: [Capabilities.CHAT_READ, Capabilities.CHAT_REPLY, Capabilities.CHAT_CREATE],
-      [TabLocation.Grades]: Capabilities.GRADES,
-      [TabLocation.Notebook]: [Capabilities.ATTENDANCE, Capabilities.ATTENDANCE_PERIODS],
-      [TabLocation.News]: Capabilities.NEWS,
-      [TabLocation.Menus]: Capabilities.CANTEEN_MENU,
-      [TabLocation.Timetable]: Capabilities.TIMETABLE,
-    };
-
-    for (const tab of this.session.user?.authorizations?.tabs ?? []) {
-      const capability = tabCapabilities[tab];
-      if (capability) {
-        this.capabilities.push(...(Array.isArray(capability) ? capability : [capability]));
-      }
+    if (this.refreshInFlight) {
+      await this.refreshInFlight;
+      return this;
     }
-		
-    return this;
+
+    const refreshPromise = (async () => {
+      const refresh = await refreshPronoteAccount(this.accountId, credentials);
+      this.authData = refresh.auth;
+      this.session = refresh.session;
+      this.tokenExpiration = Date.now() + PRONOTE_TOKEN_TTL_MS;
+      this.capabilities = [Capabilities.REFRESH];
+
+      const tabCapabilities: Partial<Record<TabLocation, Capabilities | Capabilities[]>> = {
+        [TabLocation.Assignments]: Capabilities.HOMEWORK,
+        [TabLocation.Discussions]: [Capabilities.CHAT_READ, Capabilities.CHAT_REPLY, Capabilities.CHAT_CREATE],
+        [TabLocation.Grades]: Capabilities.GRADES,
+        [TabLocation.Notebook]: [Capabilities.ATTENDANCE, Capabilities.ATTENDANCE_PERIODS],
+        [TabLocation.News]: Capabilities.NEWS,
+        [TabLocation.Menus]: Capabilities.CANTEEN_MENU,
+        [TabLocation.Timetable]: Capabilities.TIMETABLE,
+      };
+
+      for (const tab of this.session.user?.authorizations?.tabs ?? []) {
+        const capability = tabCapabilities[tab];
+        if (capability) {
+          this.capabilities.push(...(Array.isArray(capability) ? capability : [capability]));
+        }
+      }
+
+      return this;
+    })();
+
+    this.refreshInFlight = refreshPromise.then(() => {}).finally(() => {
+      this.refreshInFlight = null;
+    });
+
+    return await refreshPromise;
   }
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
