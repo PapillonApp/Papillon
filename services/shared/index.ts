@@ -806,7 +806,8 @@ export const initializeAccountManager = async (
   if (!accountId) {
     const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
     if (!lastUsedAccount) {
-      throw error("No account ID provided and no last used account found.");
+      // Expected with no account (e.g. app resumed before onboarding): callers catch it, don't report.
+      throw new Error("No account ID provided and no last used account found.");
     }
     accountId = lastUsedAccount;
   }

@@ -1,72 +1,90 @@
-import * as Crypto from "expo-crypto";
+import { Directory, File, Paths } from "expo-file-system";
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 import { createMMKV, MMKV } from "react-native-mmkv";
+
+// Must match react-native-mmkv's iOS root (AppGroupIdentifier in Info.plist)
+const APP_GROUP_ID = "group.xyz.getpapillon";
 
 const SECURE_STORE_OPTIONS: SecureStore.SecureStoreOptions = {
   keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
 };
 
-const KEY_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-const KEY_LENGTH = 32;
+const toPath = (uri: string) => decodeURIComponent(uri.replace(/^file:\/\//, ""));
 
-function generateKey(): string {
-  const bytes = Crypto.getRandomBytes(KEY_LENGTH);
-  let key = "";
-  for (let i = 0; i < KEY_LENGTH; i++) {
-    key += KEY_ALPHABET[bytes[i] & 63];
+const isReadable = (json?: string): boolean => {
+  if (!json) {return false;}
+  try {
+    JSON.parse(json);
+    return true;
+  } catch {
+    return false;
   }
-  return key;
+};
+
+function mmkvDirectory(): Directory | undefined {
+  if (Platform.OS === "ios") {return Paths.appleSharedContainers[APP_GROUP_ID];}
+  return new Directory(Paths.document, "mmkv");
 }
 
-function getOrCreateDeviceKey(keyName: string): string {
-  const existing = SecureStore.getItem(keyName, SECURE_STORE_OPTIONS);
-  if (existing) {return existing;}
+// Reads a copy of the file with the per-device key, leaving the open instance untouched
+function readWithDeviceKey(id: string, deviceKey: string): string | undefined {
+  const source = mmkvDirectory();
+  if (!source) {return undefined;}
 
-  const key = generateKey();
-  SecureStore.setItem(keyName, key, SECURE_STORE_OPTIONS);
+  const copy = new Directory(Paths.cache, "mmkv-recovery");
+  if (copy.exists) {copy.delete();}
+  copy.create({ intermediates: true });
 
-  if (SecureStore.getItem(keyName, SECURE_STORE_OPTIONS) !== key) {
-    throw new Error("Unable to persist MMKV encryption key in secure storage");
+  try {
+    new File(source, id).copySync(new File(copy, id));
+    new File(source, `${id}.crc`).copySync(new File(copy, `${id}.crc`));
+
+    const value = createMMKV({
+      id,
+      path: toPath(copy.uri),
+      encryptionKey: deviceKey,
+      encryptionType: "AES-256",
+    }).getString(id);
+    return isReadable(value) ? value : undefined;
+  } finally {
+    copy.delete();
   }
-  return key;
 }
 
-// Opening an MMKV file with the wrong key discards its content, so every path
-// below must open the file with the key it is actually encrypted with.
-export function createEncryptedMMKV(id: string, legacyKey?: string): MMKV {
-  const keyName = `mmkv-key.${id}`;
+// 8.6.0 re-encrypted some files with a per-device key, but PapillonKit reads the same
+// file in the same process with the static key: bring those files back to the static key.
+function recoverDeviceKeyFile(mmkv: MMKV, id: string) {
   const migratedName = `mmkv-key.${id}.migrated`;
+  if (SecureStore.getItem(migratedName, SECURE_STORE_OPTIONS) !== "1") {return;}
 
-  let key: string | null = null;
-  let migrated = false;
-  try {
-    key = getOrCreateDeviceKey(keyName);
-    migrated = SecureStore.getItem(migratedName, SECURE_STORE_OPTIONS) === "1";
-  } catch (error) {
-    console.error(`Secure storage unavailable for MMKV "${id}":`, error);
+  if (!isReadable(mmkv.getString(id))) {
+    let recovered: string | undefined;
+    try {
+      const deviceKey = SecureStore.getItem(`mmkv-key.${id}`, SECURE_STORE_OPTIONS);
+      recovered = deviceKey ? readWithDeviceKey(id, deviceKey) : undefined;
+    } catch (error) {
+      console.error(`Unable to read MMKV "${id}" with the per-device key:`, error);
+    }
+
+    // Unreadable with either key: start from a clean file so new logins are saved
+    mmkv.clearAll();
+    if (recovered) {mmkv.set(id, recovered);}
   }
 
-  if (key && migrated) {
-    return createMMKV({ id, encryptionKey: key, encryptionType: "AES-256" });
-  }
+  SecureStore.setItem(migratedName, "reverted", SECURE_STORE_OPTIONS);
+}
 
-  // Not migrated yet (or secure storage unavailable): the file still uses the legacy key
+// Always the static key: PapillonKit (widgets, Live Activities, Siri) opens this file
+// natively with it, and MMKV shares one instance per file within the process.
+export function createEncryptedMMKV(id: string, legacyKey?: string): MMKV {
   const mmkv = createMMKV({ id, encryptionKey: legacyKey });
-  if (!key) {return mmkv;}
 
   try {
-    mmkv.encrypt(key, "AES-256");
+    recoverDeviceKeyFile(mmkv, id);
   } catch (error) {
-    console.error(`Unable to migrate MMKV "${id}", keeping the legacy key:`, error);
-    return mmkv;
+    console.error(`Unable to recover MMKV "${id}" from the per-device key:`, error);
   }
 
-  try {
-    SecureStore.setItem(migratedName, "1", SECURE_STORE_OPTIONS);
-  } catch (error) {
-    // Without the flag, the next launch would open the file with the legacy key: roll back
-    console.error(`Unable to save migration flag for MMKV "${id}", rolling back:`, error);
-    mmkv.encrypt(legacyKey ?? "");
-  }
   return mmkv;
 }
