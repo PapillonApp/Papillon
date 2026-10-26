@@ -1,13 +1,10 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
 group = 'xyz.getpapillon.wear.bridge'
 version = '1.0.0'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useExpoPublishing()
 
 android {
   namespace "xyz.getpapillon.wear.bridge"

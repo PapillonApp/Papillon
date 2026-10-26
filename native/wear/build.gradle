@@ -1,18 +1,28 @@
-plugins {
-    id "com.android.application"
-    id "org.jetbrains.kotlin.android"
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        def kotlinVer = findProperty('android.kotlinVersion') ?: '2.2.10'
+        classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVer}")
+    }
 }
+
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "org.jetbrains.kotlin.plugin.compose"
 
 android {
     namespace "xyz.getpapillon.wear"
-    compileSdk rootProject.ext.has("compileSdkVersion") ? rootProject.ext.get("compileSdkVersion") : 35
+    compileSdk rootProject.ext.has("compileSdkVersion") ? rootProject.ext.get("compileSdkVersion") : 36
 
     defaultConfig {
         // Must match the handheld app's applicationId so Wearable Data Layer
         // DataItems and Messages are routed between the phone and watch apps.
         applicationId "xyz.getpapillon.app"
         minSdk 30
-        targetSdk rootProject.ext.has("targetSdkVersion") ? rootProject.ext.get("targetSdkVersion") : 35
+        targetSdk rootProject.ext.has("targetSdkVersion") ? rootProject.ext.get("targetSdkVersion") : 36
         versionCode 1
         versionName "8.6.1-wear"
     }
@@ -33,16 +43,8 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     buildFeatures {
         compose true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion "1.5.15"
     }
 }
 
