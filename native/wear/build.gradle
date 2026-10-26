@@ -27,11 +27,24 @@ android {
         versionName "8.6.1-wear"
     }
 
+    signingConfigs {
+        debug {
+            if (file("../app/debug.keystore").exists()) {
+                storeFile file("../app/debug.keystore")
+                storePassword "android"
+                keyAlias "androiddebugkey"
+                keyPassword "android"
+            }
+        }
+    }
+
     buildTypes {
         debug {
+            signingConfig signingConfigs.debug
             minifyEnabled false
         }
         release {
+            signingConfig signingConfigs.debug
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
