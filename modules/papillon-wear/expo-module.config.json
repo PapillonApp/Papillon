@@ -1,0 +1,7 @@
+{
+  "name": "papillon-wear",
+  "platforms": ["android"],
+  "android": {
+    "modules": ["xyz.getpapillon.wear.bridge.PapillonWearModule"]
+  }
+}

@@ -16,6 +16,7 @@ import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
 import { useCalendarWidgetFeed } from '@/utils/widgets/useCalendarWidgetFeed';
 import { usePapillonKitSettingsSync } from '@/utils/widgets/usePapillonKitSettingsSync';
+import { useWearSync } from '@/utils/wear/useWearSync';
 import { LogBox } from 'react-native';
 
 // Polyfill Buffer
@@ -44,6 +45,7 @@ export default function RootLayout() {
 
   useCalendarWidgetFeed();
   usePapillonKitSettingsSync();
+  useWearSync();
 
   const analyticsView = useMemo(() => {
     if (segments.length === 0) return null;

@@ -54,6 +54,7 @@ export interface Personalization {
   mockDataEnabled?: boolean;
   liveActivityTestMode?: boolean;
   liveActivitiesEnabled?: boolean;
+  wearOsEnabled?: boolean;
   magicModelURL?: string;
   language?: string | null;
   // Legacy global wallpaper, read as the fallback for accounts without their own entry

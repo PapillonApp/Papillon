@@ -1,0 +1,20 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'xyz.getpapillon.wear.bridge'
+version = '1.0.0'
+
+android {
+  namespace "xyz.getpapillon.wear.bridge"
+  defaultConfig {
+    versionCode 1
+    versionName "1.0.0"
+  }
+}
+
+dependencies {
+  implementation "com.google.android.gms:play-services-wearable:18.2.0"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1"
+}

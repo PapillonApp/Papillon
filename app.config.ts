@@ -172,6 +172,7 @@ export default {
       "@getpapillon/papillonkit",
       "./plugins/with-ios-native-files",
       "./plugins/with-android-gradle-properties-newline",
+      "./plugins/with-wear-os",
     ],
     experiments: {
       typedRoutes: true,

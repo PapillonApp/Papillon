@@ -1,0 +1,6 @@
+<resources>
+    <string name="wear_app_name">Papillon</string>
+    <string name="wear_tile_label">Papillon • Prochain cours</string>
+    <string name="wear_tile_description">Affiche le cours en cours ou à venir avec la salle et l\'horaire</string>
+    <string name="wear_complication_label">Papillon • Prochain cours</string>
+</resources>

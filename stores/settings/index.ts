@@ -25,6 +25,7 @@ const defaultPersonalization: Personalization = {
   mockDataEnabled: false,
   liveActivityTestMode: false,
   liveActivitiesEnabled: true,
+  wearOsEnabled: true,
   magicModelURL: MAGIC_URL,
   gradesDisplayScale: "20",
   welcomeModalSeen: false,

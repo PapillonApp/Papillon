@@ -599,5 +599,11 @@
   "Settings_Tabs_Description": "Masquer des onglets du menu",
   "Settings_Tabs_Title": "Onglets",
   "Grades_Skills_Title": "Skills",
-  "Tab_Search": "Search"
+  "Tab_Search": "Search",
+  "Settings_Features_WearOS": "Smartwatch (Wear OS)",
+  "Settings_Features_WearOS_Enable": "Wear OS Sync",
+  "Settings_Features_WearOS_Enable_Description": "Automatically syncs your timetable, grades, homework, and canteen cards with your watch",
+  "Settings_Features_WearOS_SyncNow": "Sync now",
+  "Settings_Features_WearOS_SyncNow_Connected": "{{count}} watch connected • Tap to force sync",
+  "Settings_Features_WearOS_SyncNow_Disconnected": "No nearby watch detected • Tap to update cache"
 }
