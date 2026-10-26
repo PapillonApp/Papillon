@@ -595,5 +595,11 @@
   "Settings_Features_GradeScale_Description": "Notation par défaut dans l'interface",
   "Global_Experimental": "Expérimental",
   "Grades_Skills_Title": "Compétences",
-  "Tab_Search": "Recherche"
+  "Tab_Search": "Recherche",
+  "Settings_Features_WearOS": "Montre connectée (Wear OS)",
+  "Settings_Features_WearOS_Enable": "Synchronisation Wear OS",
+  "Settings_Features_WearOS_Enable_Description": "Synchronise automatiquement l'emploi du temps, les notes, les devoirs et les cartes de self avec ta montre",
+  "Settings_Features_WearOS_SyncNow": "Synchroniser maintenant",
+  "Settings_Features_WearOS_SyncNow_Connected": "{{count}} montre connectée • Appuie pour forcer la synchronisation",
+  "Settings_Features_WearOS_SyncNow_Disconnected": "Aucune montre détectée à proximité • Appuie pour mettre à jour le cache"
 }

@@ -1,17 +1,22 @@
 import { Papicons } from "@getpapillon/papicons";
+import * as PapillonKit from "@getpapillon/papillonkit";
+import { useTheme } from "expo-router/react-navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Platform, View } from "react-native";
 
+import {
+  getConnectedWatches,
+  wearIsSupported,
+} from "@/modules/papillon-wear";
 import { useSettingsStore } from "@/stores/settings";
+import Icon from "@/ui/components/Icon";
+import Picker from "@/ui/components/Picker";
+import NativeSwitch from "@/ui/native/NativeSwitch";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import NativeSwitch from "@/ui/native/NativeSwitch";
-import { useTranslation } from "react-i18next";
-import Icon from "@/ui/components/Icon";
-import { useMemo } from "react";
 import { getGradeDisplayScale } from "@/utils/grades/scale";
-import Picker from "@/ui/components/Picker";
-import { useTheme } from "expo-router/react-navigation";
-import * as PapillonKit from "@getpapillon/papillonkit";
+import { triggerManualWearSync } from "@/utils/wear/useWearSync";
 
 export default function SettingsFeatures() {
   const { t } = useTranslation();
@@ -23,7 +28,21 @@ export default function SettingsFeatures() {
   const iOSBottomAccessoryEnabled = settingsStore.iOSBottomAccessoryEnabled ?? true;
   const showTabBarLabels = settingsStore.showTabBarLabels ?? true;
   const liveActivitiesEnabled = settingsStore.liveActivitiesEnabled ?? true;
+  const wearOsEnabled = settingsStore.wearOsEnabled ?? true;
   const selectedGradeScale = getGradeDisplayScale(settingsStore.gradesDisplayScale);
+  const [connectedWatchCount, setConnectedWatchCount] = useState(0);
+
+  const refreshConnectedWatches = useCallback(async () => {
+    if (!wearIsSupported) {
+      return;
+    }
+    const watches = await getConnectedWatches();
+    setConnectedWatchCount(watches.length);
+  }, []);
+
+  useEffect(() => {
+    refreshConnectedWatches();
+  }, [refreshConnectedWatches]);
 
   const gradeScaleOptions = [
     {
@@ -137,6 +156,60 @@ export default function SettingsFeatures() {
               />
             </List.Trailing>
           </List.Item>
+        </List.Section>
+      )}
+
+      {Platform.OS === "android" && wearIsSupported && (
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>{t("Settings_Features_WearOS")}</List.Label>
+          </List.SectionTitle>
+
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Clock"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">{t("Settings_Features_WearOS_Enable")}</Typography>
+            <Typography color="textSecondary" numberOfLines={3}>
+              {t("Settings_Features_WearOS_Enable_Description")}
+            </Typography>
+            <List.Trailing>
+              <NativeSwitch
+                value={wearOsEnabled}
+                onValueChange={(value) =>
+                  mutateProperty("personalization", {
+                    ...settingsStore,
+                    wearOsEnabled: value,
+                  })
+                }
+              />
+            </List.Trailing>
+          </List.Item>
+
+          {wearOsEnabled && (
+            <List.Item
+              onPress={async () => {
+                await triggerManualWearSync();
+                await refreshConnectedWatches();
+              }}
+            >
+              <List.Leading>
+                <Icon>
+                  <Papicons name={"Sparkles"} />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">{t("Settings_Features_WearOS_SyncNow")}</Typography>
+              <Typography color="textSecondary" numberOfLines={2}>
+                {connectedWatchCount > 0
+                  ? t("Settings_Features_WearOS_SyncNow_Connected", {
+                    count: connectedWatchCount,
+                  })
+                  : t("Settings_Features_WearOS_SyncNow_Disconnected")}
+              </Typography>
+            </List.Item>
+          )}
         </List.Section>
       )}
 

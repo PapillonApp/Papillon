@@ -1,0 +1,17 @@
+export {
+  addWatchSyncRequestListener,
+  addWatchToggleHomeworkListener,
+  getConnectedWatches,
+  pingWatches,
+  syncWatchData,
+  type WatchToggleHomeworkEvent,
+  type WearCanteenCard,
+  type WearCourseItem,
+  type WearGradeItem,
+  type WearGradesSummary,
+  type WearHomeworkItem,
+  wearIsSupported,
+  type WearNode,
+  type WearSubjectAverage,
+  type WearSyncPayload,
+} from "./src/PapillonWearModule";
