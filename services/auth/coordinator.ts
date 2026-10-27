@@ -1,7 +1,7 @@
 import { useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";
 import { useAuthStateStore } from "@/stores/authState";
-import { debug, warn } from "@/utils/logger/logger";
+import { warn } from "@/utils/logger/logger";
 
 import { AuthOnHoldError, classifyAuthError } from "./errors";
 import { authHold, isSuspended, liftedByUserRetry, nextRetryAt } from "./policy";
@@ -14,12 +14,6 @@ import {
   ServiceAuthState,
 } from "./types";
 
-/** A step not refreshed for this long belongs to a dead runtime. */
-const AUTH_LEASE_MS = 15 * 1000;
-const LEASE_HEARTBEAT_MS = 5 * 1000;
-const LEASE_POLL_MS = 500;
-/** A login hung past this stops renewing its lease, so it can't block other runtimes forever. */
-const MAX_LEASE_MS = 2 * 60 * 1000;
 const MAX_FAILURE_MESSAGE_LENGTH = 300;
 
 const RUNTIME_ID = Math.random().toString(36).slice(2, 10);
@@ -84,34 +78,6 @@ export const pruneAuthStates = (existingServiceIds: string[]): void => {
   useAuthStateStore.getState().prune(existingServiceIds);
 };
 
-const isForeignLease = (state: ServiceAuthState | undefined): boolean =>
-  Boolean(
-    state &&
-    state.runtimeId !== RUNTIME_ID &&
-    ACTIVE_AUTH_STEPS.includes(state.step) &&
-    // abs: a clock set back must not turn the lease into an hour-long wait.
-    Math.abs(Date.now() - state.updatedAt) < AUTH_LEASE_MS
-  );
-
-/**
- * Waits for a renewal running in another JS runtime to end or go stale, so
- * both never send the same single-use credential.
- */
-const waitForForeignLease = async (serviceId: string): Promise<void> => {
-  await useAuthStateStore.persist.rehydrate();
-  if (!isForeignLease(getAuthState(serviceId))) {
-    return;
-  }
-
-  debug(`Authentication of ${serviceId} is running in another runtime, waiting for it.`);
-  while (isForeignLease(getAuthState(serviceId))) {
-    await new Promise(resolve => setTimeout(resolve, LEASE_POLL_MS));
-    await useAuthStateStore.persist.rehydrate();
-  }
-  // The other runtime may have saved a new credential.
-  await useAccountStore.persist.rehydrate();
-};
-
 export const allowAuthRetry = (serviceId: string): void => {
   const state = getAuthState(serviceId);
   if (state) {
@@ -141,8 +107,8 @@ export const reportSessionError = (
   reason: "session_expired" | "suspended",
   e: unknown
 ): void => {
-  // A login running in this runtime records its own outcome; writing here
-  // would drop its active step, and with it the lease.
+  // A running login records its own outcome; writing here would drop its
+  // active step.
   if (inFlight.has(serviceId)) {
     return;
   }
@@ -192,15 +158,13 @@ async function execute<T>(
   options: AuthRefreshOptions,
   run: (tracker: AuthTracker) => Promise<T>
 ): Promise<T> {
-  await waitForForeignLease(serviceId);
-
   const previous = getAuthState(serviceId);
   const hold = authHold(previous, RUNTIME_ID, fingerprint(readStoredAuth(serviceId, fallback)), Date.now());
   if (hold) {
     throw new AuthOnHoldError(serviceId, hold.failure, hold.retryAt);
   }
 
-  // Still active but stale: the app or the task died during that step.
+  // Still active: the app died during that step (often iOS ending a background wake).
   const interruptedStep =
     previous && ACTIVE_AUTH_STEPS.includes(previous.step) ? previous.step : undefined;
   if (interruptedStep) {
@@ -227,15 +191,6 @@ async function execute<T>(
   };
 
   update({});
-  // A login with network retries outlasts the lease: keep it alive.
-  const leaseStartedAt = Date.now();
-  const heartbeat = setInterval(() => {
-    if (Date.now() - leaseStartedAt > MAX_LEASE_MS) {
-      clearInterval(heartbeat);
-      return;
-    }
-    update({});
-  }, LEASE_HEARTBEAT_MS);
 
   const tracker: AuthTracker = {
     readCredentials: () => readStoredAuth(serviceId, fallback),
@@ -274,7 +229,5 @@ async function execute<T>(
 
     warn(`Authentication of ${serviceId} failed at "${failedAt}" (${reason}): ${state.failure?.message}`);
     throw e;
-  } finally {
-    clearInterval(heartbeat);
   }
 }

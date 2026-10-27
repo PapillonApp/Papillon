@@ -1,7 +1,7 @@
 import type { Fetcher } from "@literate.ink/utilities";
 
 // Pawnote queues a session's requests: one that never answers (Android has no
-// fetch timeout) would freeze the session and keep a login holding its lease.
+// fetch timeout) would freeze the session and the login waiting on it.
 const REQUEST_TIMEOUT_MS = 60 * 1000;
 
 // PRONOTE weird user-agent check

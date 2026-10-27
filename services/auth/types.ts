@@ -2,10 +2,10 @@ import { Auth } from "@/stores/account/types";
 
 /**
  * Where a service session renewal stands. Persisted on every change so a
- * killed app or another JS runtime knows what happened.
+ * killed app knows what happened on its next launch.
  */
 export enum AuthStep {
-  /** Lock taken, nothing sent yet: stopping here is harmless. */
+  /** Login started, nothing sent yet: stopping here is harmless. */
   Starting = "starting",
   /** The stored credential left the device, the server still accepts it. */
   CredentialSent = "credential_sent",
@@ -52,7 +52,7 @@ export interface AuthFailure {
 
 export interface ServiceAuthState {
   step: AuthStep;
-  /** The app launch that wrote this state: owner of the lease and of the retry rules. */
+  /** The app launch that wrote this state: its failures only hold within it. */
   runtimeId: string;
   updatedAt: number;
   /** Short hash of the credentials last sent, never the credentials themselves. */
