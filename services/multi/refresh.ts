@@ -1,31 +1,35 @@
 import { authWithRefreshToken, Multi } from "esup-multi.js";
 
-import { useAccountStore } from "@/stores/account";
+import { runAuthRefresh } from "@/services/auth/coordinator";
+import { CredentialsMissingError } from "@/services/auth/errors";
 import { Auth } from "@/stores/account/types";
-import { error } from "@/utils/logger/logger";
 
-export async function refreshMultiSession(
+export function refreshMultiSession(
   accountId: string,
   credentials: Auth
 ): Promise<{ auth: Auth; session: Multi }> {
-  if (!credentials.refreshToken) {
-    error("Unable to find refreshToken", "refreshMultiSession");
-  }
+  return runAuthRefresh(accountId, credentials, { rotatesCredential: false }, async tracker => {
+    const stored = tracker.readCredentials();
+    if (!stored.refreshToken) {
+      throw new CredentialsMissingError("Stored Multi refresh token is missing, the account has to be linked again.");
+    }
 
-  const instanceUrl = credentials.additionals?.["instanceUrl"] as string;
-  const session = await authWithRefreshToken(instanceUrl, {
-    refreshAuthToken: credentials.refreshToken,
+    const instanceUrl = stored.additionals?.["instanceUrl"] as string;
+    tracker.credentialSent(stored);
+    const session = await authWithRefreshToken(instanceUrl, {
+      refreshAuthToken: stored.refreshToken,
+    });
+
+    const authData: Auth = {
+      accessToken: stored.accessToken,
+      refreshToken: stored.refreshToken,
+      additionals: {
+        instanceUrl: instanceUrl,
+      },
+    };
+
+    tracker.credentialReceived(authData);
+
+    return { auth: authData, session };
   });
-
-  const authData: Auth = {
-    accessToken: credentials.accessToken,
-    refreshToken: credentials.refreshToken,
-    additionals: {
-      instanceUrl: instanceUrl,
-    },
-  };
-
-  useAccountStore.getState().updateServiceAuthData(accountId, authData);
-
-  return { auth: authData, session };
 }
