@@ -345,18 +345,7 @@ export default function PronoteENTLogin() {
           store.setLastUsedAccount(deviceUUID);
         }
 
-        const parent = navigation.getParent();
-        if (parent) {
-          parent.goBack();
-
-          const parentsParent = parent.getParent();
-          if (parentsParent) {
-            parentsParent.goBack();
-          }
-        }
-
-        router.back();
-        return router.replace('/');
+        return router.dismissTo("/");
       } catch (error) {
         console.error("Error while creating account:", error);
         setReceived(false);
