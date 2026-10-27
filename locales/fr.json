@@ -598,5 +598,17 @@
   "Settings_Features_GradeScale_Description": "Notation par défaut dans l'interface",
   "Global_Experimental": "Expérimental",
   "Grades_Skills_Title": "Compétences",
-  "Tab_Search": "Recherche"
+  "Tab_Search": "Recherche",
+  "Home_Sync_Relink": "Me reconnecter",
+  "Home_Sync_LearnMore": "En savoir plus",
+  "Home_Sync_LearnMoreRelink": "En savoir plus et se reconnecter",
+  "Home_Sync_Disconnected_Title": "Vous avez été déconnecté",
+  "Home_Sync_Disconnected_Expired": "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
+  "Home_Sync_Disconnected_CredentialLost": "La connexion a été coupée pendant le renouvellement de ta session, qui n'a pas pu être récupérée. Reconnecte-toi pour continuer.",
+  "Home_Sync_Disconnected_AccountDisabled": "Ton compte a été désactivé ou n'a plus accès à ce service. Rapproche-toi de ton établissement, puis reconnecte-toi.",
+  "Home_Sync_Disconnected_SecurityChallenge": "Le service demande une vérification de sécurité. Reconnecte-toi pour la valider.",
+  "Home_Sync_Unavailable_Title": "{{service}} temporairement indisponible",
+  "Home_Sync_Unavailable_Description": "Impossible de contacter {{service}} pour le moment. Les données affichées correspondent à la dernière synchronisation.",
+  "Home_Sync_Suspended_Title": "Connexion mise en pause",
+  "Home_Sync_Suspended_Description": "Le serveur de ton établissement bloque pour l'instant les connexions depuis ce réseau. Papillon réessaiera d'ici 30 minutes ou à la prochaine ouverture de l'app. Tes dernières données restent affichées."
 }
