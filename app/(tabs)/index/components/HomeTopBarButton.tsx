@@ -14,7 +14,7 @@ interface HomeTopBarButtonProps {
 
 const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route }) => {
   return (
-    <Link asChild prefetch href={route ?? "/(features)/soon"}>
+    <Link asChild href={route ?? "/(features)/soon"}>
     <TouchableNativeFeedback useForeground>
       <View
         style={{
