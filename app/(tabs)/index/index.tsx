@@ -1,6 +1,6 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useIsFocused } from "expo-router/react-navigation";
-import { useRouter } from 'expo-router';
+import { type ParamListBase, useIsFocused } from "expo-router/react-navigation";
+import { type NativeStackNavigationProp, useNavigation, useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
 import { FlatList, Platform, RefreshControl, StatusBar, View } from 'react-native';
@@ -58,21 +58,52 @@ const HomeScreen = () => {
     }
   }, [account, accounts.length, router, initializeTransport]);
 
-  const consentPrompted = React.useRef(false);
+  // iOS refuses a modal during a transition: wait for the tabs to be on screen.
+  const navigation = useNavigation();
+  const [tabsAppeared, setTabsAppeared] = React.useState(false);
+
+  React.useLayoutEffect(() => {
+    let rootNavigation = navigation;
+    while (!rootNavigation.getState()?.routes.some(route => route.name === "(tabs)")) {
+      const parent = rootNavigation.getParent();
+      if (!parent) return;
+      rootNavigation = parent;
+    }
+
+    return (rootNavigation as NativeStackNavigationProp<ParamListBase>).addListener("transitionEnd", event => {
+      if (!event.data.closing) setTabsAppeared(true);
+    });
+  }, [navigation]);
+
+  const consentChecked = React.useRef(false);
 
   React.useEffect(() => {
-    // Only ask for consent once the user lands on home with an account (i.e. after onboarding)
-    if (!focused || accounts.length === 0 || consentPrompted.current) {
+    if (!focused || !tabsAppeared || !account) {
       return;
     }
 
-    consentPrompted.current = true;
-    checkConsent().then(consent => {
-      if (!consent.given) {
-        router.push("../consent");
+    let cancelled = false;
+    (async () => {
+      if (!consentChecked.current) {
+        const consent = await checkConsent();
+        if (cancelled) return;
+        consentChecked.current = true;
+        if (!consent.given) {
+          router.push("../consent");
+          return;
+        }
       }
-    });
-  }, [focused, accounts.length, router]);
+
+      if (!welcomeModalSeen) {
+        mutateSettings("personalization", { welcomeModalSeen: true });
+        router.navigate("/(modals)/welcome");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [focused, tabsAppeared, account, welcomeModalSeen, mutateSettings, router]);
 
   const { syncing, refresh } = useHomeData();
   const { courses } = useTimetableWidgetData();
@@ -121,15 +152,6 @@ const HomeScreen = () => {
     [data]
   );
   const allWidgetsHidden = visibleWidgets.length === 0;
-
-  React.useEffect(() => {
-    if (!account || welcomeModalSeen || !focused) {
-      return;
-    }
-
-    mutateSettings("personalization", { welcomeModalSeen: true });
-    router.navigate("/(modals)/welcome");
-  }, [account, focused, mutateSettings, router, welcomeModalSeen]);
 
   return (
     <>
