@@ -2,7 +2,8 @@ import { AuthFailure, AuthFailureReason, AuthStep, RELINK_AUTH_FAILURES, Service
 
 const BACKOFF_BASE_MS = 30 * 1000;
 const BACKOFF_MAX_MS = 15 * 60 * 1000;
-const SUSPENSION_COOLDOWN_MS = 30 * 60 * 1000;
+// PRONOTE lifts an IP suspension within minutes: wait just enough not to extend it.
+const SUSPENSION_COOLDOWN_MS = 5 * 60 * 1000;
 
 /** A relink, or a security challenge reached through the next login. */
 export const needsUserAction = (reason: AuthFailureReason): boolean =>

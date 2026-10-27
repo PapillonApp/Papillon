@@ -610,5 +610,5 @@
   "Home_Sync_Unavailable_Title": "{{service}} temporairement indisponible",
   "Home_Sync_Unavailable_Description": "Impossible de contacter {{service}} pour le moment. Les données affichées correspondent à la dernière synchronisation.",
   "Home_Sync_Suspended_Title": "Connexion mise en pause",
-  "Home_Sync_Suspended_Description": "Le serveur de ton établissement bloque pour l'instant les connexions depuis ce réseau. Papillon réessaiera d'ici 30 minutes ou à la prochaine ouverture de l'app. Tes dernières données restent affichées."
+  "Home_Sync_Suspended_Description": "Le serveur de ton établissement bloque temporairement les connexions depuis ce réseau. Réessaie dans quelques minutes en tirant la page vers le bas. Tes dernières données restent affichées."
 }
