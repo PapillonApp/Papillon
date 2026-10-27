@@ -18,6 +18,8 @@ import {
 const AUTH_LEASE_MS = 15 * 1000;
 const LEASE_HEARTBEAT_MS = 5 * 1000;
 const LEASE_POLL_MS = 500;
+/** A login hung past this stops renewing its lease, so it can't block other runtimes forever. */
+const MAX_LEASE_MS = 2 * 60 * 1000;
 const MAX_FAILURE_MESSAGE_LENGTH = 300;
 
 const RUNTIME_ID = Math.random().toString(36).slice(2, 10);
@@ -221,7 +223,14 @@ async function execute<T>(
 
   update({});
   // A login with network retries outlasts the lease: keep it alive.
-  const heartbeat = setInterval(() => update({}), LEASE_HEARTBEAT_MS);
+  const leaseStartedAt = Date.now();
+  const heartbeat = setInterval(() => {
+    if (Date.now() - leaseStartedAt > MAX_LEASE_MS) {
+      clearInterval(heartbeat);
+      return;
+    }
+    update({});
+  }, LEASE_HEARTBEAT_MS);
 
   const tracker: AuthTracker = {
     readCredentials: () => readStoredAuth(serviceId, fallback),

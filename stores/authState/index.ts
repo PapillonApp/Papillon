@@ -12,9 +12,9 @@ interface AuthStateStorage {
   prune: (existingServiceIds: string[]) => void;
 }
 
-// Encrypted like the accounts: a fingerprint of a short password could be
-// brute-forced from a readable file. MMKV writes synchronously, so a kill
-// right after a step still leaves it on disk.
+// Encrypted like the accounts, with a key shipped in the app: it keeps the
+// fingerprints out of plain-text backups, not out of a determined attacker.
+// MMKV writes synchronously, so a kill right after a step still leaves it on disk.
 export const useAuthStateStore = create<AuthStateStorage>()(
   persist(
     (set, get) => ({

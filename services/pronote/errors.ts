@@ -8,7 +8,6 @@ import {
   SecurityError,
   SessionExpiredError,
   SuspendedIPError,
-  UnreachableError,
 } from "@blockshub/pawnote-lts";
 
 import { AuthErrorClassifier } from "@/services/auth/types";
@@ -35,9 +34,6 @@ export const classifyPronoteError: AuthErrorClassifier = e => {
   // valid, so it must not get blocked.
   if (e instanceof AuthenticateError || e instanceof BusyPageError || e instanceof PageUnavailableError) {
     return "service_error";
-  }
-  if (e instanceof UnreachableError) {
-    return "network";
   }
   return undefined;
 };
