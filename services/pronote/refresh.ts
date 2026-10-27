@@ -1,6 +1,7 @@
 import {
   AccountKind,
   AuthenticateError,
+  BadCredentialsError,
   BusyPageError,
   createSessionHandle,
   loginToken,
@@ -132,6 +133,16 @@ async function loginWithStoredToken(
         suspendedUntil = Date.now() + SUSPENSION_COOLDOWN_MS;
         warn("Pronote suspended this IP, pausing every authentication for 30 minutes.");
         throw e;
+      }
+
+      if (e instanceof BadCredentialsError && attempt === 0) {
+        const freshStored = readStoredAuth(accountId, credentials);
+        const currentToken = String(stored.additionals?.["token"] || stored.accessToken || "");
+        const freshToken = String(freshStored.additionals?.["token"] || freshStored.accessToken || "");
+        if (freshToken && freshToken !== currentToken) {
+          // Un renouvellement concurrent a déjà mis à jour le jeton, on réessaie avec le nouveau jeton
+          continue;
+        }
       }
 
       lastError = e;
