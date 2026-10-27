@@ -7,6 +7,7 @@ import { FlatList, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, 
 import i18n from '@/utils/i18n';
 import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
 import { useSettingsStore } from '@/stores/settings';
+import { allowAllAuthRetries } from '@/services/auth/coordinator';
 import { getGradeDisplayScale, formatScoreForDisplay, formatGradeScoreForDisplay } from '@/utils/grades/scale';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from '@/utils/services/periods';
 import { getSubjectName } from '@/utils/subjects/name';
@@ -89,6 +90,7 @@ const GradesView = () => {
   const [searchText, setSearchText] = useState('');
 
   const handleRefresh = useCallback(async () => {
+    allowAllAuthRetries();
     // Refresh periods first (a new one may have appeared), then the current period's grades.
     await refreshPeriods();
     await refreshGrades();

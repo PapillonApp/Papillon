@@ -119,6 +119,11 @@ export const allowAuthRetry = (serviceId: string): void => {
   }
 };
 
+/** Pull to refresh on any screen: the user asks to try again now. */
+export const allowAllAuthRetries = (): void => {
+  Object.keys(useAuthStateStore.getState().services).forEach(allowAuthRetry);
+};
+
 /** Refuses any request, login or data, while the server suspends this IP. */
 export const assertSessionUsable = (serviceId: string): void => {
   const state = getAuthState(serviceId);

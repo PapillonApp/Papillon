@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAccountStore } from "@/stores/account";
+import { allowAllAuthRetries } from "@/services/auth/coordinator";
 import type { AccountManager } from "@/services/shared";
 import { getManager } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
@@ -198,6 +199,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   const handleRefresh = useCallback(
     async (week: number) => {
       setRefreshingWeek(week);
+      allowAllAuthRetries();
       try {
         await fetchWeek(week, manager, true);
       } finally {
