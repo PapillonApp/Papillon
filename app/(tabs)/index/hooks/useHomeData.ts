@@ -4,6 +4,7 @@ import { instance } from "@blockshub/pawnote-lts";
 import { useCallback, useEffect, useState } from 'react';
 
 import { getWeekNumberFromDate } from '@/database/useHomework';
+import { AuthFailureReason } from '@/services/auth/types';
 import { AuthenticationError } from '@/services/errors/AuthenticationError';
 import { SecurityChallengeError } from '@/services/errors/SecurityChallengeError';
 import { ServiceUnavailableError } from '@/services/errors/ServiceUnavailableError';
@@ -15,11 +16,18 @@ import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { debug, warn } from '@/utils/logger/logger';
 import { setPendingPronoteChallenge } from '@/utils/pronote/challenge';
 import { useAccountStore } from '@/stores/account';
+import { getServiceName } from '@/utils/services/helper';
 
 const REMOVED_SERVICE_ID = 9;
 
 const HOME_SYNC_TTL_MS = 5 * 60 * 1000;
 const lastHomeSync = new Map<string, number>();
+
+const DISCONNECTED_DESCRIPTIONS: Partial<Record<AuthFailureReason, string>> = {
+  credential_lost: "Home_Sync_Disconnected_CredentialLost",
+  account_disabled: "Home_Sync_Disconnected_AccountDisabled",
+  security_challenge: "Home_Sync_Disconnected_SecurityChallenge",
+};
 
 export const useHomeData = () => {
   const alert = useAlert();
@@ -93,7 +101,7 @@ export const useHomeData = () => {
 
     setSyncing(true);
     try {
-      await initializeAccountManager(lastUsedAccount);
+      await initializeAccountManager(lastUsedAccount, { force });
       debug("Refreshed Manager received");
 
       await Promise.all([fetchEDT(), fetchGrades()]);
@@ -166,13 +174,13 @@ export const useHomeData = () => {
         const instanceURL = error?.service?.auth?.additionals?.["instanceURL"] ?? "";
 
         alert.showAlert({
-          title: "Vous avez été déconnecté",
-          message: instanceURL ? `En savoir plus et se reconnecter` : "En savoir plus",
-          description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
+          title: t("Home_Sync_Disconnected_Title"),
+          message: t(instanceURL ? "Home_Sync_LearnMoreRelink" : "Home_Sync_LearnMore"),
+          description: t(DISCONNECTED_DESCRIPTIONS[error.reason] ?? "Home_Sync_Disconnected_Expired"),
           icon: "UserCross",
           color: "#D60046",
           customButton: instanceURL ? {
-            label: "Me reconnecter",
+            label: t("Home_Sync_Relink"),
             showCancelButton: error.service.serviceId === Services.PRONOTE,
             onPress: async () => {
               const ownerAccount = useAccountStore.getState().accounts.find(acc =>
@@ -200,9 +208,11 @@ export const useHomeData = () => {
           technical: error.message
         })
       } else if (error instanceof ServiceUnavailableError) {
+        const suspended = error.reason === "suspended";
+        const service = getServiceName(error.service.serviceId);
         alert.showAlert({
-          title: t("home.unavailable.title", "Pronote temporairement indisponible"),
-          description: t("home.unavailable.description", "Impossible de contacter Pronote pour le moment. Les données affichées correspondent à la dernière synchronisation."),
+          title: t(suspended ? "Home_Sync_Suspended_Title" : "Home_Sync_Unavailable_Title", { service }),
+          description: t(suspended ? "Home_Sync_Suspended_Description" : "Home_Sync_Unavailable_Description", { service }),
           icon: "GlobeCross",
           color: "#FF8C00",
           withoutNavbar: true,

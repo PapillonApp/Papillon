@@ -599,5 +599,17 @@
   "Settings_Tabs_Description": "Masquer des onglets du menu",
   "Settings_Tabs_Title": "Onglets",
   "Grades_Skills_Title": "Skills",
-  "Tab_Search": "Search"
+  "Tab_Search": "Search",
+  "Home_Sync_Relink": "Sign in again",
+  "Home_Sync_LearnMore": "Learn more",
+  "Home_Sync_LearnMoreRelink": "Learn more and sign in again",
+  "Home_Sync_Disconnected_Title": "You have been signed out",
+  "Home_Sync_Disconnected_Expired": "Your session seems to have expired. You can renew it in the settings by linking your account again.",
+  "Home_Sync_Disconnected_CredentialLost": "The connection dropped while your session was being renewed, and it could not be recovered. Sign in again to continue.",
+  "Home_Sync_Disconnected_AccountDisabled": "Your account has been disabled or no longer has access to this service. Contact your school, then sign in again.",
+  "Home_Sync_Disconnected_SecurityChallenge": "The service asks for a security check. Sign in again to complete it.",
+  "Home_Sync_Unavailable_Title": "{{service}} temporarily unavailable",
+  "Home_Sync_Unavailable_Description": "{{service}} can't be reached right now. The data shown comes from the last sync.",
+  "Home_Sync_Suspended_Title": "Connection paused",
+  "Home_Sync_Suspended_Description": "Your school's server is temporarily blocking connections from this network. Try again in a few minutes by pulling down to refresh. Your latest data stays visible."
 }

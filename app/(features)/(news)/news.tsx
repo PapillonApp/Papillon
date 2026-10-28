@@ -1,4 +1,5 @@
 import { useNews } from '@/database/useNews'
+import { allowAllAuthRetries } from '@/services/auth/coordinator'
 import { getManager, subscribeManagerUpdate } from '@/services/shared'
 import Avatar from '@/ui/components/Avatar'
 import ChipButton from '@/ui/components/ChipButton'
@@ -114,6 +115,7 @@ const NewsView = () => {
             refreshing={isManuallyLoading}
             onRefresh={() => {
               setIsManuallyLoading(true)
+              allowAllAuthRetries()
               void fetchNews()
             }}
             progressViewOffset={headerHeight}

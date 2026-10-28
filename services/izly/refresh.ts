@@ -1,25 +1,29 @@
-import { Auth } from "@/stores/account/types";
-import { useAccountStore } from "@/stores/account";
 import { Identification, refresh } from "ezly";
 
-export async function refreshIzlyAccount(accountId: string, credentials: Auth): Promise<{ auth: Auth; session: Identification }> {
-  const session = credentials.session as Identification;
-  const secret = String(credentials.additionals?.["secret"]);
+import { runAuthRefresh } from "@/services/auth/coordinator";
+import { Auth } from "@/stores/account/types";
 
-  await refresh(session, secret);
+export function refreshIzlyAccount(accountId: string, credentials: Auth): Promise<{ auth: Auth; session: Identification }> {
+  return runAuthRefresh(accountId, credentials, { rotatesCredential: false }, async tracker => {
+    const stored = tracker.readCredentials();
+    const session = stored.session as Identification;
+    const secret = String(stored.additionals?.["secret"]);
 
-  const authData: Auth = {
-    session,
-    additionals: {
-      secret,
-    },
-  };
+    tracker.credentialSent(stored);
+    await refresh(session, secret);
 
-  const store = useAccountStore.getState();
-  store.updateServiceAuthData(accountId, authData);
+    const authData: Auth = {
+      session,
+      additionals: {
+        secret,
+      },
+    };
 
-  return {
-    auth: authData,
-    session
-  };
+    tracker.credentialReceived(authData);
+
+    return {
+      auth: authData,
+      session
+    };
+  });
 }
