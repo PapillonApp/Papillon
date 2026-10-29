@@ -56,66 +56,62 @@ export async function getNewsById(id: string): Promise<SharedNews | undefined> {
 export async function addNewsToDatabase(news: SharedNews[]) {
   const db = getDatabaseInstance();
 
-  const itemsToCreate: Array<{ id: string; item: SharedNews }> = [];
-  const itemsToUpdate: Array<{ record: Model; item: SharedNews }> = [];
+  // Keyed on content, not on the service id (it changes between logins); the
+  // Map also drops items the service returns twice.
+  const incoming = new Map(news.map(item => [getNewsRouteId(item), item]));
+  const refreshedAccounts = new Set(news.map(item => item.createdByAccount));
 
-  for (const item of news) {
-    const id = getNewsRouteId(item);
+  // Reading inside the write: concurrent getNews() calls are serialized, so
+  // they can't both miss a record and create it twice.
+  await safeWrite(
+    db,
+    async () => {
+      const records = await db.get<News>('news').query().fetch();
+      const kept = new Map<string, News>();
+      const operations: Model[] = [];
 
-    const existingRecords = await db.get('news')
-      .query(Q.where("newsId", id))
-      .fetch();
+      for (const record of records) {
+        const isDuplicate = kept.has(record.newsId);
+        const isStale = refreshedAccounts.has(record.createdByAccount) && !incoming.has(record.newsId);
 
-    if (existingRecords.length === 0) {
-      itemsToCreate.push({ id, item });
-    } else {
-      itemsToUpdate.push({ record: existingRecords[0], item });
-    }
-  }
+        if (isDuplicate || isStale) {
+          operations.push(record.prepareDestroyPermanently());
+        } else {
+          kept.set(record.newsId, record);
+        }
+      }
 
-  if (itemsToCreate.length > 0 || itemsToUpdate.length > 0) {
-    await safeWrite(
-      db,
-      async () => {
-        const createPromises = itemsToCreate.map(({ id, item }) =>
-          db.get('news').create((record: Model) => {
-            const newsModel = record as News;
-            newsModel.newsId = id;
-            newsModel.title = item.title ?? "";
-            newsModel.createdAt = item.createdAt.getTime();
-            newsModel.acknowledged = item.acknowledged;
-            newsModel.attachments = JSON.stringify(item.attachments ?? []);
-            newsModel.content = item.content ?? "";
-            newsModel.author = item.author ?? "";
-            newsModel.category = item.category ?? "";
-            newsModel.createdByAccount = item.createdByAccount ?? "";
-            newsModel.question = item.question ?? false;
-          })
+      for (const [id, item] of incoming) {
+        const existing = kept.get(id);
+        const apply = (newsModel: News) => {
+          newsModel.newsId = id;
+          newsModel.title = item.title ?? newsModel.title ?? "";
+          newsModel.createdAt = item.createdAt.getTime();
+          newsModel.acknowledged = item.acknowledged;
+          newsModel.attachments = JSON.stringify(item.attachments ?? []);
+          newsModel.content = item.content ?? newsModel.content ?? "";
+          newsModel.author = item.author ?? newsModel.author ?? "";
+          newsModel.category = item.category ?? newsModel.category ?? "";
+          newsModel.createdByAccount = item.createdByAccount ?? newsModel.createdByAccount ?? "";
+          newsModel.question = item.question ?? newsModel.question ?? false;
+        };
+
+        operations.push(
+          existing
+            ? existing.prepareUpdate(model => apply(model as News))
+            : db.get<News>('news').prepareCreate(model => apply(model as News))
         );
+      }
 
-        const updatePromises = itemsToUpdate.map(({ record, item }) =>
-          record.update((model: Model) => {
-            const newsModel = model as News;
-            newsModel.title = item.title ?? newsModel.title;
-            newsModel.createdAt = item.createdAt.getTime();
-            newsModel.acknowledged = item.acknowledged;
-            newsModel.attachments = JSON.stringify(item.attachments ?? []);
-            newsModel.content = item.content ?? newsModel.content;
-            newsModel.author = item.author ?? newsModel.author;
-            newsModel.category = item.category ?? newsModel.category;
-            newsModel.createdByAccount = item.createdByAccount ?? newsModel.createdByAccount;
-            newsModel.question = item.question ?? newsModel.question;
-          })
-        );
-
-        await Promise.all([...createPromises, ...updatePromises]);
-      },
-      10000,
-      `add_news_${itemsToCreate.length}_create_${itemsToUpdate.length}_update`
-    );
-  } else {
-    info(`🍉 No news items to process`);
-  }
+      if (operations.length > 0) {
+        await db.batch(operations);
+      } else {
+        info(`🍉 No news items to process`);
+      }
+    },
+    10000,
+    `add_news_${incoming.size}`
+  );
 }
 
 

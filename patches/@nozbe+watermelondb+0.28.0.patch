@@ -1,4 +1,20 @@
+diff --git a/node_modules/@nozbe/watermelondb/native/android/build.gradle b/node_modules/@nozbe/watermelondb/native/android/build.gradle
+index a45cfe0..0b7e936 100644
+--- a/node_modules/@nozbe/watermelondb/native/android/build.gradle
++++ b/node_modules/@nozbe/watermelondb/native/android/build.gradle
+@@ -26,6 +26,10 @@ android {
+ 
+     namespace "com.nozbe.watermelondb"
+ 
++    buildFeatures {
++        buildConfig true
++    }
++
+     defaultConfig {
+         minSdkVersion getExtOrIntegerDefault('minSdkVersion')
+         targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
 diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.h b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.h
+index c1b7efb..a33c97a 100644
 --- a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.h
 +++ b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.h
 @@ -1,13 +1,15 @@
@@ -20,6 +36,7 @@ diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstall
  
  #ifdef __cplusplus
 diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.mm b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.mm
+index d508249..4dcea51 100644
 --- a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.mm
 +++ b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.mm
 @@ -1,12 +1,19 @@
@@ -34,23 +51,32 @@ diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstall
 +
 +extern "C" void installWatermelonJSI(id bridge) {
 +    if (![bridge respondsToSelector:@selector(runtime)]) {
++        return;
++    }
++
++    void *runtimePtr = [(id<WMJSIRuntimeProvider>)bridge runtime];
++    if (runtimePtr == nullptr) {
          return;
      }
  
 -    jsi::Runtime *runtime = (jsi::Runtime*) bridge.runtime;
 -    assert(runtime != nullptr);
 -    watermelondb::Database::install(runtime);
-+    void *runtimePtr = [(id<WMJSIRuntimeProvider>)bridge runtime];
-+    if (runtimePtr == nullptr) {
-+        return;
-+    }
-+
 +    watermelondb::Database::install((jsi::Runtime *)runtimePtr);
  }
 diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDatabaseBridge.m b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDatabaseBridge.m
+index 8a3ab35..115df20 100644
 --- a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDatabaseBridge.m
 +++ b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDatabaseBridge.m
-@@ -196,7 +196,7 @@
+@@ -1,6 +1,7 @@
+ #import "WMDatabaseBridge.h"
+ #import "WMDatabaseDriver.h"
+ #import "JSIInstaller.h"
++#import <UIKit/UIKit.h>
+ 
+ @implementation WMDatabaseBridge {
+     NSMutableDictionary<NSNumber *, WMDatabaseDriver *> *_connections;
+@@ -196,7 +197,7 @@ + (BOOL) requiresMainQueueSetup
  
  RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(initializeJSI)
  {
@@ -59,17 +85,22 @@ diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDat
      dispatch_sync([self methodQueue], ^{
          installWatermelonJSI(bridge);
      });
-diff --git a/node_modules/@nozbe/watermelondb/native/android/build.gradle b/node_modules/@nozbe/watermelondb/native/android/build.gradle
---- a/node_modules/@nozbe/watermelondb/native/android/build.gradle
-+++ b/node_modules/@nozbe/watermelondb/native/android/build.gradle
-@@ -26,6 +26,10 @@
- 
-     namespace "com.nozbe.watermelondb"
- 
-+    buildFeatures {
-+        buildConfig true
-+    }
-+
-     defaultConfig {
-         minSdkVersion getExtOrIntegerDefault('minSdkVersion')
-         targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+@@ -284,8 +285,18 @@ - (void) withDriver:(nonnull NSNumber *)tag
+     WMDatabaseDriver *driver = _connections[tag];
+     
+     if (driver) {
++        // The database lives in the App Group: iOS kills the app (0xdead10cc) if it gets
++        // suspended while SQLite holds a lock on it, so keep running until the query ends.
++        UIApplication *app = UIApplication.sharedApplication;
++        __block UIBackgroundTaskIdentifier backgroundTask = [app beginBackgroundTaskWithExpirationHandler:^{
++            [app endBackgroundTask:backgroundTask];
++            backgroundTask = UIBackgroundTaskInvalid;
++        }];
+         NSError *error;
+         id result = action(driver, &error);
++        if (backgroundTask != UIBackgroundTaskInvalid) {
++            [app endBackgroundTask:backgroundTask];
++        }
+         if (error) {
+             NSString *errorName = [NSString stringWithFormat:@"db.%s.error", methodName];
+             return reject(errorName, error.localizedDescription, error);

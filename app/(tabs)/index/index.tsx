@@ -1,9 +1,9 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useIsFocused } from "expo-router/react-navigation";
-import { useRouter } from 'expo-router';
+import { type ParamListBase, useIsFocused } from "expo-router/react-navigation";
+import { type NativeStackNavigationProp, useNavigation, useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
-import { FlatList, Image, Platform, RefreshControl, StatusBar, View } from 'react-native';
+import { FlatList, Platform, RefreshControl, StatusBar, View } from 'react-native';
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -31,7 +31,6 @@ import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import Icon from '@/ui/components/Icon';
 import Button from '@/ui/new/Button';
-import { ListTouchable } from '@/ui/new/List';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -44,12 +43,9 @@ const HomeScreen = () => {
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const initializeTransport = useAccountStore((state) => state.initializeTransport);
   const account = accounts.find(a => a.id === lastUsedAccount);
-  const recordTeamModalHomeLaunch = useAccountStore(state => state.recordTeamModalHomeLaunch);
-  const dismissTeamWidget = useAccountStore(state => state.dismissTeamWidget);
   const router = useRouter();
   const welcomeModalSeen = useSettingsStore(state => state.personalization.welcomeModalSeen);
   const mutateSettings = useSettingsStore(state => state.mutateProperty);
-  const countedTeamModalAccount = React.useRef<string | null>(null);
 
   React.useEffect(() => {
     if (accounts.length === 0) {
@@ -62,32 +58,52 @@ const HomeScreen = () => {
     }
   }, [account, accounts.length, router, initializeTransport]);
 
-  const consentPrompted = React.useRef(false);
+  // iOS refuses a modal during a transition: wait for the tabs to be on screen.
+  const navigation = useNavigation();
+  const [tabsAppeared, setTabsAppeared] = React.useState(false);
 
-  React.useEffect(() => {
-    // Only ask for consent once the user lands on home with an account (i.e. after onboarding)
-    if (!focused || accounts.length === 0 || consentPrompted.current) {
-      return;
+  React.useLayoutEffect(() => {
+    let rootNavigation = navigation;
+    while (!rootNavigation.getState()?.routes.some(route => route.name === "(tabs)")) {
+      const parent = rootNavigation.getParent();
+      if (!parent) return;
+      rootNavigation = parent;
     }
 
-    consentPrompted.current = true;
-    checkConsent().then(consent => {
-      if (!consent.given) {
-        router.push("../consent");
-      }
+    return (rootNavigation as NativeStackNavigationProp<ParamListBase>).addListener("transitionEnd", event => {
+      if (!event.data.closing) setTabsAppeared(true);
     });
-  }, [focused, accounts.length, router]);
+  }, [navigation]);
+
+  const consentChecked = React.useRef(false);
 
   React.useEffect(() => {
-    if (!account?.id || countedTeamModalAccount.current === account.id) {
+    if (!focused || !tabsAppeared || !account) {
       return;
     }
 
-    countedTeamModalAccount.current = account.id;
-    if (recordTeamModalHomeLaunch(account.id)) {
-      router.navigate("/(modals)/team");
-    }
-  }, [account?.id, recordTeamModalHomeLaunch, router]);
+    let cancelled = false;
+    (async () => {
+      if (!consentChecked.current) {
+        const consent = await checkConsent();
+        if (cancelled) return;
+        consentChecked.current = true;
+        if (!consent.given) {
+          router.push("../consent");
+          return;
+        }
+      }
+
+      if (!welcomeModalSeen) {
+        mutateSettings("personalization", { welcomeModalSeen: true });
+        router.navigate("/(modals)/welcome");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [focused, tabsAppeared, account, welcomeModalSeen, mutateSettings, router]);
 
   const { syncing, refresh } = useHomeData();
   const { courses } = useTimetableWidgetData();
@@ -114,54 +130,7 @@ const HomeScreen = () => {
     () => <GradesWidget history={history} averages={averages} />,
     [history, averages]
   );
-  const renderTeam = React.useCallback(
-    () => (
-      <ListTouchable onPress={() => router.navigate("/(modals)/team")} style={{ width: "100%", borderBottomLeftRadius: 12, borderBottomRightRadius: 12, overflow: "hidden" }}>
-      <Stack direction="horizontal" hAlign='center'>
-        <MaskedView
-          style={{ width: "35%", height: 110 }}
-          maskElement={
-            <LinearGradient
-              colors={["#000", "#0000"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ width: "100%", height: "100%" }}
-            />
-          }
-        >
-        <Image
-          source={require('@/assets/images/team.jpg')}
-          style={{
-            width: "100%",
-            height: "100%",
-            resizeMode: "cover",
-          }}
-        />
-        </MaskedView>
-      <View style={{ flex: 1, paddingRight: 16, justifyContent: "center", gap: 3 }}>
-        <Typography variant="body1" weight="bold" color="text">
-          Rejoignez la communauté !
-        </Typography>
-        <Typography variant="body2" style={{ opacity: 0.5 }}>
-          Suivez les nouveautés et fonctionnalités développés par nos soins.
-        </Typography>
-      </View>
-      </Stack>
-      </ListTouchable>
-    ),
-    []
-  );
-
   const data: HomeWidgetItem[] = React.useMemo(() => [
-    {
-      icon: <Papicons name="User" />,
-      title: "Derrière Papillon",
-      hidden: !account?.teamModal?.shown || account.teamModal.widgetDismissed === true,
-      onDismiss: account
-        ? () => dismissTeamWidget(account.id)
-        : undefined,
-      render: renderTeam,
-    },
     {
       icon: <Papicons name={"Calendar"} />,
       title: timetableTitle,
@@ -176,22 +145,13 @@ const HomeScreen = () => {
       hidden: gradesWidgetHidden,
       render: renderGrades
     }
-  ], [account, courses.length, dismissTeamWidget, gradesWidgetHidden, renderGrades, renderTeam, renderTimeTable, timetableTitle]);
+  ], [courses.length, gradesWidgetHidden, renderGrades, renderTimeTable, timetableTitle]);
 
   const visibleWidgets = React.useMemo(
     () => data.filter(item => !item.hidden && (!item.dev || __DEV__)),
     [data]
   );
   const allWidgetsHidden = visibleWidgets.length === 0;
-
-  React.useEffect(() => {
-    if (!account || welcomeModalSeen || !focused) {
-      return;
-    }
-
-    mutateSettings("personalization", { welcomeModalSeen: true });
-    router.navigate("/(modals)/welcome");
-  }, [account, focused, mutateSettings, router, welcomeModalSeen]);
 
   return (
     <>

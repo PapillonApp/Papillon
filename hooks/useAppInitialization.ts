@@ -18,6 +18,7 @@ import { FONT_CONFIG } from '@/constants/LayoutScreenOptions';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({ duration: 350, fade: true });
 
 export function useAppInitialization() {
   const [fontsLoaded, fontsError] = useFonts(FONT_CONFIG);
@@ -145,7 +146,6 @@ export function useAppInitialization() {
   useEffect(handleError, [handleError]);
 
   return {
-    isAppReady: fontsLoaded,
     fontsLoaded,
     fontsError
   };

@@ -44,7 +44,7 @@ export default function SettingsIndex() {
 
   const settingsStore = useSettingsStore(state => state.personalization);
   const currentVersion = packagejson.version;
-  const releaseNotesUrl = `https://papillon.bzh/release-notes/${currentVersion}`;
+  const releaseNotesUrl = "https://papillon.bzh/blog";
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
