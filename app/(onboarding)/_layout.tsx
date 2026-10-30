@@ -90,6 +90,10 @@ export default function OnboardingLayout() {
           options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen
+          name="services/cahierDePrepa"
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
+        />
+        <Stack.Screen
           name="services/appscho"
           options={{ headerShown: false, title: "" }}
         />

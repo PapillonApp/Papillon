@@ -123,6 +123,7 @@ export interface Auth {
 
 export enum Services {
   PRONOTE,
+  CAHIER_DE_PREPA,
   SKOLENGO,
   ECOLEDIRECTE,
   TURBOSELF,
