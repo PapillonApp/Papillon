@@ -53,6 +53,20 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       color: 'light' as const,
     },
     {
+      name: "cahier-de-prepa",
+      title: t("ONBOARDING_SERVICE_CAHIER_DE_PREPA_PRONOTE"),
+      type: ["univ"],
+      image: require("@/assets/images/cahier_de_prepa.png"),
+      onPress: () => {
+        redirect({
+          pathname: "./services/cahierDePrepa/locate",
+          options: { service: Services.CAHIER_DE_PREPA },
+        });
+      },
+      variant: "service" as const,
+      color: "light" as const,
+    },
+    {
       name: "ed",
       route: "ed",
       title: t("ONBOARDING_SERVICE_ED"),
