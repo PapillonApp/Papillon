@@ -3,6 +3,7 @@ import { Course as SharedCourse, CourseType } from '@/services/shared/timetable'
 import { ICalEvent } from './ical';
 import { parseADEDescription } from './parsers/ade-parser';
 import { isHyperplanningDescription,parseHyperplanningDescription } from './parsers/hyperplanning-parser';
+import { parseMMILimousinIcal } from './parsers/schools/iutlimousin_mmi_parser';
 import { parseUR1Ical } from './parsers/schools/univrennes1_parser';
 
 interface ConversionContext {
@@ -30,7 +31,8 @@ const DEFAULT_EVENT_DATA: ParsedEventData = {
 };
 
 const SCHOOL_PARSERS = {
-  "UNIVRENNES1": parseUR1Ical
+  "UNIVRENNES1": parseUR1Ical,
+  "UNILIMMMI": parseMMILimousinIcal
 }
 
 function parseEventData(event: ICalEvent, isADE: boolean, isHyperplanning: boolean, intelligentParsing: boolean, isSchool: boolean, schoolName?: string): ParsedEventData {

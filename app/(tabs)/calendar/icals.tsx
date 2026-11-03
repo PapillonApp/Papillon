@@ -41,7 +41,7 @@ export default function TabOneScreen() {
 
     try {
       const parsedData = await fetchAndParseICal(normalizedUrl);
-      const shouldEnableParsing = (parsedData.isADE || parsedData.isHyperplanning) ? true : intelligentParsing;
+      const shouldEnableParsing = (parsedData.isADE || parsedData.isHyperplanning || parsedData.isSchool) ? true : intelligentParsing;
 
       const finalUrl = parsedData.isADE ? enhanceADEUrl(normalizedUrl) : normalizedUrl;
 
