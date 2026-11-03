@@ -1,7 +1,13 @@
-const SCHOOL_LIST = [
+const SCHOOL_LIST: { domain: string; name: string; prodId?: string }[] = [
   {
     domain: "planning.univ-rennes1.fr",
     name: "UNIVRENNES1"
+  },
+  {
+    // BUT MMI de l'IUT du Limousin (emploi du temps uniquement)
+    domain: "mmi.unilim.fr",
+    prodId: "-//MMI//Plannings//FR",
+    name: "UNILIMMMI"
   }
 ];
 
@@ -26,7 +32,9 @@ export function detectProvider(prodId?: string, url?: string): { isADE: boolean;
   const isADE = Boolean(prodId?.toUpperCase().includes('ADE'));
   const isHyperplanning = Boolean(prodId?.toUpperCase().includes('HYPERPLANNING'));
 
-  const school = SCHOOL_LIST.find((school) => url?.includes(school.domain));
+  const school = SCHOOL_LIST.find((school) =>
+    url?.includes(school.domain) || (school.prodId !== undefined && prodId === school.prodId)
+  );
   const isSchool = Boolean(school);
 
   return { isADE, isHyperplanning, provider, isSchool, schoolName: school?.name };
