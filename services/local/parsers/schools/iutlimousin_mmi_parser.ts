@@ -18,10 +18,10 @@ const GROUPS_TOKEN = /^BUT\d-G\d[\w.-]*$/;
 
 // Parser des plannings iCal du BUT MMI de l'IUT du Limousin.
 // Exemples de SUMMARY (après désérialisation de "\,") :
-//   "R3.DWeb-DI.13 TD MORA Frédéric, BUT2-G3"
+//   "R3.DWeb-DI.13 TD NOM Prénom, BUT2-G3"
 //   "SAÉ 4.Crea.01 Autonomie NON AFFECTE, BUT2-G2"
-//   "PORTFOLIO S1 TD LAVEFVE Valérie, BUT1-G3.BUT1-G4"
-//   "[ANNULE] R1.10 TD BEVERINI Johan, BUT1-G1.BUT1-G2"
+//   "PORTFOLIO S1 TD NOM Prénom, BUT1-G3.BUT1-G4"
+//   "[ANNULE] R1.10 TD NOM Prénom, BUT1-G1.BUT1-G2"
 //   "R5.04 TD BUT3-G3"            <- pas de prof, pas de virgule
 //   "Trombinoscope, BUT1-G1.BUT1-G2"
 export function parseMMILimousinIcal(event: ICalEvent): ParsedEventData | null {
