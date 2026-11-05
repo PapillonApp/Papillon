@@ -695,7 +695,7 @@ export class AccountManager {
           result.status === "fulfilled" ? result.value : []
         );
 
-        if (options?.saveToCache && failures.length === 0) {
+        if (options?.saveToCache && combinedResult.length > 0) {
           await options.saveToCache(combinedResult);
         }
 

@@ -76,13 +76,16 @@ const GradesView = () => {
   const { subjects, history, averages, isAverageServiceProvided, refresh: refreshGrades, loading: loadingGrades, error: gradesError, failures: gradesFailures } = useGradesData(currentPeriod);
 
   const loading = loadingPeriods || loadingGrades;
-  const failure = gradesFailures[0] ?? periodsFailures[0];
-  const hasError = Boolean(gradesError || periodsError || failure);
+  const relevantFailures = (gradesFailures.length > 0 ? gradesFailures : periodsFailures).filter(f =>
+    !currentPeriod || !f.service || f.service.id === currentPeriod.createdByAccount
+  );
+  const failure = relevantFailures[0];
+  const hasError = Boolean(gradesError || periodsError || (failure && periods.length === 0));
 
   useLoadErrorAlert({
     subject: "tes notes",
     error: gradesError ?? periodsError,
-    failures: gradesFailures.length > 0 ? gradesFailures : periodsFailures,
+    failures: relevantFailures,
     hasData: subjects.length > 0,
   });
 
