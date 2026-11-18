@@ -4,8 +4,7 @@ import { useTimetable } from '@/database/useTimetable';
 import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
 import { useManagerSubscription } from '@/hooks/useManagerSubscription';
 import { allowAllAuthRetries } from "@/services/auth/coordinator";
-import type { AccountManager } from "@/services/shared";
-import { getManager } from "@/services/shared";
+import { type AccountManager, getManager } from "@/services/shared";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
 import { useAccountStore } from '@/stores/account';
 import { debug, log } from "@/utils/logger/logger";
@@ -23,6 +22,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
   const fetchedWeeks = useRef<Set<string>>(new Set());
 
   const [manager, setManager] = useState(() => getManager(true));
+  const [managerEpoch, setManagerEpoch] = useState(0);
 
   // Read through selectors: switching accounts has to rebuild `services`, or the
   // filter below would keep matching the previous account and hide every course.
@@ -66,7 +66,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
           const targetDate = new Date(safeDate);
           targetDate.setDate(targetDate.getDate() + (week - targetWeekNumber) * 7);
           const year = targetDate.getFullYear();
-          const key = `${year}-${week}`;
+          const key = `${lastUsedAccount ?? "none"}:${year}-${week}`;
           return { week, targetDate, key };
         });
 
@@ -76,14 +76,14 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
 
         if (toFetch.length > 0) {
           await Promise.all(
-            toFetch.map((c) => {
-              return manager.getWeeklyTimetable(c.week, c.targetDate)
-            })
+            toFetch.map((c) => manager.getWeeklyTimetable(c.week, c.targetDate))
           );
 
           setRefresh(prev => prev + 1);
-          for (const candidate of toFetch) {
-            fetchedWeeks.current.add(candidate.key);
+          if (manager.hasClients()) {
+            for (const candidate of toFetch) {
+              fetchedWeeks.current.add(candidate.key);
+            }
           }
         }
 
@@ -101,14 +101,15 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
         fetchTimeoutRef.current = null;
       }
     }, 100);
-  }, [manager, safeDate]);
+  }, [lastUsedAccount, manager, safeDate]);
 
   useEffect(() => {
     fetchWeeklyTimetable(weekNumber);
-  }, [weekNumber, fetchWeeklyTimetable]);
+  }, [weekNumber, managerEpoch, fetchWeeklyTimetable]);
 
   const handleManager = useCallback((updatedManager: AccountManager) => {
     setManager(updatedManager);
+    setManagerEpoch(prev => prev + 1);
     fetchedWeeks.current.clear();
     setError(null);
   }, []);
