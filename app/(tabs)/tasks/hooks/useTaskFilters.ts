@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+
 import { Homework } from "@/services/shared/homework";
 import { getSubjectName } from "@/utils/subjects/name";
 
@@ -35,13 +36,14 @@ export const buildHomeworkSections = (
 ): HomeworkSection[] => {
   const uniqueIds = new Set<string>();
   let data = homeworks.filter(hw => {
-    if (hw.id) {
-      if (!uniqueIds.has(hw.id)) {
-        uniqueIds.add(hw.id);
-        return true;
-      }
+    const dedupeKey =
+      hw.id && hw.id !== "undefined"
+        ? `id:${hw.id}`
+        : `fallback:${hw.subject}:${hw.content}:${new Date(hw.dueDate).toDateString()}`;
+    if (uniqueIds.has(dedupeKey)) {
       return false;
     }
+    uniqueIds.add(dedupeKey);
     return true;
   });
 
