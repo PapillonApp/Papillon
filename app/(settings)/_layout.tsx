@@ -1,11 +1,11 @@
 import { Stack } from "expo-router";
+import { t } from "i18next";
 import React from "react";
 import { Platform, StatusBar } from "react-native";
 
+import { useAndroidHeaderProps } from "@/components/AndroidHeaderBackground";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useScreenOptions } from "@/utils/theme/ScreenOptions";
-import { t } from "i18next";
-import { useAndroidHeaderProps } from "@/components/AndroidHeaderBackground";
 
 export default function Layout() {
   const screenOptions = useScreenOptions();
@@ -135,14 +135,6 @@ export default function Layout() {
             headerTitle: t("Settings_Transport_Title"),
           }}
         />*/}
-        <Stack.Screen
-          name="features"
-          options={{
-            headerTitle: t("Settings_Features_Title"),
-            headerBackButtonDisplayMode: "minimal",
-            headerLargeTitle: false,
-          }}
-        />
       </Stack>
     </>
   );
