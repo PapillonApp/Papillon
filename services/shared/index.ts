@@ -23,8 +23,8 @@ import {
   getRecipientsFromCache,
 } from "@/database/useChat";
 import {
-  cachePeriodGrades,
   addPeriodsToDatabase,
+  cachePeriodGrades,
   getCachedPeriodGrades,
   getPeriodsFromCache,
 } from "@/database/useGrades";
@@ -45,6 +45,7 @@ import {
   CanteenHistoryItem,
   CanteenMenu,
   QRCode,
+  QRType,
 } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
@@ -521,16 +522,36 @@ export class AccountManager {
     );
   }
 
+  private getStoredCanteenQRCode(clientId: string): string {
+    const service = this.account.services.find(s => s.id === clientId);
+    const cardNumber = service?.auth.additionals?.["cardNumber"];
+    return cardNumber !== undefined && cardNumber !== null ? String(cardNumber) : "";
+  }
+
   async getCanteenQRCodes(clientId: string): Promise<QRCode> {
     return await this.fetchData(
       Capabilities.CANTEEN_QRCODE,
-      async client =>
-        client.getCanteenQRCodes
-          ? await client.getCanteenQRCodes()
-          : error("getCanteenQRCodes not found"),
+      async client => {
+        if (!client.getCanteenQRCodes) {
+          throw error("getCanteenQRCodes not found");
+        }
+        const qr = await client.getCanteenQRCodes();
+        if (!qr.data) {
+          const fallbackData = this.getStoredCanteenQRCode(clientId);
+          if (fallbackData) {
+            return { ...qr, data: fallbackData };
+          }
+        }
+        return qr;
+      },
       {
         multiple: false,
         clientId,
+        fallback: async () => ({
+          type: QRType.QRCode,
+          data: this.getStoredCanteenQRCode(clientId),
+          createdByAccount: clientId,
+        }),
       }
     );
   }
