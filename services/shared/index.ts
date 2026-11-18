@@ -23,8 +23,8 @@ import {
   getRecipientsFromCache,
 } from "@/database/useChat";
 import {
-  cachePeriodGrades,
   addPeriodsToDatabase,
+  cachePeriodGrades,
   getCachedPeriodGrades,
   getPeriodsFromCache,
 } from "@/database/useGrades";
@@ -224,6 +224,11 @@ export class AccountManager {
   }
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
+    const homeworkServiceIds = Object.entries(this.clients)
+      .filter(([, client]) =>
+        client.capabilities.includes(Capabilities.HOMEWORK)
+      )
+      .map(([id]) => id);
     return await this.fetchData(
       Capabilities.HOMEWORK,
       async client =>
@@ -232,7 +237,7 @@ export class AccountManager {
         multiple: true,
         fallback: async () => getHomeworksFromCache(weekNumber),
         saveToCache: async (data: Homework[]) => {
-          await addHomeworkToDatabase(data);
+          await addHomeworkToDatabase(data, weekNumber, homeworkServiceIds);
         },
       }
     );

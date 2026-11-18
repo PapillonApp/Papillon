@@ -1,4 +1,5 @@
 import { Model, Q } from "@nozbe/watermelondb";
+import { endOfISOWeek, getISOWeek, setISOWeek, startOfISOWeek } from "date-fns";
 import { useEffect, useState } from "react";
 
 import { Attachment } from "@/services/shared/attachment";
@@ -144,18 +145,33 @@ export async function getHomeworksFromCache(
   }
 }
 
-export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
-  const db = getDatabaseInstance();
+export async function addHomeworkToDatabase(
+  homeworks: SharedHomework[],
+  targetWeekNumber?: number,
+  refreshedAccounts?: string[]
+) {
+  const weekNumber =
+    targetWeekNumber ??
+    (homeworks.length > 0
+      ? getWeekNumberFromDate(homeworks[0].dueDate)
+      : undefined);
 
-  const weekNumber = getWeekNumberFromDate(homeworks[0].dueDate);
+  if (weekNumber === undefined) {
+    return;
+  }
+
+  const db = getDatabaseInstance();
   const { start, end } = getDateRangeOfWeek(weekNumber);
-  const dbHomeworks = await db.get<Homework>("homework")
+  const dbHomeworks = await db
+    .get<Homework>("homework")
     .query(Q.where("dueDate", Q.between(start.getTime(), end.getTime())))
     .fetch();
 
   const homeworkIds: string[] = [];
   const refreshedServiceIds = new Set(
-    homeworks.map(homework => homework.createdByAccount)
+    refreshedAccounts && refreshedAccounts.length > 0
+      ? refreshedAccounts
+      : homeworks.map(homework => homework.createdByAccount)
   );
   for (const hw of homeworks) {
     const oldId = generateId(hw.subject + hw.content + hw.createdByAccount);
@@ -169,12 +185,23 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   const homeworksToDelete = dbHomeworks.filter(
     dbHomework =>
       !dbHomework.custom &&
-      refreshedServiceIds.has(dbHomework.createdByAccount) &&
+      (refreshedServiceIds.size > 0
+        ? refreshedServiceIds.has(dbHomework.createdByAccount)
+        : homeworks.length === 0) &&
       !homeworkIds.includes(dbHomework.homeworkId)
   );
 
-  for (const homework of homeworksToDelete) {
-    await homework.markAsDeleted();
+  if (homeworksToDelete.length > 0) {
+    await safeWrite(
+      db,
+      async () => {
+        for (const homework of homeworksToDelete) {
+          await homework.markAsDeleted();
+        }
+      },
+      10000,
+      "deleteStaleHomework"
+    );
   }
 
   for (const hw of homeworks) {
@@ -190,8 +217,17 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
       .query(Q.where("homeworkId", oldId))
       .fetch();
 
-    for (const oldRecord of oldExisting) {
-      await oldRecord.markAsDeleted();
+    if (oldId !== id && oldExisting.length > 0) {
+      await safeWrite(
+        db,
+        async () => {
+          for (const oldRecord of oldExisting) {
+            await oldRecord.markAsDeleted();
+          }
+        },
+        10000,
+        "deleteOldHomework"
+      );
     }
 
     if (existing.length === 0) {
@@ -364,17 +400,11 @@ export function getDateRangeOfWeek(
   weekNumber: number,
   year = new Date().getFullYear()
 ) {
-  const janFirst = new Date(year, 0, 1);
-  const daysOffset = (weekNumber - 1) * 7;
-  const weekStart = new Date(janFirst.setDate(janFirst.getDate() + daysOffset));
-  const day = weekStart.getDay();
-  const diff = weekStart.getDate() - day + (day <= 4 ? 1 : 8);
-  const start = new Date(weekStart.setDate(diff));
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
-  return { start, end };
+  const reference = setISOWeek(new Date(year, 0, 4), weekNumber);
+  return {
+    start: startOfISOWeek(reference),
+    end: endOfISOWeek(reference),
+  };
 }
 
 export function parseJsonArray(s: string): unknown[] {
@@ -387,9 +417,5 @@ export function parseJsonArray(s: string): unknown[] {
 }
 
 export function getWeekNumberFromDate(date: Date): number {
-  const startOfYear = new Date(date.getFullYear(), 0, 1);
-  const days = Math.floor(
-    (date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  return Math.ceil((days + startOfYear.getDay() + 1) / 7);
+  return getISOWeek(date);
 }

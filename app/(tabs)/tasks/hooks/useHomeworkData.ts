@@ -1,18 +1,18 @@
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useAccountStore } from "@/stores/account";
-import { allowAllAuthRetries } from "@/services/auth/coordinator";
-import type { AccountManager } from "@/services/shared";
-import { getManager } from "@/services/shared";
-import { Homework } from "@/services/shared/homework";
-import { useHomeworkForWeeks, updateHomeworkIsDone } from "@/database/useHomework";
-import { useLoadErrorAlert } from "@/hooks/useLoadErrorAlert";
-import { useManagerSubscription } from "@/hooks/useManagerSubscription";
-import { Capabilities, ServiceFailure } from "@/services/shared/types";
-import { generateId } from "@/utils/generateId";
-import { error } from '@/utils/logger/logger';
-import { trackAdvancedEvent } from '@/utils/logger/analytics';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
 import { useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { updateHomeworkIsDone, useHomeworkForWeeks } from "@/database/useHomework";
+import { useLoadErrorAlert } from "@/hooks/useLoadErrorAlert";
+import { useManagerSubscription } from "@/hooks/useManagerSubscription";
+import { allowAllAuthRetries } from "@/services/auth/coordinator";
+import { type AccountManager, getManager } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
+import { Capabilities, ServiceFailure } from "@/services/shared/types";
+import { useAccountStore } from "@/stores/account";
+import { generateId } from "@/utils/generateId";
+import { trackAdvancedEvent } from '@/utils/logger/analytics';
+import { error } from '@/utils/logger/logger';
 
 // Cache reads are coalesced over this window: fetching five weeks would
 // otherwise re-query every one of them five times over.
@@ -56,6 +56,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   const [refreshingWeek, setRefreshingWeek] = useState<number | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [homework, setHomework] = useState<Record<string, Homework>>({});
+  const [fetchedByWeek, setFetchedByWeek] = useState<Record<number, Homework[]>>({});
 
   // Read through selectors: switching accounts has to rebuild `services`, or the
   // filter below would keep matching the previous account and hide every task.
@@ -79,23 +80,57 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     const previousWeeks = weekCache.current;
     const nextWeeks: Record<number, Homework[]> = {};
 
-    for (const [key, list] of Object.entries(cacheByWeek)) {
-      const week = Number(key);
-      const items = list
-        // Custom tasks belong to the account itself rather than to one of its
-        // services.
-        .filter(h => h.custom ? h.createdByAccount === account?.id : services.includes(h.createdByAccount))
-        .map(cached => {
-          // The cache owns isDone: the overlay dates from the last fetch, and a
-          // task can be ticked elsewhere since (e.g. from its detail screen).
-          const overlay = cached.id ? homework[cached.id] : undefined;
-          const merged = overlay ? { ...overlay, isDone: cached.isDone } : cached;
-          const id = merged.id ?? homeworkKey(merged);
-          const previous = previousItems.get(id);
-          const item = previous && isSameHomework(previous, merged) ? previous : merged;
-          nextItems.set(id, item);
-          return item;
-        });
+    const isVisibleForAccount = (h: Homework) =>
+      h.custom ? h.createdByAccount === account?.id : services.includes(h.createdByAccount);
+
+    const allWeeks = new Set([
+      ...Object.keys(cacheByWeek).map(Number),
+      ...Object.keys(fetchedByWeek).map(Number),
+    ]);
+
+    for (const week of allWeeks) {
+      const cachedList = (cacheByWeek[week] ?? []).filter(isVisibleForAccount);
+      const fetchedList = (fetchedByWeek[week] ?? []).filter(isVisibleForAccount);
+      const seenKeys = new Set<string>();
+      const items: Homework[] = [];
+
+      for (const cached of cachedList) {
+        // The cache owns isDone: the overlay dates from the last fetch, and a
+        // task can be ticked elsewhere since (e.g. from its detail screen).
+        const overlay = cached.id ? homework[cached.id] : undefined;
+        const merged = overlay ? { ...overlay, isDone: cached.isDone } : cached;
+        const id = merged.id ?? homeworkKey(merged);
+        const routeKey = homeworkKey(merged);
+        seenKeys.add(routeKey);
+        if (merged.id) {
+          seenKeys.add(merged.id);
+        }
+        const previous = previousItems.get(id);
+        const item = previous && isSameHomework(previous, merged) ? previous : merged;
+        nextItems.set(id, item);
+        items.push(item);
+      }
+
+      for (const hw of fetchedList) {
+        const routeKey = homeworkKey(hw);
+        if (seenKeys.has(routeKey) || (hw.id && seenKeys.has(hw.id))) {
+          continue;
+        }
+        seenKeys.add(routeKey);
+        if (hw.id) {
+          seenKeys.add(hw.id);
+        }
+        const candidate = homework[routeKey] ?? { ...hw, id: hw.id ?? routeKey };
+        const id = candidate.id ?? routeKey;
+        const previous = previousItems.get(id);
+        const item = previous && isSameHomework(previous, candidate) ? previous : candidate;
+        nextItems.set(id, item);
+        items.push(item);
+      }
+
+      items.sort(
+        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+      );
 
       const previous = previousWeeks[week];
       nextWeeks[week] = previous && isSameList(previous, items) ? previous : items;
@@ -104,7 +139,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     itemCache.current = nextItems;
     weekCache.current = nextWeeks;
     return nextWeeks;
-  }, [cacheByWeek, homework, services, account?.id]);
+  }, [cacheByWeek, fetchedByWeek, homework, services, account?.id]);
 
   // A week is fetched from the service once per session; `inFlightWeeks` keeps a
   // swipe back and forth from queueing the same request twice.
@@ -148,6 +183,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
           fetched[id] = { ...hw, id: hw.id ?? id };
         }
         fetchedWeeks.current.add(week);
+        setFetchedByWeek(prev => ({ ...prev, [week]: result }));
         setHomework(prev => ({ ...prev, ...fetched }));
         scheduleRefresh();
         // The manager falls back to the cache rather than throwing, so a service
@@ -181,6 +217,8 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
     managerRef.current = updatedManager;
     setManager(updatedManager);
     fetchedWeeks.current.clear();
+    setFetchedByWeek({});
+    setHomework({});
     setLoadError(null);
     for (const week of weeksRef.current) {
       fetchWeek(week, updatedManager, true);
