@@ -30,10 +30,10 @@ export function AppProviders({ children }: AppProvidersProps) {
 
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
-    const defaultTheme = createDefaultTheme(useMaterialYou, color.mainColor);
-    const darkTheme = createDarkTheme(useMaterialYou, color.mainColor);
-    const newScheme = selectedTheme === 'auto' ? (colorScheme === 'dark' ? darkTheme : defaultTheme) : (selectedTheme === 'dark' ? darkTheme : defaultTheme);
-    return newScheme;
+    const isDark = selectedTheme === 'auto' ? colorScheme === 'dark' : selectedTheme === 'dark';
+    return isDark
+      ? createDarkTheme(useMaterialYou, color.mainColor)
+      : createDefaultTheme(useMaterialYou, color.mainColor);
   }, [colorScheme, color, selectedTheme, useMaterialYou]);
 
   // Memoize background color to prevent string recreation
