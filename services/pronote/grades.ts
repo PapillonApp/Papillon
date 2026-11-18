@@ -10,7 +10,16 @@ import {
 import { AttachmentType } from "@/services/shared/attachment";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
 import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
-import { error } from "@/utils/logger/logger";
+import { error, warn } from "@/utils/logger/logger";
+
+function emptyPeriodGrades(accountId: string): PeriodGrades {
+  return {
+    studentOverall: { value: 0, disabled: true, status: "Inconnu" },
+    classAverage: { value: 0, disabled: true, status: "Inconnu" },
+    subjects: [],
+    createdByAccount: accountId,
+  };
+}
 
 /**
  * Fetches grades from PRONOTE for a specified period.
@@ -21,17 +30,19 @@ import { error } from "@/utils/logger/logger";
  */
 export async function fetchPronoteGrades(session: SessionHandle, accountId: string, period: Period): Promise<PeriodGrades> {
   if (!session) {
-    error("Session is undefined", "fetchPronoteGrades");
+    throw error("Session is undefined", "fetchPronoteGrades");
   }
 
-  const gradeTab = session.user.resources[0].tabs.get(TabLocation.Grades);
+  const gradeTab = session.user.resources[0]?.tabs.get(TabLocation.Grades);
   if (!gradeTab) {
-    error("Grades tab not found in session", "fetchPronoteGrades");
+    warn("Grades tab not found in session", "fetchPronoteGrades");
+    return emptyPeriodGrades(accountId);
   }
 
-  const pawnotePeriod = gradeTab.periods.find(p => p.name === period.name);
+  const pawnotePeriod = (gradeTab.periods ?? []).find(p => p.name === period.name || p.id === period.id);
   if (!pawnotePeriod) {
-    error(`Period "${period}" not found in grades tab`, "fetchPronoteGrades");
+    warn(`Period "${period.name}" not found in grades tab`, "fetchPronoteGrades");
+    return emptyPeriodGrades(accountId);
   }
 
   const grades = await gradesOverview(session, pawnotePeriod);
@@ -51,12 +62,17 @@ export async function fetchPronoteGrades(session: SessionHandle, accountId: stri
  * @return {Promise<Array<Period>>} - A promise that resolves to an array of grade periods.
  */
 export async function fetchPronoteGradePeriods(session: SessionHandle, accountId: string): Promise<Period[]> {
-  const accountTab = session.user.resources[0].tabs.get(TabLocation.Grades);
-  if (!accountTab) {
-    error("Grades tab not found in session", "fetchPronotePeriods");
+  if (!session) {
+    throw error("Session is undefined", "fetchPronoteGradePeriods");
   }
 
-  return accountTab.periods.map(p => ({
+  const accountTab = session.user.resources[0]?.tabs.get(TabLocation.Grades);
+  if (!accountTab) {
+    warn("Grades tab not found in session", "fetchPronoteGradePeriods");
+    return [];
+  }
+
+  return (accountTab.periods ?? []).map(p => ({
     id: p.id,
     name: p.name,
     start: p.startDate,
@@ -72,8 +88,8 @@ export async function fetchPronoteGradePeriods(session: SessionHandle, accountId
  */
 function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] {
   const subjects: Subject[] = [];
-  
-  const allMappedGrades: Grade[] = grades.grades.map(g => ({
+
+  const allMappedGrades: Grade[] = (grades.grades ?? []).map(g => ({
     id: g.id,
     subjectId: g.subject.id,
     subjectName: g.subject.name,
@@ -100,7 +116,7 @@ function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] 
     createdByAccount: accountId
   }));
 
-  for (const average of grades.subjectsAverages) {
+  for (const average of grades.subjectsAverages ?? []) {
     const subjectId = average.subject.id;
 
     const subjectGrades = allMappedGrades.filter(g => g.subjectId === subjectId);

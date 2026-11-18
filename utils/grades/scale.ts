@@ -66,7 +66,7 @@ export const formatGradeScoreForDisplay = (
   outOf: { value: number } | undefined,
   scale: GradeDisplayScale,
 ): { value: string; denominator: string } => {
-  if (!score || score.disabled || typeof score.value !== "number") {
+  if (!score || score.disabled || typeof score.value !== "number" || !Number.isFinite(score.value)) {
     return { value: score?.status ?? "N/A", denominator: "" };
   }
 

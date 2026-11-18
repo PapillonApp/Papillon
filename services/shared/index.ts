@@ -23,8 +23,8 @@ import {
   getRecipientsFromCache,
 } from "@/database/useChat";
 import {
-  cachePeriodGrades,
   addPeriodsToDatabase,
+  cachePeriodGrades,
   getCachedPeriodGrades,
   getPeriodsFromCache,
 } from "@/database/useGrades";
@@ -274,6 +274,13 @@ export class AccountManager {
     );
   }
 
+  private async getAccountPeriodsFromCache(): Promise<Period[]> {
+    const cachedPeriods = await getPeriodsFromCache();
+    return cachedPeriods.filter(period =>
+      this.account.services.some(service => service.id === period.createdByAccount)
+    );
+  }
+
   async getGradesPeriods(): Promise<Period[]> {
     return await this.fetchData(
       Capabilities.GRADES,
@@ -281,7 +288,7 @@ export class AccountManager {
         client.getGradesPeriods ? await client.getGradesPeriods() : [],
       {
         multiple: true,
-        fallback: async () => getPeriodsFromCache(),
+        fallback: async () => this.getAccountPeriodsFromCache(),
         saveToCache: async (data: Period[]) => {
           await addPeriodsToDatabase(data);
         },
@@ -318,7 +325,7 @@ export class AccountManager {
         client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
       {
         multiple: true,
-        fallback: async () => getPeriodsFromCache(),
+        fallback: async () => this.getAccountPeriodsFromCache(),
         saveToCache: async (data: Period[]) => {
           await addPeriodsToDatabase(data);
         },

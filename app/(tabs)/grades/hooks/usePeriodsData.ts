@@ -1,8 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 
 import { useManagerSubscription } from "@/hooks/useManagerSubscription";
-import type { AccountManager } from "@/services/shared";
-import { getManager } from "@/services/shared";
+import { type AccountManager, getManager } from "@/services/shared";
 import { Period } from "@/services/shared/grade";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
 import { useSettingsStore } from "@/stores/settings";
@@ -71,7 +70,11 @@ export function usePeriodsData(): UsePeriodsDataResult {
       setCurrentPeriodState(prev => {
         // Keep the current selection alive if it still exists in the new list.
         if (prev) {
-          const stillThere = sorted.find(p => p.id === prev.id);
+          const stillThere = sorted.find(
+            p =>
+              p.id === prev.id ||
+              (p.name === prev.name && p.createdByAccount === prev.createdByAccount)
+          );
           if (stillThere) { return stillThere; }
         }
 

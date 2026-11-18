@@ -1,34 +1,35 @@
 import { Papicons } from '@getpapillon/papicons';
+import { useLocalSearchParams } from "expo-router";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { Link, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useState } from "react";
 import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { getManager } from "@/services/shared";
 import { Grade as SharedGrade, Subject } from "@/services/shared/grade";
+import { useSettingsStore } from '@/stores/settings';
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import { SkillChip } from "@/ui/components/SkillChip";
 import Stack from "@/ui/components/Stack";
 import TypographyLegacy from "@/ui/components/Typography";
-import adjust from '@/utils/adjustColor';
-import { colorCheck } from '@/utils/colorCheck';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
-import { useSettingsStore } from '@/stores/settings';
-import { formatAssumed20ForDisplay, getGradeDisplayScale, getDisplayScaleMax } from '@/utils/grades/scale';
-import { SkillChip } from "@/ui/components/SkillChip";
+import adjust from '@/utils/adjustColor';
+import { colorCheck } from '@/utils/colorCheck';
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import { useGradeInfluence } from "./hooks/useGradeInfluence";
+import { formatAssumed20ForDisplay, getDisplayScaleMax, getGradeDisplayScale } from '@/utils/grades/scale';
+import { warn } from "@/utils/logger/logger";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { warn } from "@/utils/logger/logger";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+
+import { useGradeInfluence } from "./hooks/useGradeInfluence";
 
 interface SubjectInfo {
   name: string;
@@ -125,6 +126,7 @@ export default function GradesModal() {
               period,
               period.createdByAccount
             );
+            if (!periodGrades) { continue; }
             const periodSubjects = [
               ...(periodGrades.subjects ?? []),
               ...(periodGrades.modules ?? []),
@@ -235,12 +237,12 @@ export default function GradesModal() {
               color={Platform.OS === "ios" ? subjectInfo.color : colors.primary}
               emoji={subjectInfo.emoji}
               subject={
-                (grade.skills?.length ?? 0 > 0)
+                (grade.skills?.length ?? 0) > 0
                   ? grade.description
                   : subjectInfo.name
               }
               title={
-                (grade.skills?.length ?? 0 > 0) ? undefined : grade.description
+                (grade.skills?.length ?? 0) > 0 ? undefined : grade.description
               }
               date={new Date(grade.givenAt)}
               overhead={
@@ -250,7 +252,7 @@ export default function GradesModal() {
                   }
                   score={
                     grade.studentScore?.disabled
-                      ? (grade.skills?.length ?? 0 > 0)
+                      ? (grade.skills?.length ?? 0) > 0
                         ? subjectInfo.name
                         : String(grade.studentScore?.status)
                       : grade.studentScore
