@@ -1,7 +1,3 @@
-import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "expo-router/react-navigation";
-import * as Device from "expo-device"
-import { router } from "expo-router";
 import {
   finishLoginManually,
   SecurityError,
@@ -9,22 +5,25 @@ import {
   securitySource,
   SessionHandle,
 } from "@blockshub/pawnote-lts";
+import { Papicons } from "@getpapillon/papicons";
+import * as Device from "expo-device";
+import { router } from "expo-router";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import Reanimated from "react-native-reanimated"
+import Reanimated from "react-native-reanimated";
 
+import { PlatformPressable } from "@/app/(onboarding)/services/ed/credentials";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
-
-import { PlatformPressable } from "@/app/(onboarding)/services/ed/credentials";
 
 export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId, relinkAccountId, relinkServiceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string, relinkAccountId?: string, relinkServiceId?: string }) {
   const { t } = useTranslation();
@@ -95,15 +94,11 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         updatedAt: (new Date()).toISOString()
       }
 
-      store.addAccount(account)
-      store.setLastUsedAccount(deviceId)
+      store.addAccount(account);
+      store.setLastUsedAccount(deviceId);
 
-      router.push({
-        pathname: "../end/color",
-        params: {
-          accountId: deviceId
-        }
-      });
+      setChallengeModalVisible(false);
+      return router.dismissTo("/");
     } catch (error) {
       return alert.showAlert({
         title: t("Alert_Auth_Error"),
