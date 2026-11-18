@@ -478,6 +478,8 @@
   "Settings_Subjects_Reset_Title": "Reset",
   "Settings_Subjects_Reset_Message": "Are you sure you want to reset all subjects?",
   "Settings_Subjects_Reset_Button": "Reset",
+  "Settings_Subjects_SchoolService": "School service",
+  "Settings_Subjects_Other": "Other",
   "Settings_Donator": "Donors",
   "Settings_Donator_Description": "View the list of donors",
   "Settings_App_Version": "App version",

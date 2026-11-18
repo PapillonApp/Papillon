@@ -473,6 +473,8 @@
   "Settings_Subjects_Reset_Title": "Réinitialiser",
   "Settings_Subjects_Reset_Message": "Voulez-vous vraiment réinitialiser toutes les matières ?",
   "Settings_Subjects_Reset_Button": "Réinitialiser",
+  "Settings_Subjects_SchoolService": "Service scolaire",
+  "Settings_Subjects_Other": "Autres",
   "Settings_Donator": "Donateurs",
   "Settings_Donator_Description": "Voir la liste des donateurs",
   "Settings_App_Version": "Version de l'application",
