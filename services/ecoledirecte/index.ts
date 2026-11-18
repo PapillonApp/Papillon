@@ -92,7 +92,7 @@ export class EcoleDirecte implements SchoolServicePlugin {
 
   async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
     if (this.session) {
-      return fetchEDTimetable(this.session, this.accountId, weekNumber)
+      return fetchEDTimetable(this.session, this.accountId, weekNumber, date)
     }
 
     throw error("Session or account is not valid", "EcoleDirecte.getWeeklyTimetable")

@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { getISOWeek } from 'date-fns';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, PixelRatio, Platform } from 'react-native';
-import { getWeekNumberFromDate } from "@/database/useHomework";
-import { warn } from "@/utils/logger/logger";
+
 import { trackAdvancedEvent } from "@/utils/logger/analytics";
+import { warn } from "@/utils/logger/logger";
 
 const INITIAL_INDEX = 10000;
 
@@ -15,7 +16,7 @@ export type CalendarState = ReturnType<typeof useCalendarState>;
  */
 export function useCalendarState(viewportWidth: number) {
   const [date, setDate] = useState(new Date());
-  const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
+  const [weekNumber, setWeekNumber] = useState(getISOWeek(date));
   const [currentIndex, setCurrentIndex] = useState(INITIAL_INDEX);
   const lastTrackedDateKey = useRef<string>("");
   const flatListRef = useRef<FlatList<any>>(null);
@@ -64,7 +65,7 @@ export function useCalendarState(viewportWidth: number) {
 
   const handleDateChange = useCallback((newDate: Date) => {
     setDate(newDate);
-    const newWeekNumber = getWeekNumberFromDate(newDate);
+    const newWeekNumber = getISOWeek(newDate);
     if (newWeekNumber !== weekNumber) {
       setWeekNumber(newWeekNumber);
     }
@@ -73,11 +74,7 @@ export function useCalendarState(viewportWidth: number) {
   // Sync FlatList with date
   useEffect(() => {
     const newIndex = getIndexFromDate(date);
-    let newWeekNumber = getWeekNumberFromDate(date);
-
-    if (date.getDay() === 0) {
-      newWeekNumber += 1;
-    }
+    const newWeekNumber = getISOWeek(date);
 
     if (newIndex !== currentIndex) {
       setCurrentIndex(newIndex);
@@ -118,7 +115,7 @@ export function useCalendarState(viewportWidth: number) {
       setCurrentIndex(newIndex);
       const newDate = getDateFromIndex(newIndex);
       setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
-      const newWeekNumber = getWeekNumberFromDate(newDate);
+      const newWeekNumber = getISOWeek(newDate);
       if (newWeekNumber !== weekNumber) {
         setWeekNumber(newWeekNumber);
       }

@@ -1,12 +1,14 @@
-import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
-import { Auth, Services } from "@/stores/account/types";
 import { User } from "@blockshub/blockscho";
-import { refreshAppSchoAccount } from "./refresh";
-import { error } from "@/utils/logger/logger";
-import { CourseDay } from "@/services/shared/timetable";
+
+import { fetchAppschoNews } from "@/services/appscho/news";
 import { fetchAppschoTimetable } from "@/services/appscho/timetable";
 import { News } from "@/services/shared/news";
-import { fetchAppschoNews } from "@/services/appscho/news";
+import { CourseDay } from "@/services/shared/timetable";
+import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
+import { Auth, Services } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
+
+import { refreshAppSchoAccount } from "./refresh";
 
 export class Appscho implements SchoolServicePlugin {
   displayName = "AppScho";
@@ -34,7 +36,7 @@ export class Appscho implements SchoolServicePlugin {
   async getWeeklyTimetable(weekNumber: number, date: Date, forceRefresh?: boolean): Promise<CourseDay[]> {
     if (this.session) {
       const instanceId = String(this.authData.additionals?.["instanceId"]);
-      return fetchAppschoTimetable(this.session, this.accountId, weekNumber, instanceId, forceRefresh);
+      return fetchAppschoTimetable(this.session, this.accountId, weekNumber, instanceId, forceRefresh, date);
     }
 
     error("Session is not valid", "Appscho.getWeeklyTimetable");

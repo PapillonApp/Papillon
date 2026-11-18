@@ -109,7 +109,7 @@ export class Skolengo implements SchoolServicePlugin {
 
   async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
     if (this.session) {
-      return fetchSkolengoTimetable(this.session, this.accountId, weekNumber)
+      return fetchSkolengoTimetable(this.session, this.accountId, weekNumber, date)
     }
 		
     error("Session is not valid", "Skolengo.getWeeklyTimetable")

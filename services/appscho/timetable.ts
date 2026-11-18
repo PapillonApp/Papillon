@@ -1,7 +1,10 @@
-import { User, getPlanning, Lesson } from "@blockshub/blockscho";
+import { getPlanning, Lesson, User } from "@blockshub/blockscho";
+import { endOfISOWeek, format, startOfDay, startOfISOWeek } from "date-fns";
+
 import { getDateRangeOfWeek } from "@/database/useHomework";
-import { Course, CourseDay, CourseType } from "../shared/timetable";
+
 import { parseADEDescription } from "../local/parsers/ade-parser";
+import { Course, CourseDay, CourseType } from "../shared/timetable";
 
 function parseAppschoDate(dateStr: string): Date {
   if (!dateStr) return new Date(NaN);
@@ -13,9 +16,12 @@ export async function fetchAppschoTimetable(
   accountId: string,
   weekNumber: number,
   instanceId: string,
-  _forceRefresh?: boolean
+  _forceRefresh?: boolean,
+  date?: Date
 ): Promise<CourseDay[]> {
-  const { start, end } = getDateRangeOfWeek(weekNumber);
+  const { start, end } = date
+    ? { start: startOfISOWeek(date), end: endOfISOWeek(date) }
+    : getDateRangeOfWeek(weekNumber);
   try {
     const planning = await getPlanning(instanceId, session.token);
     if(!planning || planning.length === 0) {
@@ -28,17 +34,17 @@ export async function fetchAppschoTimetable(
     const eventsByDate = new Map<string, Lesson[]>();
     weekEvents.forEach((lesson: Lesson) => {
       const lessonDate = parseAppschoDate(lesson.dtstart);
-      const dateKey = lessonDate.toISOString().split('T')[0];
+      const dateKey = format(lessonDate, "yyyy-MM-dd");
       const existing = eventsByDate.get(dateKey) || [];
       existing.push(lesson);
       eventsByDate.set(dateKey, existing);
     });
     const result: CourseDay[] = [];
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dateKey = d.toISOString().split('T')[0];
+    for (let d = startOfDay(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const dateKey = format(d, "yyyy-MM-dd");
       const dayEvents = eventsByDate.get(dateKey) || [];
       result.push({
-        date: new Date(d),
+        date: startOfDay(d),
         courses: mapAppschoCourses(dayEvents, accountId)
       });
     }

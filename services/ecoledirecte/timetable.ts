@@ -1,20 +1,23 @@
 import { Client, TimetableCourse, TimetableCourseType } from "@blockshub/blocksdirecte";
+import { endOfISOWeek, format, startOfDay, startOfISOWeek } from "date-fns";
 
 import { getDateRangeOfWeek } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 
 import { Course, CourseDay, CourseStatus, CourseType } from "../shared/timetable";
 
-export async function fetchEDTimetable(session: Client, accountId: string, weekNumber: number): Promise<CourseDay[]> {
+export async function fetchEDTimetable(session: Client, accountId: string, weekNumber: number, date?: Date): Promise<CourseDay[]> {
   try {
-    const { start, end } = getDateRangeOfWeek(weekNumber);
+    const { start, end } = date
+      ? { start: startOfISOWeek(date), end: endOfISOWeek(date) }
+      : getDateRangeOfWeek(weekNumber);
 
     const timetable = (await session.timetable.getTimetableBetweenDates(start, end, false)).filter(course => course.codeMatiere !== "");
     const mappedCourses = mapEcoleDirecteCourses(timetable, accountId);
     const dayMap: Record<string, Course[]> = {};
 
     for (const course of mappedCourses) {
-      const dayKey = course.from.toISOString().split("T")[0];
+      const dayKey = format(course.from, "yyyy-MM-dd");
       dayMap[dayKey] = dayMap[dayKey] || [];
       dayMap[dayKey].push(course);
     }
@@ -23,8 +26,8 @@ export async function fetchEDTimetable(session: Client, accountId: string, weekN
       dayMap[day].sort((a, b) => a.from.getTime() - b.from.getTime());
     }
 
-    return Object.entries(dayMap).map(([day, courses]) => ({
-      date: new Date(day),
+    return Object.values(dayMap).map((courses) => ({
+      date: startOfDay(courses[0].from),
       courses
     }));
   } catch(error) {

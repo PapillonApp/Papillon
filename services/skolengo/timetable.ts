@@ -1,17 +1,22 @@
+import { endOfISOWeek, startOfDay, startOfISOWeek } from "date-fns";
 import { Kind, Lesson, Skolengo } from "skolengojs";
 
 import { getDateRangeOfWeek } from "@/database/useHomework";
 
 import { Course, CourseDay, CourseStatus, CourseType } from "../shared/timetable";
 
-export async function fetchSkolengoTimetable(session: Skolengo, accountId: string, weekNumber: number): Promise<CourseDay[]> {
-  const { start, end } = getDateRangeOfWeek(weekNumber)
+export async function fetchSkolengoTimetable(session: Skolengo, accountId: string, weekNumber: number, date?: Date): Promise<CourseDay[]> {
+  const { start, end } = date
+    ? { start: startOfISOWeek(date), end: endOfISOWeek(date) }
+    : getDateRangeOfWeek(weekNumber)
   const result: CourseDay[] = []
 
   const getTimetable = async (sessionToUse: Skolengo, kidName?: string) => {
     const timetable = await sessionToUse.GetTimetable(start, end)
     result.push(...timetable.map(day => ({
-      date: day.date,
+      date: day.lessons[0]?.startDateTime
+        ? startOfDay(day.lessons[0].startDateTime)
+        : startOfDay(day.date),
       courses: mapSkolengoCourse(day.lessons, accountId, kidName)
     })))
   }
@@ -28,14 +33,14 @@ export async function fetchSkolengoTimetable(session: Skolengo, accountId: strin
 
 function mapSkolengoCourse(data: Lesson[], accountId: string, kidName?: string): Course[] {
   return data.map(lesson => ({
-    subject: lesson.subject.label,
+    subject: lesson.subject?.label || "Cours",
     id: lesson.id,
     type: CourseType.LESSON,
     from: lesson.startDateTime,
     to: lesson.endDateTime,
     room: lesson.room,
-    teacher: lesson.teacher.map(t => `${t.firstName} ${t.lastName}`).join(", "),
-    backgroundColor: lesson.subject.color,
+    teacher: (lesson.teacher ?? []).map(t => `${t.firstName} ${t.lastName}`).join(", "),
+    backgroundColor: lesson.subject?.color,
     status: lesson.canceled ? CourseStatus.CANCELED : undefined,
     createdByAccount: accountId,
     kidName: kidName
