@@ -1,23 +1,22 @@
-import { type ParamListBase, useFocusEffect, useIsFocused, useTheme } from "expo-router/react-navigation";
+import { LinearGradient } from "expo-linear-gradient";
 import { type NativeStackNavigationProp, useNavigation, useRouter } from "expo-router";
+import { type ParamListBase, useFocusEffect, useIsFocused, useTheme } from "expo-router/react-navigation";
+import * as SplashScreen from "expo-splash-screen";
+import { useVideoPlayer, VideoView } from "expo-video";
 import * as WebBrowser from 'expo-web-browser';
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Image, StatusBar, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { consumeSecurityLogoutNotice } from "@/stores/global/encryption";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Stack from "@/ui/components/Stack";
 import Button from "@/ui/new/Button";
 import Divider from "@/ui/new/Divider";
 import PapillonLogo from "@/ui/new/symbols/PapillonLogo";
 import Typography from "@/ui/new/Typography";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import { useVideoPlayer, VideoView } from "expo-video";
-import { LinearGradient } from "expo-linear-gradient";
-import * as SplashScreen from "expo-splash-screen";
-import { useTranslation } from "react-i18next";
-
-import { consumeSecurityLogoutNotice } from "@/stores/global/encryption";
 
 export default function Welcome() {
   const insets = useSafeAreaInsets();
@@ -34,17 +33,20 @@ export default function Welcome() {
     });
   }, [navigation]);
 
-  const openHelpWebPage = () => {
-    WebBrowser.openBrowserAsync("https://docs.papillon.bzh/support", {
-      presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET
+  const openWebPage = (url: string) => {
+    WebBrowser.openBrowserAsync(url, {
+      dismissButtonStyle: "close",
+      presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
     });
-  }
+  };
+
+  const openHelpWebPage = () => {
+    openWebPage("https://docs.papillon.bzh/support");
+  };
 
   const openLegalWebPage = () => {
-    WebBrowser.openBrowserAsync("https://docs.papillon.bzh/terms", {
-      presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET
-    });
-  }
+    openWebPage("https://docs.papillon.bzh/terms");
+  };
 
   const openDevMenu = () => {
     router.push("/devmode");

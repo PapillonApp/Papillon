@@ -1,32 +1,31 @@
 import { Papicons } from "@getpapillon/papicons";
-import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
-import { Stack as ExpoStack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { Stack as ExpoStack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useCallback, useRef, useState } from "react";
+import { Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
 import ModalOverhead from "@/components/ModalOverhead";
 import { deleteHomeworkFromDatabase, getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
-import Stack from "@/ui/components/Stack";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import Stack from "@/ui/components/Stack";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
 import { formatHTML } from "@/utils/format/html";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { Platform } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import List from "@/ui/new/List";
-import Typography from "@/ui/new/Typography";
-import { Homework } from "@/services/shared/homework";
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import { View } from "react-native";
 
 const Task = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -265,7 +264,8 @@ const Task = () => {
               <List.Item
                 onPress={() =>
                   WebBrowser.openBrowserAsync(attachment.url, {
-                    presentationStyle: "formSheet",
+                    dismissButtonStyle: "close",
+                    presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
                   })
                 }
               >

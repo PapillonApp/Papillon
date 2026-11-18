@@ -1,34 +1,35 @@
-import { getManager } from "@/services/shared";
-import { News } from "@/services/shared/news";
-import { getNewsById } from "@/database/useNews";
-import { useAccountStore } from "@/stores/account";
-import { Services } from "@/stores/account/types";
-import Stack from "@/ui/components/Stack";
-import TypographyLegacy, { VARIANTS } from "@/ui/components/Typography";
+import { Papicons } from "@getpapillon/papicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
+import * as WebBrowser from "expo-web-browser";
+import { t } from "i18next";
+import React, { useEffect, useState } from "react";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
+import HTMLView from "react-native-htmlview";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Attachment, News as SkolengoNews } from "skolengojs";
 
-import HTMLView from "react-native-htmlview";
-import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
-import { NativeHeaderSide } from "@/ui/components/NativeHeader";
-import Icon from "@/ui/components/Icon";
-import { t } from "i18next";
-import ListLegacy from "@/ui/components/List";
-import Item, { Leading } from "@/ui/components/Item";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
+import { getNewsById } from "@/database/useNews";
+import { getManager } from "@/services/shared";
+import { News } from "@/services/shared/news";
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Avatar from "@/ui/components/Avatar";
-import { getInitials } from "@/utils/chats/initials";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { Papicons } from "@getpapillon/papicons";
-import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
+import Icon from "@/ui/components/Icon";
+import Item, { Leading } from "@/ui/components/Item";
+import ListLegacy from "@/ui/components/List";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import Stack from "@/ui/components/Stack";
+import TypographyLegacy, { VARIANTS } from "@/ui/components/Typography";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { getInitials } from "@/utils/chats/initials";
+import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
+import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { useFont } from "@/utils/theme/fonts";
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const NewsPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -205,7 +206,15 @@ const NewsPage = () => {
         {news.attachments.length > 0 && (
           <ListLegacy>
             {news.attachments.map((attachment, index) => (
-              <Item key={index} onPress={() => Linking.openURL(attachment.url)}>
+              <Item
+                key={index}
+                onPress={() =>
+                  WebBrowser.openBrowserAsync(attachment.url, {
+                    dismissButtonStyle: "close",
+                    presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
+                  })
+                }
+              >
                 <Leading>
                   <Icon size={28}>
                     <Papicons name={getAttachmentIcon(attachment)} />
