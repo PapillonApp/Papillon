@@ -3,7 +3,6 @@ import { t } from 'i18next';
 import React from 'react';
 import { Platform, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from "expo-router/react-navigation";
 
 import { TipIds } from '@/constants/Tips';
 import Stack from '@/ui/components/Stack';
@@ -35,7 +34,7 @@ const HomeTopBar = ({ height = 56, loading }: { height?: number, loading?: boole
             blurAmount={10}
             blurType="systemUltraThinMaterial"
             direction="blurredTopClearBottom"
-            startOffset={0}
+            startOffset={0.7}
             reducedTransparencyFallbackColor="#00000000"
             style={{ width: "100%", height: "100%" }}
           />

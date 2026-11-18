@@ -1,15 +1,16 @@
 
-import { useTheme } from "expo-router/react-navigation";
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
+import { useTheme } from "expo-router/react-navigation";
 import React, { useEffect } from 'react';
-import { Platform, useWindowDimensions, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import Reanimated from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { runsIOS26 } from '../utils/IsLiquidGlass';
-import { TabHeaderTitleProps } from './TabHeaderTitle';
 import AndroidBackButton from '@/utils/theme/AndroidBackButton';
+
+import { runsIOS26 } from '../utils/IsLiquidGlass';
 import useResizable from "../utils/Resizable";
+import { TabHeaderTitleProps } from './TabHeaderTitle';
 
 
 interface TabHeaderProps {
@@ -56,26 +57,26 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           top: 0,
           left: 0,
           right: 0,
-          height: height,
+          height: Math.max(0, height),
           zIndex: 99,
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
           elevation: 0,
         }]}
         pointerEvents={'none'}
       >
-        {runsIOS26 && (
+        {runsIOS26 && height > 0 && (
           <ProgressiveBlurView
-            blurType="systemMaterial"
-            blurAmount={20}
+            blurType="systemUltraThinMaterial"
+            blurAmount={15}
             direction="blurredTopClearBottom"
-            startOffset={0}
+            startOffset={0.7}
             reducedTransparencyFallbackColor="#00000000"
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
               right: 0,
-              height: height - 20,
+              height,
               zIndex: 99,
             }}
           />
@@ -108,7 +109,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             gap: 8,
             paddingHorizontal: 16,
             paddingLeft: isModal ? 24 : 16,
-            height: 40,
+            minHeight: 40,
             alignItems: 'center',
             justifyContent: 'center',
           }}

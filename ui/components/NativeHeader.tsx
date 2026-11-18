@@ -1,19 +1,19 @@
-import { useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useEffect, useRef } from "react";
 import { Platform, Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
 import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
-import { runsIOS26 } from "../utils/IsLiquidGlass";
-import Typography from "./Typography";
-import AnimatedNumber from "./AnimatedNumber";
 import adjust from "@/utils/adjustColor";
+
+import { runsIOS26 } from "../utils/IsLiquidGlass";
+import AnimatedNumber from "./AnimatedNumber";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 // Pre-computed styles for maximum performance
 const styles = StyleSheet.create({
   side: {
-    height: 36,
+    minHeight: 36,
     minWidth: 36,
     alignSelf: "center",
     flexShrink: 1,
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    height: 36,
+    minHeight: 36,
     width: "100%",
     flexDirection: "row",
     gap: 4,
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     maxWidth: 300,
   },
   pressable: {
-    height: 42,
+    minHeight: 42,
     minWidth: 36,
     alignItems: "center",
     justifyContent: "center",

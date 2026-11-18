@@ -1,6 +1,7 @@
-import React from "react";
-import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View, StyleProp } from "react-native";
 import { useTheme } from "expo-router/react-navigation";
+import React from "react";
+import { DimensionValue, StyleProp, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
+
 import SkeletonView from "@/ui/components/SkeletonView";
 import { useFont } from "@/utils/theme/fonts";
 
@@ -142,6 +143,7 @@ const arePropsEqual = (prev: TypographyProps, next: TypographyProps) => {
   if (prev.inline !== next.inline) return false;
   if (prev.nowrap !== next.nowrap) return false;
   if (prev.skeleton !== next.skeleton) return false;
+  if (prev.maxFontSizeMultiplier !== next.maxFontSizeMultiplier) { return false; }
 
   if (prev.style === next.style) return true;
 
@@ -248,6 +250,7 @@ const Typography = React.memo(({
   return (
     <Text
       {...rest}
+      maxFontSizeMultiplier={rest.maxFontSizeMultiplier ?? 1.35}
       style={combinedStyle}
       numberOfLines={nowrap ? 1 : rest.numberOfLines}
     >

@@ -1,13 +1,13 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Link } from 'expo-router';
+import { useTheme } from "expo-router/react-navigation";
 import React from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
-import adjust from "@/utils/adjustColor";
 
 import Typography from '@/ui/components/Typography';
-import { Link } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import adjust from "@/utils/adjustColor";
 
 export interface HomeHeaderButtonItem {
   title: string;
@@ -86,8 +86,8 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
             flex: 1,
             overflow: 'hidden'
           }}>
-            <Typography nowrap variant="h6" color={colors.text + "e5"} style={{ lineHeight: 0 }}>{item.title}</Typography>
-            <Typography nowrap variant="title" color={colors.text + "75"} style={{ lineHeight: 0 }}>{item.description}</Typography>
+            <Typography nowrap variant="h6" color={colors.text + "e5"}>{item.title}</Typography>
+            <Typography nowrap variant="title" color={colors.text + "75"}>{item.description}</Typography>
           </View>
         </Pressable>
       </Link.AppleZoom>
