@@ -3,8 +3,11 @@ import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LayoutChangeEvent, Platform, StyleSheet, useWindowDimensions, View } from "react-native";
+import Reanimated, { type SharedValue, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
+import { useBottomAccessoryVisible } from "@/components/BottomAccessory";
 import { CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
@@ -16,16 +19,12 @@ import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import useResizable from "@/ui/utils/Resizable";
 import i18n from "@/utils/i18n";
 
-import Reanimated, { useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
-
-import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
-
 import { DayPager } from "./components/DayPager";
 import { WeekView } from "./components/WeekView";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
-import { useWeekGeometry, type WeekGeometry } from "./hooks/useWeekGeometry";
 import { useWeekendVisibility } from "./hooks/useWeekendVisibility";
+import { useWeekGeometry, type WeekGeometry } from "./hooks/useWeekGeometry";
 
 const isAndroid = Platform.OS === "android";
 
@@ -141,7 +140,18 @@ function TabOneScreen() {
 
   const { isTablet } = useResizable();
   const storedViewMode = useSettingsStore(state => state.personalization.calendarViewMode);
+  const iOSBottomAccessoryEnabled = useSettingsStore(
+    state => state.personalization.iOSBottomAccessoryEnabled
+  ) ?? true;
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
+  const isBottomAccessoryVisible = useBottomAccessoryVisible();
+
+  const hasAccessory =
+    Platform.OS === "ios" && runsIOS26 && iOSBottomAccessoryEnabled && isBottomAccessoryVisible;
+  const topInset = runsIOS26 ? headerHeight : 0;
+  const bottomInset = Platform.OS === "ios"
+    ? insets.bottom + (runsIOS26 ? 64 : 50) + (hasAccessory ? 60 : 0)
+    : insets.bottom + 24;
 
   const viewMode = storedViewMode ?? (isTablet ? "week" : "list");
   const isWeekMode = viewMode === "week";
@@ -209,10 +219,10 @@ function TabOneScreen() {
   const toolbarLabel = getToolbarLabel(dateOfPageIndex(settledIndex), isWeekMode);
 
   const calendarAnchor = useMemo(() => ({
-    top: runsIOS26 ? headerHeight : 0,
+    top: topInset,
     left: TOOLBAR_BUTTON_INSET,
     width: TOOLBAR_BUTTON_SIZE,
-  }), [headerHeight]);
+  }), [topInset]);
 
   const handlePickDate = useCallback((picked: Date) => {
     handleDateChange(picked);
@@ -367,8 +377,8 @@ function TabOneScreen() {
             scrollPage={scrollPage}
             onPageCrossed={anchorWeekOnPage}
             onPageSettled={handleWeekPageSettled}
-            topInset={runsIOS26 ? headerHeight : 0}
-            bottomInset={insets.bottom}
+            topInset={topInset}
+            bottomInset={bottomInset}
           />
         ) : (
           <DayPager
@@ -381,6 +391,8 @@ function TabOneScreen() {
             settledIndex={settledIndex}
             onSettle={handleListSettle}
             scrollPage={scrollPage}
+            topInset={topInset}
+            bottomInset={bottomInset}
           />
         )}
       </View>

@@ -3,6 +3,7 @@ import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
+import { getCourseRouteId } from '@/database/useTimetable';
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { TransportStorage } from "@/stores/account/types";
 import Course from "@/ui/components/Course";
@@ -11,7 +12,6 @@ import { Colors, getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectName } from '@/utils/subjects/name';
 
 import { EmptyCalendar } from './EmptyCalendar';
-import { getCourseRouteId } from '@/database/useTimetable';
 
 interface CalendarDayProps {
   dayDate: Date;
@@ -25,6 +25,7 @@ interface CalendarDayProps {
   isRefreshing: boolean;
   onRefresh: () => void;
   colors: { primary: string, background: string };
+  topInset?: number;
   tabBarHeight: number;
   transportInfo?: TransportStorage;
   /** The timetable could not be loaded: an empty day means "unknown", not "free". */
@@ -57,7 +58,7 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
   return true;
 }
 
-export const CalendarDay = React.memo(({ dayDate, width, courses, isRefreshing, onRefresh, colors, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
+export const CalendarDay = React.memo(({ dayDate, width, courses, isRefreshing, onRefresh, colors, topInset = 0, tabBarHeight, transportInfo, hasError = false }: CalendarDayProps) => {
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
 
@@ -127,11 +128,11 @@ export const CalendarDay = React.memo(({ dayDate, width, courses, isRefreshing, 
         data={enrichedEvents}
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
+        contentInsetAdjustmentBehavior="never"
         contentContainerStyle={{
-          paddingVertical: 12,
+          paddingTop: topInset + 12,
+          paddingBottom: tabBarHeight + 12,
           gap: 4,
-          paddingBottom: tabBarHeight + 6,
           ...(isEmpty ? { alignItems: "center" } : {}),
         }}
         refreshControl={
@@ -201,6 +202,8 @@ export const CalendarDay = React.memo(({ dayDate, width, courses, isRefreshing, 
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.hasError === nextProps.hasError &&
     prevProps.onRefresh === nextProps.onRefresh &&
+    prevProps.tabBarHeight === nextProps.tabBarHeight &&
+    prevProps.topInset === nextProps.topInset &&
     areCoursesEquivalent(prevProps.courses, nextProps.courses)
   );
 });
