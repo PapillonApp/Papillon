@@ -1,17 +1,26 @@
 import { Papicons } from '@getpapillon/papicons';
-import { type ParamListBase, useIsFocused } from "expo-router/react-navigation";
+import MaskedView from '@react-native-masked-view/masked-view';
 import { type NativeStackNavigationProp, useNavigation, useRouter } from 'expo-router';
+import { type ParamListBase, useIsFocused } from "expo-router/react-navigation";
 import { t } from 'i18next';
 import React from 'react';
 import { FlatList, Platform, RefreshControl, StatusBar, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
-import { checkConsent } from '@/utils/logger/consent';
+import { Dynamic } from '@/ui/components/Dynamic';
+import Icon from '@/ui/components/Icon';
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
 import { Animation } from '@/ui/utils/Animation';
+import { checkConsent } from '@/utils/logger/consent';
 
+import { useGradesData } from '../grades/hooks/useGradesData';
+import { usePeriodsData } from '../grades/hooks/usePeriodsData';
 import HomeHeader from './atoms/HomeHeader';
 import HomeTopBar from './atoms/HomeTopBar';
 import Wallpaper from './atoms/Wallpaper';
@@ -19,18 +28,8 @@ import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useHomeData } from './hooks/useHomeData';
 import { useTimetableWidgetData } from './hooks/useTimetableWidgetData';
 import { useTimetableWidgetTitle } from './hooks/useTimetableWidgetTitle';
-import HomeTimeTableWidget from './widgets/timetable';
 import GradesWidget from './widgets/Grades';
-import { usePeriodsData } from '../grades/hooks/usePeriodsData';
-import { useGradesData } from '../grades/hooks/useGradesData';
-import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
-import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
-import { Dynamic } from '@/ui/components/Dynamic';
-import Stack from '@/ui/components/Stack';
-import Typography from '@/ui/components/Typography';
-import Icon from '@/ui/components/Icon';
-import Button from '@/ui/new/Button';
+import HomeTimeTableWidget from './widgets/timetable';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -109,7 +108,7 @@ const HomeScreen = () => {
   const { courses } = useTimetableWidgetData();
   const timetableTitle = useTimetableWidgetTitle(courses);
 
-  const { currentPeriod } = usePeriodsData();
+  const { currentPeriod, refresh: refreshPeriods } = usePeriodsData();
   const { grades, history, averages, refresh: refreshGrades } = useGradesData(currentPeriod);
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -118,11 +117,12 @@ const HomeScreen = () => {
     try {
       await refresh();
       // The grades widget keeps its own cache, the timetable reads the database.
+      await refreshPeriods();
       await refreshGrades();
     } finally {
       setRefreshing(false);
     }
-  }, [refresh, refreshGrades]);
+  }, [refresh, refreshPeriods, refreshGrades]);
   const gradesWidgetHidden = grades.length === 0;
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget courses={courses} />, [courses]);

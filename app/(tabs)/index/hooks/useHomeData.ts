@@ -1,6 +1,6 @@
+import { instance } from "@blockshub/pawnote-lts";
 import { router } from 'expo-router';
 import { t } from 'i18next';
-import { instance } from "@blockshub/pawnote-lts";
 import { useCallback, useEffect, useState } from 'react';
 
 import { getWeekNumberFromDate } from '@/database/useHomework';
@@ -9,13 +9,13 @@ import { AuthenticationError } from '@/services/errors/AuthenticationError';
 import { SecurityChallengeError } from '@/services/errors/SecurityChallengeError';
 import { ServiceUnavailableError } from '@/services/errors/ServiceUnavailableError';
 import { getManager, initializeAccountManager } from "@/services/shared";
+import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
 import { useSettingsStore } from '@/stores/settings';
 import { useAlert } from '@/ui/components/AlertProvider';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { debug, warn } from '@/utils/logger/logger';
 import { setPendingPronoteChallenge } from '@/utils/pronote/challenge';
-import { useAccountStore } from '@/stores/account';
 import { getServiceName } from '@/utils/services/helper';
 
 const REMOVED_SERVICE_ID = 9;
@@ -64,6 +64,15 @@ export const useHomeData = () => {
     }
   }, []);
 
+  const fetchNews = useCallback(async () => {
+    const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping news fetch');
+      return;
+    }
+    await manager.getNews();
+  }, []);
+
   const initialize = useCallback(async (force = false) => {
     if (!lastUsedAccount) {
       return;
@@ -104,7 +113,20 @@ export const useHomeData = () => {
       await initializeAccountManager(lastUsedAccount, { force });
       debug("Refreshed Manager received");
 
-      await Promise.all([fetchEDT(), fetchGrades()]);
+      const [edtResult, gradesResult, newsResult] = await Promise.allSettled([
+        fetchEDT(),
+        fetchGrades(),
+        fetchNews(),
+      ]);
+      if (edtResult.status === "rejected") {
+        throw edtResult.reason;
+      }
+      if (gradesResult.status === "rejected") {
+        throw gradesResult.reason;
+      }
+      if (newsResult.status === "rejected") {
+        warn(`News fetch failed: ${String(newsResult.reason)}`, "useHomeData");
+      }
       lastHomeSync.set(lastUsedAccount, Date.now());
 
       if (settingsstore.showAlertAtLogin) {
@@ -233,7 +255,7 @@ export const useHomeData = () => {
     } finally {
       setSyncing(false);
     }
-  }, [alert, fetchEDT, fetchGrades, settingsstore.showAlertAtLogin, lastUsedAccount, removeAccount]);
+  }, [alert, fetchEDT, fetchGrades, fetchNews, settingsstore.showAlertAtLogin, lastUsedAccount, removeAccount]);
 
   useEffect(() => {
     initialize();

@@ -23,8 +23,8 @@ import {
   getRecipientsFromCache,
 } from "@/database/useChat";
 import {
-  cachePeriodGrades,
   addPeriodsToDatabase,
+  cachePeriodGrades,
   getCachedPeriodGrades,
   getPeriodsFromCache,
 } from "@/database/useGrades";
@@ -74,6 +74,11 @@ import { Kid } from "./kid";
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
   private failures = new Map<Capabilities, ServiceFailure[]>();
+  public refreshVersion = 0;
+
+  hasClients(): boolean {
+    return Object.keys(this.clients).length > 0;
+  }
 
   getFailures(capability: Capabilities): ServiceFailure[] {
     return this.failures.get(capability) ?? [];
@@ -115,6 +120,16 @@ export class AccountManager {
    * backoff or a block left by a rejected credential.
    */
   async refreshAllAccounts(options: { force?: boolean } = {}): Promise<boolean> {
+    try {
+      return await this.executeRefreshAllAccounts(options);
+    } finally {
+      this.refreshVersion += 1;
+    }
+  }
+
+  private async executeRefreshAllAccounts(
+    options: { force?: boolean } = {}
+  ): Promise<boolean> {
     debug("We're refreshing all services for the account " + this.account.id);
     const hasInternet = await this.hasInternet();
 
@@ -411,7 +426,7 @@ export class AccountManager {
         multiple: true,
         fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
         saveToCache: async (data: CourseDay[]) => {
-          addCourseDayToDatabase(data);
+          await addCourseDayToDatabase(data);
         },
       }
     );
@@ -577,7 +592,7 @@ export class AccountManager {
 
   private async hasInternet(): Promise<boolean> {
     const networkState = await Network.getNetworkStateAsync();
-    return networkState.isInternetReachable ?? false;
+    return networkState.isConnected !== false && networkState.isInternetReachable !== false;
   }
 
   private async fetchData<T>(

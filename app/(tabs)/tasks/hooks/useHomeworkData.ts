@@ -1,18 +1,18 @@
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useAccountStore } from "@/stores/account";
-import { allowAllAuthRetries } from "@/services/auth/coordinator";
-import type { AccountManager } from "@/services/shared";
-import { getManager } from "@/services/shared";
-import { Homework } from "@/services/shared/homework";
-import { useHomeworkForWeeks, updateHomeworkIsDone } from "@/database/useHomework";
-import { useLoadErrorAlert } from "@/hooks/useLoadErrorAlert";
-import { useManagerSubscription } from "@/hooks/useManagerSubscription";
-import { Capabilities, ServiceFailure } from "@/services/shared/types";
-import { generateId } from "@/utils/generateId";
-import { error } from '@/utils/logger/logger';
-import { trackAdvancedEvent } from '@/utils/logger/analytics';
 import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
 import { useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { updateHomeworkIsDone, useHomeworkForWeeks } from "@/database/useHomework";
+import { useLoadErrorAlert } from "@/hooks/useLoadErrorAlert";
+import { useManagerSubscription } from "@/hooks/useManagerSubscription";
+import { allowAllAuthRetries } from "@/services/auth/coordinator";
+import { type AccountManager, getManager } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
+import { Capabilities, ServiceFailure } from "@/services/shared/types";
+import { useAccountStore } from "@/stores/account";
+import { generateId } from "@/utils/generateId";
+import { trackAdvancedEvent } from '@/utils/logger/analytics';
+import { error } from '@/utils/logger/logger';
 
 // Cache reads are coalesced over this window: fetching five weeks would
 // otherwise re-query every one of them five times over.
@@ -147,7 +147,9 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
           const id = homeworkKey(hw);
           fetched[id] = { ...hw, id: hw.id ?? id };
         }
-        fetchedWeeks.current.add(week);
+        if (managerToUse.hasClients()) {
+          fetchedWeeks.current.add(week);
+        }
         setHomework(prev => ({ ...prev, ...fetched }));
         scheduleRefresh();
         // The manager falls back to the cache rather than throwing, so a service
@@ -173,12 +175,19 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   }, [weeksKey, fetchWeek]);
 
   const managerRef = useRef(manager);
+  const lastRefreshVersionRef = useRef(manager?.refreshVersion ?? -1);
   const handleManager = useCallback((updatedManager: AccountManager) => {
     // The subscription is re-established whenever `fetchWeek` changes, and fires
     // straight away with the manager already in hand: only an actually new
-    // manager is worth re-fetching every week for.
-    if (managerRef.current === updatedManager) { return; }
+    // manager or a newly completed refresh is worth re-fetching every week for.
+    if (
+      managerRef.current === updatedManager &&
+      lastRefreshVersionRef.current === updatedManager.refreshVersion
+    ) {
+      return;
+    }
     managerRef.current = updatedManager;
+    lastRefreshVersionRef.current = updatedManager.refreshVersion;
     setManager(updatedManager);
     fetchedWeeks.current.clear();
     setLoadError(null);

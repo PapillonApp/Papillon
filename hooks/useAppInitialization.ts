@@ -1,8 +1,9 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useRef, useState } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 
+import { FONT_CONFIG } from '@/constants/LayoutScreenOptions';
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
 import { configureTips, resetTipsDatastore, showAllTips } from '@/modules/papillon-tips';
 import { initializeAccountManager } from '@/services/shared';
@@ -14,7 +15,8 @@ import { warn } from '@/utils/logger/logger';
 import { posthog } from '@/utils/logger/posthog';
 import ModelManager from '@/utils/magic/ModelManager';
 import { MAGIC_AVAILABLE } from '@/utils/magic/tflite';
-import { FONT_CONFIG } from '@/constants/LayoutScreenOptions';
+
+const FONT_LOADING_TIMEOUT_MS = 4000;
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -22,6 +24,15 @@ SplashScreen.setOptions({ duration: 350, fade: true });
 
 export function useAppInitialization() {
   const [fontsLoaded, fontsError] = useFonts(FONT_CONFIG);
+  const [fontTimeoutElapsed, setFontTimeoutElapsed] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFontTimeoutElapsed(true);
+    }, FONT_LOADING_TIMEOUT_MS);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Settings
   const customLanguage = useSettingsStore(state => state.personalization.language);
@@ -139,14 +150,14 @@ export function useAppInitialization() {
   }, []);
 
   // Error Handling for Fonts
-  const handleError = useCallback(() => {
-    if (fontsError) { throw fontsError; }
+  useEffect(() => {
+    if (fontsError) {
+      warn(`Font loading failed: ${String(fontsError)}`, "useAppInitialization");
+    }
   }, [fontsError]);
 
-  useEffect(handleError, [handleError]);
-
   return {
-    fontsLoaded,
-    fontsError
+    fontsLoaded: fontsLoaded || Boolean(fontsError) || fontTimeoutElapsed,
+    fontsError,
   };
 }
