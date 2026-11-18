@@ -1,11 +1,11 @@
-import { Platform, Switch, TouchableOpacity, View } from "react-native"
-import { useState } from "react";
-import ActionMenu from "./ActionMenu";
-import Typography from "../new/Typography";
-import { ListTouchable } from "../new/List";
-import { LiquidGlassView } from "@sbaiahmed1/react-native-blur";
 import { Papicons } from "@getpapillon/papicons";
+import { LiquidGlassView } from "@sbaiahmed1/react-native-blur";
 import { useTheme } from "expo-router/react-navigation";
+import React from "react";
+import { Platform, TouchableOpacity, View } from "react-native";
+
+import Typography from "../new/Typography";
+import ActionMenu, { type NativeActionEvent } from "./ActionMenu";
 
 type PickerProps = {
   options: string[]
@@ -21,6 +21,7 @@ const Picker: React.FC<PickerProps> = ({ options, selectedIndex, onValueChange, 
     <View pointerEvents={disabled ? "none" : "auto"} style={{ marginHorizontal: -12 }}>
       <PickerContainer>
         <ActionMenu
+          selectionMode="single"
           actions={options.map((option, index) => ({
             id: option,
             title: option,
@@ -29,7 +30,7 @@ const Picker: React.FC<PickerProps> = ({ options, selectedIndex, onValueChange, 
           }))}
           onPressAction={(e: NativeActionEvent) => {
             const index = options.findIndex(option => option === e.nativeEvent.event);
-            if(index !== -1) {
+            if (index !== -1) {
               onValueChange(index);
             }
           }}

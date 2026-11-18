@@ -1,30 +1,27 @@
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import { router, useLocalSearchParams } from "expo-router";
-import { Platform, ScrollView, View } from "react-native";
-import { Papicons } from "@getpapillon/papicons"
-import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { Period } from "@/services/shared/grade";
-import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
-import { useMemo, useState } from "react";
-import { Attendance } from "@/services/shared/attendance";
-import Stack from "@/ui/components/Stack";
-import AnimatedNumber from "@/ui/components/AnimatedNumber";
-import adjust from "@/utils/adjustColor";
-import { error } from "@/utils/logger/logger";
-import { getManager } from "@/services/shared";
+import { Papicons } from "@getpapillon/papicons";
+import { formatDate, formatDistanceToNowStrict } from "date-fns";
+import * as DateLocale from "date-fns/locale";
+import { useLocalSearchParams } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
-import i18n from "@/utils/i18n";
+import React, { useMemo, useState } from "react";
+import { Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { getManager } from "@/services/shared";
+import { Attendance } from "@/services/shared/attendance";
+import { Period } from "@/services/shared/grade";
 import ActionMenu from "@/ui/components/ActionMenu";
-import AndroidBackButton from "@/utils/theme/AndroidBackButton";
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
 import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import List from "@/ui/new/List";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Typography from "@/ui/new/Typography";
-import { formatDate, formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
-import * as DateLocale from 'date-fns/locale';
+import adjust from "@/utils/adjustColor";
+import i18n from "@/utils/i18n";
+import { error } from "@/utils/logger/logger";
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 
 const parseSearchParam = <T,>(value: string | string[] | undefined, fallback: T): T => {
   const serializedValue = Array.isArray(value) ? value[0] : value;
@@ -114,8 +111,9 @@ export default function AttendanceView() {
           onHeightChanged={setHeaderHeight}
           title={
             <ActionMenu
-                key={String(period?.id ?? "")}
-                onPressAction={async ({ nativeEvent }) => {
+              key={String(period?.id ?? "")}
+              selectionMode="single"
+              onPressAction={async ({ nativeEvent }) => {
                   const actionId = nativeEvent.event;
 
                   if (actionId.startsWith("period:")) {
