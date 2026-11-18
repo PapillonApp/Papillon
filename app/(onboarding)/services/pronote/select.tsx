@@ -1,20 +1,20 @@
-import { useHeaderHeight, useRoute, useTheme } from "expo-router/react-navigation";
-import { useNavigation } from "expo-router";
 import { geolocation } from "@blockshub/pawnote-lts";
+import { useNavigation } from "expo-router";
+import { useHeaderHeight, useRoute, useTheme } from "expo-router/react-navigation";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatSchoolName } from '@/utils/format/formatSchoolName';
 
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { Dynamic } from "@/ui/components/Dynamic";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Search from "@/ui/components/Search";
 import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 
 
 export interface School {
@@ -88,20 +88,18 @@ export default function PronoteLoginSelectEtab() {
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.overground }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
-        animated
         ListHeaderComponent={<SafeHorizontalView base={16}><PronoteSearchHeader search={search} setSearch={setSearch} loading={loading} t={t} /></SafeHorizontalView>}
         safeHorizontalPadding={16}
+        nestedScrollEnabled
         contentContainerStyle={{
-          flexGrow: 1,
-          gap: 10,
           paddingTop: headerHeight + 20,
           paddingBottom: insets.bottom + 20,
         }}
         style={{ flex: 1 }}
       >
 
-        {filteredSchools.map((school) => (
-          <List.Item animated={true} id={school.url} key={school.url} onPress={() => selectSchool(school)}>
+        {filteredSchools.map((school, index) => (
+          <List.Item id={`${school.url}-${index}`} key={`${school.url}-${index}`} onPress={() => selectSchool(school)}>
             <List.Leading>
               <Image
                 source={require("@/assets/images/service_pronote.png")}

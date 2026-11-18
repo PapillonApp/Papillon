@@ -1,10 +1,10 @@
-import React from 'react';
-import { Platform, PlatformColor, View } from 'react-native';
-import { useTranslation } from "react-i18next";
-
 import { Stack } from 'expo-router';
-import { useScreenOptions } from "@/utils/theme/ScreenOptions";
+import React from 'react';
+import { useTranslation } from "react-i18next";
+import { Platform, View } from 'react-native';
+
 import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 
 export const unstable_settings = { anchor: "locate" };
 
@@ -39,7 +39,13 @@ export default function OnboardingLayout() {
         />
         <Stack.Screen
           name="browser"
-          options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_ENT_LOGIN"), presentation: "modal", headerStyle: { backgroundColor: "transparent" } }}
+          options={{
+            ...newScreenOptions,
+            title: t("ONBOARDING_HEADER_ENT_LOGIN"),
+            presentation: Platform.OS === "android" ? "card" : "modal",
+            gestureEnabled: false,
+            headerStyle: { backgroundColor: "transparent" },
+          }}
         />
         <Stack.Screen
           name="qrcode"

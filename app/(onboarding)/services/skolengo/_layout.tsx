@@ -1,10 +1,10 @@
+import { Stack } from 'expo-router';
 import React from 'react';
 import { useTranslation } from "react-i18next";
-
-import { Stack } from 'expo-router';
-import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { Platform } from 'react-native';
+
 import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 
 export const unstable_settings = { anchor: "locate" };
 
@@ -30,7 +30,12 @@ export default function OnboardingLayout() {
       />
       <Stack.Screen
         name="webview"
-        options={{ ...newScreenOptions, headerShown: false, presentation: "modal" }}
+        options={{
+          ...newScreenOptions,
+          headerShown: false,
+          presentation: Platform.OS === "android" ? "card" : "modal",
+          gestureEnabled: false,
+        }}
       />
     </Stack>
   );

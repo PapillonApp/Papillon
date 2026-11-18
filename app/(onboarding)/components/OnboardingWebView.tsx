@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
+import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Platform, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -111,13 +111,14 @@ export default function OnboardingWebView({ webViewRef, ...props }: React.Compon
       </View>
 
       <SafeAreaView edges={["left", "right"]} style={{ flex: 1 }}>
-      <WebView
-        style={{
-          flex: 1,
-          width: "100%",
-          height: "100%"
-        }}
-        {...props}
+        <WebView
+          style={{
+            flex: 1,
+            width: "100%",
+            height: "100%"
+          }}
+          nestedScrollEnabled
+          {...props}
         onNavigationStateChange={(navState) => {
           setCurrentUrl(navState.url);
           if (props.onNavigationStateChange) {
