@@ -104,7 +104,13 @@ export function getCachedPeriodGrades(key: string): SharedPeriodGrades | null {
   if (!raw) { return null; }
 
   try {
-    return JSON.parse(raw, (k, v) => (k === "givenAt" && typeof v === "string" ? new Date(v) : v));
+    const parsed = JSON.parse(raw, (k, v) =>
+      k === "givenAt" && typeof v === "string" ? new Date(v) : v
+    ) as SharedPeriodGrades;
+    return {
+      ...parsed,
+      fromCache: true,
+    };
   } catch {
     periodGradesCache.remove(key);
     return null;

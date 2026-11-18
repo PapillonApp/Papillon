@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useManagerSubscription } from "@/hooks/useManagerSubscription";
-import type { AccountManager } from "@/services/shared";
-import { getManager } from "@/services/shared";
+import { type AccountManager, getManager } from "@/services/shared";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
 import type { Kid } from "@/services/shared/kid";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
@@ -153,6 +152,13 @@ export function useGradesData(
         if (requestId !== requestIdRef.current) { return; } // A newer request has taken over.
 
         setFailures(managerToUse.getFailures(Capabilities.GRADES));
+
+        if (!result) {
+          applyResult(undefined);
+          setError(new Error("Grades not available offline"));
+          return;
+        }
+
         cacheRef.current.set(cacheKey, result);
         applyResult(result);
       } catch (e) {

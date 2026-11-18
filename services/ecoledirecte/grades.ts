@@ -1,29 +1,25 @@
 import { Client } from "@blockshub/blocksdirecte";
 
+import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
+import { SkillChipLevel } from "@/ui/components/SkillChip";
 import { getSubjectAverageByProperty } from "@/utils/grades/algorithms/helpers";
 import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
 import { warn } from "@/utils/logger/logger";
 
-import { Grade, GradeScore, Period, PeriodGrades, Subject, } from "../shared/grade";
-import { SkillChipLevel } from "@/ui/components/SkillChip";
-import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
+import { Grade, GradeScore, Period, PeriodGrades, Subject } from "../shared/grade";
 
 export async function fetchEDGradePeriods(
   session: Client,
   accountId: string
 ): Promise<Period[]> {
-  try {
-    const overview = await session.marks.getMark();
-    return overview.periodes.map(period => ({
-      name: period.periode,
-      id: period.codePeriode,
-      start: new Date(period.dateDebut),
-      end: new Date(period.dateFin),
-      createdByAccount: accountId,
-    }));
-  } catch {
-    return [];
-  }
+  const overview = await session.marks.getMark();
+  return (overview.periodes ?? []).map(period => ({
+    name: period.periode,
+    id: period.codePeriode,
+    start: new Date(period.dateDebut),
+    end: new Date(period.dateFin),
+    createdByAccount: accountId,
+  }));
 }
 
 export async function fetchEDGrades(
@@ -31,103 +27,152 @@ export async function fetchEDGrades(
   accountId: string,
   period: Period
 ): Promise<PeriodGrades> {
-  try {
-    const overview = await session.marks.getMark();
-    const periodReport = overview.periodes.find(
-      item => item.codePeriode === period.id || item.idPeriode === period.id
-    );
-    const grades = getGradesForPeriod(overview.notes, period);
+  const overview = await session.marks.getMark();
+  const periodes = overview.periodes ?? [];
+  const notes = overview.notes ?? [];
+  const periodReport = periodes.find(
+    item =>
+      item.codePeriode === period.id ||
+      item.idPeriode === period.id ||
+      item.periode === period.name
+  );
 
-    if (!periodReport) {
-      warn("Invalid grades data structure or period not found");
-      return emptyPeriodGrades(accountId);
+  if (!periodReport) {
+    warn("Invalid grades data structure or period not found");
+    return emptyPeriodGrades(accountId);
+  }
+
+  const targetPeriodCode = periodReport.codePeriode || period.id;
+  const rawGrades = getGradesForPeriod(notes, period, targetPeriodCode);
+
+  const skillColors = {
+    insufficient: overview.parametrage?.couleurEval1 ?? "#C50017",
+    weak: overview.parametrage?.couleurEval2 ?? "#E8901C",
+    almostProficient: overview.parametrage?.couleurEval3 ?? "#6BAE00",
+    satisfactory: overview.parametrage?.couleurEval4 ?? "#12BB67",
+  };
+  const allMappedGrades: Grade[] = rawGrades.map(g => ({
+    id: String(g.id),
+    subjectId: g.codeMatiere,
+    subjectName: g.libelleMatiere,
+    description: g.devoir?.trim() || g.commentaire?.trim() || "",
+    givenAt: new Date(g.date),
+    subjectFile: undefined,
+    correctionFile: undefined,
+    bonus: false,
+    optional: false,
+    outOf: parseGradeValue(g.noteSur),
+    coefficient: g.nonSignificatif ? 0 : (parseNumericValue(g.coef, 1) ?? 1),
+    studentScore: parseGradeValue(g.valeur),
+    averageScore: parseGradeValue(g.moyenneClasse),
+    minScore: parseGradeValue(g.minClasse),
+    maxScore: parseGradeValue(g.maxClasse),
+    createdByAccount: accountId,
+    skills: (g.elementsProgramme ?? []).map(s => ({
+      name: s.libelleCompetence,
+      description: s.descriptif,
+      score: parseSkillLevel(Number.parseInt(s.valeur, 10), skillColors),
+    })),
+  }));
+
+  const subjects: Record<string, Subject> = {};
+
+  const buildSubject = (
+    id: string,
+    name: string,
+    subjectGrades: Grade[],
+    rawAverages?: {
+      student?: string;
+      classAverage?: string;
+      max?: string;
+      min?: string;
     }
-
-    const subjects: Record<string, Subject> = {};
-    const skillColors = {
-      insufficient: overview.parametrage.couleurEval1,
-      weak: overview.parametrage.couleurEval2,
-      almostProficient: overview.parametrage.couleurEval3,
-      satisfactory: overview.parametrage.couleurEval4,
-    };
-    const allMappedGrades: Grade[] = grades.map(g => ({
-        id: String(g.id),
-        subjectId: g.codeMatiere,
-        subjectName: g.libelleMatiere,
-        description: g.devoir?.trim() || g.commentaire?.trim() || "",
-        givenAt: new Date(g.date),
-        subjectFile: undefined,
-        correctionFile: undefined,
-        bonus: false,
-        optional: g.nonSignificatif,
-        outOf: parseGradeValue(g.noteSur),
-        coefficient: parseNumericValue(g.coef, 1) ?? 1,
-        studentScore: parseGradeValue(g.valeur),
-        averageScore: parseGradeValue(g.moyenneClasse),
-        minScore: parseGradeValue(g.minClasse),
-        maxScore: parseGradeValue(g.maxClasse),
-        createdByAccount: accountId,
-        skills: g.elementsProgramme.map(s => ({
-          name: s.libelleCompetence,
-          description: s.descriptif,
-          score: parseSkillLevel(parseInt(s.valeur), skillColors),
-        })),
-    }))
-
-    for (const subject of periodReport.ensembleMatieres?.disciplines ?? []) {
-      const parsedAverage = parseGradeValue(subject.moyenne)
-      const parsedClassAverage = parseGradeValue(subject.moyenneClasse)
-      const parsedMaximum = parseGradeValue(subject.moyenneMax)
-      const parsedMinimum = parseGradeValue(subject.moyenneMin)
-      const grades = allMappedGrades.filter(grade => grade.subjectId === subject.codeMatiere)
-      const computedAverage = getSubjectAverage(grades)
-      const computedClassAverage = getSubjectAverageByProperty(grades, "averageScore")
-      const computedMaximum = getSubjectAverageByProperty(grades, "maxScore")
-      const computedMinimum = getSubjectAverageByProperty(grades, "minScore")
-
-      subjects[subject.codeMatiere] = {
-        id: subject.codeMatiere,
-        name: subject.discipline,
-        studentAverage: parsedAverage.disabled && computedAverage >= 0 ? { value: computedAverage } : parsedAverage,
-        classAverage: parsedClassAverage.disabled && computedClassAverage >= 0 ? { value: computedClassAverage } : parsedClassAverage,
-        maximum: parsedMaximum.disabled && computedMaximum >= 0 ? { value: computedMaximum } : parsedMaximum,
-        minimum: parsedMinimum.disabled && computedMinimum >= 0 ? { value: computedMinimum } : parsedMinimum,
-        outOf: { value: 20 },
-        grades
-      }
-    }
-
-    const subjectValues = Object.values(subjects).filter(subject => subject.grades?.length)
-    const average = getAverageScore(
-      parseGradeValue(periodReport.ensembleMatieres?.moyenneGenerale),
-      subjectValues,
-      "studentAverage"
-    )
-    const classAverage = getAverageScore(
-      parseGradeValue(periodReport.ensembleMatieres?.moyenneClasse),
-      subjectValues,
-      "classAverage"
-    )
+  ): Subject => {
+    const parsedAverage = parseGradeValue(rawAverages?.student);
+    const parsedClassAverage = parseGradeValue(rawAverages?.classAverage);
+    const parsedMaximum = parseGradeValue(rawAverages?.max);
+    const parsedMinimum = parseGradeValue(rawAverages?.min);
+    const computedAverage = getSubjectAverage(subjectGrades);
+    const computedClassAverage = getSubjectAverageByProperty(subjectGrades, "averageScore");
+    const computedMaximum = getSubjectAverageByProperty(subjectGrades, "maxScore");
+    const computedMinimum = getSubjectAverageByProperty(subjectGrades, "minScore");
 
     return {
-      studentOverall: average,
-      classAverage,
-      subjects: subjectValues,
-      createdByAccount: accountId
+      id,
+      name,
+      studentAverage: parsedAverage.disabled && computedAverage >= 0 ? { value: computedAverage } : parsedAverage,
+      classAverage: parsedClassAverage.disabled && computedClassAverage >= 0 ? { value: computedClassAverage } : parsedClassAverage,
+      maximum: parsedMaximum.disabled && computedMaximum >= 0 ? { value: computedMaximum } : parsedMaximum,
+      minimum: parsedMinimum.disabled && computedMinimum >= 0 ? { value: computedMinimum } : parsedMinimum,
+      outOf: { value: 20 },
+      grades: subjectGrades,
+    };
+  };
+
+  for (const subject of periodReport.ensembleMatieres?.disciplines ?? []) {
+    if (!subject.codeMatiere) {
+      continue;
     }
-  } catch (error) {
-    warn(String(error));
-    return emptyPeriodGrades(accountId)
+
+    const isSubSubject = Boolean(subject.sousMatiere || subject.codeSousMatiere);
+    if (isSubSubject && subjects[subject.codeMatiere]) {
+      continue;
+    }
+
+    const subjectGrades = allMappedGrades.filter(grade => grade.subjectId === subject.codeMatiere);
+    subjects[subject.codeMatiere] = buildSubject(
+      subject.codeMatiere,
+      subject.discipline,
+      subjectGrades,
+      {
+        student: subject.moyenne,
+        classAverage: subject.moyenneClasse,
+        max: subject.moyenneMax,
+        min: subject.moyenneMin,
+      }
+    );
   }
+
+  for (const grade of allMappedGrades) {
+    if (!grade.subjectId || subjects[grade.subjectId]) {
+      continue;
+    }
+
+    const subjectGrades = allMappedGrades.filter(candidate => candidate.subjectId === grade.subjectId);
+    subjects[grade.subjectId] = buildSubject(
+      grade.subjectId,
+      grade.subjectName || grade.subjectId,
+      subjectGrades
+    );
+  }
+
+  const subjectValues = Object.values(subjects).filter(subject => subject.grades?.length);
+  const average = getAverageScore(
+    parseGradeValue(periodReport.ensembleMatieres?.moyenneGenerale),
+    subjectValues,
+    "studentAverage"
+  );
+  const classAverage = getAverageScore(
+    parseGradeValue(periodReport.ensembleMatieres?.moyenneClasse),
+    subjectValues,
+    "classAverage"
+  );
+
+  return {
+    studentOverall: average,
+    classAverage,
+    subjects: subjectValues,
+    createdByAccount: accountId,
+  };
 }
 
 function emptyPeriodGrades(accountId: string): PeriodGrades {
   return {
     createdByAccount: accountId,
-    classAverage: { value: 16.66, disabled: true },
-    studentOverall: { value: 16.66, disabled: true },
-    subjects: []
-  }
+    classAverage: { value: 0, disabled: true, status: "Inconnu" },
+    studentOverall: { value: 0, disabled: true, status: "Inconnu" },
+    subjects: [],
+  };
 }
 
 function parseSkillLevel(value: number, colors: {insufficient: string, weak: string, almostProficient: string, satisfactory: string}): string | SkillChipLevel {
@@ -217,14 +262,25 @@ function parseColor(hex: string): string {
 
 
 
-function getGradesForPeriod<T extends { codePeriode?: string; date?: string }>(grades: T[], period: Period): T[] {
-  const directMatches = grades.filter(grade => grade.codePeriode === period.id)
+function getGradesForPeriod<T extends { codePeriode?: string; date?: string }>(
+  grades: T[],
+  period: Period,
+  periodCode?: string
+): T[] {
+  const effectiveCode = periodCode || period.id;
+  const directMatches = effectiveCode
+    ? grades.filter(
+      grade =>
+        grade.codePeriode === effectiveCode ||
+        Boolean(grade.codePeriode?.startsWith(effectiveCode))
+    )
+    : [];
 
   if (directMatches.length > 0) {
-    return directMatches
+    return directMatches;
   }
 
-  return grades.filter(grade => isGradeInPeriod(grade, period))
+  return grades.filter(grade => isGradeInPeriod(grade, period));
 }
 
 function parseNumericValue(value?: string | number | null, fallback?: number): number | undefined {
@@ -298,8 +354,11 @@ function getAverageScore(
 
   const validValues = subjects
     .map(subject => subject[key])
-    .filter(score => !score.disabled && Number.isFinite(score.value))
-    .map(score => score.value)
+    .filter(
+      (score): score is GradeScore =>
+        score !== undefined && !score.disabled && Number.isFinite(score.value)
+    )
+    .map(score => score.value);
 
   if (validValues.length === 0) {
     return { value: 0, disabled: true, status: "Inconnu" }
