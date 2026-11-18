@@ -1,31 +1,32 @@
-import React, { useCallback, useMemo, useState } from 'react';
 import { Link, Stack, useTheme } from 'expo-router';
 import { t } from 'i18next';
+import { ArrowUpDown } from 'lucide-react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { FlatList, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { FlatList, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
-import i18n from '@/utils/i18n';
+import { AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
 import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
-import { useSettingsStore } from '@/stores/settings';
 import { allowAllAuthRetries } from '@/services/auth/coordinator';
-import { getGradeDisplayScale, formatScoreForDisplay, formatGradeScoreForDisplay } from '@/utils/grades/scale';
-import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from '@/utils/services/periods';
-import { getSubjectName } from '@/utils/subjects/name';
-import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { Grade, Period, Subject } from '@/services/shared/grade';
-
-import { usePeriodsData } from './hooks/usePeriodsData';
-import { useGradesData } from './hooks/useGradesData';
+import { useSettingsStore } from '@/stores/settings';
+import SafeHorizontalView, { SAFE_HORIZONTAL_EDGES } from '@/ui/components/SafeHorizontalView';
+import CompactGrade from '@/ui/new/CompactGrade';
+import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
+import useResizable from '@/ui/utils/Resizable';
+import { formatGradeScoreForDisplay, formatScoreForDisplay, getGradeDisplayScale } from '@/utils/grades/scale';
+import i18n from '@/utils/i18n';
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from '@/utils/services/periods';
+import { getSubjectEmoji } from '@/utils/subjects/emoji';
+import { getSubjectName } from '@/utils/subjects/name';
+
 import Averages from './atoms/Averages';
 import GradesEmptyState from './atoms/GradesEmptyState';
 import GradesLoading from './atoms/GradesLoading';
-import List from '@/ui/new/List';
-import useResizable from '@/ui/utils/Resizable';
-import CompactGrade from '@/ui/new/CompactGrade';
-import { AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import SafeHorizontalView, { SAFE_HORIZONTAL_EDGES } from '@/ui/components/SafeHorizontalView';
+import { useGradesData } from './hooks/useGradesData';
+import { usePeriodsData } from './hooks/usePeriodsData';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -134,7 +135,7 @@ const GradesView = () => {
     <>
       <Stack.SearchBar
         onChangeText={(e) => setSearchText(e.nativeEvent.text)}
-        placeholder={"Rechercher une matière ou une note..."}
+        placeholder={t('Grades_Search_Placeholder')}
         onFocus={() => setIsSearchbarFocused(true)}
         onBlur={() => setIsSearchbarFocused(false)}
         autoCapitalize="none"
@@ -194,8 +195,8 @@ const GradesView = () => {
       {isAndroid ? (
         <Stack.Toolbar placement="right" asChild>
           <AndroidHeaderMenu
-            icon="Filter"
-            accessibilityLabel="Sort by"
+            icon={<ArrowUpDown size={22} color={String(theme.colors.text)} />}
+            accessibilityLabel={t('Grades_Menu_SortBy')}
             actions={sortings.map(sorting => ({
               id: sorting.value,
               title: sorting.label,
@@ -208,8 +209,8 @@ const GradesView = () => {
       ) : (
         <Stack.Toolbar placement="right">
           <Stack.Toolbar.Menu>
-            <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
-            <Stack.Toolbar.Label>Sort by</Stack.Toolbar.Label>
+            <Stack.Toolbar.Icon sf="arrow.up.arrow.down" />
+            <Stack.Toolbar.Label>{t('Grades_Menu_SortBy')}</Stack.Toolbar.Label>
             {sortings.map(sorting => (
               <Stack.Toolbar.MenuAction
                 key={sorting.value}
