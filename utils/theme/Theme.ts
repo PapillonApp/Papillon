@@ -29,66 +29,69 @@ const FALLBACK_COLORS = {
 const isMaterialYouAvailable =
   Platform.OS === "android" && typeof Platform.Version === "number" && Platform.Version >= 31;
 
-function getThemeColors(useMaterialYou: boolean) {
+type ThemeColorSet = typeof FALLBACK_COLORS;
+
+let cachedDynamicColors: ThemeColorSet | null = null;
+
+function getThemeColors(useMaterialYou: boolean): ThemeColorSet {
   if (useMaterialYou && isMaterialYouAvailable) {
-    const scheme = getDynamicColorScheme('#29947A');
-    return {
-      light: {
-        primary: scheme.light.primary,
-        tint: scheme.light.primary,
-        background: scheme.light.surfaceContainer,
-        overground: scheme.light.surfaceContainer,
-        text: scheme.light.onBackground,
-        card: scheme.light.surfaceDim,
-        item: scheme.light.surfaceContainerLowest,
-      },
-      dark: {
-        primary: scheme.dark.primaryContainer,
-        tint: scheme.dark.primary,
-        background: scheme.dark.background,
-        overground: scheme.dark.background,
-        text: scheme.dark.onBackground,
-        card: scheme.dark.surfaceContainer,
-        item: scheme.dark.surfaceContainer,
-      },
-    };
+    if (!cachedDynamicColors) {
+      const scheme = getDynamicColorScheme('#29947A');
+      cachedDynamicColors = {
+        light: {
+          primary: scheme.light.primary,
+          tint: scheme.light.primary,
+          background: scheme.light.surfaceContainer,
+          overground: scheme.light.surfaceContainer,
+          text: scheme.light.onBackground,
+          card: scheme.light.surfaceDim,
+          item: scheme.light.surfaceContainerLowest,
+        },
+        dark: {
+          primary: scheme.dark.primaryContainer,
+          tint: scheme.dark.primary,
+          background: scheme.dark.background,
+          overground: scheme.dark.background,
+          text: scheme.dark.onBackground,
+          card: scheme.dark.surfaceContainer,
+          item: scheme.dark.surfaceContainer,
+        },
+      };
+    }
+
+    return cachedDynamicColors;
   }
 
   return FALLBACK_COLORS;
 }
 
-export function createDefaultTheme(useMaterialYou: boolean, primaryColor: string) {
-  const colors = getThemeColors(useMaterialYou);
-
+function buildTheme(
+  baseTheme: typeof NativeDefaultTheme,
+  palette: ThemeColorSet["light"],
+  useMaterialYou: boolean,
+  primaryColor: string
+) {
   return {
-    ...NativeDefaultTheme,
+    ...baseTheme,
     colors: {
-      ...NativeDefaultTheme.colors,
-      primary: useMaterialYou ? colors.light.primary : (primaryColor || colors.light.primary),
-      tint: useMaterialYou ? colors.light.tint : (primaryColor || colors.light.tint),
-      background: colors.light.background,
-      overground: colors.light.overground,
-      text: colors.light.text,
-      card: colors.light.card,
-      item: colors.light.item,
+      ...baseTheme.colors,
+      primary: useMaterialYou ? palette.primary : (primaryColor || palette.primary),
+      tint: useMaterialYou ? palette.tint : (primaryColor || palette.tint),
+      background: palette.background,
+      overground: palette.overground,
+      text: palette.text,
+      card: palette.card,
+      item: palette.item,
     },
   };
 }
 
+export function createDefaultTheme(useMaterialYou: boolean, primaryColor: string) {
+  const colors = getThemeColors(useMaterialYou);
+  return buildTheme(NativeDefaultTheme, colors.light, useMaterialYou, primaryColor);
+}
+
 export function createDarkTheme(useMaterialYou: boolean, primaryColor: string) {
   const colors = getThemeColors(useMaterialYou);
-
-  return {
-    ...NativeDarkTheme,
-    colors: {
-      ...NativeDarkTheme.colors,
-      primary: useMaterialYou ? colors.dark.primary : (primaryColor || colors.dark.primary),
-      tint: useMaterialYou ? colors.dark.tint : (primaryColor || colors.dark.tint),
-      background: colors.dark.background,
-      overground: colors.dark.overground,
-      text: colors.dark.text,
-      card: colors.dark.card,
-      item: colors.dark.item,
-    },
-  };
+  return buildTheme(NativeDarkTheme, colors.dark, useMaterialYou, primaryColor);
 }

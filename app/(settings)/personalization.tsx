@@ -1,25 +1,24 @@
-import { Alert, Platform, ScrollView, Switch } from "react-native";
-import Stack from "@/ui/components/Stack";
-import { EarthIcon } from "lucide-react-native";
-import React, { useEffect } from "react";
-import Typography from "@/ui/new/Typography";
-import Icon from "@/ui/components/Icon";
-import { Papicons, PapillonApp } from "@getpapillon/papicons";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
-import AppColorsSelector from "@/components/AppColorsSelector";
-import { AppColors } from "@/utils/colors";
+import { Papicons } from "@getpapillon/papicons";
+import { router } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import adjust from "@/utils/adjustColor";
+import { FadeIn, FadeOut } from "react-native-reanimated";
+
+import AppColorsSelector from "@/components/AppColorsSelector";
 import { useAccountStore } from "@/stores/account";
 import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from "@/stores/settings";
-import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { FadeIn, FadeOut } from "react-native-reanimated";
-import List from "@/ui/new/List";
-import NativeSwitch from "@/ui/native/NativeSwitch";
+import Icon from "@/ui/components/Icon";
 import Picker from "@/ui/components/Picker";
+import Stack from "@/ui/components/Stack";
+import NativeSwitch from "@/ui/native/NativeSwitch";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
+import { AppColors } from "@/utils/colors";
 import { trackOptionalEvent } from "@/utils/logger/analytics";
 
 const FONT_OPTIONS = [
@@ -45,20 +44,18 @@ const PersonalizationSettings = () => {
   );
 
   const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
-  const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
-  const [selectedTheme, setSelectedTheme] = React.useState<"light" | "dark" | "auto">("auto");
+  const [, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
+  const selectedTheme = settingsStore.theme ?? "auto";
 
-  const height = useHeaderHeight()
+  const height = useHeaderHeight();
 
-  useEffect(() => {
-    if (settingsStore.theme) {
-      setSelectedTheme(settingsStore.theme);
+  const handleSelectTheme = (nextTheme: "light" | "dark" | "auto") => {
+    if (selectedTheme === nextTheme) {
+      return;
     }
-  }, []);
-
-  useEffect(() => {
-    mutateProperty('personalization', { theme: selectedTheme });
-  }, [selectedTheme]);
+    trackOptionalEvent("color_theme_changed", { theme: nextTheme });
+    mutateProperty("personalization", { theme: nextTheme });
+  };
 
   return (
     <>
@@ -146,12 +143,8 @@ const PersonalizationSettings = () => {
                 hAlign={"center"}
                 vAlign={"center"}
               >
-                <AnimatedPressable onPress={() => {
-                  if (selectedTheme !== "light") {
-                    trackOptionalEvent("color_theme_changed", { theme: "light" });
-                  }
-                  setSelectedTheme("light");
-                }}
+                <AnimatedPressable
+                  onPress={() => handleSelectTheme("light")}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
@@ -166,12 +159,8 @@ const PersonalizationSettings = () => {
                     />
                   </Stack>
                 </AnimatedPressable>
-                <AnimatedPressable onPress={() => {
-                  if (selectedTheme !== "dark") {
-                    trackOptionalEvent("color_theme_changed", { theme: "dark" });
-                  }
-                  setSelectedTheme("dark");
-                }}
+                <AnimatedPressable
+                  onPress={() => handleSelectTheme("dark")}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
@@ -186,12 +175,8 @@ const PersonalizationSettings = () => {
                     />
                   </Stack>
                 </AnimatedPressable>
-                <AnimatedPressable onPress={() => {
-                  if (selectedTheme !== "auto") {
-                    trackOptionalEvent("color_theme_changed", { theme: "auto" });
-                  }
-                  setSelectedTheme("auto");
-                }}
+                <AnimatedPressable
+                  onPress={() => handleSelectTheme("auto")}
                   style={{ overflow: "hidden", height: "100%" }}
                 >
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
