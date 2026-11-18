@@ -11,9 +11,11 @@ const Wallpaper = ({ height = 400, dim = true }) => {
   try {
     const { wallpaper: currentWallpaper, wallpaperGradient } = useAccountWallpaper();
 
-    // No wallpaper yet (first launch, or cleared): default to a random gradient
+    // No wallpaper yet (first launch): default to a random gradient; null means explicitly cleared
     useEffect(() => {
-      if (!currentWallpaper) applyGradientWallpaper(randomGradient());
+      if (currentWallpaper === undefined) {
+        applyGradientWallpaper(randomGradient());
+      }
     }, [currentWallpaper]);
 
     // Gradients render from their params in memory, so edits show up without waiting for the PNG on disk

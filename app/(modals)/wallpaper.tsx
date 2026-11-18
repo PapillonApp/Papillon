@@ -1,27 +1,36 @@
-import { TipIds } from "@/constants/Tips"
-import { useAccountStore } from "@/stores/account"
-import { retireTip } from "@/stores/tips"
-import { useSettingsStore } from "@/stores/settings"
-import { Wallpaper } from "@/stores/settings/types"
-import AnimatedPressable from "@/ui/components/AnimatedPressable"
-import Stack from "@/ui/components/Stack"
-import { Stack as ExpoStack } from 'expo-router';
-import Typography from "@/ui/components/Typography"
-import { useHeaderHeight, useTheme } from "expo-router/react-navigation"
-import React, { useEffect, useMemo, useRef, useState } from "react"
-import { Dimensions, FlatList, Image, Platform, Pressable, RefreshControl, View } from "react-native"
-import { File, Directory, Paths } from 'expo-file-system';
-import ActivityIndicator from "@/components/ActivityIndicator"
-import { router } from "expo-router";
-import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems"
-import { Dices, EllipsisVertical, Image as ImageIcon, RefreshCw, X } from "lucide-react-native"
+import { Directory, File, Paths } from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
+import { router, Stack as ExpoStack } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
+import { Dices, EllipsisVertical, Image as ImageIcon, RefreshCw, X } from "lucide-react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Dimensions, FlatList, Image, Platform, Pressable, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import * as ImagePicker from 'expo-image-picker';
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import NativeSegmentedControl from "@/ui/native/NativeSegmentedControl"
-import { generateMeshGradient } from "@/utils/generative"
-import { applyGradientWallpaper, setAccountWallpaper, useAccountWallpaper, Gradient, GRADIENT_HEIGHT, GRADIENT_PALETTE, GRADIENT_WIDTH, isGradient, randomGradient, randomSeed } from "@/utils/gradientWallpaper"
+import ActivityIndicator from "@/components/ActivityIndicator";
+import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
+import { TipIds } from "@/constants/Tips";
+import { useSettingsStore } from "@/stores/settings";
+import { Wallpaper } from "@/stores/settings/types";
+import { retireTip } from "@/stores/tips";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import NativeSegmentedControl from "@/ui/native/NativeSegmentedControl";
+import { generateMeshGradient } from "@/utils/generative";
+import {
+  applyGradientWallpaper,
+  Gradient,
+  GRADIENT_HEIGHT,
+  GRADIENT_PALETTE,
+  GRADIENT_WIDTH,
+  isGradient,
+  randomGradient,
+  randomSeed,
+  setAccountWallpaper,
+  useAccountWallpaper,
+} from "@/utils/gradientWallpaper";
+import { error as logError } from "@/utils/logger/logger";
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
 
@@ -88,36 +97,45 @@ const WallpaperModal = () => {
   // a tapped row is already visible, and the first row never needs scrolling
   useEffect(() => {
     if (tab === "images" && collections.length > 0 && currentWallpaper) {
-      const collectionIndex = collections.findIndex((collection) => collection.images.find((image) => image.id === currentWallpaper.id));
+      const collectionIndex = collections.findIndex((collection) =>
+        collection.images.find((image) => image.id === currentWallpaper.id)
+      );
       if (collectionIndex > 0) {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           flatListRef.current?.scrollToIndex({
             index: collectionIndex,
             animated: true,
             viewOffset: Platform.OS === "ios" ? headerHeight : 0,
           });
         }, 10);
+        return () => clearTimeout(timer);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, collections]);
 
   const wallpaperDirectory = new Directory(Paths.document, "wallpapers");
+
+  const selectImageWallpaper = (nextWallpaper: Wallpaper) => {
+    clearTimeout(applyTimeout.current);
+    pendingGradient.current = null;
+    setAccountWallpaper({
+      wallpaper: nextWallpaper,
+      lastImageWallpaper: nextWallpaper,
+    });
+  };
 
   const downloadAndSelect = (wallpaper: Wallpaper) => {
     const fileName = `${wallpaper.id}.jpg`;
 
     const wallpaperFile = new File(wallpaperDirectory, fileName);
     if (wallpaperFile.exists) {
-      setAccountWallpaper({
-        wallpaper: {
-          id: wallpaper.id,
-          path: {
-            directory: wallpaperDirectory.name,
-            name: wallpaperFile.name
-          }
-        }
-      })
+      selectImageWallpaper({
+        id: wallpaper.id,
+        path: {
+          directory: wallpaperDirectory.name,
+          name: wallpaperFile.name,
+        },
+      });
       return;
     }
 
@@ -127,55 +145,66 @@ const WallpaperModal = () => {
       wallpaperDirectory.create();
     }
     File.downloadFileAsync(wallpaper.url!, wallpaperFile).then((result) => {
-      setAccountWallpaper({
-        wallpaper: {
-          id: wallpaper.id,
-          path: {
-            directory: wallpaperDirectory.name,
-            name: result.name
-          }
-        }
-      })
+      selectImageWallpaper({
+        id: wallpaper.id,
+        path: {
+          directory: wallpaperDirectory.name,
+          name: result.name,
+        },
+      });
     }).finally(() => {
       setCurrentlyDownloading((prev) => prev.filter((id) => id !== wallpaper.id));
-    })
-  }
+    });
+  };
 
-  const uploadCustomWallpaper = () => {
+  const uploadCustomWallpaper = async () => {
     try {
-      ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
-      }).then((result) => {
-        if (result.canceled) return;
+      });
 
-        const asset = result.assets[0];
-        const sourceFile = new File(asset.uri);
+      if (result.canceled || !result.assets?.[0]) {
+        return;
+      }
 
-        if (!wallpaperDirectory.exists) {
-          wallpaperDirectory.create();
+      const asset = result.assets[0];
+      const sourceFile = new File(asset.uri);
+
+      if (!wallpaperDirectory.exists) {
+        wallpaperDirectory.create();
+      }
+
+      const now = Date.now();
+      const newFileName = `custom-${now}.jpg`;
+      const destFile = new File(wallpaperDirectory, newFileName);
+
+      sourceFile.copy(destFile);
+
+      if (isGradient(currentWallpaper) && currentWallpaper?.path?.name) {
+        const gradientFile = new File(wallpaperDirectory, currentWallpaper.path.name);
+        if (gradientFile.exists) {
+          gradientFile.delete();
         }
+      }
 
-        const newFileName = `custom:${Date.now()}.jpg`;
-        const destFile = new File(wallpaperDirectory, newFileName);
+      selectImageWallpaper({
+        id: `custom:${now}`,
+        path: {
+          directory: wallpaperDirectory.name,
+          name: destFile.name,
+        },
+      });
 
-        sourceFile.copy(destFile);
-
-        setAccountWallpaper({
-          wallpaper: {
-            id: `custom:${Date.now()}`,
-            path: {
-              directory: wallpaperDirectory.name,
-              name: destFile.name
-            }
-          }
-        })
-      })
-    } catch (error) {
-      console.log(error);
+      if (tab !== "images") {
+        setTab("images");
+      }
+    } catch (err) {
+      logError(`Failed to upload custom wallpaper: ${String(err)}`);
     }
-  }
+  };
 
   const [gradient, setGradient] = useState<Gradient>(() => accountWallpaper.wallpaperGradient ?? randomGradient());
   const applyTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -219,26 +248,38 @@ const WallpaperModal = () => {
     }
   };
 
-  const downloadsSize = (wallpaperDirectory.info().size / (1024 * 1024)).toFixed(2) + " MB";
+  const directorySize = wallpaperDirectory.exists ? (wallpaperDirectory.info().size ?? 0) : 0;
+  const downloadsSize = (directorySize / (1024 * 1024)).toFixed(2) + " MB";
 
   const clearWallpaper = () => {
-    setAccountWallpaper({ wallpaper: undefined })
+    clearTimeout(applyTimeout.current);
+    pendingGradient.current = null;
+    setAccountWallpaper({
+      wallpaper: null,
+      lastImageWallpaper: undefined,
+      wallpaperGradient: undefined,
+    });
   };
 
   const clearDownloads = () => {
-    wallpaperDirectory.delete();
+    clearTimeout(applyTimeout.current);
+    pendingGradient.current = null;
+    if (wallpaperDirectory.exists) {
+      wallpaperDirectory.delete();
+    }
     // Downloads are shared by every account: drop all references to them
     mutateProperty("personalization", {
-      wallpaper: undefined,
+      wallpaper: null,
       lastImageWallpaper: undefined,
-      wallpapersByAccount: {}
-    })
+      wallpaperGradient: undefined,
+      wallpapersByAccount: {},
+    });
   };
 
   return (
     <>
       <ExpoStack.Title asChild>
-        <View style={{ width: Math.min(Dimensions.get("window").width - (Platform.OS === "android" ? 200 : 140), 280) }}>
+        <View style={{ width: Math.min(Dimensions.get("window").width - (Platform.OS === "android" ? (tab === "gradient" ? 240 : 200) : (tab === "gradient" ? 180 : 140)), 280) }}>
           <NativeSegmentedControl
             options={[t("Modal_Wallpaper_Tab_Gradient"), t("Modal_Wallpaper_Tab_Images")]}
             selectedIndex={tab === "gradient" ? 0 : 1}
@@ -250,6 +291,12 @@ const WallpaperModal = () => {
       <FlatList
         ref={flatListRef}
         data={tab === "images" ? collections : []}
+        onScrollToIndexFailed={({ index, averageItemLength }) => {
+          flatListRef.current?.scrollToOffset({
+            offset: index * averageItemLength,
+            animated: true,
+          });
+        }}
         onLayout={(e) => setListHeight(e.nativeEvent.layout.height)}
         // The gradient editor fills the visible sheet (the preview stretches), so there's nothing to scroll
         scrollEnabled={tab === "images"}
@@ -322,99 +369,99 @@ const WallpaperModal = () => {
           </ExpoStack.Toolbar>
           <ExpoStack.Toolbar placement="right" asChild>
             <View style={{ flexDirection: "row" }}>
-              {tab === "gradient" ? (
-                <AndroidHeaderButton icon={<Dices size={24} color={colors.text} />} onPress={randomizeGradient} />
-              ) : (
-                <AndroidHeaderButton icon={<ImageIcon size={24} color={hasCustomWallpaper ? colors.primary : colors.text} />} onPress={uploadCustomWallpaper} />
+              {tab === "gradient" && (
+                <>
+                  <AndroidHeaderButton icon={<Dices size={24} color={colors.text} />} onPress={randomizeGradient} />
+                  <AndroidHeaderButton
+                    icon={<RefreshCw size={24} color={colors.text} />}
+                    accessibilityLabel={t("Modal_Wallpaper_Gradient_Shuffle")}
+                    onPress={shuffleGradient}
+                  />
+                </>
               )}
-              {tab === "gradient" ? (
-                <AndroidHeaderButton
-                  icon={<RefreshCw size={24} color={colors.text} />}
-                  accessibilityLabel={t("Modal_Wallpaper_Gradient_Shuffle")}
-                  onPress={shuffleGradient}
-                />
-              ) : (
-                <AndroidHeaderMenu
-                  icon={<EllipsisVertical size={24} color={colors.text} />}
-                  actions={[
-                    {
-                      id: "background:clear",
-                      title: t("Modal_Wallpaper_Clear"),
-                      imageColor: "#FF0000",
-                      attributes: { "destructive": true, "disabled": !currentWallpaper }
-                    },
-                    {
-                      id: "background:downloads",
-                      title: t("Modal_Wallpaper_Downloads"),
-                      imageColor: colors.text,
-                      displayInline: false,
-                      subactions: [
-                        {
-                          title: t("Modal_Wallpaper_Downloads_Size"),
-                          subtitle: downloadsSize
-                        },
-                        {
-                          id: "downloads:clear",
-                          title: t("Modal_Wallpaper_ClearDownloads"),
-                          imageColor: "#FF0000",
-                          attributes: { "destructive": true, "disabled": !wallpaperDirectory.exists }
-                        }
-                      ]
-                    },
-                  ]}
-                  onPressAction={({ nativeEvent }) => {
-                    if (nativeEvent.event === "downloads:clear") clearDownloads();
-                    if (nativeEvent.event === "background:clear") clearWallpaper();
-                  }}
-                />
-              )}
+              <AndroidHeaderButton icon={<ImageIcon size={24} color={hasCustomWallpaper ? colors.primary : colors.text} />} onPress={uploadCustomWallpaper} />
+              <AndroidHeaderMenu
+                icon={<EllipsisVertical size={24} color={colors.text} />}
+                actions={[
+                  {
+                    id: "background:clear",
+                    title: t("Modal_Wallpaper_Clear"),
+                    imageColor: "#FF0000",
+                    attributes: { "destructive": true, "disabled": !currentWallpaper }
+                  },
+                  {
+                    id: "background:downloads",
+                    title: t("Modal_Wallpaper_Downloads"),
+                    imageColor: colors.text,
+                    displayInline: false,
+                    subactions: [
+                      {
+                        title: t("Modal_Wallpaper_Downloads_Size"),
+                        subtitle: downloadsSize
+                      },
+                      {
+                        id: "downloads:clear",
+                        title: t("Modal_Wallpaper_ClearDownloads"),
+                        imageColor: "#FF0000",
+                        attributes: { "destructive": true, "disabled": !wallpaperDirectory.exists }
+                      }
+                    ]
+                  },
+                ]}
+                onPressAction={({ nativeEvent }) => {
+                  if (nativeEvent.event === "downloads:clear") {
+                    clearDownloads();
+                  }
+                  if (nativeEvent.event === "background:clear") {
+                    clearWallpaper();
+                  }
+                }}
+              />
             </View>
           </ExpoStack.Toolbar>
         </>
       ) : (
         <>
           <ExpoStack.Toolbar placement="left">
-            {tab === "gradient" ? (
+            <ExpoStack.Toolbar.Button
+              icon="photo"
+              tintColor={hasCustomWallpaper ? colors.primary : undefined}
+              onPress={uploadCustomWallpaper}
+            />
+            {tab === "gradient" && (
               <ExpoStack.Toolbar.Button icon="dice" onPress={randomizeGradient} />
-            ) : (
-              <ExpoStack.Toolbar.Button
-                icon="photo"
-                tintColor={hasCustomWallpaper ? colors.primary : undefined}
-                onPress={uploadCustomWallpaper}
-              />
             )}
           </ExpoStack.Toolbar>
           <ExpoStack.Toolbar placement="right">
-            {tab === "gradient" ? (
+            {tab === "gradient" && (
               <ExpoStack.Toolbar.Button icon="arrow.triangle.2.circlepath" onPress={shuffleGradient}>
                 {t("Modal_Wallpaper_Gradient_Shuffle")}
               </ExpoStack.Toolbar.Button>
-            ) : (
-              <ExpoStack.Toolbar.Menu>
-                <ExpoStack.Toolbar.Icon sf="ellipsis" />
+            )}
+            <ExpoStack.Toolbar.Menu>
+              <ExpoStack.Toolbar.Icon sf="ellipsis" />
+              <ExpoStack.Toolbar.MenuAction
+                icon="trash.fill"
+                destructive
+                disabled={!currentWallpaper}
+                onPress={clearWallpaper}
+              >
+                {t("Modal_Wallpaper_Clear")}
+              </ExpoStack.Toolbar.MenuAction>
+              <ExpoStack.Toolbar.Menu title={t("Modal_Wallpaper_Downloads")} icon="square.and.arrow.down">
+                <ExpoStack.Toolbar.MenuAction disabled subtitle={downloadsSize}>
+                  {t("Modal_Wallpaper_Downloads_Size")}
+                </ExpoStack.Toolbar.MenuAction>
                 <ExpoStack.Toolbar.MenuAction
                   icon="trash.fill"
                   destructive
-                  disabled={!currentWallpaper}
-                  onPress={clearWallpaper}
+                  disabled={!wallpaperDirectory.exists}
+                  onPress={clearDownloads}
                 >
-                  {t("Modal_Wallpaper_Clear")}
+                  {t("Modal_Wallpaper_ClearDownloads")}
                 </ExpoStack.Toolbar.MenuAction>
-                <ExpoStack.Toolbar.Menu title={t("Modal_Wallpaper_Downloads")} icon="square.and.arrow.down">
-                  <ExpoStack.Toolbar.MenuAction disabled subtitle={downloadsSize}>
-                    {t("Modal_Wallpaper_Downloads_Size")}
-                  </ExpoStack.Toolbar.MenuAction>
-                  <ExpoStack.Toolbar.MenuAction
-                    icon="trash.fill"
-                    destructive
-                    disabled={!wallpaperDirectory.exists}
-                    onPress={clearDownloads}
-                  >
-                    {t("Modal_Wallpaper_ClearDownloads")}
-                  </ExpoStack.Toolbar.MenuAction>
-                </ExpoStack.Toolbar.Menu>
               </ExpoStack.Toolbar.Menu>
-            )}
+            </ExpoStack.Toolbar.Menu>
           </ExpoStack.Toolbar>
         </>
       )}
