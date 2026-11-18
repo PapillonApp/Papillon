@@ -1,31 +1,31 @@
 import { Papicons } from '@getpapillon/papicons';
-import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import type { LiveActivityPreviewMode } from "@getpapillon/papillonkit";
+import * as PapillonKit from "@getpapillon/papillonkit";
 import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
 import * as DateLocale from 'date-fns/locale';
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import i18n, { t } from "i18next";
 import React, { useEffect, useState } from "react";
 import { Alert, Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ModalOverhead from "@/components/ModalOverhead";
 import { getCourseById } from "@/database/useTimetable";
 import { Course as SharedCourse } from "@/services/shared/timetable";
+import { useSettingsStore } from "@/stores/settings";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Icon from "@/ui/components/Icon";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import { NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { getSubjectName } from '@/utils/subjects/name';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
-import { useSettingsStore } from "@/stores/settings";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import * as PapillonKit from "@getpapillon/papillonkit";
-import type { LiveActivityPreviewMode } from "@getpapillon/papillonkit";
+import { getSubjectName } from '@/utils/subjects/name';
 
 import { getStatusText } from "../../(tabs)/calendar/components/CalendarDay";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SubjectInfo {
   name: string;
@@ -69,12 +69,40 @@ export default function CourseModal() {
     };
   }, [id]);
 
+  const handleGoBack = () =>
+    router.canGoBack() ? router.back() : router.replace("/");
+
+  const iosFallbackHeader =
+    Platform.OS === "ios" && !router.canGoBack() ? (
+      <Stack.Screen
+        options={{
+          headerLeft: () => (
+            <HeaderBackButton onPress={handleGoBack} tintColor={colors.text} />
+          ),
+        }}
+      />
+    ) : null;
+
   if (loading) {
-    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><ActivityIndicator /></View>;
+    return (
+      <>
+        {iosFallbackHeader}
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator />
+        </View>
+      </>
+    );
   }
 
   if (!course) {
-    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Typography variant="title">{t("Tab_Calendar")}</Typography></View>;
+    return (
+      <>
+        {iosFallbackHeader}
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <Typography variant="title">{t("Tab_Calendar")}</Typography>
+        </View>
+      </>
+    );
   }
 
   const subjectInfo: SubjectInfo = {
@@ -97,9 +125,10 @@ export default function CourseModal() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.overground }}>
+      {iosFallbackHeader}
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <HeaderBackButton onPress={() => router.back()} />
+          <HeaderBackButton onPress={handleGoBack} />
         </NativeHeaderSide>
       )}
 
