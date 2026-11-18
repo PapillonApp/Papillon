@@ -1,3 +1,4 @@
+import { getISOWeek } from 'date-fns';
 import { router, Stack } from 'expo-router';
 import { useHeaderHeight, useTheme } from 'expo-router/react-navigation';
 import { t } from 'i18next';
@@ -7,31 +8,29 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
   runOnJS,
+  type SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  type SharedValue,
 } from 'react-native-reanimated';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { AndroidHeaderButton, AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
 import { TipIds } from '@/constants/Tips';
-import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
+import { getDateRangeOfWeek } from '@/database/useHomework';
 import { retireTip } from '@/stores/tips';
 import { useAlert } from "@/ui/components/AlertProvider";
-import Tip from '@/ui/components/Tip';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import Tip from '@/ui/components/Tip';
 import Typography from '@/ui/new/Typography';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import i18n from '@/utils/i18n';
 
-import { AndroidHeaderButton, AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
-
 import TasksWeekPage from './components/TasksWeekPage';
 import WeekPicker from './components/WeekPicker';
 import { useHomeworkData } from './hooks/useHomeworkData';
-import { useTaskFilters } from './hooks/useTaskFilters';
+import { type SortMethod, useTaskFilters } from './hooks/useTaskFilters';
 import { useWeekSelection } from './hooks/useWeekSelection';
-import type { SortMethod } from './hooks/useTaskFilters';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -96,7 +95,7 @@ const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol; papico
 // The pager addresses weeks as an offset from the week the screen opened in;
 // this is the number a human reads on the calendar.
 const getDisplayedWeekNumber = (week: number) =>
-  getWeekNumberFromDate(getDateRangeOfWeek(week, new Date().getFullYear()).start);
+  getISOWeek(getDateRangeOfWeek(week, new Date().getFullYear()).start);
 
 interface WeekLabels {
   main: string;
@@ -104,9 +103,16 @@ interface WeekLabels {
 }
 
 function getWeekLabels(week: number, currentWeek: number): WeekLabels {
+  let relative: string | undefined;
+  if (week === currentWeek) {
+    relative = t('Tasks_ThisWeek');
+  } else if (week === currentWeek + 1) {
+    relative = t('Tasks_NextWeek');
+  }
+
   return {
     main: `${t('Tasks_Week')} ${getDisplayedWeekNumber(week)}`,
-    relative: week === currentWeek ? t('Tasks_ThisWeek') : undefined,
+    relative,
   };
 }
 
@@ -148,7 +154,7 @@ const TasksView: React.FC = () => {
   const headerHeight = useHeaderHeight();
 
   const {
-    defaultWeek,
+    currentWeek,
     selectedWeek,
     showWeekPicker,
     toggleWeekPicker,
@@ -180,9 +186,11 @@ const TasksView: React.FC = () => {
   const {
     searchTerm,
     setSearchTerm,
+    showUndoneOnly,
+    setShowUndoneOnly,
     sortMethod,
     setSortMethod,
-    collapsedGroups,
+    groupOverrides,
     toggleGroup,
   } = useTaskFilters();
 
@@ -198,7 +206,7 @@ const TasksView: React.FC = () => {
   // label is anchored to the last *settled* week instead of the live one:
   // nothing in the header changes while a swipe is in flight.
   const [settledIndex, setSettledIndex] = useState(INITIAL_INDEX);
-  const settledLabels = getWeekLabels(getWeekFromIndex(settledIndex), defaultWeek);
+  const settledLabels = getWeekLabels(getWeekFromIndex(settledIndex), currentWeek);
   const weekLabel = settledLabels.relative ?? settledLabels.main;
 
   // The pager's live position, in pixels away from the origin page. Pages are
@@ -347,7 +355,7 @@ const TasksView: React.FC = () => {
                 offset={offsetX}
                 pageOffset={pageIndex - INITIAL_INDEX}
                 pageWidth={windowWidth}
-                labels={getWeekLabels(getWeekFromIndex(pageIndex), defaultWeek)}
+                labels={getWeekLabels(getWeekFromIndex(pageIndex), currentWeek)}
                 slideDistance={screenWidth * TITLE_SLIDE_RATIO}
               />
             );
@@ -362,13 +370,27 @@ const TasksView: React.FC = () => {
             <AndroidHeaderMenu
               icon="Filter"
               accessibilityLabel={t('Task_Sorting_Title')}
-              actions={sortings.map(sorting => ({
-                id: sorting.value,
-                title: sorting.label,
-                papicon: sorting.papicon,
-                state: sortMethod === sorting.value ? 'on' : 'off',
-              }))}
-              onPressAction={({ nativeEvent }) => setSortMethod(nativeEvent.event as SortMethod)}
+              actions={[
+                ...sortings.map(sorting => ({
+                  id: sorting.value,
+                  title: sorting.label,
+                  papicon: sorting.papicon,
+                  state: (sortMethod === sorting.value ? 'on' : 'off') as 'on' | 'off',
+                })),
+                {
+                  id: 'toggle-done',
+                  title: t('Task_OnlyShowUndone'),
+                  papicon: 'Check',
+                  state: showUndoneOnly ? 'off' : 'on',
+                },
+              ]}
+              onPressAction={({ nativeEvent }) => {
+                if (nativeEvent.event === 'toggle-done') {
+                  setShowUndoneOnly(prev => !prev);
+                  return;
+                }
+                setSortMethod(nativeEvent.event as SortMethod);
+              }}
             />
           </View>
         </Stack.Toolbar>
@@ -378,16 +400,27 @@ const TasksView: React.FC = () => {
           <Stack.Toolbar.Menu>
             <Stack.Toolbar.Icon sf="line.3.horizontal.decrease" />
             <Stack.Toolbar.Label>{t('Task_Sorting_Title')}</Stack.Toolbar.Label>
-            {sortings.map(sorting => (
+            <Stack.Toolbar.Menu inline title={t('Task_Sorting_Title')}>
+              {sortings.map(sorting => (
+                <Stack.Toolbar.MenuAction
+                  key={sorting.value}
+                  isOn={sortMethod === sorting.value}
+                  icon={sorting.sf}
+                  onPress={() => setSortMethod(sorting.value)}
+                >
+                  {sorting.label}
+                </Stack.Toolbar.MenuAction>
+              ))}
+            </Stack.Toolbar.Menu>
+            <Stack.Toolbar.Menu inline title={t('Task_Show_Title')}>
               <Stack.Toolbar.MenuAction
-                key={sorting.value}
-                isOn={sortMethod === sorting.value}
-                icon={sorting.sf}
-                onPress={() => setSortMethod(sorting.value)}
+                isOn={!showUndoneOnly}
+                icon="checkmark.circle"
+                onPress={() => setShowUndoneOnly(prev => !prev)}
               >
-                {sorting.label}
+                {t('Task_OnlyShowUndone')}
               </Stack.Toolbar.MenuAction>
-            ))}
+            </Stack.Toolbar.Menu>
           </Stack.Toolbar.Menu>
         </Stack.Toolbar>
       )}
@@ -414,7 +447,8 @@ const TasksView: React.FC = () => {
                       animateItems={index === INITIAL_INDEX}
                       searchTerm={searchTerm}
                       sortMethod={sortMethod}
-                      collapsedGroups={collapsedGroups}
+                      showUndoneOnly={showUndoneOnly}
+                      groupOverrides={groupOverrides}
                       toggleGroup={toggleGroup}
                       isRefreshing={refreshingWeek === week}
                       onRefresh={handleRefresh}

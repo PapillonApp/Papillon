@@ -40,7 +40,19 @@ export const getWeekIndexOfDate = (date: Date) =>
  * names the *next* week for any Sunday. The title, the pager's origin and the
  * picker all read this, so they cannot drift apart.
  */
-export const getCurrentWeekIndex = () => getWeekIndexOfDate(new Date());
+export const getCurrentWeekIndex = (now = new Date()) => getWeekIndexOfDate(now);
+
+/**
+ * On Saturday afternoon (from 14:00) and Sunday, default the tasks view to
+ * next week so students immediately see upcoming schoolwork for Monday.
+ */
+export const getDefaultTasksWeekIndex = (now = new Date()) => {
+  const current = getCurrentWeekIndex(now);
+  const day = now.getDay();
+  const isWeekendAfterSaturdayCutoff =
+    day === 0 || (day === 6 && now.getHours() >= 14);
+  return isWeekendAfterSaturdayCutoff ? current + 1 : current;
+};
 
 export const getWeekCell = (index: number): WeekCell => {
   const { start, end } = getWeekRange(index);

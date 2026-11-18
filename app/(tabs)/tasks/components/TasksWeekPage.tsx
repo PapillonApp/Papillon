@@ -11,8 +11,9 @@ interface TasksWeekPageProps {
   homeworks?: Homework[];
   searchTerm: string;
   sortMethod: SortMethod;
-  collapsedGroups: string[];
-  toggleGroup: (headerId: string) => void;
+  showUndoneOnly?: boolean;
+  groupOverrides: Record<string, boolean>;
+  toggleGroup: (headerId: string, currentlyCollapsed: boolean) => void;
   isRefreshing: boolean;
   onRefresh: (week: number) => void;
   setAsDone: (item: Homework, done: boolean) => void;
@@ -29,7 +30,8 @@ const TasksWeekPage: React.FC<TasksWeekPageProps> = ({
   homeworks,
   searchTerm,
   sortMethod,
-  collapsedGroups,
+  showUndoneOnly = false,
+  groupOverrides,
   toggleGroup,
   isRefreshing,
   onRefresh,
@@ -38,8 +40,13 @@ const TasksWeekPage: React.FC<TasksWeekPageProps> = ({
   hasError,
 }) => {
   const sections = useMemo(
-    () => buildHomeworkSections(homeworks ?? [], { searchTerm, sortMethod }),
-    [homeworks, searchTerm, sortMethod]
+    () =>
+      buildHomeworkSections(homeworks ?? [], {
+        searchTerm,
+        sortMethod,
+        showUndoneOnly,
+      }),
+    [homeworks, searchTerm, sortMethod, showUndoneOnly]
   );
 
   const handleRefresh = useCallback(() => onRefresh(week), [onRefresh, week]);
@@ -50,7 +57,7 @@ const TasksWeekPage: React.FC<TasksWeekPageProps> = ({
       searchTerm={searchTerm}
       isRefreshing={isRefreshing}
       onRefresh={handleRefresh}
-      collapsedGroups={collapsedGroups}
+      groupOverrides={groupOverrides}
       toggleGroup={toggleGroup}
       sortMethod={sortMethod}
       setAsDone={setAsDone}
