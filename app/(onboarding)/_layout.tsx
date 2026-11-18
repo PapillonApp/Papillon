@@ -1,12 +1,12 @@
-import React from 'react';
-import { Platform, Pressable, View } from 'react-native';
 import { Stack, useRouter } from "expo-router";
 import { HeaderBackButton } from "expo-router/react-navigation";
-
-import { useScreenOptions } from "@/utils/theme/ScreenOptions";
-import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 import { t } from 'i18next';
+import React from 'react';
+import { Platform, Pressable, View } from 'react-native';
+
+import { useAndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 import Typography from '@/ui/new/Typography';
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
   const router = useRouter();
@@ -21,6 +21,8 @@ export default function OnboardingLayout() {
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
   }), [screenOptions, androidHeaderProps]);
+
+  const sheetPresentation = Platform.OS === "android" ? "card" : "formSheet";
 
   return (
     <View style={{ flex: 1, backgroundColor: Platform.OS === "ios" ? "black" : undefined }}>
@@ -75,19 +77,19 @@ export default function OnboardingLayout() {
 
         <Stack.Screen
           name="services/pronote"
-          options={{ headerShown: false, title: "", presentation: "formSheet" }}
+          options={{ headerShown: false, title: "", presentation: sheetPresentation }}
         />
         <Stack.Screen
           name="services/ed"
-          options={{ headerShown: false, title: "", presentation: "formSheet" }}
+          options={{ headerShown: false, title: "", presentation: sheetPresentation }}
         />
         <Stack.Screen
           name="services/skolengo"
-          options={{ headerShown: false, title: "", presentation: "formSheet" }}
+          options={{ headerShown: false, title: "", presentation: sheetPresentation }}
         />
         <Stack.Screen
           name="services/multi"
-          options={{ headerShown: false, title: "", presentation: "formSheet" }}
+          options={{ headerShown: false, title: "", presentation: sheetPresentation }}
         />
         <Stack.Screen
           name="services/appscho"

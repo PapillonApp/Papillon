@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { router, useNavigation } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView, Platform } from "react-native";
@@ -10,12 +10,12 @@ import { SearchSchools } from "skolengojs";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Search from "@/ui/components/Search";
 import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 
 export interface School {
@@ -119,17 +119,15 @@ export default function PronoteLoginMethod() {
       <List
         ListHeaderComponent={<SafeHorizontalView base={16}><PronoteSearchHeader city={city} setCity={setCity} loading={loading && schools.length === 0} showElse={schools.length === 0 && !loading} t={t} /></SafeHorizontalView>}
         safeHorizontalPadding={16}
+        nestedScrollEnabled
         contentContainerStyle={{
-          flexGrow: 1,
-          gap: 10,
           paddingTop: headerHeight + 20,
           paddingBottom: insets.bottom + 20,
         }}
         style={{ flex: 1 }}
-        animated
       >
         {schools.map((school, i) => (
-          <List.Item animated={true} key={school.id} id={school.id} onPress={() => {selectSchool(school)}}>
+          <List.Item key={`${school.id}-${i}`} id={`${school.id}-${i}`} onPress={() => {selectSchool(school)}}>
             <List.Leading>
               <Icon><Papicons name="mappin" /></Icon>
             </List.Leading>

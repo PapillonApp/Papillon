@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView, Platform } from "react-native";
@@ -9,13 +9,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Search from "@/ui/components/Search";
 import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { GeographicSearchCities } from "@/utils/native/georeverse";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const convertPostalCode
 = (postalCode: string) => {
@@ -125,17 +125,15 @@ export default function PronoteLoginMethod() {
       <List
         ListHeaderComponent={<SafeHorizontalView base={16}><PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} t={t} /></SafeHorizontalView>}
         safeHorizontalPadding={16}
+        nestedScrollEnabled
         contentContainerStyle={{
-          flexGrow: 1,
-          gap: 10,
           paddingTop: headerHeight + 20,
           paddingBottom: insets.bottom + 20,
         }}
         style={{ flex: 1 }}
-        animated
       >
         {cities.length === 0 && !loading && (
-          <List.Item animated onPress={() => navigation.navigate("qrcode")}>
+          <List.Item id="login-qrcode" onPress={() => navigation.navigate("qrcode")}>
             <List.Leading>
               <Icon><Papicons name="qrcode" /></Icon>
             </List.Leading>
@@ -147,7 +145,7 @@ export default function PronoteLoginMethod() {
         )}
 
         {cities.length === 0 && !loading && (
-          <List.Item animated onPress={() => navigation.navigate("url")}>
+          <List.Item id="login-url" onPress={() => navigation.navigate("url")}>
             <List.Leading>
               <Icon><Papicons name="link" /></Icon>
             </List.Leading>
@@ -156,7 +154,7 @@ export default function PronoteLoginMethod() {
         )}
 
         {cities.map((city, i) => (
-          <List.Item animated={true} key={city.id} id={city.id} onPress={() => {selectCity(city)}}>
+          <List.Item key={`${city.id}-${i}`} id={`${city.id}-${i}`} onPress={() => {selectCity(city)}}>
             <List.Leading>
               <Icon><Papicons name="mappin" /></Icon>
             </List.Leading>

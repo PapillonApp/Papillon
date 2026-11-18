@@ -103,7 +103,7 @@ export async function GeographicSearchCities(q: string, retry = 3): Promise<GeoS
 
     while (retries > 0) {
       res = await fetch(
-        `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(q)}`
+        `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(q)}&type=municipality`
       );
 
       if (res.ok) {
@@ -124,8 +124,8 @@ export async function GeographicSearchCities(q: string, retry = 3): Promise<GeoS
 
     const response = await res.json();
 
-    const resp = response?.features.map((feature: any) => ({
-      id: feature.properties.banId,
+    const resp = response?.features?.map((feature: any) => ({
+      id: feature.properties.id ?? feature.properties.banId ?? `${feature.properties.city}-${feature.properties.postcode}`,
       city: feature.properties.city,
       context: feature.properties.context,
       importance: feature.properties.score,
