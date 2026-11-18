@@ -2,11 +2,16 @@ import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 import { useAndroidHeaderProps } from "@/components/AndroidHeaderBackground";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { useScreenOptions } from "@/utils/theme/ScreenOptions";
 
 import CalendarHeaderBackground from "./components/CalendarHeaderBackground";
+
+// eslint-disable-next-line camelcase
+export const unstable_settings = {
+  anchor: "index",
+};
 
 export default function Layout() {
   const { t } = useTranslation();

@@ -3,9 +3,10 @@ import 'react-native-reanimated';
 import "@/utils/i18n";
 
 import { Buffer } from 'buffer';
-import React, { useEffect, useMemo, useRef } from 'react';
 import { useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { LogBox, View } from 'react-native';
 
 import { AppProviders } from '@/components/AppProviders';
 import { RootNavigator } from '@/components/RootNavigator';
@@ -17,7 +18,11 @@ import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
 import { useCalendarWidgetFeed } from '@/utils/widgets/useCalendarWidgetFeed';
 import { usePapillonKitSettingsSync } from '@/utils/widgets/usePapillonKitSettingsSync';
-import { LogBox, View } from 'react-native';
+
+// eslint-disable-next-line camelcase
+export const unstable_settings = {
+  anchor: "(tabs)",
+};
 
 // Polyfill Buffer
 global.Buffer = Buffer;
