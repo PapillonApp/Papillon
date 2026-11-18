@@ -1,36 +1,37 @@
 import { Papicons } from "@getpapillon/papicons";
-import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
-import { Stack as ExpoStack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { Stack as ExpoStack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useCallback, useRef, useState } from "react";
+import { Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
 import ModalOverhead from "@/components/ModalOverhead";
 import { deleteHomeworkFromDatabase, getHomeworkById, updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { useAlert } from "@/ui/components/AlertProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
-import Stack from "@/ui/components/Stack";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import Stack from "@/ui/components/Stack";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
 import { formatHTML } from "@/utils/format/html";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { Platform } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import List from "@/ui/new/List";
-import Typography from "@/ui/new/Typography";
-import { Homework } from "@/services/shared/homework";
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import { View } from "react-native";
 
 const Task = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const alert = useAlert();
   const theme = useTheme();
   const colors = theme.colors;
   const [task, setTask] = useState<Homework>();
@@ -82,16 +83,36 @@ const Task = () => {
   }
 
   const setAsDone = async (done: boolean) => {
-    if (!task) return;
-    // A custom task has no service to sync its state with.
-    if (!task.custom) {
-      const manager = getManager();
-      await manager?.setHomeworkCompletion(task, done);
+    if (!task) {
+      return;
     }
 
-    await updateHomeworkIsDone(id, done);
-    setIsDone(done);
-  }
+    try {
+      let updatedTask = task;
+      // A custom task has no service to sync its state with.
+      if (!task.custom) {
+        const manager = getManager();
+        if (!manager) {
+          throw new Error("Account manager unavailable");
+        }
+        updatedTask = await manager.setHomeworkCompletion(task, done);
+      }
+
+      await updateHomeworkIsDone(id, done);
+      setIsDone(done);
+      setTask({ ...updatedTask, isDone: done });
+    } catch (err) {
+      alert.showAlert({
+        title: "Une erreur est survenue",
+        message: "Ce devoir n'a pas été mis à jour",
+        description:
+          "Nous n'avons pas réussi à mettre à jour l'état du devoir, si ce devoir est important, merci de te rendre sur l'application officielle de ton établissement afin de définir son état.",
+        color: "#D60046",
+        icon: "AlertTriangle",
+        technical: String(err),
+      });
+    }
+  };
 
   const editTask = () => {
     if (!task) {

@@ -53,14 +53,14 @@ export async function fetchSkolengoHomeworks(session: Skolengo, accountId: strin
 
 export async function setSkolengoHomeworkAsDone(accountId: string, homework: Homework, status?: boolean): Promise<Homework> {
   if (!homework.ref) {
-    error("Invalid Homework Reference")
+    throw error("Invalid Homework Reference")
   }
 
-  const state = await homework.ref.setCompletion(status || !homework.isDone)
-  let attachments: Attachment[] = []
+  const finalStatus = status ?? !homework.isDone;
+  const state = await homework.ref.setCompletion(finalStatus)
 
   const homeworkAttachments = await state.getAttachments()
-  attachments = homeworkAttachments.map(attachment => ({
+  const attachments: Attachment[] = homeworkAttachments.map(attachment => ({
     type: AttachmentType.FILE,
     name: attachment.fileName ?? "",
     url: attachment.url,
