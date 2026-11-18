@@ -303,6 +303,8 @@
   "SubjectInfo_MaxAverage_Description": "Meilleure moyenne du groupe",
   "SubjectInfo_MinAverage_Label": "Moyenne minimale",
   "SubjectInfo_MinAverage_Description": "Moyenne la plus faible du groupe",
+  "SubjectInfo_GlobalImpact_Label": "Impact sur la moyenne",
+  "SubjectInfo_GlobalImpact_Description": "Influence de cette matière sur ta moyenne générale",
   "Grades_Semester": "Semestre",
   "Grades_Trimester": "Trimestre",
   "Grades_OutPeriod": "Hors période",

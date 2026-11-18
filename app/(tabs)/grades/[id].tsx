@@ -1,34 +1,40 @@
 import { Papicons } from '@getpapillon/papicons';
+import { useLocalSearchParams } from "expo-router";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { Link, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useState } from "react";
 import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { getManager } from "@/services/shared";
 import { Grade as SharedGrade, Subject } from "@/services/shared/grade";
+import { useSettingsStore } from '@/stores/settings';
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import { SkillChip } from "@/ui/components/SkillChip";
 import Stack from "@/ui/components/Stack";
 import TypographyLegacy from "@/ui/components/Typography";
-import adjust from '@/utils/adjustColor';
-import { colorCheck } from '@/utils/colorCheck';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
-import { useSettingsStore } from '@/stores/settings';
-import { formatAssumed20ForDisplay, getGradeDisplayScale, getDisplayScaleMax } from '@/utils/grades/scale';
-import { SkillChip } from "@/ui/components/SkillChip";
+import adjust from '@/utils/adjustColor';
+import { colorCheck } from '@/utils/colorCheck';
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import { useGradeInfluence } from "./hooks/useGradeInfluence";
+import {
+  formatAssumed20ForDisplay,
+  getDisplayScaleMax,
+  getGradeDisplayScale,
+  toDisplayScaleFrom20,
+} from '@/utils/grades/scale';
+import { warn } from "@/utils/logger/logger";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { warn } from "@/utils/logger/logger";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+
+import { useGradeInfluence } from "./hooks/useGradeInfluence";
 
 interface SubjectInfo {
   name: string;
@@ -169,8 +175,12 @@ export default function GradesModal() {
     subjects,
     getSubjectById
   );
-  const avgInfluence = grade ? getAvgInfluence(grade) : 0;
-  const avgClass = grade ? getAvgClassInfluence(grade) : 0;
+  const avgInfluence = grade
+    ? Number(toDisplayScaleFrom20(getAvgInfluence(grade), displayScale).toFixed(2)) || 0
+    : 0;
+  const avgClass = grade
+    ? Number(toDisplayScaleFrom20(getAvgClassInfluence(grade), displayScale).toFixed(2)) || 0
+    : 0;
 
   if (loading) {
     return (
@@ -492,13 +502,13 @@ export default function GradesModal() {
                   color={
                     avgInfluence === 0
                       ? "#757575"
-                      : avgInfluence >= 0
+                      : avgInfluence > 0
                         ? "#2e8900"
                         : "#990000"
                   }
                   denominator="pts"
                 >
-                  {avgInfluence >= 0
+                  {avgInfluence > 0
                     ? `+${avgInfluence.toFixed(2)}`
                     : avgInfluence.toFixed(2)}
                 </ContainedNumber>
@@ -516,16 +526,10 @@ export default function GradesModal() {
               </Typography>
               <List.Trailing>
                 <ContainedNumber
-                  color={
-                    avgClass === 0
-                      ? "#757575"
-                      : avgClass >= 0
-                        ? "#2e8900"
-                        : "#990000"
-                  }
+                  color="#757575"
                   denominator="pts"
                 >
-                  {avgClass >= 0
+                  {avgClass > 0
                     ? `+${avgClass.toFixed(2)}`
                     : avgClass.toFixed(2)}
                 </ContainedNumber>
