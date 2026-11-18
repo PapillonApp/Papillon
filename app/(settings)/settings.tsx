@@ -1,35 +1,30 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
-import { BusIcon, HeartIcon, InfoIcon } from "lucide-react-native";
+import { HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
-import { Alert, Image, Platform, Pressable, View } from "react-native";
+import { Alert, Image, Platform, View } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Avatar from "@/ui/components/Avatar";
 import Icon from "@/ui/components/Icon";
-import { NativeHeaderSide } from "@/ui/components/NativeHeader";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import TypographyLegacy from "@/ui/components/Typography";
-import adjust from "@/utils/adjustColor";
-import { getInitials } from "@/utils/chats/initials";
-import { error } from "@/utils/logger/logger";
-import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
-import { trackOptionalEvent } from "@/utils/logger/analytics";
-
-import packagejson from "../../package.json"
-import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import List, { ListTouchable } from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import adjust from "@/utils/adjustColor";
+import { getInitials } from "@/utils/chats/initials";
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
+import { trackOptionalEvent } from "@/utils/logger/analytics";
+import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
+
+import packagejson from "../../package.json";
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -89,6 +84,7 @@ export default function SettingsIndex() {
           color: "#1F7AFC",
           onPress: () =>
             WebBrowser.openBrowserAsync(releaseNotesUrl, {
+              dismissButtonStyle: "close",
               presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
             }),
         },
@@ -99,7 +95,10 @@ export default function SettingsIndex() {
           icon: <HeartIcon />,
           color: "#EFA400",
           onPress: () =>
-            WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate"),
+            WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate", {
+              dismissButtonStyle: "close",
+              presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
+            }),
         },
         {
           title: t("Settings_About_Title"),
