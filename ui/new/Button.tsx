@@ -76,7 +76,7 @@ export default function Button({ label, onPress, disabled = false, variant = "pr
         ButtonVariants[variant] as ViewStyle,
         {
           paddingHorizontal: 20,
-          height: height,
+          minHeight: height,
           justifyContent: "center",
           alignItems: "center",
           borderRadius: 500,

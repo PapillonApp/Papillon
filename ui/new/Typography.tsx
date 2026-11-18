@@ -1,6 +1,7 @@
 import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Platform, Text } from "react-native";
+
 import { useFont } from "@/utils/theme/fonts";
 
 const WEIGHTS = ["light", "regular", "medium", "semibold", "bold"];
@@ -68,7 +69,10 @@ const fixLineHeight = (style: Record<string, string | number>) => {
   if (!style) { return {}; }
   if (style.lineHeight && style.fontSize) {
     if (typeof style.lineHeight === "string" && style.lineHeight.endsWith("%")) {
-      style.lineHeight = (parseFloat(style.lineHeight) / 100) * style.fontSize;
+      return {
+        ...style,
+        lineHeight: (parseFloat(style.lineHeight) / 100) * Number(style.fontSize),
+      };
     }
   }
   return style;
@@ -103,6 +107,10 @@ export default function Typography({ variant = "body1", color = "textPrimary", a
   ]
 
   return (
-    <Text {...rest} style={style} />
+    <Text
+      {...rest}
+      maxFontSizeMultiplier={rest.maxFontSizeMultiplier ?? 1.35}
+      style={style}
+    />
   );
 }
