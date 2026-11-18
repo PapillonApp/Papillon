@@ -30,7 +30,7 @@ export interface Wallpaper {
 export type CalendarViewMode = "list" | "week";
 
 export interface AccountWallpaper {
-  wallpaper?: Wallpaper;
+  wallpaper?: Wallpaper | null;
   // Restored when switching the wallpaper modal back from gradient to image
   lastImageWallpaper?: Wallpaper;
   wallpaperGradient?: { colors: string[]; seed: number };
@@ -57,7 +57,7 @@ export interface Personalization {
   magicModelURL?: string;
   language?: string | null;
   // Legacy global wallpaper, read as the fallback for accounts without their own entry
-  wallpaper?: Wallpaper;
+  wallpaper?: Wallpaper | null;
   lastImageWallpaper?: Wallpaper;
   wallpaperGradient?: { colors: string[]; seed: number };
   wallpapersByAccount?: Record<string, AccountWallpaper>;

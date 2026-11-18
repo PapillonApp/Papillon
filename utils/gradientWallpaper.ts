@@ -47,7 +47,7 @@ export const GRADIENT_PALETTE = [
 export const GRADIENT_HEIGHT = 800;
 export const GRADIENT_WIDTH = Math.round(GRADIENT_HEIGHT * Dimensions.get("window").width / 400);
 
-export const isGradient = (wallpaper?: Wallpaper) => wallpaper?.id.startsWith("gradient:") ?? false;
+export const isGradient = (wallpaper?: Wallpaper | null) => wallpaper?.id.startsWith("gradient:") ?? false;
 
 export const randomSeed = () => Math.floor(Math.random() * 1e9);
 
@@ -64,8 +64,9 @@ export function applyGradientWallpaper(gradient: Gradient) {
   const directory = new Directory(Paths.document, "wallpapers");
   if (!directory.exists) directory.create();
 
-  const id = `gradient:${Date.now()}`;
-  const file = new File(directory, `${id}.png`);
+  const now = Date.now();
+  const id = `gradient:${now}`;
+  const file = new File(directory, `gradient-${now}.png`);
   file.writeSync(image.encodeToBytes());
 
   const { wallpaper: previous, lastImageWallpaper } = getAccountWallpaper();
