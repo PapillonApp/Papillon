@@ -1,26 +1,25 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from "expo-router/react-navigation";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { Link, useRouter } from 'expo-router';
+import { useTheme } from "expo-router/react-navigation";
+import { t } from 'i18next';
 import React, { useEffect, useMemo } from 'react';
-import { Dimensions, Platform, StyleSheet } from 'react-native';
-import { Pressable } from 'react-native';
+import { Dimensions, Platform, Pressable, StyleSheet } from 'react-native';
 import Reanimated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { initializeAccountManager } from '@/services/shared';
 import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
+import ActionMenu from '@/ui/components/ActionMenu';
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
 import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
-
-import { useUserProfileData } from '../hooks/useUserProfileData';
-import { t } from 'i18next';
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import { menuAvatarURI } from '@/utils/generative';
-import ActionMenu from '@/ui/components/ActionMenu';
-import ActivityIndicator from '@/ui/components/ActivityIndicator';
+
+import { useUserProfileData } from '../hooks/useUserProfileData';
 
 const UserProfile = ({ subtitle, onPress, loading }: { subtitle?: string, onPress?: () => void, loading?: boolean }) => {
   const router = useRouter();
@@ -83,6 +82,7 @@ const UserProfile = ({ subtitle, onPress, loading }: { subtitle?: string, onPres
 
         <UserProfileItemContainer>
           <ActionMenu
+            selectionMode="single"
             onPressAction={async ({ nativeEvent }) => {
               if (nativeEvent.event === "edit") {
                 router.push('/(modals)/profile');

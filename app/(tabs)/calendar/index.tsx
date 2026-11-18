@@ -3,8 +3,10 @@ import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LayoutChangeEvent, Platform, StyleSheet, useWindowDimensions, View } from "react-native";
+import Reanimated, { type SharedValue, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
 import { CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
@@ -16,16 +18,12 @@ import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import useResizable from "@/ui/utils/Resizable";
 import i18n from "@/utils/i18n";
 
-import Reanimated, { useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
-
-import { AndroidHeaderButton, AndroidHeaderMenu } from "@/components/AndroidHeaderItems";
-
 import { DayPager } from "./components/DayPager";
 import { WeekView } from "./components/WeekView";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
-import { useWeekGeometry, type WeekGeometry } from "./hooks/useWeekGeometry";
 import { useWeekendVisibility } from "./hooks/useWeekendVisibility";
+import { useWeekGeometry, type WeekGeometry } from "./hooks/useWeekGeometry";
 
 const isAndroid = Platform.OS === "android";
 
@@ -293,6 +291,7 @@ function TabOneScreen() {
         <Stack.Toolbar placement="right" asChild>
           <AndroidHeaderMenu
             icon="Dots"
+            selectionMode="single"
             accessibilityLabel={t('Tab_Calendar_View_Mode')}
             actions={[
               {

@@ -7,31 +7,29 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
   runOnJS,
+  type SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  type SharedValue,
 } from 'react-native-reanimated';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { AndroidHeaderButton, AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
 import { TipIds } from '@/constants/Tips';
 import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
 import { retireTip } from '@/stores/tips';
 import { useAlert } from "@/ui/components/AlertProvider";
-import Tip from '@/ui/components/Tip';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import Tip from '@/ui/components/Tip';
 import Typography from '@/ui/new/Typography';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import i18n from '@/utils/i18n';
 
-import { AndroidHeaderButton, AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
-
 import TasksWeekPage from './components/TasksWeekPage';
 import WeekPicker from './components/WeekPicker';
 import { useHomeworkData } from './hooks/useHomeworkData';
-import { useTaskFilters } from './hooks/useTaskFilters';
+import { type SortMethod, useTaskFilters } from './hooks/useTaskFilters';
 import { useWeekSelection } from './hooks/useWeekSelection';
-import type { SortMethod } from './hooks/useTaskFilters';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -361,6 +359,7 @@ const TasksView: React.FC = () => {
             <AndroidHeaderButton icon="Plus" accessibilityLabel={t('Task_New_Title')} onPress={openNewTask} />
             <AndroidHeaderMenu
               icon="Filter"
+              selectionMode="single"
               accessibilityLabel={t('Task_Sorting_Title')}
               actions={sortings.map(sorting => ({
                 id: sorting.value,

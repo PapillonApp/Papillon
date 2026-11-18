@@ -1,34 +1,59 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import {
+  Button as ExpoButton,
+  Host,
+  Image as ExpoImage,
+  Label as ExpoLabel,
+  Menu as ExpoMenu,
+  Picker as ExpoPicker,
+  RNHostView,
+  Section as ExpoSection,
+  Text as ExpoText,
+  Toggle as ExpoToggle,
+} from "@expo/ui/swift-ui";
+import {
+  disabled as disabledModifier,
+  pickerStyle,
+  tag,
+  tint,
+} from "@expo/ui/swift-ui/modifiers";
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "expo-router/react-navigation";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ColorValue,
+  Dimensions,
+  Image,
+  LayoutRectangle,
   Modal,
   Platform,
   Pressable,
-  TouchableOpacity,
-  View,
   StyleSheet,
-  Text,
-  LayoutRectangle,
-  Dimensions,
-  ColorValue,
-  Image,
+  View,
 } from "react-native";
-import { useTheme } from "expo-router/react-navigation";
+import Reanimated, {
+  FadeIn,
+  FadeOut,
+  LayoutAnimationConfig,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Stack from "@/ui/components/Stack";
-import { Papicons } from "@getpapillon/papicons";
-import Typography from "../new/Typography";
-import Reanimated, { FadeIn, FadeInRight, FadeOut, FadeOutLeft, LayoutAnimationConfig, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming, ZoomOut, ZoomOutEasyUp } from "react-native-reanimated";
-import { PapillonAndroidMenuIn, PapillonAppearIn, PapillonAppearOut, PapillonSpringIn, PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
-import { ListTouchable } from "../new/List";
-import { Host, Menu as ExpoMenu, Button as ExpoButton, Toggle as ExpoToggle, RNHostView, Section as ExpoSection, Image as ExpoImage, Text as ExpoText, VStack as ExpoVStack, HStack as ExpoHStack, RNHostView as ExpoRNHostView, HStack } from "@expo/ui/swift-ui";
-import { disabled as disabledModifier, tint, foregroundStyle, font } from "@expo/ui/swift-ui/modifiers";
 import type { SFSymbol } from "sf-symbols-typescript";
+
+import Stack from "@/ui/components/Stack";
+
+import { ListTouchable } from "../new/List";
+import Typography from "../new/Typography";
+import { PapillonAndroidMenuIn } from "../utils/Transition";
 
 export type NativeActionEvent = {
   nativeEvent: {
     event: string;
   };
 };
+
+export type SelectionMode = "single" | "multiple";
 
 export type MenuAction = {
   id?: string;
@@ -41,6 +66,7 @@ export type MenuAction = {
     keepsMenuPresented?: boolean;
   };
   state?: "off" | "on" | "mixed";
+  selectionMode?: SelectionMode;
   /** SF Symbol name (iOS). */
   image?: string;
   imageColor?: number | ColorValue;
@@ -56,40 +82,129 @@ export type MenuAction = {
 export type MenuComponentProps = {
   actions: MenuAction[];
   onPressAction?: (event: NativeActionEvent) => void;
+  selectionMode?: SelectionMode;
   children?: React.ReactNode;
 };
 
 function renderExpoActions(
   actions: MenuAction[],
-  onPress: (id: string) => void
+  onPress: (id: string) => void,
+  selectionMode?: SelectionMode
 ): React.ReactNode {
-  return actions.map((action, index) => {
-    const id = action.id ?? `action-${index}`;
-    if (action.attributes?.hidden) return null;
+  const visibleEntries = actions
+    .map((action, index) => ({
+      action,
+      id: action.id ?? `action-${index}`,
+    }))
+    .filter(({ action }) => !action.attributes?.hidden);
 
-    const destructive = Boolean(action.attributes?.destructive || (action as any).destructive);
-    const isDisabled = Boolean(action.attributes?.disabled || (action as any).disabled);
-    const imageColor = action.imageColor != null ? String(action.imageColor) : undefined;
+  const canUseInlinePicker =
+    selectionMode === "single" &&
+    visibleEntries.length > 0 &&
+    visibleEntries.every(
+      ({ action }) =>
+        (action.state === "on" || action.state === "off") &&
+        !action.subactions?.length &&
+        !action.subtitle &&
+        !action.imageUri &&
+        !action.attributes?.destructive &&
+        !(action as { destructive?: boolean }).destructive &&
+        (action.selectionMode ?? selectionMode) === "single"
+    ) &&
+    visibleEntries.filter(({ action }) => action.state === "on").length <= 1;
+
+  if (canUseInlinePicker) {
+    const selectedEntry = visibleEntries.find(
+      ({ action }) => action.state === "on"
+    );
+
+    return (
+      <ExpoPicker
+        label=""
+        selection={selectedEntry?.id ?? null}
+        onSelectionChange={selection => {
+          if (typeof selection === "string") {
+            onPress(selection);
+          }
+        }}
+        modifiers={[pickerStyle("inline")]}
+      >
+        {visibleEntries.map(({ action, id }) => {
+          const isDisabled = Boolean(
+            action.attributes?.disabled ||
+              (action as { disabled?: boolean }).disabled
+          );
+          const sfSymbol = action.image as SFSymbol | undefined;
+          const imageColor =
+            action.imageColor !== undefined && action.imageColor !== null
+              ? String(action.imageColor)
+              : undefined;
+          const itemModifiers = [
+            tag(id),
+            ...(isDisabled ? [disabledModifier(true)] : []),
+            ...(imageColor ? [tint(imageColor)] : []),
+          ];
+
+          if (sfSymbol) {
+            return (
+              <ExpoLabel
+                key={id}
+                title={action.title}
+                systemImage={sfSymbol}
+                modifiers={itemModifiers}
+              />
+            );
+          }
+
+          return (
+            <ExpoText key={id} modifiers={itemModifiers}>
+              {action.title}
+            </ExpoText>
+          );
+        })}
+      </ExpoPicker>
+    );
+  }
+
+  return visibleEntries.map(({ action, id }) => {
+    const legacy = action as { destructive?: boolean; disabled?: boolean };
+    const destructive = Boolean(
+      action.attributes?.destructive || legacy.destructive
+    );
+    const isDisabled = Boolean(
+      action.attributes?.disabled || legacy.disabled
+    );
+    const imageColor =
+      action.imageColor !== undefined && action.imageColor !== null
+        ? String(action.imageColor)
+        : undefined;
     const sfSymbol = action.image as SFSymbol | undefined;
+    const effectiveSelectionMode = action.selectionMode ?? selectionMode;
 
     if (action.subactions && action.subactions.length > 0) {
       if (action.displayInline) {
         return (
           <ExpoSection key={id}>
-            {renderExpoActions(action.subactions, onPress)}
+            {renderExpoActions(
+              action.subactions,
+              onPress,
+              effectiveSelectionMode
+            )}
           </ExpoSection>
         );
       }
       return (
         <ExpoMenu key={id} label="">
-          {renderExpoActions(action.subactions, onPress)}
+          {renderExpoActions(
+            action.subactions,
+            onPress,
+            effectiveSelectionMode
+          )}
         </ExpoMenu>
       );
     }
 
-    const mods = [
-      ...(isDisabled ? [disabledModifier(true)] : []),
-    ];
+    const mods = [...(isDisabled ? [disabledModifier(true)] : [])];
 
     if (action.state === "on" || action.state === "off") {
       if (action.subtitle || action.imageUri) {
@@ -106,6 +221,28 @@ function renderExpoActions(
           </ExpoToggle>
         );
       }
+
+      if (!sfSymbol && effectiveSelectionMode !== undefined) {
+        const selectionSymbol: SFSymbol =
+          effectiveSelectionMode === "single"
+            ? action.state === "on"
+              ? "checkmark.circle.fill"
+              : "circle"
+            : action.state === "on"
+              ? "checkmark.square.fill"
+              : "square";
+
+        return (
+          <ExpoButton
+            key={id}
+            label={action.title}
+            systemImage={selectionSymbol}
+            onPress={() => onPress(id)}
+            modifiers={imageColor ? [...mods, tint(imageColor)] : mods}
+          />
+        );
+      }
+
       return (
         <ExpoToggle
           key={id}
@@ -137,6 +274,7 @@ function MenuItem({
   subtitleColor,
   primaryColor,
   destructiveColor,
+  selectionMode,
   onPress,
 }: {
   action: MenuAction;
@@ -144,13 +282,19 @@ function MenuItem({
   subtitleColor: string;
   primaryColor: string;
   destructiveColor: string;
+  selectionMode?: SelectionMode;
   onPress: () => void;
 }) {
   const theme = useTheme();
 
   // Reduced flags: compute isOn from action.state (attributes does not expose state in the types).
   const isOn = action.state === "on";
+  const hasSelectionState = action.state === "on" || action.state === "off";
   const hasSubactions = Boolean(action.subactions?.length);
+  const effectiveSelectionMode = action.selectionMode ?? selectionMode;
+  const accentColor =
+    (theme.colors as { tint?: string }).tint ?? String(theme.colors.primary);
+  const inactiveBorderColor = `${String(theme.colors.text)}66`;
   const legacy = action as unknown as { destructive?: boolean; disabled?: boolean };
   const destructive = Boolean(action.attributes?.destructive ?? legacy.destructive);
   const disabled = Boolean(action.attributes?.disabled ?? legacy.disabled);
@@ -197,8 +341,40 @@ function MenuItem({
           {hasSubactions && (
             <Papicons name="ChevronRight" color={colorText} size={20} style={styles.arrow} />
           )}
-          {(isOn && !hasSubactions) && (
-            <Papicons name="Check" color={theme.colors.tint} size={18} style={styles.check} />
+          {hasSelectionState && !hasSubactions && (
+            effectiveSelectionMode === "single" ? (
+              <View
+                style={[
+                  styles.radioOuter,
+                  { borderColor: isOn ? accentColor : inactiveBorderColor },
+                ]}
+              >
+                {isOn && (
+                  <View
+                    style={[styles.radioInner, { backgroundColor: accentColor }]}
+                  />
+                )}
+              </View>
+            ) : effectiveSelectionMode === "multiple" ? (
+              <View
+                style={[
+                  styles.checkboxOuter,
+                  {
+                    borderColor: isOn ? accentColor : inactiveBorderColor,
+                    backgroundColor: isOn ? accentColor : "transparent",
+                  },
+                ]}
+              >
+                {isOn && <Papicons name="Check" color="#FFFFFF" size={12} />}
+              </View>
+            ) : isOn ? (
+              <Papicons
+                name="Check"
+                color={accentColor}
+                size={18}
+                style={styles.check}
+              />
+            ) : null
           )}
         </Stack>
       </ListTouchable>
@@ -210,6 +386,7 @@ export default function ActionMenu({
   actions = [],
   children,
   onPressAction,
+  selectionMode,
   placement = "auto",
 }: MenuComponentProps & { placement?: "auto" | "below" }) {
   const handleActionPress = onPressAction ?? (() => { });
@@ -265,9 +442,13 @@ export default function ActionMenu({
             </RNHostView>
           }
         >
-          {renderExpoActions(actions, (id) => {
-            handleActionPress({ nativeEvent: { event: id } });
-          })}
+          {renderExpoActions(
+            actions,
+            id => {
+              handleActionPress({ nativeEvent: { event: id } });
+            },
+            selectionMode
+          )}
         </ExpoMenu>
       </Host>
     );
@@ -484,6 +665,7 @@ export default function ActionMenu({
                         subtitleColor={subtitleColor}
                         primaryColor={primaryColor}
                         destructiveColor={destructiveColor}
+                        selectionMode={currentSubmenu?.selectionMode ?? selectionMode}
                         onPress={() => handlePress(action, `action-${submenuStack.length}-${index}`)}
                       />
                     ))}
@@ -574,6 +756,29 @@ const styles = StyleSheet.create({
   },
   check: {
     alignSelf: "center",
+    marginLeft: 6,
+  },
+  radioOuter: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 6,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  checkboxOuter: {
+    width: 18,
+    height: 18,
+    borderRadius: 5,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
     marginLeft: 6,
   },
   headerIcon: {

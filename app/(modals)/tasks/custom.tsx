@@ -41,6 +41,7 @@ const SubjectSelector = ({ subjects, selectedSubject, setSelectedSubject }: {
   return (
     <View style={{ width: "100%" }} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
       <ActionMenu
+        selectionMode="single"
         onPressAction={({ nativeEvent }) => {
           const selected = subjects.find(s => s.id === nativeEvent.event);
           if (selected) {

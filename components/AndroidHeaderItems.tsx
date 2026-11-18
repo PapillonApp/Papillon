@@ -1,10 +1,13 @@
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { Papicons } from "@getpapillon/papicons";
-
-import ActionMenu, { type MenuAction, type NativeActionEvent } from "@/ui/components/ActionMenu";
+import ActionMenu, {
+  type MenuAction,
+  type NativeActionEvent,
+  type SelectionMode,
+} from "@/ui/components/ActionMenu";
 
 // Android header items are plain React Native views rather than
 // `Stack.Toolbar` items. The toolbar's Android backend hosts its children in a
@@ -52,17 +55,24 @@ export function AndroidHeaderMenu({
   icon,
   actions,
   onPressAction,
+  selectionMode,
   accessibilityLabel,
 }: {
   icon: HeaderIcon;
   actions: AndroidHeaderMenuAction[];
   onPressAction: (event: NativeActionEvent) => void;
+  selectionMode?: SelectionMode;
   accessibilityLabel?: string;
 }) {
   const { colors } = useTheme();
 
   return (
-    <ActionMenu actions={actions} onPressAction={onPressAction} placement="below">
+    <ActionMenu
+      actions={actions}
+      onPressAction={onPressAction}
+      selectionMode={selectionMode}
+      placement="below"
+    >
       <View accessibilityRole="button" accessibilityLabel={accessibilityLabel} style={styles.item}>
         {typeof icon === "string" ? <Papicons name={icon} size={24} color={String(colors.text)} /> : icon}
       </View>
