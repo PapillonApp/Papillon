@@ -1,6 +1,6 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from "expo-router/react-navigation";
 import { useLocalSearchParams } from "expo-router";
+import { useTheme } from "expo-router/react-navigation";
 import { t } from "i18next";
 import React, { useEffect, useState } from "react";
 import { Platform, View } from "react-native";
@@ -8,23 +8,27 @@ import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { getManager } from "@/services/shared";
 import { GradeScore, Subject } from "@/services/shared/grade";
+import { useSettingsStore } from '@/stores/settings';
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import { useSettingsStore } from '@/stores/settings';
-import { formatScoreForDisplay, getGradeDisplayScale } from '@/utils/grades/scale';
-import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
-import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import adjust from '@/utils/adjustColor';
+import PapillonSubjectAvg, { getSubjectAverage } from "@/utils/grades/algorithms/subject";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import {
+  formatScoreForDisplay,
+  getGradeDisplayScale,
+  toDisplayScaleFrom20,
+} from '@/utils/grades/scale';
+import { warn } from "@/utils/logger/logger";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { warn } from "@/utils/logger/logger";
 
 export default function SubjectModal() {
   const { id, period: periodId } = useLocalSearchParams<{ id: string; period?: string }>();
@@ -33,6 +37,7 @@ export default function SubjectModal() {
   const insets = useSafeAreaInsets();
   const displayScale = getGradeDisplayScale(useSettingsStore(state => state.personalization.gradesDisplayScale));
   const [subject, setSubject] = useState<Subject>();
+  const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,20 +46,36 @@ export default function SubjectModal() {
     (async () => {
       try {
         const manager = getManager();
-        if (!manager || !id) return;
+        if (!manager || !id) {
+          return;
+        }
 
         const periods = await manager.getGradesPeriods();
         const period = periods.find(candidate => candidate.id === periodId) ?? getCurrentPeriod(periods);
-        if (!period) return;
+        if (!period) {
+          return;
+        }
 
         const periodGrades = await manager.getGradesForPeriod(period, period.createdByAccount);
-        const match = [...(periodGrades.subjects ?? []), ...(periodGrades.modules ?? [])]
-          .find(candidate => candidate.id === id);
-        if (!cancelled) setSubject(match);
+        if (!periodGrades) {
+          return;
+        }
+
+        const combinedSubjects = [
+          ...(periodGrades.subjects ?? []),
+          ...(periodGrades.modules ?? []),
+        ];
+        const match = combinedSubjects.find(candidate => candidate.id === id);
+        if (!cancelled) {
+          setSubject(match);
+          setAllSubjects(combinedSubjects);
+        }
       } catch (error) {
         warn(`Unable to fetch subject ${id}: ${String(error)}`);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     })();
 
@@ -104,6 +125,25 @@ export default function SubjectModal() {
     { title: "SubjectInfo_MaxAverage_Label", description: "SubjectInfo_MaxAverage_Description", score: subject.maximum, icon: "Plus" },
     { title: "SubjectInfo_MinAverage_Label", description: "SubjectInfo_MinAverage_Description", score: subject.minimum, icon: "Minus" },
   ];
+
+  const allGrades = allSubjects.flatMap(candidate => candidate.grades ?? []);
+  const gradesWithoutSubject = allSubjects
+    .filter(candidate => candidate.id !== subject.id)
+    .flatMap(candidate => candidate.grades ?? []);
+  const overallWithSubject = PapillonSubjectAvg(allGrades);
+  const overallWithoutSubject = PapillonSubjectAvg(gradesWithoutSubject);
+  const hasCalculableImpact =
+    computedAverage >= 0 &&
+    overallWithSubject >= 0 &&
+    overallWithoutSubject >= 0;
+  const globalImpact = hasCalculableImpact
+    ? Number(
+      toDisplayScaleFrom20(
+        overallWithSubject - overallWithoutSubject,
+        displayScale
+      ).toFixed(2)
+    ) || 0
+    : null;
 
   return (
     <>
@@ -174,6 +214,34 @@ export default function SubjectModal() {
               </List.Trailing>
             </List.Item>
           ))}
+
+          {globalImpact !== null && (
+            <List.Item key="SubjectInfo_GlobalImpact">
+              <List.Leading>
+                <Icon>
+                  <Papicons name="Grades" />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">{t("SubjectInfo_GlobalImpact_Label")}</Typography>
+              <Typography variant="body1" color="textSecondary">
+                {t("SubjectInfo_GlobalImpact_Description")}
+              </Typography>
+              <List.Trailing>
+                <ContainedNumber
+                  color={
+                    globalImpact === 0
+                      ? "#757575"
+                      : globalImpact > 0
+                        ? "#2e8900"
+                        : "#990000"
+                  }
+                  denominator="pts"
+                >
+                  {globalImpact > 0 ? `+${globalImpact.toFixed(2)}` : globalImpact.toFixed(2)}
+                </ContainedNumber>
+              </List.Trailing>
+            </List.Item>
+          )}
         </List.Section>
       </List>
     </>

@@ -301,6 +301,8 @@
   "SubjectInfo_MaxAverage_Description": "Best average in the group",
   "SubjectInfo_MinAverage_Label": "Minimum average",
   "SubjectInfo_MinAverage_Description": "Lowest average in the group",
+  "SubjectInfo_GlobalImpact_Label": "Overall average impact",
+  "SubjectInfo_GlobalImpact_Description": "Influence of this subject on your overall average",
   "Grades_Semester": "Semester",
   "Grades_Trimester": "Trimester",
   "Grades_OutPeriod": "Out of period",
