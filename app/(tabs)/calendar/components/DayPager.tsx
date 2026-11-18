@@ -1,12 +1,11 @@
 import { useTheme } from "expo-router/react-navigation";
 import React, { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { PixelRatio, Platform, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Reanimated, {
   runOnJS,
+  type SharedValue,
   useAnimatedScrollHandler,
   useSharedValue,
-  type SharedValue,
 } from "react-native-reanimated";
 
 import type { CourseDay } from "@/services/shared/timetable";
@@ -27,6 +26,8 @@ export interface DayPagerProps {
   settledIndex: number;
   onSettle: (index: number) => void;
   scrollPage: SharedValue<number>;
+  topInset: number;
+  bottomInset: number;
 }
 
 export function DayPager({
@@ -39,10 +40,10 @@ export function DayPager({
   settledIndex,
   onSettle,
   scrollPage,
+  topInset,
+  bottomInset,
 }: DayPagerProps) {
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
-  const tabBarHeight = insets.bottom;
 
   const {
     flatListRef,
@@ -142,12 +143,13 @@ export function DayPager({
         isRefreshing={isRefreshing}
         onRefresh={onRefresh}
         colors={dayColors}
-        tabBarHeight={tabBarHeight}
+        topInset={topInset}
+        tabBarHeight={bottomInset}
         transportInfo={transportInfo}
         hasError={hasError}
       />
     );
-  }, [getDateFromIndex, windowWidth, timetable, isRefreshing, onRefresh, dayColors, tabBarHeight, transportInfo, hasError]);
+  }, [getDateFromIndex, windowWidth, timetable, isRefreshing, onRefresh, dayColors, topInset, bottomInset, transportInfo, hasError]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -174,7 +176,7 @@ export function DayPager({
         initialNumToRender={3}
         showsVerticalScrollIndicator={false}
         removeClippedSubviews
-        extraData={{ isRefreshing, dayColors, timetable }}
+        extraData={{ isRefreshing, dayColors, timetable, topInset, bottomInset }}
       />
     </View>
   );
