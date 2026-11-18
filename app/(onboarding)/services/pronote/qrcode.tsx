@@ -1,9 +1,3 @@
-import { Papicons } from "@getpapillon/papicons";
-import MaskedView from "@react-native-masked-view/masked-view";
-import { useTheme } from "expo-router/react-navigation";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
 import {
   AuthenticateError,
   createSessionHandle,
@@ -15,9 +9,15 @@ import {
   securitySave,
   securitySource,
 } from "@blockshub/pawnote-lts";
+import { Papicons } from "@getpapillon/papicons";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import * as Device from "expo-device";
+import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -25,14 +25,14 @@ import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
+import { error as logError } from "@/utils/logger/logger";
 import { setPendingPronoteChallenge } from "@/utils/pronote/challenge";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import * as Device from "expo-device";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -55,18 +55,16 @@ export default function PronoteLoginWithQR() {
   const deviceName: string = Device.deviceName ?? "Pronote" 
 
   async function loginQR() {
-    setScanned(false);
-    setLoadingModalVisible(true);
-
-    if (QRValidationCode === "" || QRValidationCode.length !== 4) {
-      // Handle error
+    if (!QRData || QRValidationCode.length !== 4) {
       return;
     }
+
+    setLoadingModalVisible(true);
 
     const accountID = uuid();
 
     try {
-      const decodedJSON = JSON.parse(QRData!);
+      const decodedJSON = JSON.parse(QRData);
 
       const data = {
         jeton: decodedJSON.jeton,
@@ -80,11 +78,16 @@ export default function PronoteLoginWithQR() {
         refresh = await loginQrCode(session, {
           qr: data,
           pin: QRValidationCode,
-          deviceUUID: accountID
-        })
-      } catch(error) {
-        if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          if (error.handle.shouldEnterSource && !error.handle.shouldEnterPIN) {
+          deviceUUID: accountID,
+        });
+      } catch (error) {
+        if (error instanceof SecurityError) {
+          if (
+            !error.handle.shouldCustomPassword &&
+            !error.handle.shouldCustomDoubleAuth &&
+            error.handle.shouldEnterSource &&
+            !error.handle.shouldEnterPIN
+          ) {
             const mode: DoubleAuthMode = DoubleAuthMode.MGDA_NotificationSeulement;
             const source = deviceName.length > 30 ? "Pronote" : deviceName;
             await securitySource(session, source);
@@ -95,24 +98,30 @@ export default function PronoteLoginWithQR() {
               session,
               context.authentication,
               context.identity,
-              context.initialUsername,
+              context.initialUsername
             );
           } else {
             setPendingPronoteChallenge({ session, error, deviceUUID: accountID });
+            setLoadingModalVisible(false);
             router.push("/(onboarding)/services/pronote/challenge");
+            return;
           }
+        } else {
+          throw error;
         }
       }
 
-      if (!refresh) { throw AuthenticateError; }
+      if (!refresh) {
+        throw new AuthenticateError("Missing refresh information");
+      }
 
       const user = session.user.resources[0];
       const schoolName = user.establishmentName;
       const className = user.className;
-      const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
+      const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name);
       let pp = "";
       if (session.user.resources[0].profilePicture?.url) {
-        pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
+        pp = await URLToBase64(session.user.resources[0].profilePicture?.url);
       }
 
       useAccountStore.getState().addAccount({
@@ -123,7 +132,7 @@ export default function PronoteLoginWithQR() {
         className,
         customisation: {
           profilePicture: pp,
-          subjects: {}
+          subjects: {},
         },
         services: [{
           id: accountID,
@@ -135,24 +144,28 @@ export default function PronoteLoginWithQR() {
               instanceURL: refresh.url,
               kind: refresh.kind,
               username: refresh.username,
-              deviceUUID: accountID
-            }
+              deviceUUID: accountID,
+            },
           },
           serviceId: Services.PRONOTE,
           createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString()
+          updatedAt: (new Date()).toISOString(),
         }],
         createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString()
+        updatedAt: (new Date()).toISOString(),
       });
-      useAccountStore.getState().setLastUsedAccount(accountID)
+      useAccountStore.getState().setLastUsedAccount(accountID);
       setTimeout(() => {
         setLoadingModalVisible(false);
         return router.dismissTo("/");
       }, 1000);
     } catch (error) {
-      console.error(error);
-      // Handle error
+      logError(`Failed to log in via PRONOTE QR code: ${String(error)}`);
+      setLoadingModalVisible(false);
+      setScanned(false);
+      setQRData(null);
+      setQRValidationCode("");
+      Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
     }
   }
 
@@ -172,12 +185,12 @@ export default function PronoteLoginWithQR() {
     setPinModalVisible(true);
   };
 
-  useEffect(() => {
-    if (!pinModalVisible) {
-      setScanned(false);
-      setQRData(null);
-    }
-  }, [pinModalVisible]);
+  const closePinModal = () => {
+    setPinModalVisible(false);
+    setScanned(false);
+    setQRData(null);
+    setQRValidationCode("");
+  };
 
   const keyboardDidShow = () => setKeyboardOpen(true);
   const keyboardDidHide = () => setKeyboardOpen(false);
@@ -262,9 +275,7 @@ export default function PronoteLoginWithQR() {
         visible={pinModalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => {
-          setPinModalVisible(!pinModalVisible);
-        }}
+        onRequestClose={closePinModal}
       >
         <KeyboardAvoidingView
           style={{
@@ -363,7 +374,11 @@ export default function PronoteLoginWithQR() {
           >
             <Button
               title={t("CONFIRM_BTN")}
+              disabled={QRValidationCode.length !== 4}
               onPress={() => {
+                if (QRValidationCode.length !== 4) {
+                  return;
+                }
                 setPinModalVisible(false);
                 loginQR();
               }}
@@ -371,9 +386,7 @@ export default function PronoteLoginWithQR() {
             <Button
               title={t("CANCEL_BTN")}
               variant="outline"
-              onPress={() => {
-                setPinModalVisible(false);
-              }}
+              onPress={closePinModal}
             />
           </SafeHorizontalView>
         </KeyboardAvoidingView>
@@ -393,31 +406,24 @@ export default function PronoteLoginWithQR() {
         </Typography>
       </View>
 
-      <MaskedView
-        style={StyleSheet.absoluteFillObject}
-        maskElement={
-          <View style={styles.maskContainer}>
-            <View style={styles.transparentSquare} />
-          </View>
-        }
-      >
-        <View
-          style={styles.maskContainer}
+      {permission?.granted && (
+        <CameraView
+          facing="back"
+          barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
+          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={StyleSheet.absoluteFill}
         />
-        {permission?.granted && (
-          <CameraView
-            facing="back"
-            barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
-            onBarcodeScanned={
-              scanned ? undefined : handleBarCodeScanned
-            }
-            style={StyleSheet.absoluteFillObject}
-          />
-        )}
-        {permission?.granted && (
-          <View style={styles.transparentSquareBorder} />
-        )}
-      </MaskedView>
+      )}
+
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={styles.overlayTop} />
+        <View style={styles.overlayMiddleRow}>
+          <View style={styles.overlaySide} />
+          <View style={styles.viewfinder} />
+          <View style={styles.overlaySide} />
+        </View>
+        <View style={styles.overlayBottom} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -429,43 +435,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "black",
   },
-  maskContainer: {
+  overlayTop: {
+    height: "35%",
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
+  },
+  overlayMiddleRow: {
+    height: 300,
+    flexDirection: "row",
+  },
+  overlaySide: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
   },
-  transparentSquare: {
-    position: "absolute",
+  viewfinder: {
     width: 300,
     height: 300,
-    backgroundColor: "black",
     borderWidth: 2,
     borderColor: "#fff",
     borderRadius: 30,
     borderCurve: "continuous",
-    alignSelf: "center",
-    top: "35%",
-  },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 200,
-    backgroundColor: '#ffffff42',
-    padding: 10,
-    borderRadius: 100,
-  },
-  transparentSquareBorder: {
-    position: "absolute",
-    width: 300,
-    height: 300,
     backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: "#fff",
-    borderRadius: 30,
-    borderCurve: "continuous",
-    alignSelf: "center",
-    top: "35%",
+  },
+  overlayBottom: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
   },
 
   explainations: {
