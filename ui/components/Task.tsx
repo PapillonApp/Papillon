@@ -1,24 +1,22 @@
-import React, { useMemo } from 'react';
-import Stack from './Stack';
-import Typography from './Typography';
-import { formatHTML } from '@/utils/format/html';
-import { useTheme } from "expo-router/react-navigation";
-import adjust from '@/utils/adjustColor';
-import { Text } from 'react-native';
-
+import { Papicons } from '@getpapillon/papicons';
 import { formatDistanceStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
-import i18n from '@/utils/i18n';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from './Icon';
-import { Dynamic } from './Dynamic';
-import { Animation } from '../utils/Animation';
+import { useTheme } from "expo-router/react-navigation";
+import React from 'react';
+import { Platform, Text } from 'react-native';
 import { LinearTransition } from 'react-native-reanimated';
-import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
-import { t } from 'i18next';
-import { Platform } from 'react-native';
+
+import adjust from '@/utils/adjustColor';
+import FormattedHomeworkText from '@/utils/format/FormattedHomeworkText';
+import i18n from '@/utils/i18n';
+
 import { ListTouchable } from '../new/List';
+import { Animation } from '../utils/Animation';
+import { Dynamic } from './Dynamic';
+import Icon from './Icon';
+import Stack from './Stack';
+import Typography from './Typography';
 
 interface TaskProps {
   subject: string;
@@ -69,8 +67,7 @@ const Task: React.FC<TaskProps> = React.memo(({
   onPress
 }) => {
   const theme = useTheme();
-  const tintedColor = useMemo(() => adjust(color, theme.dark ? 0.3 : -0.3), [color, theme.dark]);
-  const formattedDescription = useMemo(() => formatHTML(description), [description]);
+  const tintedColor = React.useMemo(() => adjust(color, theme.dark ? 0.3 : -0.3), [color, theme.dark]);
 
   return (
     <ListTouchable onPress={onPress}>
@@ -126,9 +123,12 @@ const Task: React.FC<TaskProps> = React.memo(({
 
           {/* Content */}
           <Stack animated layout={Animation(LinearTransition, "list")}>
-            <Typography numberOfLines={3} variant='title' weight='medium'>
-              {formattedDescription}
-            </Typography>
+            <FormattedHomeworkText
+              html={description}
+              numberOfLines={3}
+              variant="title"
+              weight="medium"
+            />
           </Stack>
 
           {/* Bottom */}
