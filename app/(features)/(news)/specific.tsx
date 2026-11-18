@@ -1,34 +1,35 @@
-import { getManager } from "@/services/shared";
-import { News } from "@/services/shared/news";
-import { getNewsById } from "@/database/useNews";
-import { useAccountStore } from "@/stores/account";
-import { Services } from "@/stores/account/types";
-import Stack from "@/ui/components/Stack";
-import TypographyLegacy, { VARIANTS } from "@/ui/components/Typography";
+import { Papicons } from "@getpapillon/papicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
+import { t } from "i18next";
+import React, { useEffect, useState } from "react";
 import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
+import HTMLView from "react-native-htmlview";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Attachment, News as SkolengoNews } from "skolengojs";
 
-import HTMLView from "react-native-htmlview";
-import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
-import { NativeHeaderSide } from "@/ui/components/NativeHeader";
-import Icon from "@/ui/components/Icon";
-import { t } from "i18next";
-import ListLegacy from "@/ui/components/List";
-import Item, { Leading } from "@/ui/components/Item";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
+import { getNewsById } from "@/database/useNews";
+import { getManager } from "@/services/shared";
+import { News } from "@/services/shared/news";
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Avatar from "@/ui/components/Avatar";
-import { getInitials } from "@/utils/chats/initials";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { Papicons } from "@getpapillon/papicons";
-import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
+import Icon from "@/ui/components/Icon";
+import Item, { Leading } from "@/ui/components/Item";
+import ListLegacy from "@/ui/components/List";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import Stack from "@/ui/components/Stack";
+import TypographyLegacy, { VARIANTS } from "@/ui/components/Typography";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { getProfileColorByName } from "@/utils/chats/colors";
+import { getInitials } from "@/utils/chats/initials";
+import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
+import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { useFont } from "@/utils/theme/fonts";
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const NewsPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -146,20 +147,32 @@ const NewsPage = () => {
 
       <SafeHorizontalView base={20} style={{ gap: 24 }}>
         <Stack gap={10}>
-          <Stack padding={[10, 4]} radius={200} backgroundColor={colors.text + "16"}>
-            <TypographyLegacy variant="body2">
-              {news.category}
-            </TypographyLegacy>
-          </Stack>
+          {Boolean(news.category) && (
+            <Stack
+              inline
+              padding={[10, 4]}
+              radius={200}
+              backgroundColor={`${String(colors.text)}16`}
+              style={{ alignSelf: "flex-start" }}
+            >
+              <TypographyLegacy variant="body2">
+                {news.category}
+              </TypographyLegacy>
+            </Stack>
+          )}
 
           <TypographyLegacy variant="h3">
             {news.title}
           </TypographyLegacy>
 
-          <Stack direction="horizontal" hAlign="center">
+          <Stack direction="horizontal" hAlign="center" gap={12}>
             <Stack direction="horizontal" gap={8} inline flex hAlign="center">
-              <Avatar initials={getInitials(news.author)} size={28} />
-              <TypographyLegacy nowrap variant="body2">
+              <Avatar
+                initials={getInitials(news.author)}
+                color={getProfileColorByName(news.author)}
+                size={28}
+              />
+              <TypographyLegacy nowrap variant="body2" style={{ flex: 1 }}>
                 {news.author}
               </TypographyLegacy>
             </Stack>
@@ -198,7 +211,7 @@ const NewsPage = () => {
           style={{
             gap: 12
           }}
-          paragraphBreak=""
+          paragraphBreak={"\n\n"}
           bullet="  •  "
         />
 

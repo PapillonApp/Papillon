@@ -1,10 +1,11 @@
 import { Model, Q } from "@nozbe/watermelondb";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Attachment } from "@/services/shared/attachment";
 import { News as SharedNews } from "@/services/shared/news";
+import { useAccountStore } from "@/stores/account";
 import { generateId } from "@/utils/generateId";
-import { info,warn } from "@/utils/logger/logger";
+import { info, warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import News from "./models/News";
@@ -13,26 +14,40 @@ import { safeWrite } from "./utils/safeTransaction";
 
 export function useNews(refresh = 0) {
   const database = useDatabase();
-  const [news, setNews] = useState<SharedNews[]>([]);
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const accounts = useAccountStore(state => state.accounts);
+  const [allNews, setAllNews] = useState<SharedNews[]>([]);
+
+  const activeServiceIds = useMemo(() => {
+    const account = accounts.find(acc => acc.id === lastUsedAccount);
+    return new Set(account?.services.map(service => service.id) ?? []);
+  }, [accounts, lastUsedAccount]);
 
   useEffect(() => {
-
     const query = database.get<News>('news').query();
 
-    const sub = query.observe().subscribe(news =>
-      setNews(
-        news.map(mapNewsToShared).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+    const sub = query.observe().subscribe(records =>
+      setAllNews(
+        records
+          .map(mapNewsToShared)
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       )
     );
 
     return () => sub.unsubscribe();
   }, [refresh, database]);
 
-  return news;
+  return useMemo(
+    () => allNews.filter(item => activeServiceIds.has(item.createdByAccount)),
+    [allNews, activeServiceIds]
+  );
 }
 
 export function getNewsRouteId(item: SharedNews): string {
-  return generateId(item.author + item.title + item.createdByAccount);
+  const discriminator = item.title?.trim()
+    ? `${item.title}${item.createdAt.getTime()}`
+    : `${item.createdAt.getTime()}${item.id}`;
+  return generateId(item.author + discriminator + item.createdByAccount);
 }
 
 export async function getNewsById(id: string): Promise<SharedNews | undefined> {
@@ -43,13 +58,17 @@ export async function getNewsById(id: string): Promise<SharedNews | undefined> {
     .fetch();
   const cachedNews = records[0] ? mapNewsToShared(records[0]) : undefined;
 
+  if (cachedNews) {
+    return cachedNews;
+  }
+
   try {
     const { getManager } = await import("@/services/shared");
     const freshNews = await getManager()?.getNews();
-    return freshNews?.find(item => getNewsRouteId(item) === id) ?? cachedNews;
+    return freshNews?.find(item => getNewsRouteId(item) === id);
   } catch (error) {
     warn(`Unable to refresh news ${id}: ${String(error)}`);
-    return cachedNews;
+    return undefined;
   }
 }
 
@@ -126,7 +145,7 @@ export async function getNewsFromCache(): Promise<SharedNews[]> {
 
     return news
       .map(mapNewsToShared)
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   } catch (e) {
     warn(String(e));
     return [];
