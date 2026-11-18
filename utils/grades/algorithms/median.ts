@@ -1,45 +1,51 @@
 import { Grade } from "@/services/shared/grade";
 
-const PapillonMedian = (grades: Grade[]): number => {
-  const validGrades = grades
-    .filter((grade) => 
-      grade.studentScore?.value !== null && 
-      grade.studentScore?.value !== undefined && 
-      grade.outOf?.value !== null && 
-      grade.outOf?.value !== undefined &&
-      !grade.studentScore.disabled &&
-      grade.coefficient !== 0 &&
-      grade.studentScore.value >= 0
-    )
-    .map((grade) => {
-      const coefficient = grade.coefficient || 1;
-      const outOfValue = grade.outOf.value!;
-      const gradeValue = grade.studentScore!.value!;
-      
-      // Normalize to /20 scale
-      let normalizedValue: number;
-      if (gradeValue > 20 || (coefficient < 1 && outOfValue - 20 >= -5) || outOfValue > 20) {
-        normalizedValue = (gradeValue / outOfValue) * 20;
-      } else {
-        normalizedValue = (gradeValue / outOfValue) * 20;
-      }
-      
-      return normalizedValue;
-    });
+import { normalizeValidGrade } from "./helpers";
 
-  if (validGrades.length === 0) {
+const computeMedian = (values: number[]): number => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+
+  if (sorted.length % 2 === 0) {
+    return (sorted[middle - 1] + sorted[middle]) / 2;
+  }
+
+  return sorted[middle];
+};
+
+const PapillonMedian = (grades: Grade[]): number => {
+  const mandatoryValues: number[] = [];
+  const optionalValues: number[] = [];
+
+  for (const grade of grades) {
+    const normalized = normalizeValidGrade(grade, "studentScore");
+    if (!normalized || normalized.bonus) {
+      continue;
+    }
+
+    if (normalized.optional) {
+      optionalValues.push(normalized.gradeOn20);
+    } else {
+      mandatoryValues.push(normalized.gradeOn20);
+    }
+  }
+
+  if (mandatoryValues.length === 0) {
     return -1;
   }
 
-  validGrades.sort((a, b) => a - b);
+  const activeValues = [...mandatoryValues];
+  let currentMedian = computeMedian(activeValues);
+  const sortedOptional = [...optionalValues].sort((a, b) => b - a);
 
-  const middle = Math.floor(validGrades.length / 2);
-
-  if (validGrades.length % 2 === 0) {
-    return (validGrades[middle - 1] + validGrades[middle]) / 2;
+  for (const optionalValue of sortedOptional) {
+    if (optionalValue > currentMedian) {
+      activeValues.push(optionalValue);
+      currentMedian = computeMedian(activeValues);
+    }
   }
-  
-  return validGrades[middle];
+
+  return currentMedian;
 };
 
 export default PapillonMedian;

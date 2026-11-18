@@ -1,94 +1,160 @@
 import { Grade } from "@/services/shared/grade";
 
-export type ScoreProperty = "studentScore" | "averageScore" | "minScore" | "maxScore";
+export type ScoreProperty =
+  | "studentScore"
+  | "averageScore"
+  | "minScore"
+  | "maxScore";
 
-export const getSubjectAverageByProperty = (
-  subject: Grade[],
+export interface NormalizedGrade {
+  gradeOn20: number;
+  coefficient: number;
+  bonus: boolean;
+  optional: boolean;
+}
+
+export interface AverageDetails {
+  average: number;
+  isOptionalOnly: boolean;
+}
+
+/**
+ * Validates a grade for a given score property and normalizes its value to /20.
+ */
+export const normalizeValidGrade = (
+  grade: Grade,
+  property: ScoreProperty = "studentScore"
+): NormalizedGrade | null => {
+  const targetScore = grade[property];
+
+  if (
+    !targetScore ||
+    targetScore.disabled ||
+    targetScore.value === null ||
+    targetScore.value === undefined ||
+    typeof targetScore.value !== "number" ||
+    !Number.isFinite(targetScore.value) ||
+    targetScore.value < 0 ||
+    grade.coefficient === 0 ||
+    !grade.outOf?.value ||
+    !Number.isFinite(grade.outOf.value) ||
+    grade.outOf.value <= 0
+  ) {
+    return null;
+  }
+
+  const rawCoefficient = grade.coefficient ?? 1;
+  if (!Number.isFinite(rawCoefficient) || rawCoefficient <= 0) {
+    return null;
+  }
+
+  const applyStudentRules = property === "studentScore";
+
+  return {
+    gradeOn20: (targetScore.value / grade.outOf.value) * 20,
+    coefficient: rawCoefficient,
+    bonus: applyStudentRules && Boolean(grade.bonus),
+    optional: applyStudentRules && Boolean(grade.optional),
+  };
+};
+
+/**
+ * Computes a weighted /20 average with PRONOTE bonus and greedy-descending optional handling.
+ */
+export const computeWeightedAverageDetails = (
+  grades: Grade[],
   property: ScoreProperty = "studentScore",
-  loop: boolean = false
-): number => {
+  allowOptionalOnlyFallback: boolean = false
+): AverageDetails => {
+  const mandatory: NormalizedGrade[] = [];
+  const optional: NormalizedGrade[] = [];
+  const bonus: NormalizedGrade[] = [];
+
+  for (const grade of grades) {
+    const normalized = normalizeValidGrade(grade, property);
+    if (!normalized) {
+      continue;
+    }
+
+    if (normalized.bonus) {
+      bonus.push(normalized);
+    } else if (normalized.optional) {
+      optional.push(normalized);
+    } else {
+      mandatory.push(normalized);
+    }
+  }
+
   let calcGradesSum = 0;
   let calcOutOfSum = 0;
 
-  for (let i = 0; i < subject.length; i++) {
-    const grade = subject[i];
-    const targetScore = grade[property];
-
-    // Skip invalid grades
-    if (
-      !targetScore ||
-      targetScore.disabled ||
-      targetScore.value === null ||
-      targetScore.value < 0 ||
-      grade.coefficient === 0 ||
-      typeof targetScore.value !== "number" ||
-      !grade.outOf?.value
-    ) {
-      continue;
-    }
-
-    const coefficient = grade.coefficient || 1;
-    const outOfValue = grade.outOf.value;
-    const gradeValue = targetScore.value;
-
-    // Handle optional grades (only for student scores)
-    if (property === "studentScore" && grade.optional && !loop) {
-      const filteredSubject = subject.filter((_, idx) => idx !== i);
-      const avgWithout = getSubjectAverageByProperty(filteredSubject, property, true);
-      const avgWith = getSubjectAverageByProperty(subject, property, true);
-
-      // Only keep optional grade if it improves the average
-      if (avgWithout > avgWith) {
-        continue;
-      }
-    }
-
-    // Handle bonus grades (only for student scores)
-    if (property === "studentScore" && grade.bonus) {
-      const averageMoy = outOfValue / 2;
-      const newGradeValue = gradeValue - averageMoy;
-
-      if (newGradeValue >= 0) {
-        calcGradesSum += newGradeValue;
-        calcOutOfSum += 1;
-      }
-      continue;
-    }
-
-    // Normalize grades to /20 scale
-    if (gradeValue > 20 || (coefficient < 1 && outOfValue - 20 >= -5) || outOfValue > 20) {
-      const gradeOn20 = (gradeValue / outOfValue) * 20;
-      calcGradesSum += gradeOn20 * coefficient;
-      calcOutOfSum += 20 * coefficient;
-    } else {
-      calcGradesSum += gradeValue * coefficient;
-      calcOutOfSum += outOfValue * coefficient;
-    }
+  for (const item of mandatory) {
+    calcGradesSum += item.gradeOn20 * item.coefficient;
+    calcOutOfSum += 20 * item.coefficient;
   }
 
   if (calcOutOfSum > 0) {
+    for (const item of bonus) {
+      const bonusPoints = Math.max(0, item.gradeOn20 - 10) * item.coefficient;
+      calcGradesSum += bonusPoints;
+    }
+
+    // Evaluate optional grades from highest to lowest so inferior ones cannot ride in early.
+    const sortedOptional = [...optional].sort(
+      (a, b) => b.gradeOn20 - a.gradeOn20 || b.coefficient - a.coefficient
+    );
+
+    for (const item of sortedOptional) {
+      const currentAverage = (calcGradesSum / calcOutOfSum) * 20;
+      if (item.gradeOn20 > currentAverage) {
+        calcGradesSum += item.gradeOn20 * item.coefficient;
+        calcOutOfSum += 20 * item.coefficient;
+      }
+    }
+
     const result = Math.min((calcGradesSum / calcOutOfSum) * 20, 20);
-    return isNaN(result) ? -1 : result;
+    return {
+      average: Number.isNaN(result) ? -1 : result,
+      isOptionalOnly: false,
+    };
   }
 
-  return -1;
+  if (allowOptionalOnlyFallback && optional.length > 0) {
+    for (const item of optional) {
+      calcGradesSum += item.gradeOn20 * item.coefficient;
+      calcOutOfSum += 20 * item.coefficient;
+    }
+
+    for (const item of bonus) {
+      const bonusPoints = Math.max(0, item.gradeOn20 - 10) * item.coefficient;
+      calcGradesSum += bonusPoints;
+    }
+
+    const result = Math.min((calcGradesSum / calcOutOfSum) * 20, 20);
+    return {
+      average: Number.isNaN(result) ? -1 : result,
+      isOptionalOnly: true,
+    };
+  }
+
+  return { average: -1, isOptionalOnly: false };
 };
 
-export const PapillonSubjectAvgByProperty = (
+/**
+ * Computes the overall subject-based average, treating 100%-optional subjects greedily.
+ */
+export const computeOverallSubjectAverage = (
   grades: Grade[],
-  property: ScoreProperty = "studentScore"
+  property: ScoreProperty = "studentScore",
+  emptyValue: number = -1
 ): number => {
   if (!grades?.length) {
-    return 0;
+    return emptyValue;
   }
 
   const groupedBySubject: Record<string, Grade[]> = {};
-  let countedSubjects = 0;
-  let totalAverage = 0;
 
-  // Group grades by subject
-  for (let i = 0; i < grades.length; i++) {
-    const grade = grades[i];
+  for (const grade of grades) {
     const key = grade.subjectId;
     if (!groupedBySubject[key]) {
       groupedBySubject[key] = [];
@@ -96,16 +162,49 @@ export const PapillonSubjectAvgByProperty = (
     groupedBySubject[key].push(grade);
   }
 
-  const subjects = Object.values(groupedBySubject);
+  let countedSubjects = 0;
+  let totalAverage = 0;
+  const optionalSubjectAverages: number[] = [];
 
-  // Calculate average for each subject
-  for (let i = 0; i < subjects.length; i++) {
-    const nAvg = getSubjectAverageByProperty(subjects[i], property);
-    if (nAvg !== -1) {
+  for (const subjectGrades of Object.values(groupedBySubject)) {
+    const { average, isOptionalOnly } = computeWeightedAverageDetails(
+      subjectGrades,
+      property,
+      true
+    );
+
+    if (average === -1) {
+      continue;
+    }
+
+    if (isOptionalOnly) {
+      optionalSubjectAverages.push(average);
+    } else {
       countedSubjects++;
-      totalAverage += nAvg;
+      totalAverage += average;
     }
   }
 
-  return countedSubjects > 0 ? totalAverage / countedSubjects : 0;
+  if (countedSubjects > 0 && optionalSubjectAverages.length > 0) {
+    optionalSubjectAverages.sort((a, b) => b - a);
+    for (const optAverage of optionalSubjectAverages) {
+      if (optAverage > totalAverage / countedSubjects) {
+        totalAverage += optAverage;
+        countedSubjects++;
+      }
+    }
+  }
+
+  return countedSubjects > 0 ? totalAverage / countedSubjects : emptyValue;
 };
+
+export const getSubjectAverageByProperty = (
+  subject: Grade[],
+  property: ScoreProperty = "studentScore",
+  _loop: boolean = false
+): number => computeWeightedAverageDetails(subject, property, true).average;
+
+export const PapillonSubjectAvgByProperty = (
+  grades: Grade[],
+  property: ScoreProperty = "studentScore"
+): number => computeOverallSubjectAverage(grades, property, 0);
