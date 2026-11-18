@@ -24,7 +24,7 @@ import ActionMenu from "@/ui/components/ActionMenu";
 import { useAlert } from "@/ui/components/AlertProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Stack from "@/ui/components/Stack";
-import Task, { formatDistanceDay } from "@/ui/components/Task";
+import Task, { formatTaskFullDate } from "@/ui/components/Task";
 import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 
@@ -179,7 +179,13 @@ const DateSelector = ({ selectedDate, setDate, accent }: {
         <Typography style={{ flex: 1 }}
           nowrap
           color={"secondary"}
-        >{formatDistanceDay(selectedDate)}</Typography>
+        >
+          {formatTaskFullDate(selectedDate, {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+          })}
+        </Typography>
         <AnimatedPressable
           accessibilityRole="button"
           onPress={togglePicker}
@@ -390,6 +396,7 @@ const NewTaskModal = () => {
               description={taskDescription || t("Task_New_TaskDescription_Placeholder")}
               color={accent}
               date={selectedDate}
+              showFullDate
               completed={taskDone}
               hasAttachments={false}
               onToggle={() => { setTaskDone(!taskDone); }}

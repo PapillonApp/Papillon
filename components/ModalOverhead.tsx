@@ -1,15 +1,29 @@
 import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "expo-router/react-navigation";
+import React from "react";
+import { Platform, Text, View, ViewStyle } from "react-native";
 
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography, { Variant } from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
-import { useTheme } from "expo-router/react-navigation";
-import React from "react";
-import { Platform, Text, View, ViewStyle } from "react-native";
+import i18n from "@/utils/i18n";
 
 const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", custom = false, title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, custom?: boolean, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
   const theme = useTheme();
+  const formattedDate = date
+    ? (() => {
+      const value = new Date(date).toLocaleDateString(
+        i18n.language,
+        dateFormat ?? {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }
+      );
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    })()
+    : null;
 
   return (
     <Stack
@@ -83,17 +97,13 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
           {title}
         </Typography>
       )}
-      {date && (
+      {formattedDate && (
         <Typography
           variant="body1"
           color='secondary'
           align="center"
         >
-          {new Date(date).toLocaleDateString(undefined, dateFormat ? dateFormat : {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
+          {formattedDate}
         </Typography>
       )}
     </Stack>

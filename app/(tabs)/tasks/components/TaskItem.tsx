@@ -1,16 +1,16 @@
+import { Link } from 'expo-router';
 import React, { memo, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
 import Reanimated from 'react-native-reanimated';
 
+import { getHomeworkRouteId } from '@/database/useHomework';
 import { Homework } from "@/services/shared/homework";
 import Task from "@/ui/components/Task";
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
-import { getSubjectName } from "@/utils/subjects/name";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
+
 import { useMagicPrediction } from '../hooks/useMagicPrediction';
-import { Link } from 'expo-router';
-import { getHomeworkRouteId } from '@/database/useHomework';
 
 interface TaskItemProps {
   item: Homework;
@@ -18,6 +18,7 @@ interface TaskItemProps {
   fromCache?: boolean;
   /** Off for rows the week pager mounts off-screen — nobody sees them appear. */
   animated?: boolean;
+  showFullDate?: boolean;
   setAsDone: (item: Homework, done: boolean) => void;
 }
 
@@ -25,6 +26,7 @@ const TaskItem = memo(
   ({
     item,
     animated = true,
+    showFullDate = false,
     setAsDone
   }: TaskItemProps) => {
     const cleanContent = useMemo(() => item.content.replace(/<[^>]*>/g, ""), [item.content]);
@@ -50,6 +52,7 @@ const TaskItem = memo(
             color={getSubjectColor(item.subject)}
             description={item.content}
             date={new Date(item.dueDate)}
+            showFullDate={showFullDate}
             completed={item.isDone}
             hasAttachments={item.attachments.length > 0}
             isCustom={item.custom}

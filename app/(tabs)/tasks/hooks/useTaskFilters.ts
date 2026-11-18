@@ -1,5 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+
 import { Homework } from "@/services/shared/homework";
+import i18n from "@/utils/i18n";
 import { getSubjectName } from "@/utils/subjects/name";
 
 export type SortMethod = 'date' | 'subject' | 'done';
@@ -11,7 +13,12 @@ const normalize = (value: string) =>
     .replace(/[\u0300-\u036f]/g, "");
 
 const formatDateHeader = (date: Date): string => {
-  return date.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+  const formatted = date.toLocaleDateString(i18n.language, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 };
 
 export interface HomeworkSection {
@@ -110,16 +117,17 @@ export const useTaskFilters = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showUndoneOnly, setShowUndoneOnly] = useState(false);
   const [sortMethod, setSortMethod] = useState<SortMethod>("date");
-  const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
+  const [groupOverrides, setGroupOverrides] = useState<Record<string, boolean>>({});
 
-  const toggleGroup = useCallback((headerId: string) => {
-    setCollapsedGroups(prev => {
-      if (prev.includes(headerId)) {
-        return prev.filter(id => id !== headerId);
-      }
-      return [...prev, headerId];
-    });
-  }, []);
+  const toggleGroup = useCallback(
+    (headerId: string, currentlyCollapsed: boolean) => {
+      setGroupOverrides(prev => ({
+        ...prev,
+        [headerId]: !currentlyCollapsed,
+      }));
+    },
+    []
+  );
 
   return {
     searchTerm,
@@ -128,7 +136,7 @@ export const useTaskFilters = () => {
     setShowUndoneOnly,
     sortMethod,
     setSortMethod,
-    collapsedGroups,
+    groupOverrides,
     toggleGroup,
   };
 };

@@ -1,16 +1,17 @@
+import { startOfDay } from "date-fns";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useCallback, useMemo } from "react";
 import { RefreshControl, StyleSheet } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 
 import { Homework } from "@/services/shared/homework";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import List from "@/ui/new/List";
 import useResizable from "@/ui/utils/Resizable";
 
 import DateHeader from "../atoms/DateHeader";
 import EmptyState from "../atoms/EmptyState";
 import TaskItem from "./TaskItem";
-import { useTheme } from "expo-router/react-navigation";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export interface HomeworkSection {
   id: string;
@@ -24,8 +25,8 @@ interface TasksListProps {
   searchTerm: string;
   isRefreshing: boolean;
   onRefresh: () => void;
-  collapsedGroups: string[];
-  toggleGroup: (headerId: string) => void;
+  groupOverrides: Record<string, boolean>;
+  toggleGroup: (headerId: string, currentlyCollapsed: boolean) => void;
   sortMethod: string;
   setAsDone: (item: Homework, done: boolean) => void;
   isLoaded?: boolean;
@@ -44,7 +45,7 @@ const TasksList: React.FC<TasksListProps> = ({
   searchTerm,
   isRefreshing,
   onRefresh,
-  collapsedGroups,
+  groupOverrides,
   toggleGroup,
   sortMethod,
   setAsDone,
@@ -54,6 +55,9 @@ const TasksList: React.FC<TasksListProps> = ({
 }) => {
   const { colors } = useTheme();
   const { isLarge } = useResizable();
+  const showsDayGroups =
+    sortMethod === "date" && searchTerm.trim().length === 0;
+  const showFullDate = !showsDayGroups;
 
   // Items arrive already merged with the freshly fetched homework, so a row
   // only needs the item itself — no per-row lookup, no per-row id hashing.
@@ -65,11 +69,12 @@ const TasksList: React.FC<TasksListProps> = ({
           index={index}
           fromCache={item.fromCache}
           animated={animateItems}
+          showFullDate={showFullDate}
           setAsDone={setAsDone}
         />
       </Reanimated.View>
     ),
-    [setAsDone, animateItems]
+    [setAsDone, animateItems, showFullDate]
   );
 
   const taskKeyExtractor = useCallback((item: Homework) => {
@@ -87,9 +92,8 @@ const TasksList: React.FC<TasksListProps> = ({
     () => sections.filter(section => section.data.length > 0),
     [sections]
   );
-  const showsDayGroups =
-    sortMethod === "date" && searchTerm.trim().length === 0;
   const numColumns = isLarge && showsDayGroups ? 2 : 1;
+  const todayStart = startOfDay(new Date()).getTime();
 
   return (
     <List
@@ -120,7 +124,12 @@ const TasksList: React.FC<TasksListProps> = ({
       }
     >
       {visibleSections.map(section => {
-        const isCollapsed = collapsedGroups.includes(section.id);
+        const defaultCollapsed =
+          Boolean(section.date) &&
+          startOfDay(section.date!).getTime() < todayStart &&
+          section.data.length > 0 &&
+          section.data.every(hw => hw.isDone);
+        const isCollapsed = groupOverrides[section.id] ?? defaultCollapsed;
 
         return (
           <Reanimated.View key={section.id} layout={LinearTransition}>
@@ -128,7 +137,7 @@ const TasksList: React.FC<TasksListProps> = ({
               <DateHeader
                 title={section.title}
                 isCollapsed={isCollapsed}
-                onToggle={() => toggleGroup(section.id)}
+                onToggle={() => toggleGroup(section.id, isCollapsed)}
               />
             )}
 

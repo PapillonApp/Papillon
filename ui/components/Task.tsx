@@ -1,24 +1,22 @@
-import React, { useMemo } from 'react';
-import Stack from './Stack';
-import Typography from './Typography';
-import { formatHTML } from '@/utils/format/html';
-import { useTheme } from "expo-router/react-navigation";
-import adjust from '@/utils/adjustColor';
-import { Text } from 'react-native';
-
+import { Papicons } from '@getpapillon/papicons';
 import { formatDistanceStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
-import i18n from '@/utils/i18n';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from './Icon';
-import { Dynamic } from './Dynamic';
-import { Animation } from '../utils/Animation';
+import { useTheme } from "expo-router/react-navigation";
+import React, { useMemo } from 'react';
+import { Platform, Text } from 'react-native';
 import { LinearTransition } from 'react-native-reanimated';
-import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
-import { t } from 'i18next';
-import { Platform } from 'react-native';
+
+import adjust from '@/utils/adjustColor';
+import { formatHTML } from '@/utils/format/html';
+import i18n from '@/utils/i18n';
+
 import { ListTouchable } from '../new/List';
+import { Animation } from '../utils/Animation';
+import { Dynamic } from './Dynamic';
+import Icon from './Icon';
+import Stack from './Stack';
+import Typography from './Typography';
 
 interface TaskProps {
   subject: string;
@@ -27,12 +25,28 @@ interface TaskProps {
   color: string;
   description: string;
   date: Date;
+  showFullDate?: boolean;
   completed: boolean;
   hasAttachments: boolean;
   isCustom?: boolean;
   magic?: string;
   onToggle: () => void;
   onPress?: () => void;
+}
+
+export function formatTaskFullDate(
+  date: Date,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const formatted = date.toLocaleDateString(
+    i18n.language,
+    options ?? {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    }
+  );
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 
 export function formatDistanceDay(date: Date): string {
@@ -61,6 +75,7 @@ const Task: React.FC<TaskProps> = React.memo(({
   color,
   description,
   date,
+  showFullDate = false,
   completed,
   hasAttachments,
   isCustom = false,
@@ -120,7 +135,7 @@ const Task: React.FC<TaskProps> = React.memo(({
             </Stack>
             {/* Date */}
             <Typography nowrap variant='body2' weight='medium' color={"secondary"}>
-              {formatDistanceDay(date)}
+              {showFullDate ? formatTaskFullDate(date) : formatDistanceDay(date)}
             </Typography>
           </Stack>
 
