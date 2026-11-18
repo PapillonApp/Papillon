@@ -1,21 +1,31 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-import { log } from "@/utils/logger/logger";
-import { trackAdvancedEvent, trackOptionalEvent } from "@/utils/logger/analytics";
-import { initializeTransport } from "@/utils/transport";
+import { isValidBase64Image, stripBase64ImagePrefix } from "@/utils/attachments/helper";
 import { generateAvatar, loadAvatarFont } from "@/utils/generative";
+import { trackAdvancedEvent, trackOptionalEvent } from "@/utils/logger/analytics";
+import { log } from "@/utils/logger/logger";
+import { initializeTransport } from "@/utils/transport";
 
-import { createEncryptedMMKVStorage } from '../global'
-import { useSettingsStore } from '../settings'
+import { createEncryptedMMKVStorage } from '../global';
+import { useSettingsStore } from '../settings';
 import { Account, AccountsStorage, Auth, TransportAddress } from "./types";
 
-// Some services return an HTML error page (base64 "<!DOCTYPE html>") instead of an image
-const isValidPicture = (pp?: string) => !!pp && !pp.startsWith("PCFET0NUWVBFIGh0bWw+");
+// Some services return an HTML/text 404 page instead of an image
+export const isValidPicture = (pp?: string): boolean => isValidBase64Image(pp);
+
+const normalizePicture = (pp?: string, fallbackName = ""): string =>
+  pp && isValidPicture(pp) ? stripBase64ImagePrefix(pp) : generateAvatar(fallbackName);
 
 const withAvatar = (account: Account): Account =>
   isValidPicture(account.customisation?.profilePicture)
-    ? account
+    ? {
+      ...account,
+      customisation: {
+        subjects: account.customisation?.subjects ?? {},
+        profilePicture: stripBase64ImagePrefix(account.customisation!.profilePicture),
+      },
+    }
     : {
       ...account,
       customisation: {
@@ -106,7 +116,7 @@ export const useAccountStore = create<AccountsStorage>()(
               return {
                 ...account,
                 customisation: {
-                  profilePicture: isValidPicture(profilePicture) ? profilePicture : generateAvatar(account.firstName),
+                  profilePicture: normalizePicture(profilePicture, account.firstName),
                   subjects: account.customisation?.subjects ?? {},
                 },
               };
@@ -327,11 +337,16 @@ export const useAccountStore = create<AccountsStorage>()(
       onRehydrateStorage: () => state => {
         // Loaded at startup so avatars generated later (new accounts, "remove photo") use SN Pro too
         loadAvatarFont()
-          .catch(() => {})
+          .catch(() => undefined)
           .finally(() => {
-            state?.accounts
-              .filter(a => !isValidPicture(a.customisation?.profilePicture))
-              .forEach(a => state.setAccountProfilePicture(a.id, ""));
+            state?.accounts.forEach(a => {
+              const pp = a.customisation?.profilePicture;
+              if (!isValidPicture(pp)) {
+                state.setAccountProfilePicture(a.id, "");
+              } else if (pp?.startsWith("data:")) {
+                state.setAccountProfilePicture(a.id, stripBase64ImagePrefix(pp));
+              }
+            });
           });
       },
     }
