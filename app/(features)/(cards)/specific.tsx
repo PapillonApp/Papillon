@@ -1,42 +1,38 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
-import { Platform, ScrollView, View } from "react-native";
-import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
+import { ChevronDown, Clock, Papicons, QrCode } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import { Switch } from "react-native-gesture-handler";
+import { useTheme } from "expo-router/react-navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Platform, ScrollView, View } from "react-native";
 
-import adjust from "@/utils/adjustColor";
-import { getCodeType, getServiceColor } from "@/utils/services/helper";
-import { warn } from "@/utils/logger/logger";
 import { getWeekNumberFromDate } from "@/database/useHomework";
-
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
 import { BookingDay, CanteenHistoryItem, CanteenKind } from "@/services/shared/canteen";
-
+import { Capabilities } from "@/services/shared/types";
+import { Services } from "@/stores/account/types";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { useAlert } from "@/ui/components/AlertProvider";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Calendar from "@/ui/components/Calendar";
+import ChipButton from "@/ui/components/ChipButton";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
-import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
-import Calendar from "@/ui/components/Calendar";
-import { Card } from "./cards";
-
-import { Calendar as CalendarIcon, ChevronDown, Clock, Papicons, QrCode } from "@getpapillon/papicons";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { Services } from "@/stores/account/types";
-import { useTranslation } from "react-i18next";
-import { Capabilities } from "@/services/shared/types";
-import i18n from "@/utils/i18n";
+import List from "@/ui/components/List";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import Stack from "@/ui/components/Stack";
 import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
-import ChipButton from "@/ui/components/ChipButton";
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import Typography from "@/ui/components/Typography";
 import NativeSwitch from "@/ui/native/NativeSwitch";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import adjust from "@/utils/adjustColor";
+import i18n from "@/utils/i18n";
+import { warn } from "@/utils/logger/logger";
+import { getCodeType, getServiceColor } from "@/utils/services/helper";
+
+import { Card } from "./cards";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -48,8 +44,17 @@ export default function QRCodeAndCardsPage() {
   const theme = useTheme();
   const { colors } = theme;
 
-  const manager = getManager();
-  const hasBookingCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount)
+  const [manager, setManager] = useState(() => getManager(true));
+  const [managerEpoch, setManagerEpoch] = useState(0);
+
+  useEffect(() => {
+    return subscribeManagerUpdate((updatedManager) => {
+      setManager(updatedManager);
+      setManagerEpoch(prev => prev + 1);
+    });
+  }, []);
+
+  const hasBookingCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount);
 
   const [history, setHistory] = useState<CanteenHistoryItem[]>([]);
   const [qrcode, setQR] = useState("");
@@ -70,6 +75,9 @@ export default function QRCodeAndCardsPage() {
   }, [date, bookingWeek]);
 
   const fetchQRCode = useCallback(async () => {
+    if (!manager) {
+      return;
+    }
     try {
       const { data } = await manager.getCanteenQRCodes(wallet.createdByAccount);
       setQR(data);
@@ -81,31 +89,59 @@ export default function QRCodeAndCardsPage() {
   const [loadingHistory, setLoadingHistory] = useState(false);
 
   const fetchHistory = useCallback(async () => {
+    if (!manager) {
+      return;
+    }
     setLoadingHistory(true);
-    const history = await manager.getCanteenTransactionsHistory(wallet.createdByAccount);
-    setHistory(history);
-    setLoadingHistory(false);
+    try {
+      const historyData = await manager.getCanteenTransactionsHistory(wallet.createdByAccount);
+      setHistory(historyData);
+    } catch (error) {
+      warn(String(error));
+    } finally {
+      setLoadingHistory(false);
+    }
   }, [manager, wallet.createdByAccount]);
 
   const fetchBookingWeek = useCallback(async () => {
-    const bookings = await manager.getCanteenBookingWeek(weekNumber, wallet.createdByAccount);
-    setBookingWeek(bookings);
+    if (!manager) {
+      return;
+    }
+    try {
+      const bookings = await manager.getCanteenBookingWeek(weekNumber, wallet.createdByAccount);
+      setBookingWeek(bookings);
+    } catch (error) {
+      warn(String(error));
+    }
   }, [manager, weekNumber, wallet.createdByAccount]);
 
   const fetchKind = useCallback(async () => {
-    const kind = await manager.getCanteenKind(wallet.createdByAccount);
-    setAccountKind(kind);
-  }, [manager, weekNumber, wallet.createdByAccount]);
+    if (!manager) {
+      return;
+    }
+    try {
+      const kind = await manager.getCanteenKind(wallet.createdByAccount);
+      setAccountKind(kind);
+    } catch (error) {
+      warn(String(error));
+    }
+  }, [manager, wallet.createdByAccount]);
 
   useEffect(() => {
+    if (!manager) {
+      return;
+    }
     fetchQRCode();
     fetchHistory();
     fetchKind();
-  }, [fetchQRCode, fetchHistory]);
+  }, [manager, managerEpoch, fetchQRCode, fetchHistory, fetchKind]);
 
   useEffect(() => {
+    if (!manager) {
+      return;
+    }
     fetchBookingWeek();
-  }, [fetchBookingWeek]);
+  }, [manager, managerEpoch, fetchBookingWeek]);
 
   const handleDateChange = useCallback(
     (newDate: Date) => {
@@ -120,7 +156,9 @@ export default function QRCodeAndCardsPage() {
   const serviceColor = useMemo(() => adjust(getServiceColor(service), -0.1), [service]);
 
   const handleToggle = async (index: number) => {
-    if (!bookingDay) return;
+    if (!bookingDay || !manager) {
+      return;
+    }
     const updatedBookingDay = { ...bookingDay };
     const item = updatedBookingDay.available[index];
     const previous = item.booked;

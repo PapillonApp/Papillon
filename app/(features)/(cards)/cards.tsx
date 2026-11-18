@@ -1,23 +1,3 @@
-import { useManagerSubscription } from "@/hooks/useManagerSubscription";
-import type { AccountManager } from "@/services/shared";
-import { Balance } from "@/services/shared/balance";
-import { useAccountStore } from "@/stores/account";
-import { Services } from "@/stores/account/types";
-import Button from "@/ui/new/Button";
-import ChipButton from "@/ui/components/ChipButton";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { EmptyItem } from "@/ui/components/EmptyItem";
-import Stack from "@/ui/components/Stack";
-import TabHeader from "@/ui/components/TabHeader";
-import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
-import Typography from "@/ui/components/Typography";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import {
-  getServiceBackground,
-  getServiceLogo,
-  getServiceName,
-} from "@/utils/services/helper";
 import { Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -25,6 +5,27 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Platform, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+
+import { useManagerSubscription } from "@/hooks/useManagerSubscription";
+import type { AccountManager } from "@/services/shared";
+import { Balance } from "@/services/shared/balance";
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
+import ChipButton from "@/ui/components/ChipButton";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { EmptyItem } from "@/ui/components/EmptyItem";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import Stack from "@/ui/components/Stack";
+import TabHeader from "@/ui/components/TabHeader";
+import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
+import Typography from "@/ui/components/Typography";
+import Button from "@/ui/new/Button";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import {
+  getServiceBackground,
+  getServiceLogo,
+  getServiceName,
+} from "@/utils/services/helper";
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);
@@ -264,7 +265,7 @@ export function Card({
               variant="caption"
               align="right"
               color={"#FFFFFF" + 90}
-              style={{ width: "100%", lineHeight: 0 }}
+              style={{ width: "100%" }}
             >
               {wallet.label}
             </Typography>
@@ -272,7 +273,7 @@ export function Card({
               variant="title"
               align="right"
               color={"#FFFFFF"}
-              style={{ width: "100%", lineHeight: 0 }}
+              style={{ width: "100%" }}
             >
               {(wallet.amount / 100).toFixed(2)} {wallet.currency}
             </Typography>

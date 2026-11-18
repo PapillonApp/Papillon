@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "expo-router/react-navigation";
 import { useRouter } from "expo-router";
+import { useTheme } from "expo-router/react-navigation";
+import { useTranslation } from "react-i18next";
 import { Alert, Image, ScrollView, View } from "react-native";
 
+import SettingsHeader from "@/components/SettingsHeader";
+import { removeBalanceFromDatabase } from "@/database/useBalance";
+import { getManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import SettingsHeader from "@/components/SettingsHeader";
-import { getServiceBackground, getServiceName, isSelfModuleEnabledED } from "@/utils/services/helper";
-import { useTranslation } from "react-i18next";
-import { removeBalanceFromDatabase } from "@/database/useBalance";
-import { getManager } from "@/services/shared";
 import i18n from "@/utils/i18n";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import { getServiceBackground, getServiceName, isSelfModuleEnabledED } from "@/utils/services/helper";
 
 export default function CardView() {
   const router = useRouter();
@@ -28,7 +28,10 @@ export default function CardView() {
   const selfCompatible = account?.services.filter(
     service => {
       if (service.serviceId === Services.ECOLEDIRECTE) {
-        return isSelfModuleEnabledED(service.additionals);
+        return (
+          Array.isArray(service.auth?.additionals?.["modules"]) &&
+          isSelfModuleEnabledED(service.auth?.additionals)
+        );
       }
       return [Services.TURBOSELF, Services.ARD, Services.IZLY].includes(service.serviceId);
     },

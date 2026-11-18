@@ -1,16 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Pressable, TextInput, Keyboard, View, FlatList } from 'react-native';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
-
-import Typography from '@/ui/components/Typography';
-import Stack from '@/ui/components/Stack';
-
 import { Papicons } from '@getpapillon/papicons';
-import { authenticateWithCredentials, Host } from 'turboself-api'
-import Icon from '@/ui/components/Icon';
-import ViewContainer from '@/ui/components/ViewContainer';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useTheme } from "expo-router/react-navigation";
+import LottieView from 'lottie-react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, FlatList, Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Reanimated, {
   Extrapolate,
   interpolate,
@@ -18,16 +12,21 @@ import Reanimated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import Button from '@/ui/components/Button';
-import uuid from '@/utils/uuid/uuid';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { authenticateWithCredentials, Host } from 'turboself-api';
+
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { initializeAccountManager } from '@/services/shared';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
-import { useTheme } from "expo-router/react-navigation";
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { useTranslation } from 'react-i18next';
-import { initializeAccountManager } from '@/services/shared';
+import Button from '@/ui/components/Button';
+import Icon from '@/ui/components/Icon';
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
+import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
+import ViewContainer from '@/ui/components/ViewContainer';
+import uuid from '@/utils/uuid/uuid';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -78,6 +77,7 @@ const staticStyles = StyleSheet.create({
 export default function TurboSelfSelectHost() {
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const search = useLocalSearchParams();
   const height = useSharedValue(INITIAL_HEIGHT);
@@ -90,7 +90,7 @@ export default function TurboSelfSelectHost() {
         : [];
 
     return parsedRef.map(
-      (sibling: any) =>
+      (sibling: Host & { premissions?: Host["permissions"] }) =>
         new Host(
           sibling.id,
           sibling.localId,
@@ -104,7 +104,7 @@ export default function TurboSelfSelectHost() {
           sibling.type,
           sibling.cardNumber,
           sibling.cafeteriaUrl,
-          sibling.premissions
+          sibling.permissions ?? sibling.premissions ?? {}
         )
     );
   }, [search.siblings]);
@@ -220,48 +220,81 @@ export default function TurboSelfSelectHost() {
               data={siblings}
               numColumns={2}
               renderItem={({ item }) => (
-                <AnimatedPressable style={{ flex: 1 }} onPress={async () => {
-                  const user = item as Host
-                  const authentification = await authenticateWithCredentials(String(search.username), String(search.password), true, false, user.id)
-                  const accountId = uuid()
-                  const store = useAccountStore.getState()
-                  const service = {
-                    id: accountId,
-                    auth: {
-                      additionals: {
+                <AnimatedPressable
+                  style={{ flex: 1, opacity: isSubmitting ? 0.6 : 1 }}
+                  disabled={isSubmitting}
+                  onPress={async () => {
+                    if (isSubmitting) {
+                      return;
+                    }
+                    setIsSubmitting(true);
+                    try {
+                      const user = item as Host;
+                      const authentification = await authenticateWithCredentials(
+                        String(search.username),
+                        String(search.password),
+                        true,
+                        false,
+                        user.id
+                      );
+                      const accountId = uuid();
+                      const store = useAccountStore.getState();
+                      const additionals: Record<string, string | number> = {
                         username: String(search.username),
                         password: String(search.password),
-                        "hoteId": authentification.host?.id ?? "N/A"
+                        hoteId: authentification.host?.id ?? "N/A",
+                      };
+                      if (authentification.host?.cardNumber) {
+                        additionals.cardNumber = authentification.host.cardNumber;
                       }
-                    },
-                    serviceId: Services.TURBOSELF,
-                    createdAt: (new Date()).toISOString(),
-                    updatedAt: (new Date()).toISOString()
-                  }
+                      const service = {
+                        id: accountId,
+                        auth: {
+                          additionals,
+                        },
+                        serviceId: Services.TURBOSELF,
+                        createdAt: (new Date()).toISOString(),
+                        updatedAt: (new Date()).toISOString(),
+                      };
 
-                  if (String(search.action) === "addService") {
-                    store.addServiceToAccount(store.lastUsedAccount, service)
-                    await initializeAccountManager()
-                    router.back();
-                    router.back();
-                    return router.back();
-                  }
+                      if (String(search.action) === "addService") {
+                        const currentAccount = store.accounts.find(a => a.id === store.lastUsedAccount);
+                        const existingService = currentAccount?.services.find(
+                          s => s.serviceId === Services.TURBOSELF
+                        );
 
-                  store.addAccount({
-                    id: accountId,
-                    firstName: authentification.host?.firstName ?? "N/A",
-                    lastName: authentification.host?.lastName ?? "N/A",
-                    schoolName: authentification.establishment?.name,
-                    className: authentification.host?.division,
-                    services: [service],
-                    createdAt: (new Date()).toISOString(),
-                    updatedAt: (new Date()).toISOString()
-                  })
+                        if (existingService) {
+                          store.updateServiceAuthData(existingService.id, { additionals });
+                        } else {
+                          store.addServiceToAccount(store.lastUsedAccount, service);
+                        }
+                        await initializeAccountManager();
+                        router.back();
+                        router.back();
+                        return router.back();
+                      }
 
-                  store.setLastUsedAccount(accountId)
-                  router.dismissAll();
-                  return router.push("/");
-                }}>
+                      store.addAccount({
+                        id: accountId,
+                        firstName: authentification.host?.firstName ?? "N/A",
+                        lastName: authentification.host?.lastName ?? "N/A",
+                        schoolName: authentification.establishment?.name,
+                        className: authentification.host?.division,
+                        services: [service],
+                        createdAt: (new Date()).toISOString(),
+                        updatedAt: (new Date()).toISOString(),
+                      });
+
+                      store.setLastUsedAccount(accountId);
+                      router.dismissAll();
+                      return router.push("/");
+                    } catch {
+                      Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_BAD_CREDENTIALS_TURBOSELF"));
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                >
                   <Stack
                     hAlign="center"
                     style={{

@@ -44,9 +44,23 @@ export async function addBalancesToDatabase(balances: SharedBalance[]) {
             lunchRemaining: balance.lunchRemaining,
             lunchPrice: balance.lunchPrice,
             label: balance.label
-          })
-        })
-      }, 10000, 'addBalancesToDatabase')
+          });
+        });
+      }, 10000, 'addBalancesToDatabase');
+    } else {
+      const balanceToUpdate = existing[0];
+      await safeWrite(db, async () => {
+        await balanceToUpdate.update((record: Model) => {
+          const balanceModel = record as Balance;
+          Object.assign(balanceModel, {
+            currency: balance.currency,
+            amount: balance.amount,
+            lunchRemaining: balance.lunchRemaining,
+            lunchPrice: balance.lunchPrice,
+            label: balance.label,
+          });
+        });
+      }, 10000, 'addBalancesToDatabase');
     }
   }
 }

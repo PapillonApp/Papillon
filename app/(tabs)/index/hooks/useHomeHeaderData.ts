@@ -1,11 +1,13 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+import { useNews } from '@/database/useNews';
 import { AccountManager, getManager, subscribeManagerUpdate } from '@/services/shared';
 import { Attendance } from '@/services/shared/attendance';
 import { Period } from '@/services/shared/grade';
-import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
-import { useNews } from '@/database/useNews';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { isSelfModuleEnabledED } from '@/utils/services/helper';
 
 export const useHomeHeaderData = () => {
   const accounts = useAccountStore((state) => state.accounts);
@@ -14,15 +16,20 @@ export const useHomeHeaderData = () => {
 
   const availableCanteenCards = useMemo(
     () =>
-      account?.services.filter(service =>
-        [
+      account?.services.filter(service => {
+        if (service.serviceId === Services.ECOLEDIRECTE) {
+          return (
+            Array.isArray(service.auth?.additionals?.["modules"]) &&
+            isSelfModuleEnabledED(service.auth?.additionals)
+          );
+        }
+        return [
           Services.TURBOSELF,
           Services.ALISE,
           Services.ARD,
-          Services.ECOLEDIRECTE,
           Services.IZLY,
-        ].includes(service.serviceId)
-      ) ?? [],
+        ].includes(service.serviceId);
+      }) ?? [],
     [account]
   );
 

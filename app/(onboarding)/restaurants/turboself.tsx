@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { useTheme } from "expo-router/react-navigation";
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useTheme } from "expo-router/react-navigation";
 import LottieView from 'lottie-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import Reanimated, {
   withTiming
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { authenticateWithCredentials } from 'turboself-api'
+import { authenticateWithCredentials } from 'turboself-api';
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
@@ -22,6 +22,7 @@ import Button from '@/ui/components/Button';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import uuid from '@/utils/uuid/uuid';
+
 import LoginView from "../components/LoginView";
 
 const ANIMATION_DURATION = 100;
@@ -66,28 +67,42 @@ export default function TurboSelfLoginWithCredentials() {
   const loginTurboself = async (submittedUsername: string, submittedPassword: string) => {
     try {
       setIsLoggingIn(true);
-      const authentification = await authenticateWithCredentials(submittedUsername, submittedPassword, true, false)
+      const authentification = await authenticateWithCredentials(submittedUsername, submittedPassword, true, false);
       const siblings = await authentification.getSiblings();
       if (siblings.length === 0) {
-        const accountId = uuid()
-        const store = useAccountStore.getState()
+        const accountId = uuid();
+        const store = useAccountStore.getState();
+        const additionals: Record<string, string | number> = {
+          username: submittedUsername,
+          password: submittedPassword,
+          hoteId: authentification.host?.id ?? "N/A",
+        };
+        if (authentification.host?.cardNumber) {
+          additionals.cardNumber = authentification.host.cardNumber;
+        }
         const service = {
           id: accountId,
           auth: {
-            additionals: {
-              username: submittedUsername,
-              password: submittedPassword,
-              "hoteId": authentification.host?.id ?? "N/A"
-            }
+            additionals,
           },
           serviceId: Services.TURBOSELF,
           createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString()
-        }
+          updatedAt: (new Date()).toISOString(),
+        };
 
         if (action === "addService") {
-          store.addServiceToAccount(store.lastUsedAccount, service)
-          await initializeAccountManager()
+          const currentAccount = store.accounts.find(a => a.id === store.lastUsedAccount);
+          const existingService = currentAccount?.services.find(
+            s => s.serviceId === Services.TURBOSELF
+          );
+
+          if (existingService) {
+            store.updateServiceAuthData(existingService.id, { additionals });
+          } else {
+            store.addServiceToAccount(store.lastUsedAccount, service);
+          }
+          await initializeAccountManager();
+          setIsLoggingIn(false);
           router.back();
           router.back();
           return router.back();
