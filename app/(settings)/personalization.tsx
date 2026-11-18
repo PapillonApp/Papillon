@@ -1,25 +1,26 @@
-import { Alert, Platform, ScrollView, Switch } from "react-native";
-import Stack from "@/ui/components/Stack";
-import { EarthIcon } from "lucide-react-native";
-import React, { useEffect } from "react";
-import Typography from "@/ui/new/Typography";
-import Icon from "@/ui/components/Icon";
-import { Papicons, PapillonApp } from "@getpapillon/papicons";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
-import AppColorsSelector from "@/components/AppColorsSelector";
-import { AppColors } from "@/utils/colors";
+import { Papicons } from "@getpapillon/papicons";
+import * as PapillonKit from "@getpapillon/papillonkit";
+import { router } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
+import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import adjust from "@/utils/adjustColor";
+import { FadeIn, FadeOut } from "react-native-reanimated";
+
+import AppColorsSelector from "@/components/AppColorsSelector";
 import { useAccountStore } from "@/stores/account";
 import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from "@/stores/settings";
-import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { FadeIn, FadeOut } from "react-native-reanimated";
-import List from "@/ui/new/List";
-import NativeSwitch from "@/ui/native/NativeSwitch";
+import Icon from "@/ui/components/Icon";
 import Picker from "@/ui/components/Picker";
+import Stack from "@/ui/components/Stack";
+import NativeSwitch from "@/ui/native/NativeSwitch";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
+import { AppColors } from "@/utils/colors";
+import { getGradeDisplayScale } from "@/utils/grades/scale";
 import { trackOptionalEvent } from "@/utils/logger/analytics";
 
 const FONT_OPTIONS = [
@@ -30,6 +31,13 @@ const FONT_OPTIONS = [
   { label: "IBM Plex Serif", value: "ibm-plex-serif" as const },
 ];
 
+const GRADE_SCALE_OPTIONS = [
+  { label: "Note sur 20", value: "20" as const },
+  { label: "Note sur 10", value: "10" as const },
+  { label: "Note sur 5", value: "5" as const },
+  { label: "Pourcentage", value: "percentage" as const },
+];
+
 const PersonalizationSettings = () => {
   const theme = useTheme();
   const { t } = useTranslation()
@@ -38,6 +46,11 @@ const PersonalizationSettings = () => {
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
   const useMaterialYou = settingsStore.useMaterialYou ?? DEFAULT_MATERIAL_YOU_ENABLED;
+  const liveActivitiesEnabled = settingsStore.liveActivitiesEnabled ?? true;
+  const selectedGradeScale = getGradeDisplayScale(settingsStore.gradesDisplayScale);
+  const selectedGradeScaleIndex = useMemo(() => {
+    return Math.max(0, GRADE_SCALE_OPTIONS.findIndex(option => option.value === selectedGradeScale));
+  }, [selectedGradeScale]);
   const selectedFontFamily = settingsStore.fontFamily ?? "sn-pro";
   const selectedFontIndex = Math.max(
     FONT_OPTIONS.findIndex(option => option.value === selectedFontFamily),
@@ -301,6 +314,72 @@ const PersonalizationSettings = () => {
             </List.Trailing>
           </List.Item>
         </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>{t("Settings_Features_Grades")}</List.Label>
+          </List.SectionTitle>
+
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Grades"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="body2" color="primary">{t("Global_Experimental")}</Typography>
+            <Typography variant="title">{t("Settings_Features_GradeScale")}</Typography>
+            <Typography color="textSecondary" numberOfLines={2}>
+              {t("Settings_Features_GradeScale_Description")}
+            </Typography>
+            <List.Trailing>
+              <View style={{ width: 120, alignItems: "flex-end" }}>
+                <Picker
+                  options={GRADE_SCALE_OPTIONS.map(option => option.label)}
+                  selectedIndex={selectedGradeScaleIndex}
+                  onValueChange={(index) => {
+                    const option = GRADE_SCALE_OPTIONS[index];
+                    if (!option) {
+                      return;
+                    }
+                    mutateProperty("personalization", {
+                      gradesDisplayScale: option.value,
+                    });
+                  }}
+                />
+              </View>
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+
+        {PapillonKit.features.liveActivities && (
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>{t("Settings_Features_LockScreen")}</List.Label>
+            </List.SectionTitle>
+
+            <List.Item>
+              <List.Leading>
+                <Icon>
+                  <Papicons name={"Clock"} />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">{t("Settings_Features_LiveActivities")}</Typography>
+              <Typography color="textSecondary" numberOfLines={3}>
+                {t("Settings_Features_LiveActivities_Description")}
+              </Typography>
+              <List.Trailing>
+                <NativeSwitch
+                  value={liveActivitiesEnabled}
+                  onValueChange={(value) =>
+                    mutateProperty("personalization", {
+                      liveActivitiesEnabled: value,
+                    })
+                  }
+                />
+              </List.Trailing>
+            </List.Item>
+          </List.Section>
+        )}
       </List>
     </>
   )
