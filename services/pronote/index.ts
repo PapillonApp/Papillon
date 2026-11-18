@@ -172,7 +172,9 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
-    return this.withSession(session => setPronoteHomeworkAsDone(session, homework, state));
+    return this.withSession(session =>
+      setPronoteHomeworkAsDone(session, homework, state, this.accountId)
+    );
   }
 
   createMail(subject: string, content: string, recipients: Recipient[]): Promise<Chat> {

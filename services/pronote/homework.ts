@@ -5,9 +5,29 @@ import {
   translateToWeekNumber,
 } from "@blockshub/pawnote-lts";
 
-import { getDateRangeOfWeek } from "@/database/useHomework";
+import { getDateRangeOfWeek, getHomeworkRouteId } from "@/database/useHomework";
 import { Homework, ReturnFormat } from "@/services/shared/homework";
 import { error } from "@/utils/logger/logger";
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function getMondayWeekIndex(date: Date): number {
+  const weekStart = getDateRangeOfWeek(1).start;
+  const startMidnight = new Date(
+    weekStart.getFullYear(),
+    weekStart.getMonth(),
+    weekStart.getDate()
+  );
+  const dateMidnight = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+  const diffDays = Math.round(
+    (dateMidnight.getTime() - startMidnight.getTime()) / DAY_MS
+  );
+  return 1 + Math.floor(diffDays / 7);
+}
 
 /**
   * Fetches homework assignments from PRONOTE for the current week.
@@ -47,20 +67,55 @@ export async function fetchPronoteHomeworks(session: SessionHandle, accountId: s
   return result;
 }
 
-export async function setPronoteHomeworkAsDone(session: SessionHandle, homework: Homework, status?: boolean): Promise<Homework> {
+export async function setPronoteHomeworkAsDone(
+  session: SessionHandle,
+  homework: Homework,
+  status?: boolean,
+  accountId?: string
+): Promise<Homework> {
+  let targetHomework = homework;
+
   if (homework.fromCache) {
-    error("You can't set data from cache as done.")
-    return homework;
+    const dueDate = new Date(homework.dueDate);
+    const resolvedAccountId = accountId ?? homework.createdByAccount;
+    const weekIndex = getMondayWeekIndex(dueDate);
+    const freshHomeworks = await fetchPronoteHomeworks(
+      session,
+      resolvedAccountId,
+      weekIndex
+    );
+    const targetRouteId = getHomeworkRouteId({
+      ...homework,
+      dueDate,
+      createdByAccount: resolvedAccountId,
+    });
+    const resolved = freshHomeworks.find(
+      item =>
+        item.id === homework.id ||
+        getHomeworkRouteId(item) === homework.id ||
+        getHomeworkRouteId(item) === targetRouteId
+    );
+    if (!resolved) {
+      throw error(
+        "You can't set data from cache as done.",
+        "setPronoteHomeworkAsDone"
+      );
+    }
+    targetHomework = resolved;
   }
 
+  const finalStatus = status ?? !homework.isDone;
+
   try {
-    await assignmentStatus(session, homework.id, status || !homework.isDone)
+    await assignmentStatus(session, targetHomework.id, finalStatus);
   } catch (err) {
-    error(String(err))
+    const logged = error(String(err), "setPronoteHomeworkAsDone");
+    throw err instanceof Error ? err : logged;
   }
+
   return {
-    ...homework,
-    isDone: status || !homework.isDone,
-    progress: (status || !homework.isDone) ? 1 : 0
-  }
+    ...targetHomework,
+    isDone: finalStatus,
+    progress: finalStatus ? 1 : 0,
+  };
 }

@@ -1,16 +1,17 @@
+import { Link } from 'expo-router';
 import React, { memo, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 import Reanimated from 'react-native-reanimated';
 
+import { getHomeworkRouteId } from '@/database/useHomework';
 import { Homework } from "@/services/shared/homework";
 import Task from "@/ui/components/Task";
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
-import { getSubjectName } from "@/utils/subjects/name";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
+
 import { useMagicPrediction } from '../hooks/useMagicPrediction';
-import { Link } from 'expo-router';
-import { getHomeworkRouteId } from '@/database/useHomework';
 
 interface TaskItemProps {
   item: Homework;
@@ -33,8 +34,8 @@ const TaskItem = memo(
     return (
       <Reanimated.View
         style={{ marginBottom: 10 }}
-        entering={animated ? PapillonAppearIn : undefined}
-        exiting={animated ? PapillonAppearOut : undefined}
+        entering={Platform.OS === "ios" && animated ? PapillonAppearIn : undefined}
+        exiting={Platform.OS === "ios" && animated ? PapillonAppearOut : undefined}
       >
         <Link
           href={{

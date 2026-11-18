@@ -1,24 +1,23 @@
-import React, { useMemo } from 'react';
-import Stack from './Stack';
-import Typography from './Typography';
-import { formatHTML } from '@/utils/format/html';
-import { useTheme } from "expo-router/react-navigation";
-import adjust from '@/utils/adjustColor';
-import { Text } from 'react-native';
-
+import { Papicons } from '@getpapillon/papicons';
 import { formatDistanceStrict, startOfDay } from 'date-fns';
 import * as DateLocale from 'date-fns/locale';
-import i18n from '@/utils/i18n';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from './Icon';
-import { Dynamic } from './Dynamic';
-import { Animation } from '../utils/Animation';
-import { LinearTransition } from 'react-native-reanimated';
-import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
+import { useTheme } from "expo-router/react-navigation";
 import { t } from 'i18next';
-import { Platform } from 'react-native';
+import React, { useMemo } from 'react';
+import { Platform, Text, View } from 'react-native';
+import Reanimated, { LinearTransition } from 'react-native-reanimated';
+
+import adjust from '@/utils/adjustColor';
+import { formatHTML } from '@/utils/format/html';
+import i18n from '@/utils/i18n';
+
 import { ListTouchable } from '../new/List';
+import { Animation } from '../utils/Animation';
+import { Dynamic } from './Dynamic';
+import Icon from './Icon';
+import Stack from './Stack';
+import Typography from './Typography';
 
 interface TaskProps {
   subject: string;
@@ -125,14 +124,14 @@ const Task: React.FC<TaskProps> = React.memo(({
           </Stack>
 
           {/* Content */}
-          <Stack animated layout={Animation(LinearTransition, "list")}>
+          <Stack>
             <Typography numberOfLines={3} variant='title' weight='medium'>
               {formattedDescription}
             </Typography>
           </Stack>
 
           {/* Bottom */}
-          <Stack animated layout={Animation(LinearTransition, "list")} direction="horizontal" gap={8} hAlign='center'>
+          <Stack direction="horizontal" gap={8} hAlign='center'>
             <Stack inline flex hAlign='start' vAlign='center'>
               {/* Magic */}
               {magic && (
@@ -155,37 +154,40 @@ const Task: React.FC<TaskProps> = React.memo(({
                 </Dynamic>
               )}
             </Stack>
-            <Stack animated layout={Animation(LinearTransition, "list")} radius={300} inline hAlign='end' vAlign='center' style={{ overflow: Platform.OS === "android" ? "hidden" : undefined }}>
-              <ListTouchable scaleTo={0.8} animated layout={Animation(LinearTransition, "list")} onPress={onToggle}>
-                <Stack
-                  animated
-                  layout={Animation(LinearTransition, "list")}
-                  card
-                  backgroundColor={completed ? tintedColor : undefined}>
-                  <Stack
-                    animated
-                    layout={Animation(LinearTransition, "list")}
-                    padding={[completed ? 12 : 8, 8]}
-                    direction='horizontal'
-                    gap={6}
-                    radius={100}
-                    hAlign='center'
-                    style={{ overflow: "hidden" }}
+            <View style={{ borderRadius: 100, overflow: "hidden" }}>
+              <ListTouchable onPress={onToggle}>
+                <Reanimated.View
+                  layout={Platform.OS === "ios" ? Animation(LinearTransition, "list") : undefined}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 6,
+                    paddingHorizontal: completed ? 12 : 8,
+                    paddingVertical: 8,
+                    borderRadius: 100,
+                    backgroundColor: completed ? tintedColor : theme.colors.card,
+                    borderWidth: Platform.OS === "android" ? 0 : 0.5,
+                    borderColor:
+                      typeof theme.colors.text === "string"
+                        ? theme.colors.text + "25"
+                        : undefined,
+                  }}
+                >
+                  <Icon
+                    size={24}
+                    opacity={completed ? 1 : 0.5}
+                    fill={completed ? "#FFF" : undefined}
                   >
-                    <Icon size={24} opacity={completed ? 1 : 0.5} fill={completed ? "#FFF" : undefined}>
-                      <Papicons name='check' />
-                    </Icon>
-                    {completed &&
-                      <Dynamic animated>
-                        <Typography color='#FFF'>
-                          Terminé
-                        </Typography>
-                      </Dynamic>
-                    }
-                  </Stack>
-                </Stack>
+                    <Papicons name="check" />
+                  </Icon>
+                  {completed && (
+                    <Typography nowrap variant="body2" weight="semibold" color="#FFF">
+                      {t("Task_Done")}
+                    </Typography>
+                  )}
+                </Reanimated.View>
               </ListTouchable>
-            </Stack>
+            </View>
           </Stack>
         </Stack>
       </Stack>
