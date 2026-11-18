@@ -1,4 +1,5 @@
 import { Model, Q } from "@nozbe/watermelondb";
+import { endOfDay, startOfDay } from "date-fns";
 import { useEffect, useState } from "react";
 
 import { getICalCourseById, getICalEventsForWeek } from "@/services/local/ical";
@@ -82,12 +83,9 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
     db,
     async () => {
       for (const day of courses) {
-        const dayTimestamp = day.date.getTime();
-        const oneDayMs = 24 * 60 * 60 * 1000;
-
         const dbCourses = await db.get<Course>('courses')
           .query(
-            Q.where('from', Q.between(dayTimestamp, dayTimestamp + oneDayMs))
+            Q.where('from', Q.between(startOfDay(day.date).getTime(), endOfDay(day.date).getTime()))
           )
           .fetch();
 
@@ -182,14 +180,6 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   );
 }
 
-// Courses are grouped on the day they fall on in the device's timezone: grouping
-// on the UTC date would file evening courses under the previous day west of UTC.
-function startOfLocalDay(date: Date): number {
-  const day = new Date(date);
-  day.setHours(0, 0, 0, 0);
-  return day.getTime();
-}
-
 function getWeeksRange(weeks: number[], year: number): { start: Date; end: Date } {
   let start = new Date(8640000000000000);
   let end = new Date(-8640000000000000);
@@ -227,9 +217,11 @@ async function readCoursesFromCache(weeks: number[], year: number): Promise<Shar
       .query(Q.where('from', Q.between(minStart.getTime(), maxEnd.getTime())))
       .fetch();
 
+    // Courses are grouped on the day they fall on in the device's timezone: grouping
+    // on the UTC date would file evening courses under the previous day west of UTC.
     const dayMap: Record<number, SharedCourse[]> = {};
     for (const course of courses) {
-      const dayKey = startOfLocalDay(new Date(course.from));
+      const dayKey = startOfDay(new Date(course.from)).getTime();
       dayMap[dayKey] = dayMap[dayKey] || [];
       dayMap[dayKey].push(mapCourseToShared(course));
     }
@@ -237,7 +229,7 @@ async function readCoursesFromCache(weeks: number[], year: number): Promise<Shar
     try {
       const icalEvents = await getICalEventsForWeek(minStart, maxEnd);
       for (const event of icalEvents) {
-        const dayKey = startOfLocalDay(event.from);
+        const dayKey = startOfDay(event.from).getTime();
         dayMap[dayKey] = dayMap[dayKey] || [];
         dayMap[dayKey].push(event);
       }

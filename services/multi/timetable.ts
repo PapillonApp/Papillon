@@ -1,3 +1,4 @@
+import { endOfISOWeek, format, startOfDay, startOfISOWeek } from "date-fns";
 import { EventResponse, Multi } from "esup-multi.js";
 
 import { getDateRangeOfWeek } from "@/database/useHomework";
@@ -12,27 +13,36 @@ import {
 export async function fetchMultiTimetable(
   session: Multi,
   accountId: string,
-  weekNumber: number
+  weekNumber: number,
+  date?: Date
 ): Promise<CourseDay[]> {
-  const { start, end } = getDateRangeOfWeek(weekNumber);
-  const result: CourseDay[] = [];
+  const { start, end } = date
+    ? { start: startOfISOWeek(date), end: endOfISOWeek(date) }
+    : getDateRangeOfWeek(weekNumber);
 
   const timetable = await session.getSchedules({
-    startDate: start.toISOString().split("T")[0],
-    endDate: end.toISOString().split("T")[0],
+    startDate: format(start, "yyyy-MM-dd"),
+    endDate: format(end, "yyyy-MM-dd"),
   });
 
-  for (const day of timetable.plannings) {
-    const courses = mapMultiCourse(day.events, accountId);
-    result.push({
-      date: day.events[0]?.startDateTime
-        ? new Date(day.events[0].startDateTime)
-        : new Date(),
-      courses: courses,
-    });
+  const dayMap: Record<string, Course[]> = {};
+  for (const planning of timetable.plannings) {
+    const courses = mapMultiCourse(planning.events, accountId);
+    for (const course of courses) {
+      const dayKey = format(course.from, "yyyy-MM-dd");
+      dayMap[dayKey] = dayMap[dayKey] || [];
+      dayMap[dayKey].push(course);
+    }
   }
 
-  return result;
+  for (const day in dayMap) {
+    dayMap[day].sort((a, b) => a.from.getTime() - b.from.getTime());
+  }
+
+  return Object.values(dayMap).map(courses => ({
+    date: startOfDay(courses[0].from),
+    courses,
+  }));
 }
 
 function mapMultiCourse(data: EventResponse[], accountId: string): Course[] {

@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "expo-router/react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "expo-router/react-navigation";
 import { LucideIcon } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,11 +9,11 @@ import { Platform, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
 
+import { ListTouchable } from "../new/List";
 import { formatDuration } from "../utils/Duration";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
-import { ListTouchable } from "../new/List";
 
 type Variant = "primary" | "separator";
 
@@ -97,7 +97,8 @@ const Course = React.memo((props: CourseProps) => {
 
   const fStart = new Date(start * 1000);
   const fEnd = new Date(end * 1000);
-  const hStart = fStart.getHours();
+  const hStart = fStart.getHours() + fStart.getMinutes() / 60;
+  const hEnd = fEnd.getHours() + fEnd.getMinutes() / 60;
 
   let textColor = adjust(color ?? "#FFFFFF", dark ? 0.1 : -0.15);
   if (status?.canceled) { textColor = colors.text + "80"; }
@@ -157,8 +158,10 @@ const Course = React.memo((props: CourseProps) => {
       setTaps((prevTaps) => (prevTaps + 1) % 3);
     };
 
-    let timeKey;
-    if (hStart < 11) {
+    let timeKey: keyof typeof messageKeys;
+    if (hStart < 14 && hEnd > 12) {
+      timeKey = 'lunch';
+    } else if (hStart < 11) {
       timeKey = 'morning';
     } else if (hStart < 14) {
       timeKey = 'lunch';
@@ -179,36 +182,36 @@ const Course = React.memo((props: CourseProps) => {
           backgroundColor: colors.item,
         }}
       >
-      <ListTouchable
-        onPress={() => increaseTaps()}
-        style={{
-          flex: 1,
-        }}
-      >
-        <Stack
-          card
-          direction="horizontal"
-          padding={[14, 8]}
-          radius={300}
-          vAlign="start"
-          gap={8}
-          hAlign="center"
-          style={{ flex: 1, backgroundColor: colors.item }}
+        <ListTouchable
+          onPress={() => increaseTaps()}
+          style={{
+            flex: 1,
+          }}
         >
-          <Icon papicon size={24} opacity={skeleton ? 0.1 : 0.6}>
-            {hStart < 11 ? <Papicons name="Sunrise" /> : hStart < 14 ? <Papicons name="Cutlery" /> : <Papicons name="Sun" />}
-          </Icon>
-          <Typography variant="h6" style={{ flex: 1, opacity: 0.6, color: colors.text }} nowrap skeleton={skeleton}>
-            {message}
-          </Typography>
-          <Typography variant="body1" style={{ color: colors.text + "80" }} skeleton={skeleton}>
-            {formatDuration(duration)}
-          </Typography>
-        </Stack>
-      </ListTouchable>
+          <Stack
+            card
+            direction="horizontal"
+            padding={[14, 8]}
+            radius={300}
+            vAlign="start"
+            gap={8}
+            hAlign="center"
+            style={{ flex: 1, backgroundColor: colors.item }}
+          >
+            <Icon papicon size={24} opacity={skeleton ? 0.1 : 0.6}>
+              {timeKey === 'morning' ? <Papicons name="Sunrise" /> : timeKey === 'lunch' ? <Papicons name="Cutlery" /> : <Papicons name="Sun" />}
+            </Icon>
+            <Typography variant="h6" style={{ flex: 1, opacity: 0.6, color: colors.text }} nowrap skeleton={skeleton}>
+              {message}
+            </Typography>
+            <Typography variant="body1" style={{ color: colors.text + "80" }} skeleton={skeleton}>
+              {formatDuration(duration)}
+            </Typography>
+          </Stack>
+        </ListTouchable>
       </View>
     )
-  }, [colors.card, colors.text, duration, hStart, skeleton]);
+  }, [colors.card, colors.text, compact, duration, hEnd, hStart, skeleton, t]);
 
   /** statut (cours annulé ou magicInfo) */
   const renderStatus = useCallback(() => {

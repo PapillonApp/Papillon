@@ -9,6 +9,7 @@ import {
   timetableFromWeek,
   translateToWeekNumber,
 } from "@blockshub/pawnote-lts";
+import { format, startOfDay } from "date-fns";
 
 import { Course, CourseDay, CourseResource, CourseStatus, CourseType } from "@/services/shared/timetable";
 import { error } from "@/utils/logger/logger";
@@ -36,7 +37,7 @@ export async function fetchPronoteWeekTimetable(
   const dayMap: Record<string, Course[]> = {};
 
   for (const course of mappedCourses) {
-    const dayKey = course.from.toISOString().split("T")[0];
+    const dayKey = format(course.from, "yyyy-MM-dd");
     dayMap[dayKey] = dayMap[dayKey] || [];
     dayMap[dayKey].push(course);
   }
@@ -45,8 +46,8 @@ export async function fetchPronoteWeekTimetable(
     dayMap[day].sort((a, b) => a.from.getTime() - b.from.getTime());
   }
 
-  return Object.entries(dayMap).map(([day, courses]) => ({
-    date: new Date(day),
+  return Object.values(dayMap).map((courses) => ({
+    date: startOfDay(courses[0].from),
     courses
   }));
 }
@@ -71,11 +72,11 @@ const mapCourses = (
     }
     if (c.is === "lesson") {
       courseList.push({
-        subject: c.subject!.name,
+        subject: c.subject?.name || c.status || c.notes || "Cours",
         id: c.id,
         type: CourseType.LESSON,
         room: c.classrooms.join(", "),
-        teacher: c.teacherNames.join(", "),
+        teacher: [...c.teacherNames, ...c.personalNames].join(", "),
         group: c.groupNames.join(", "),
         status: mapCourseStatus(c),
         customStatus: c.status,
@@ -138,13 +139,7 @@ export async function fetchPronoteCourseResources(
 }
 
 const mapCourseStatus = (course: TimetableClassLesson): CourseStatus | undefined => {
-  // eslint-disable-next-line default-case
-  switch (course.status) {
-  case "Cours annulé":
-  case "Prof. absent":
-  case "Classe absente":
-  case "Prof./pers. absent":
-  case "Sortie pédagogique":
+  if (course.canceled) {
     return CourseStatus.CANCELED;
   }
 
@@ -152,5 +147,9 @@ const mapCourseStatus = (course: TimetableClassLesson): CourseStatus | undefined
     return CourseStatus.EVALUATED;
   }
 
-  return undefined
+  if (course.status?.trim()) {
+    return CourseStatus.EDITED;
+  }
+
+  return undefined;
 };
