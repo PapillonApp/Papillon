@@ -1,7 +1,6 @@
-
 import { Client, DoubleAuthQuestions, DoubleAuthResult, Require2FA } from "@blockshub/blocksdirecte";
-import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { router } from "expo-router";
+import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -13,6 +12,7 @@ import {
   Pressable,
   View,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Reanimated, {
   FadeInDown,
   FadeOutUp,
@@ -24,6 +24,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import { extractEDClassName, selectEDAccountIndex } from "@/services/ecoledirecte/refresh";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -32,7 +33,7 @@ import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
-import { ScrollView } from "react-native-gesture-handler";
+
 import LoginView from "../../components/LoginView";
 
 const ANIMATION_DURATION = 170;
@@ -90,24 +91,33 @@ export default function EDLoginWithCredentials() {
 
     try {
       const tokens = await client.auth.loginUsername(username, password, keys?.cn, keys?.cv, true, device);
-      if (tokens) {
-        client.auth.setAccount(0);
+      if (tokens?.accounts?.length) {
+        const accountIndex = selectEDAccountIndex(tokens.accounts);
+        client.auth.setAccount(accountIndex);
         const authentication = client.auth.getAccount();
+        const className = extractEDClassName(authentication);
+        const schoolName =
+          authentication.nomEtablissement?.trim() ||
+          authentication.profile?.nomEtablissement?.trim() ||
+          undefined;
         const account: Account = {
           id: device,
           firstName: authentication.prenom,
           lastName: authentication.nom,
-          schoolName: authentication.nomEtablissement,
+          schoolName,
+          className,
           services: [
             {
               id: device,
               auth: {
                 additionals: {
-                  "username": username,
-                  "token": authentication.accessToken,
-                  "cn": keys?.cn ?? "",
-                  "cv": keys?.cv ?? "",
-                  "deviceUUID": device
+                  username,
+                  token: authentication.accessToken,
+                  cn: keys?.cn ?? "",
+                  cv: keys?.cv ?? "",
+                  deviceUUID: device,
+                  accountId: authentication.id,
+                  modules: JSON.stringify(authentication.modules ?? []),
                 }
               },
               serviceId: Services.ECOLEDIRECTE,
