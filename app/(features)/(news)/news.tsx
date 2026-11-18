@@ -1,10 +1,21 @@
+import { Papicons } from '@getpapillon/papicons'
+import { router } from 'expo-router'
+import { useTheme } from "expo-router/react-navigation"
+import { t } from 'i18next'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { Platform, RefreshControl } from 'react-native'
+import Reanimated, { useAnimatedStyle } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
 import { useNews } from '@/database/useNews'
 import { allowAllAuthRetries } from '@/services/auth/coordinator'
-import { getManager, subscribeManagerUpdate } from '@/services/shared'
+import { type AccountManager, getManager, subscribeManagerUpdate } from '@/services/shared'
 import Avatar from '@/ui/components/Avatar'
 import ChipButton from '@/ui/components/ChipButton'
 import { Dynamic } from '@/ui/components/Dynamic'
 import Icon from '@/ui/components/Icon'
+import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary'
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Search from '@/ui/components/Search'
 import Stack from '@/ui/components/Stack'
 import TabHeader from '@/ui/components/TabHeader'
@@ -16,16 +27,6 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition'
 import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
-import { Papicons } from '@getpapillon/papicons'
-import { useTheme } from "expo-router/react-navigation"
-import { router } from 'expo-router'
-import { t } from 'i18next'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Platform, RefreshControl } from 'react-native'
-import Reanimated, { useAnimatedStyle } from 'react-native-reanimated'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary'
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 const NewsView = () => {
   const theme = useTheme()
@@ -50,10 +51,10 @@ const NewsView = () => {
     return [...news].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
   }, [news])
 
-  const fetchNews = useCallback(async () => {
+  const fetchNews = useCallback(async (targetManager?: AccountManager) => {
     try {
       setIsLoading(true)
-      const manager = getManager()
+      const manager = targetManager ?? getManager()
       if (!manager) {
         warn('Manager is null, skipping news fetch')
         return
@@ -68,12 +69,12 @@ const NewsView = () => {
   }, [])
 
   useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate(() => {
-      void fetchNews()
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      void fetchNews(manager)
     })
 
     return () => unsubscribe()
-  }, [])
+  }, [fetchNews])
 
   const [searchText, setSearchText] = useState('')
 
