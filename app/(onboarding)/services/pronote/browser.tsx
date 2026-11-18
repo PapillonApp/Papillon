@@ -1,6 +1,3 @@
-import { useRoute, useTheme } from "expo-router/react-navigation";
-import { router, useNavigation } from "expo-router";
-import * as Device from "expo-device"
 import {
   AccountKind,
   createSessionHandle,
@@ -13,29 +10,32 @@ import {
   securitySource,
   SessionHandle,
 } from "@blockshub/pawnote-lts";
+import * as Device from "expo-device";
+import { router, useNavigation } from "expo-router";
+import { useRoute, useTheme } from "expo-router/react-navigation";
 import React, { createRef, RefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, KeyboardAvoidingView, Modal } from "react-native";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import WebView from "react-native-webview";
 import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 
+import { Pronote2FAModal } from "@/components/onboarding/Pronote2FAModal";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Stack from "@/ui/components/Stack";
+import Button from "@/ui/new/Button";
 import Divider from "@/ui/new/Divider";
 import Typography from "@/ui/new/Typography";
-import { URLToBase64 } from "@/utils/attachments/helper";
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
+import { extractPronoteProfilePicture } from "@/utils/pronote/profilePicture";
 import uuid from "@/utils/uuid/uuid";
 
 import OnboardingWebView from "../../components/OnboardingWebView";
-import { Pronote2FAModal } from "@/components/onboarding/Pronote2FAModal";
-import Button from "@/ui/new/Button";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export default function PronoteENTLogin() {
   const { colors } = useTheme();
@@ -301,10 +301,7 @@ export default function PronoteENTLogin() {
         const className = session.user.resources[0].className;
         const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
 
-        let pp = "";
-        if (session.user.resources[0].profilePicture?.url) {
-          pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
-        }
+        const pp = await extractPronoteProfilePicture(session, refresh.url || url);
 
         const auth = {
           accessToken: refresh.token,

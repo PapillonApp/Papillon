@@ -16,8 +16,10 @@ import { CredentialsMissingError } from "@/services/auth/errors";
 import { AuthTracker } from "@/services/auth/types";
 import { SecurityChallengeError } from "@/services/errors/SecurityChallengeError";
 import { classifyPronoteError } from "@/services/pronote/errors";
+import { isValidPicture, useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";
 import { customFetcher } from "@/utils/pronote/fetcher";
+import { extractPronoteProfilePicture } from "@/utils/pronote/profilePicture";
 
 const MAX_ATTEMPTS = 2;
 const RETRY_BASE_DELAY_MS = 2000;
@@ -76,7 +78,7 @@ export function refreshPronoteAccount(
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         try {
-          return await loginWithStoredToken(tracker);
+          return await loginWithStoredToken(accountId, tracker);
         } catch (e) {
           lastError = e;
           if (!isSafeToRetry(e)) {
@@ -93,7 +95,33 @@ export function refreshPronoteAccount(
   );
 }
 
-async function loginWithStoredToken(tracker: AuthTracker): Promise<PronoteRefresh> {
+function backfillProfilePicture(
+  serviceAccountId: string,
+  session: SessionHandle,
+  instanceUrl?: string
+): void {
+  const { accounts, lastUsedAccount, setAccountProfilePicture } = useAccountStore.getState();
+  const activeAccount =
+    accounts.find(acc => acc.id === lastUsedAccount && acc.services.some(s => s.id === serviceAccountId)) ??
+    accounts.find(acc => acc.services.some(s => s.id === serviceAccountId));
+
+  if (!activeAccount || isValidPicture(activeAccount.customisation?.profilePicture)) {
+    return;
+  }
+
+  void extractPronoteProfilePicture(session, instanceUrl)
+    .then(picture => {
+      if (picture && isValidPicture(picture)) {
+        setAccountProfilePicture(activeAccount.id, picture);
+      }
+    })
+    .catch(() => undefined);
+}
+
+async function loginWithStoredToken(
+  serviceAccountId: string,
+  tracker: AuthTracker
+): Promise<PronoteRefresh> {
   const handle = createSessionHandle(customFetcher);
   const stored = tracker.readCredentials();
   const deviceUUID = String(stored.additionals?.["deviceUUID"] || "");
@@ -114,6 +142,7 @@ async function loginWithStoredToken(tracker: AuthTracker): Promise<PronoteRefres
 
     const auth = toAuth(refresh, deviceUUID);
     tracker.credentialReceived(auth);
+    backfillProfilePicture(serviceAccountId, handle, refresh.url || loginParams.url);
     return { auth, session: handle };
   } catch (e) {
     if (e instanceof SecurityError) {

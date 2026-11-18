@@ -1,9 +1,3 @@
-import { Papicons } from "@getpapillon/papicons";
-import MaskedView from "@react-native-masked-view/masked-view";
-import { useTheme } from "expo-router/react-navigation";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
 import {
   AuthenticateError,
   createSessionHandle,
@@ -15,6 +9,13 @@ import {
   securitySave,
   securitySource,
 } from "@blockshub/pawnote-lts";
+import { Papicons } from "@getpapillon/papicons";
+import MaskedView from "@react-native-masked-view/masked-view";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import * as Device from "expo-device";
+import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
@@ -25,14 +26,13 @@ import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Typography from "@/ui/components/Typography";
-import { URLToBase64 } from "@/utils/attachments/helper";
 import { setPendingPronoteChallenge } from "@/utils/pronote/challenge";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
+import { extractPronoteProfilePicture } from "@/utils/pronote/profilePicture";
 import uuid from "@/utils/uuid/uuid";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
-import * as Device from "expo-device";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -110,10 +110,7 @@ export default function PronoteLoginWithQR() {
       const schoolName = user.establishmentName;
       const className = user.className;
       const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
-      let pp = "";
-      if (session.user.resources[0].profilePicture?.url) {
-        pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
-      }
+      const pp = await extractPronoteProfilePicture(session, refresh.url || data.url);
 
       useAccountStore.getState().addAccount({
         id: accountID,

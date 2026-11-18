@@ -1,7 +1,3 @@
-import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "expo-router/react-navigation";
-import * as Device from "expo-device"
-import { router } from "expo-router";
 import {
   finishLoginManually,
   SecurityError,
@@ -9,22 +5,26 @@ import {
   securitySource,
   SessionHandle,
 } from "@blockshub/pawnote-lts";
+import { Papicons } from "@getpapillon/papicons";
+import * as Device from "expo-device";
+import { router } from "expo-router";
+import { useTheme } from "expo-router/react-navigation";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import Reanimated from "react-native-reanimated"
+import Reanimated from "react-native-reanimated";
 
-import { useAccountStore } from "@/stores/account";
+import { PlatformPressable } from "@/app/(onboarding)/services/ed/credentials";
+import { isValidPicture, useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
 import Icon from "@/ui/components/Icon";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
-
-import { PlatformPressable } from "@/app/(onboarding)/services/ed/credentials";
+import { extractPronoteProfilePicture } from "@/utils/pronote/profilePicture";
 
 export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId, relinkAccountId, relinkServiceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string, relinkAccountId?: string, relinkServiceId?: string }) {
   const { t } = useTranslation();
@@ -54,9 +54,10 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         context.identity,
         context.initialUsername
       )
-      const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
-      const schoolName = session.user.resources[0].establishmentName
-      const className = session.user.resources[0].className
+      const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name);
+      const schoolName = session.user.resources[0].establishmentName;
+      const className = session.user.resources[0].className;
+      const pp = await extractPronoteProfilePicture(session, refresh.url);
 
       const auth = {
         accessToken: refresh.token,
@@ -65,16 +66,20 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
           instanceURL: refresh.url,
           kind: refresh.kind,
           username: refresh.username,
-          deviceUUID: deviceId
-        }
-      }
+          deviceUUID: deviceId,
+        },
+      };
 
-      const store = useAccountStore.getState()
+      const store = useAccountStore.getState();
 
       if (relinkServiceId && relinkAccountId) {
-        store.updateServiceAuthData(relinkServiceId, auth)
-        store.setLastUsedAccount(relinkAccountId)
-        setChallengeModalVisible(false)
+        store.updateServiceAuthData(relinkServiceId, auth);
+        const existingAccount = store.accounts.find(a => a.id === relinkAccountId);
+        if (pp && existingAccount && !isValidPicture(existingAccount.customisation?.profilePicture)) {
+          store.setAccountProfilePicture(relinkAccountId, pp);
+        }
+        store.setLastUsedAccount(relinkAccountId);
+        setChallengeModalVisible(false);
         return router.dismissTo("/");
       }
 
@@ -84,16 +89,20 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         lastName,
         schoolName,
         className,
+        customisation: {
+          profilePicture: pp,
+          subjects: {},
+        },
         services: [{
           id: deviceId,
           auth,
           serviceId: Services.PRONOTE,
           createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString()
+          updatedAt: (new Date()).toISOString(),
         }],
         createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString()
-      }
+        updatedAt: (new Date()).toISOString(),
+      };
 
       store.addAccount(account)
       store.setLastUsedAccount(deviceId)

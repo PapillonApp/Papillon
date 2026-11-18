@@ -1,5 +1,7 @@
 import type { Fetcher } from "@literate.ink/utilities";
 
+import { cachePronoteProfilePictureFromResponse } from "@/utils/pronote/profilePicture";
+
 // Pawnote queues a session's requests: one that never answers (Android has no
 // fetch timeout) would freeze the session and the login waiting on it.
 const REQUEST_TIMEOUT_MS = 60 * 1000;
@@ -22,6 +24,8 @@ export const customFetcher: Fetcher = async (options) => {
     });
 
     const content = await response.text();
+    const requestUrl = typeof options.url === "string" ? options.url : options.url.href;
+    cachePronoteProfilePictureFromResponse(requestUrl, content, options.content);
 
     return {
       content,
