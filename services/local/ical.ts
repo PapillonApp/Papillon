@@ -1,11 +1,42 @@
 import { Course as SharedCourse } from '@/services/shared/timetable';
 
-import { convertMultipleEvents } from './event-converter';
-import { convertICalEventToSharedCourse } from './event-converter';
+import { convertICalEventToSharedCourse, convertMultipleEvents } from './event-converter';
 import { filterEventsByWeek } from './event-filter';
 import { getAllIcals, updateProviderIfUnknown } from './ical-database';
 import { detectProvider } from './ical-utils';
 import { parseICalString } from './parsers/ical-event-parser';
+
+const ICAL_CACHE_TTL_MS = 5 * 60 * 1000;
+const rawICalCache = new Map<string, { text: string; fetchedAt: number }>();
+const inFlightICalRequests = new Map<string, Promise<string>>();
+
+async function fetchRawICal(url: string): Promise<string> {
+  const cached = rawICalCache.get(url);
+  if (cached && Date.now() - cached.fetchedAt < ICAL_CACHE_TTL_MS) {
+    return cached.text;
+  }
+
+  const inFlight = inFlightICalRequests.get(url);
+  if (inFlight) {
+    return inFlight;
+  }
+
+  const request = (async () => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const text = await response.text();
+    rawICalCache.set(url, { text, fetchedAt: Date.now() });
+    return text;
+  })().finally(() => {
+    inFlightICalRequests.delete(url);
+  });
+
+  inFlightICalRequests.set(url, request);
+  return request;
+}
 
 export interface ICalEvent {
   uid: string;
@@ -29,15 +60,14 @@ export interface ParsedICalData {
   schoolName?: string;
 }
 
-export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
+export async function fetchAndParseICal(
+  url: string,
+  rangeStart?: Date,
+  rangeEnd?: Date
+): Promise<ParsedICalData> {
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const icalString = await response.text();
-    const { events, metadata } = parseICalString(icalString);
+    const icalString = await fetchRawICal(url);
+    const { events, metadata } = parseICalString(icalString, rangeStart, rangeEnd);
     const { isADE, isHyperplanning, provider, isSchool, schoolName } = detectProvider(metadata.prodId, url);
     return {
       events,
@@ -55,8 +85,12 @@ export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
   }
 }
 
-async function processIcalData(ical: any): Promise<{ parsedData: ParsedICalData; shouldUpdateIcal: boolean }> {
-  const parsedData = await fetchAndParseICal(ical.url);
+async function processIcalData(
+  ical: any,
+  rangeStart?: Date,
+  rangeEnd?: Date
+): Promise<{ parsedData: ParsedICalData; shouldUpdateIcal: boolean }> {
+  const parsedData = await fetchAndParseICal(ical.url, rangeStart, rangeEnd);
   let shouldUpdateIcal = false;
 
   if (!ical.provider || ical.provider === 'unknown') {
@@ -73,7 +107,7 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
 
   for (const ical of icals) {
     try {
-      const { parsedData } = await processIcalData(ical);
+      const { parsedData } = await processIcalData(ical, weekStart, weekEnd);
       const weekEvents = filterEventsByWeek(parsedData.events, weekStart, weekEnd);
       const convertedEvents = convertMultipleEvents(weekEvents, {
         icalId: ical.id,
@@ -96,10 +130,21 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
 
 export async function getICalCourseById(id: string): Promise<SharedCourse | undefined> {
   const icals = await getAllIcals();
+  const separatorIndex = id.lastIndexOf('::');
+  let rangeStart: Date | undefined;
+  let rangeEnd: Date | undefined;
+
+  if (separatorIndex !== -1) {
+    const occMs = Number(id.slice(separatorIndex + 2));
+    if (Number.isFinite(occMs)) {
+      rangeStart = new Date(occMs - 1000);
+      rangeEnd = new Date(occMs + 1000);
+    }
+  }
 
   for (const ical of icals) {
     try {
-      const { parsedData } = await processIcalData(ical);
+      const { parsedData } = await processIcalData(ical, rangeStart, rangeEnd);
       const event = parsedData.events.find(candidate => candidate.uid === id);
       if (event) {
         return convertICalEventToSharedCourse(event, {
