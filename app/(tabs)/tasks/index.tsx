@@ -7,31 +7,29 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
   runOnJS,
+  type SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  type SharedValue,
 } from 'react-native-reanimated';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { AndroidHeaderButton, AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
 import { TipIds } from '@/constants/Tips';
 import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
 import { retireTip } from '@/stores/tips';
 import { useAlert } from "@/ui/components/AlertProvider";
-import Tip from '@/ui/components/Tip';
 import MainTabErrorBoundary from '@/ui/components/MainTabErrorBoundary';
+import Tip from '@/ui/components/Tip';
 import Typography from '@/ui/new/Typography';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import i18n from '@/utils/i18n';
 
-import { AndroidHeaderButton, AndroidHeaderMenu } from '@/components/AndroidHeaderItems';
-
 import TasksWeekPage from './components/TasksWeekPage';
 import WeekPicker from './components/WeekPicker';
 import { useHomeworkData } from './hooks/useHomeworkData';
-import { useTaskFilters } from './hooks/useTaskFilters';
+import { type SortMethod, useTaskFilters } from './hooks/useTaskFilters';
 import { useWeekSelection } from './hooks/useWeekSelection';
-import type { SortMethod } from './hooks/useTaskFilters';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -84,8 +82,8 @@ const VELOCITY_PROJECTION = 0.12;
 // on a task wait for a gesture that is never coming.
 // Roughly two to one, so a swipe can drift off the horizontal and still page,
 // while anything meant as a scroll gets out well before it pages.
-const PAN_ACTIVATE_X = 14;
-const PAN_FAIL_Y = 30;
+const PAN_ACTIVATE_X = 20;
+const PAN_FAIL_Y = 12;
 
 const getSortings = (): { value: SortMethod; label: string; sf: SFSymbol; papicon: string }[] => [
   { value: 'date', label: t('Tasks_Sorting_Methods_DueDate'), sf: 'calendar', papicon: 'Calendar' },
@@ -138,6 +136,26 @@ function TitleLayer({ offset, pageOffset, pageWidth, labels, slideDistance }: {
           {labels.relative}
         </Typography>
       )}
+    </Reanimated.View>
+  );
+}
+
+function WeekPageSlot({ offsetX, pageOffset, width, children }: {
+  offsetX: SharedValue<number>;
+  pageOffset: number;
+  width: number;
+  children: React.ReactNode;
+}) {
+  // Each slot animates its own translateX around left: 0 so the active page's
+  // layout frame stays inside [0, windowWidth] and Android touch dispatch
+  // never rejects touches on off-origin weeks.
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateX: pageOffset * width - offsetX.value }],
+  }), [pageOffset, width]);
+
+  return (
+    <Reanimated.View style={[styles.page, { width }, style]}>
+      {children}
     </Reanimated.View>
   );
 }
@@ -285,10 +303,6 @@ const TasksView: React.FC = () => {
     [windowWidth, offsetX, gestureStartOffset, activationTranslation, pendingPage, commitPage]
   );
 
-  const rowStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: -offsetX.value }],
-  }));
-
   // Kept referentially stable so the memoized picker is not re-rendered, and
   // its SwiftUI host not re-fed props, on every week crossing.
   const weekPickerAnchor = useMemo(() => ({
@@ -394,18 +408,17 @@ const TasksView: React.FC = () => {
 
       <View style={styles.container}>
         <GestureDetector gesture={panGesture}>
-          <Reanimated.View style={[styles.pager, rowStyle]}>
+          <Reanimated.View style={styles.pager}>
             {pageOffsets.map(offset => {
               const index = settledIndex + offset;
               const week = getWeekFromIndex(index);
 
               return (
-                <View
+                <WeekPageSlot
                   key={index}
-                  style={[
-                    styles.page,
-                    { width: windowWidth, left: (index - INITIAL_INDEX) * windowWidth },
-                  ]}
+                  offsetX={offsetX}
+                  pageOffset={index - INITIAL_INDEX}
+                  width={windowWidth}
                 >
                   <View style={{ flex: 1, backgroundColor: colors.overground }}>
                     <TasksWeekPage
@@ -422,7 +435,7 @@ const TasksView: React.FC = () => {
                       hasError={hasHomeworkError}
                     />
                   </View>
-                </View>
+                </WeekPageSlot>
               );
             })}
           </Reanimated.View>
@@ -467,6 +480,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     bottom: 0,
+    left: 0,
   },
   // Fixed size, so the header title view never re-measures when the labels swap
   // or the subtitle comes and goes. Every layer fills this same box.

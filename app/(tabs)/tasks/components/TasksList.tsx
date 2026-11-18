@@ -1,16 +1,16 @@
+import { useTheme } from "expo-router/react-navigation";
 import React, { useCallback, useMemo } from "react";
 import { RefreshControl, StyleSheet } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 
 import { Homework } from "@/services/shared/homework";
+import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import List from "@/ui/new/List";
 import useResizable from "@/ui/utils/Resizable";
 
 import DateHeader from "../atoms/DateHeader";
 import EmptyState from "../atoms/EmptyState";
 import TaskItem from "./TaskItem";
-import { useTheme } from "expo-router/react-navigation";
-import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 
 export interface HomeworkSection {
   id: string;
@@ -95,6 +95,7 @@ const TasksList: React.FC<TasksListProps> = ({
     <List
       key={`tasks-list-${numColumns}`}
       animated
+      nestedScrollEnabled
       numColumns={numColumns}
       maintainVisibleContentPosition={{ disabled: true }}
       style={[styles.list, { backgroundColor: colors.overground }]}
