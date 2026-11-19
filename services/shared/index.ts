@@ -62,25 +62,13 @@ import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { debug, error, log, warn } from "@/utils/logger/logger";
 
-import {
-  AccessDeniedError,
-  AccountDisabledError,
-  AuthenticateError,
-  BadCredentialsError,
-  SessionExpiredError,
-} from "@blockshub/pawnote-lts";
-
+import { allowAuthRetry, getAuthState, pruneAuthStates } from "../auth/coordinator";
+import { classifyAuthError } from "../auth/errors";
+import { needsUserAction } from "../auth/policy";
+import { AuthFailureReason, AuthStep } from "../auth/types";
 import { AuthenticationError } from "../errors/AuthenticationError";
 import { SecurityChallengeError } from "../errors/SecurityChallengeError";
 import { ServiceUnavailableError } from "../errors/ServiceUnavailableError";
-
-const isPermanentAuthError = (e: unknown): boolean =>
-  e instanceof BadCredentialsError ||
-  e instanceof AuthenticateError ||
-  e instanceof SessionExpiredError ||
-  e instanceof AccessDeniedError ||
-  e instanceof AccountDisabledError ||
-  e instanceof AuthenticationError;
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -92,7 +80,7 @@ export class AccountManager {
     return this.failures.get(capability) ?? [];
   }
 
-  constructor(public account: Account) { }
+  constructor(public account: Account) {}
 
   syncAccount(account: Account): void {
     this.account = account;
@@ -111,21 +99,37 @@ export class AccountManager {
     return this.account;
   }
 
-  async refreshAllAccounts(): Promise<boolean> {
+  /**
+   * The persisted reason wins over the error: only it knows that a rejection
+   * followed an interrupted rotation (credential_lost).
+   */
+  private failureReason(service: ServiceAccount, err: unknown): AuthFailureReason {
+    const state = getAuthState(service.id);
+    if (state?.step === AuthStep.Failed && state.failure) {
+      return state.failure.reason;
+    }
+    return classifyAuthError(err);
+  }
+
+  /**
+   * @param options.force - Explicit retry from the user: lifts a pending
+   * backoff or a block left by a rejected credential.
+   */
+  async refreshAllAccounts(options: { force?: boolean } = {}): Promise<boolean> {
     debug("We're refreshing all services for the account " + this.account.id);
     const hasInternet = await this.hasInternet();
 
     let refreshedAtLeastOne = false;
 
-    const failures: Array<{ service: ServiceAccount; err: unknown }> = [];
+    const failures: Array<{ service: ServiceAccount; err: unknown; reason: AuthFailureReason }> = [];
 
     for (const service of this.account.services) {
       try {
         debug("Trying to refresh " + service.id);
-        const reusable =
-          service.serviceId === Services.PRONOTE
-            ? this.clients[service.id]
-            : undefined;
+        // Plugins that know when their session ends keep their instance, so
+        // a renewal already running inside it is joined, not duplicated.
+        const existing = this.clients[service.id];
+        const reusable = existing?.isTokenValid ? existing : undefined;
         const plugin = reusable ?? this.getServicePluginForAccount(service);
 
         if (!hasInternet && plugin.requiresInternet !== false) {
@@ -133,13 +137,16 @@ export class AccountManager {
           continue;
         }
 
-        if (reusable && reusable.isTokenValid?.()) {
+        if (reusable?.isTokenValid?.()) {
           refreshedAtLeastOne = true;
           debug("Reusing the still valid session of " + service.id);
           continue;
         }
 
         if (plugin?.capabilities.includes(Capabilities.REFRESH)) {
+          if (options.force) {
+            allowAuthRetry(service.id);
+          }
           this.clients[service.id] = await plugin.refreshAccount(service.auth);
           refreshedAtLeastOne = true;
           debug("Successfully refreshed " + service.id);
@@ -147,24 +154,23 @@ export class AccountManager {
           this.clients[service.id] = plugin;
           debug(
             "Plugin for " +
-            service.id +
-            " doesn't support refresh but is available for other capabilities"
+              service.id +
+              " doesn't support refresh but is available for other capabilities"
           );
         }
       } catch (e) {
-        warn(`Refresh failed for ${service.id}: ${e}`);
-        failures.push({ service, err: e });
+        const reason = this.failureReason(service, e);
+        warn(`Refresh failed for ${service.id} (${reason}): ${e}`);
+        failures.push({ service, err: e, reason });
       }
     }
 
     debug(
       "Finished refreshing process for all services, services refreshed: " +
-      Object.keys(this.clients).length
+        Object.keys(this.clients).length
     );
 
-    const challenge = failures.find(
-      f => f.err instanceof SecurityChallengeError
-    );
+    const challenge = failures.find(f => f.err instanceof SecurityChallengeError);
     if (challenge) {
       const err = challenge.err as SecurityChallengeError;
       throw new SecurityChallengeError(
@@ -175,29 +181,18 @@ export class AccountManager {
       );
     }
 
-    const authFailure = failures.find(f => isPermanentAuthError(f.err));
+    // A challenge the app can solve was handled above: any other needs a relink.
+    const authFailure = failures.find(f => needsUserAction(f.reason));
     if (authFailure) {
-      throw new AuthenticationError(
-        String(authFailure.err),
-        authFailure.service
-      );
+      throw new AuthenticationError(String(authFailure.err), authFailure.service, authFailure.reason);
     }
 
-    if (
-      !hasInternet &&
-      Object.keys(this.clients).length === 0 &&
-      this.account.services.length > 0
-    ) {
-      throw new Error(
-        "Internet not reachable and no offline service is available."
-      );
+    if (!hasInternet && Object.keys(this.clients).length === 0 && this.account.services.length > 0) {
+      throw new Error("Internet not reachable and no offline service is available.");
     }
 
     if (!refreshedAtLeastOne && failures.length > 0) {
-      throw new ServiceUnavailableError(
-        String(failures[0].err),
-        failures[0].service
-      );
+      throw new ServiceUnavailableError(String(failures[0].err), failures[0].service, failures[0].reason);
     }
 
     return refreshedAtLeastOne;
@@ -238,9 +233,7 @@ export class AccountManager {
         multiple: true,
         fallback: async () => getHomeworksFromCache(weekNumber),
         saveToCache: async (data: Homework[]) => {
-          if (data && data.length > 0) {
-            await addHomeworkToDatabase(data);
-          }
+          await addHomeworkToDatabase(data);
         },
       }
     );
@@ -408,10 +401,7 @@ export class AccountManager {
     );
   }
 
-  async getWeeklyTimetable(
-    weekNumber: number,
-    date: Date
-  ): Promise<CourseDay[]> {
+  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
@@ -420,8 +410,7 @@ export class AccountManager {
           : [],
       {
         multiple: true,
-        fallback: async () =>
-          getCoursesFromCache([weekNumber], date.getFullYear()),
+        fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
         saveToCache: async (data: CourseDay[]) => {
           addCourseDayToDatabase(data);
         },
@@ -575,17 +564,12 @@ export class AccountManager {
     );
   }
 
-  async signAttendance(
-    params: AttendanceSignParams,
-    clientId?: string
-  ): Promise<unknown> {
+  async signAttendance(params: AttendanceSignParams, clientId?: string): Promise<unknown> {
     return await this.fetchData(
       Capabilities.SIGN,
       async client => {
         if (!client.signAttendance) {
-          throw new Error(
-            "signAttendance not implemented but capability is set."
-          );
+          throw new Error("signAttendance not implemented but capability is set.");
         }
         return await client.signAttendance(params);
       },
@@ -669,9 +653,9 @@ export class AccountManager {
         if (!client.capabilities.includes(capability)) {
           throw error(
             "Capability " +
-            capability +
-            " not supported by client " +
-            options.clientId
+              capability +
+              " not supported by client " +
+              options.clientId
           );
         }
         if (client.requiresInternet !== false && !(await this.hasInternet())) {
@@ -696,9 +680,7 @@ export class AccountManager {
       let availableClients = this.getAvailableClients(capability);
 
       if (!(await this.hasInternet())) {
-        availableClients = availableClients.filter(
-          client => client.requiresInternet === false
-        );
+        availableClients = availableClients.filter(client => client.requiresInternet === false);
         if (availableClients.length === 0 && options?.fallback) {
           warn("No internet connection, using fallback.");
           return await callFallback();
@@ -822,8 +804,8 @@ export class AccountManager {
 
     error(
       "We're not able to find a plugin for service: " +
-      service.serviceId +
-      ". Please review your implementation",
+        service.serviceId +
+        ". Please review your implementation",
       "AccountManager.getServicePluginForAccount"
     );
   }
@@ -854,7 +836,8 @@ const notifyManagerListeners = (manager: AccountManager) => {
 const managerInFlight = new Map<string, Promise<AccountManager>>();
 
 export const initializeAccountManager = async (
-  accountId?: string
+  accountId?: string,
+  options: { force?: boolean } = {}
 ): Promise<AccountManager> => {
   if (!accountId) {
     const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
@@ -867,10 +850,12 @@ export const initializeAccountManager = async (
 
   const pending = managerInFlight.get(accountId);
   if (pending) {
-    debug(
-      "An initialization is already running for " + accountId + ", joining it."
-    );
-    return pending;
+    if (!options.force) {
+      debug("An initialization is already running for " + accountId + ", joining it.");
+      return pending;
+    }
+    // Joining would skip the retry the user asked for: wait, then run again.
+    await pending.catch(() => undefined);
   }
 
   const targetId = accountId;
@@ -884,6 +869,10 @@ export const initializeAccountManager = async (
       throw error("Account not found for ID: " + targetId);
     }
 
+    pruneAuthStates(
+      useAccountStore.getState().accounts.flatMap(acc => acc.services.map(service => service.id))
+    );
+
     let manager = globalManager;
     if (manager && manager.account.id === targetId) {
       manager.syncAccount(account);
@@ -896,7 +885,7 @@ export const initializeAccountManager = async (
       notifyManagerListeners(manager);
     }
 
-    await manager.refreshAllAccounts();
+    await manager.refreshAllAccounts(options);
     // A newer initialization for another account may have taken over while this
     // one was refreshing; publishing now would hand screens the stale account.
     if (globalManager === manager) {

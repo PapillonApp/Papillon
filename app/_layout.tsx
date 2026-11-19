@@ -5,18 +5,19 @@ import "@/utils/i18n";
 import { Buffer } from 'buffer';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 
 import { AppProviders } from '@/components/AppProviders';
-import FakeSplash from '@/components/FakeSplash';
 import { RootNavigator } from '@/components/RootNavigator';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
+import { useAccountStore } from '@/stores/account';
 import { useNetworkStore } from '@/stores/logs';
 import { checkConsent } from '@/utils/logger/consent';
 import { posthog } from '@/utils/logger/posthog';
 import uuid from '@/utils/uuid/uuid';
 import { useCalendarWidgetFeed } from '@/utils/widgets/useCalendarWidgetFeed';
 import { usePapillonKitSettingsSync } from '@/utils/widgets/usePapillonKitSettingsSync';
-import { LogBox } from 'react-native';
+import { LogBox, View } from 'react-native';
 
 // Polyfill Buffer
 global.Buffer = Buffer;
@@ -37,8 +38,15 @@ LogBox.ignoreLogs([
   "cannot calculate shadow efficiently",
 ]);
 
+// From onLayout, not an effect: hiding earlier shows a blank frame.
+const hideSplashIfSignedIn = () => {
+  if (useAccountStore.getState().accounts.length > 0) {
+    SplashScreen.hideAsync();
+  }
+};
+
 export default function RootLayout() {
-  const { isAppReady, fontsLoaded } = useAppInitialization();
+  const { fontsLoaded } = useAppInitialization();
   const segments = useSegments();
   const lastTrackedView = useRef<string | null>(null);
 
@@ -107,8 +115,9 @@ export default function RootLayout() {
 
   return (
     <AppProviders>
-      <FakeSplash isAppReady={isAppReady} instant={true} />
-      <RootNavigator />
+      <View style={{ flex: 1 }} onLayout={hideSplashIfSignedIn}>
+        <RootNavigator />
+      </View>
     </AppProviders>
   );
 }

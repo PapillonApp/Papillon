@@ -33,7 +33,6 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
     >
     <Link
       asChild
-      prefetch
       href={{
         pathname: item.route ?? "/(features)/soon",
         params: item.params,

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTimetable } from '@/database/useTimetable';
 import { useLoadErrorAlert } from '@/hooks/useLoadErrorAlert';
 import { useManagerSubscription } from '@/hooks/useManagerSubscription';
+import { allowAllAuthRetries } from "@/services/auth/coordinator";
 import type { AccountManager } from "@/services/shared";
 import { getManager } from "@/services/shared";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
@@ -130,6 +131,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
 
   const handleRefresh = useCallback(() => {
     setRefresh(prev => prev + 1);
+    allowAllAuthRetries();
     fetchWeeklyTimetable(weekNumber, true);
   }, [fetchWeeklyTimetable, weekNumber]);
 
