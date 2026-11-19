@@ -1,7 +1,6 @@
 {
   "Global_Back": "رجوع",
   "Global_DatePrefix": "يوم",
-
   "Tab_Home": "الرئيسية",
   "Tab_Calendar": "الحصص",
   "Tab_Tasks": "المهام",
@@ -16,7 +15,6 @@
   "Tab_Page": "صفحة",
   "Tab_Settings": "الإعدادات",
   "Tab_News": "الأخبار",
-
   "ONBOARDING_MAIN_TITLE": "التطبيق الأمثل لإدارة حياتك المدرسية",
   "ONBOARDING_MAIN_DESCRIPTION": "اربط تطبيقاتك المدرسية للوصول إلى درجاتك، حصصك، واجباتك والمزيد عبر واجهة Papillon!",
   "ONBOARDING_START_BTN": "ابدأ الآن",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "رمز PIN",
   "SEARCH_UNIV_PLACEHOLDER": "بحث عن خادم...",
   "ONBOARDING_LOADING_LOGIN": "جاري تسجيل الدخول...",
-
   "WAITING": "انتظار",
   "IZLY_SMS_SEND": "لقد تلقيت للتو رابطاً لتسجيل الدخول، اضغط عليه واتبع الخطوات.",
   "STEP": "الخطوة",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "تسجيل الدخول",
   "CONFIRM_BTN": "تأكيد",
   "CANCEL_BTN": "إلغاء",
-
   "Tab_New_Event": "حدث جديد",
-
   "Tab_Calendar_Icals": "إدارة ملفات iCal",
   "Tab_Calendar_Icals_Description": "إدارة روابط iCal الخاصة بك",
-
   "Tab_Calendar_Icals_Add_URL": "إضافة رابط iCal",
   "Tab_Calendar_Icals_Manage_Title": "إدارة {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "إضافة أو حذف روابط iCal للمزامنة مع تقويمك.",
   "Tab_Calendar_Icals_Add_Title": "العنوان مفقود",
   "Tab_Calendar_Icals_Add_Description": "أعطِ اسماً لرابط iCal هذا لإضافته.",
   "Tab_Calendar_Icals_Empty": "لم يتم إضافة أي رابط iCal",
-
   "TabUnderConstruction_Title": "هذا التبويب قيد الإنشاء.",
   "TabUnderConstruction_Details": "عد لاحقاً للاطلاع على التحديثات.",
-
   "TabDevModeNotice_Title": "وضع التطوير",
   "TabDevModeNotice_Details": "بيئة اختبار كاملة للمطورين.",
-
   "Alert_TechnicalDetails": "تفاصيل تقنية",
-
   "Online_Course": "أونلاين",
   "Evaluated_Course": "تقييم",
   "Edited_Course": "حصة معدلة",
@@ -94,36 +84,28 @@
   "No_Course_Room": "قاعة غير معروفة",
   "Event_DeleteEvent": "حذف الحدث",
   "Event_Confirm_DeleteEvent": "هل أنت متأكد أنك تريد حذف هذا الحدث؟",
-
   "Course_Separator_Lunch_Default": "استراحة الغداء",
   "Course_Separator_Lunch_Alt_1": "بالهناء والشفاء!",
   "Course_Separator_Lunch_Alt_2": "لذيذ!",
-
   "Course_Separator_Morning_Default": "استراحة الصباح",
   "Course_Separator_Morning_Alt_1": "وقت النوم!",
   "Course_Separator_Morning_Alt_2": "الفطور",
-
   "Course_Separator_Evening_Default": "استراحة بعد الظهر",
   "Course_Separator_Evening_Alt_1": "حان وقت الاستراحة!",
   "Course_Separator_Evening_Alt_2": "وقت الوجبة الخفيفة!",
-
   "Course_Separator_Night_Default": "استراحة المساء",
   "Course_Separator_Night_Alt_1": "وقت النوم!",
   "Course_Separator_Night_Alt_2": "لقد حل الليل!",
-
   "Context_Delete": "حذف",
   "Context_Cancel": "إلغاء",
   "Context_Edit": "تعديل",
   "Context_Add": "إضافة",
-
   "Form_Title": "العنوان",
   "Form_Location": "الموقع",
   "Form_Organizer": "المنظم",
   "Form_Start": "البداية",
   "Form_End": "النهاية",
-
   "Confirm_DeleteEvent": "هل أنت متأكد أنك تريد حذف هذا الحدث؟",
-
   "Home_Welcome_Name": "أهلاً، {{name}} {{emoji}}",
   "Home_Display_More": "عرض المزيد",
   "Home_Cards_Button_Description_Plurial": "متاحة",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "ليس لديك أي حصص متبقية اليوم",
   "Home_Planned_One": "لديك حصة واحدة متبقية اليوم",
   "Home_Planned_Number": "لديك {{number}} حصص متبقية اليوم",
-
   "Home_Widget_NextCourses": "الحصص القادمة",
   "Home_Widget_NewGrades": "درجات جديدة",
   "Home_Widget_NewHomeworks": "مهام للقيام بها",
-
   "Home_Widget_NoCourses": "لا توجد حصص قادمة",
   "Home_Widget_NoCourses_Description": "لا توجد حصص مجدولة لهذا اليوم.",
-
   "Home_Cards_Button_Title": "البطاقات",
   "Home_Cards_Button_Description_None": "لا توجد بطاقات",
   "Home_Cards_Button_Description_Singular": "بطاقة واحدة",
   "Home_Cards_Button_Description_Number": "{{number}} بطاقات",
-
   "Home_Chats_Button_Title": "الرسائل",
   "Home_Chats_Button_Description_None": "لا توجد رسائل",
   "Home_Chats_Button_Description_Singular": "رسالة واحدة",
   "Home_Chats_Button_Description_Number": "{{number}} رسائل",
-
   "Home_Attendance_Title": "الغياب",
   "Home_Attendance_Button_Description_None": "لا يوجد غياب",
   "Home_Attendance_Button_Description_Singular": "غياب واحد",
   "Home_Attendance_Button_Description_Number": "{{number}} حالات غياب",
-
   "Home_Menu_Button_Title": "القائمة",
   "Home_Menu_Button_Description": "قائمة طعام اليوم",
-
   "Tab_Calendar_Empty": "لم يتم العثور على أي حدث",
   "Tab_Calendar_Empty_Description": "أضف حدثاً أو قم بمزامنة تقويمك للبدء.",
-
   "Modal_Course_Title": "حصتي",
   "Modal_Course_StartsIn": "تبدأ خلال",
   "Modal_Course_StartedAgo": "انتهت منذ",
   "Modal_Course_Ongoing": "بدأت منذ",
   "Modal_Course_Group": "المجموعة",
   "Modal_Course_Group_Full": "الفصل",
-
   "Modal_Course_Details": "تفاصيل الحصة",
   "Modal_Course_Teacher": "المعلم",
   "Modal_Course_Room": "القاعة",
   "Modal_Course_Duration": "المدة",
-
   "Modal_Course_Time": "أوقات الحصة",
   "Modal_Course_Start": "البداية",
   "Modal_Course_End": "النهاية",
-
   "Tasks_Search_Placeholder": "البحث عن مهام",
   "Tasks_LeftHomeworks_Title": "مهام متبقية",
   "Tasks_LeftHomeworks_Time": "هذا الأسبوع",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "المهام المكتملة",
   "Task_Show_Title": "عرض",
   "Settings_General": "عام",
-
   "Latest_Grades": "درجات جديدة",
   "Grades_Search_Placeholder": "بحث عن درجة أو مادة",
-
   "Grades_Avg_Methods": "طرق الحساب",
   "Grades_Avg_All_Title": "المعدل العام",
   "Grades_Avg_All_Short": "المعدل العام",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "يحسب المتوسط الموزون لمعدلات المواد",
   "Grades_Avg_Median_Title": "الوسيط",
   "Grades_Avg_Median_Short": "الوسيط",
-
   "Grades_Avg_More": "معرفة المزيد",
   "Grades_Avg_KnowMore": "معرفة المزيد",
   "Grades_Avg_KnowMore_Description": "فهم طرق حساب المعدل العام",
-
   "Grades_SubjectInfo": "معلومات المادة",
   "Grades_SubjectInfo_NbGrades": "{{number}} درجات",
   "SubjectInfo_StudentAverage_Label": "معدل الطالب",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "أفضل معدل في المجموعة",
   "SubjectInfo_MinAverage_Label": "أدنى معدل",
   "SubjectInfo_MinAverage_Description": "أقل معدل في المجموعة",
-
   "Grades_Semester": "أسدوس",
   "Grades_Trimester": "دورة",
   "Grades_OutPeriod": "خارج الفترة",
   "Grades_Year": "السنة",
   "Grades_MockExamBac": "امتحان تجريبي",
   "Grades_MockExamBrevet": "امتحان تجريبي",
-
   "Grades_Method_AllGrades": "جميع المواد",
   "Grades_Method_Weighted": "المعامل",
-
   "Grades_Sort": "ترتيب",
   "Grades_Sorting_Alphabetical": "أبجدي",
   "Grades_Sorting_Averages": "المعدلات",
   "Grades_Sorting_Date": "التاريخ",
-
   "Grades_Menu_SortBy": "ترتيب حسب",
   "Grades_Menu_AverageBy": "المعدل حسب",
   "NoAverage": "لا يوجد معدل",
-
   "Grades_Empty_Title": "لا توجد درجات",
   "Grades_Empty_Description": "لم تحصل على أي درجة بعد في هذه الفترة.",
-
   "Grade_NoDescription": "واجب في مادة {{subject}}",
-
   "Grades_Tab_Subjects": "المواد",
   "Grades_Tab_Latest": "درجات جديدة",
-
   "Profile_Attendance_Title": "المواظبة",
   "Profile_Attendance_Denominator_Single": "غياب",
   "Profile_Attendance_Denominator_Plural": "غيابات",
-
   "Profile_Discussions_Title": "المناقشات",
   "Profile_Discussions_Denominator_Single": "غير مقروءة",
   "Profile_Discussions_Denominator_Plural": "غير مقروءة",
-
   "Profile_News_Title": "الأخبار",
   "Profile_News_Denominator_Single": "جديد",
   "Profile_News_Denominator_Plural": "جديدة",
   "Profile_News_Open": "فتح",
   "Profile_News_Loading_Title": "جاري تحميل الأخبار...",
   "Profile_News_Author_Unknown": "كاتب مجهول",
-
   "Profile_Cards_Title": "رمز QR والبطاقات",
-
   "Modal_Grades_Title": "تفاصيل الدرجة",
   "Modal_Grades_BestGrade": "أفضل درجة في المجموعة",
-
   "Grades_Details_Title": "التفاصيل",
   "Grades_NormalizedGrade_Title": "الدرجة على 20",
   "Grades_NormalizedGrade_Description": "قيمة الدرجة محولة إلى سلم 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "معدل المجموعة",
   "Grades_Tab_Rank": "الترتيب",
   "Grades_Tab_Rank_Description": "الترتيب داخل المجموعة",
-
   "News_Search_Placeholder": "البحث عن خبر",
   "News_Empty_Title": "لا توجد أخبار",
   "News_Empty_Description": "لم يتم العثور على أي أخبار في مؤسستك.",
   "News_Search_NoResults": "لم يتم العثور على أي خبر",
   "News_Search_NoResults_Description": "لم يتم العثور على أي خبر يطابق بحثك.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "ثيم ناعم وأنيق",
-
   "News_Theme_Reading_Title": "قراءة",
   "News_Theme_Reading_Description": "ثيم مصمم للقراءة",
-
   "Attendance_Hours_Missed": "الساعات الضائعة",
   "Attendance_Hours_Unjustified": "الساعات غير المبررة",
   "Attendance_Missing": "الغيابات",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "بدون سبب",
   "Attendance_NoEvent_Title": "لا يوجد أي حدث",
   "Attendance_NoEvent_Description": "لا توجد غيابات أو تأخرات مسجلة لهذه الفترة.",
-
   "Settings_Account_Title": "حسابي",
   "Settings_Account_Description": "حسابي الشخصي",
   "Settings_Services_Title": "الحسابات المرتبطة",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "تغيير اللغة",
   "Settings_Tabs_Title": "التبويبات",
   "Settings_Tabs_Description": "إخفاء تبويبات من القائمة",
-
   "Settings_Personalization_Title_Card": "التخصيص",
   "Settings_Personalization_Subtitle_Card": "الثيمات، المواد...",
   "Settings_SubjectPersonalization_Title": "تخصيص المواد",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "الإبلاغ عن خلل",
   "Settings_About_Issue_Description": "الإبلاغ عن مشكلة واجهتها",
   "Settings_About_Dependency_Version": "إصدار التبعيات",
-
   "Alert_No_Technical": "لا توجد معلومات تقنية متاحة.",
   "Alert_Auth_Error": "خطأ في المصادقة",
   "Alert_Auth_Bad_Creds": "المعلومات التي أدخلتها غير صحيحة أو أنك تحاول الاتصال بحساب ولي أمر. هذا النوع من الحسابات غير مدعوم حالياً في Papillon.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "تعذر على Papillon الحصول على معلومات من خادم PRONOTE هذا، هل لا يزال صالحاً؟",
   "Alert_No_Pos": "تعذر الحصول على الموقع",
   "Alert_Connexion_Fail": "تعذر الاتصال",
-
   "Feature_Limited": "ميزات محدودة",
   "Feature_Soon": "قادمة قريباً!",
   "Feature_Soon_Notification": "نحن نعمل بجد لنقدم لكم هذه الميزة في تحديث مستقبلي.",
   "Feature_Add_Card": "أضف بطاقة جديدة من تبويب الملف الشخصي المتاح في شريط التنقل",
-
   "Webview_Wait": "قليلاً من الصبر...",
-
   "Profile_QRCards": "رمز QR والبطاقات",
   "Profile_QRCards_Subtitle": "{{count}} بطاقة/بطاقات",
   "Profile_Cards_Loading_History": "جاري تحميل سجل العمليات",
   "Profile_Cards_Loading_History_Description": "قد يستغرق هذا لحظة...",
-
   "Settings_Cards_Banner_Title": "البطاقات",
   "Settings_Cantineen_Subtitle_Card": "المطعم، الوصول",
   "Settings_Cards_Banner_Description": "أضف بطاقات المطعم والنقل الخاصة بك للوصول إليها في أي مكان من هاتفك عبر Papillon",
   "Settings_Cards_None_Title": "لا توجد بطاقات",
   "Settings_Cards_Add_Button": "إضافة",
-
   "Settings_Cards_None_Description": "أضف بطاقة للاطلاع على رصيد المطعم، مسح رمز QR الخاص بك والمزيد",
   "Settings_Subjects_None_Title": "لا توجد مواد",
   "Settings_Subjects_None_Description": "تصفح التبويبات المختلفة للتطبيق لتتمكن من تخصيص المواد.",
   "Settings_Subjects_Reset_Title": "إعادة ضبط",
   "Settings_Subjects_Reset_Message": "هل تريد حقاً إعادة ضبط جميع المواد؟",
   "Settings_Subjects_Reset_Button": "إعادة ضبط",
-
   "Settings_Donator": "المتبرعون",
   "Settings_Donator_Description": "مشاهدة قائمة المتبرعين",
   "Settings_App_Version": "إصدار التطبيق",
-
   "Profile_Cards_Scan_Orientation": "وجه رمز QR نحو ماسح المحطة",
   "Profile_Cards_No_Reservation": "لا يوجد حجز",
   "Profile_Cards_No_Available_Reservation": "يبدو أنه لا يمكنك الحجز في هذا اليوم.",
   "Profile_Cards_History": "السجل",
   "Magic_Important": "قد يكون مهماً",
-
   "OnBoarding_Step": "الخطوة ",
   "OnBoarding_Step_Of": "من ",
-
   "Consent_Advanced_Title": "أريد مساعدة Papillon",
   "Consent_Advanced_Description": "نجمع معلومات أكثر تفصيلاً حول استخدامك.",
   "Consent_Required_Title": "الأساسيات فقط",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "يستخدم فقط لتحسين التطبيق",
   "Consent_Arg2": "مجهول وغير مرتبط بهويتك",
   "Consent_Arg3": "لا نملك صلاحية الوصول إلى حساباتك",
-
   "Changelog_Title": "ملاحظات التحديث",
-
   "Tasks_Sorting_Methods_DueDate": "تاريخ التسليم",
   "Tasks_Sorting_Methods_Subject": "المواد",
   "Tasks_Sorting_Methods_Done": "غير مكتملة",
   "Tasks_ThisWeek": "هذا الأسبوع",
-
   "Task_Undone": "غير مكتملة",
   "Task_Done": "مكتملة",
-
   "Modal_Wallpaper_Title": "تخصيص خلفية الشاشة",
   "Modal_Profile_Title": "تخصيص الملف الشخصي",
-
   "Modal_Task_Status": "حالة الواجب",
   "Modal_Task_Description": "وصف الواجب",
   "Modal_Task_Attachments": "المرفقات",
-
   "Today": "اليوم",
   "Yesterday": "أمس",
-  "Tomorrow": "غداً"
+  "Tomorrow": "غداً",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

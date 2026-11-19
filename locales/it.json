@@ -1,7 +1,6 @@
 {
   "Global_Back": "Indietro",
   "Global_DatePrefix": "il",
-
   "Tab_Home": "Home",
   "Tab_Calendar": "Lezioni",
   "Tab_Tasks": "Compiti",
@@ -16,7 +15,6 @@
   "Tab_Page": "Pagina",
   "Tab_Settings": "Impostazioni",
   "Tab_News": "Novità",
-
   "ONBOARDING_MAIN_TITLE": "L'app per gestire la tua vita scolastica",
   "ONBOARDING_MAIN_DESCRIPTION": "Collega le tue applicazioni scolastiche per accedere a voti, lezioni, compiti e molto altro nell'interfaccia Papillon!",
   "ONBOARDING_START_BTN": "Inizia",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "Codice PIN",
   "SEARCH_UNIV_PLACEHOLDER": "Cerca un'istanza...",
   "ONBOARDING_LOADING_LOGIN": "Connessione in corso...",
-
   "WAITING": "In attesa",
   "IZLY_SMS_SEND": "Hai appena ricevuto un link per connetterti, cliccaci sopra e segui i passaggi.",
   "STEP": "Passaggio",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Accedi",
   "CONFIRM_BTN": "Conferma",
   "CANCEL_BTN": "Annulla",
-
   "Tab_New_Event": "Nuovo evento",
-
   "Tab_Calendar_Icals": "Gestione iCal",
   "Tab_Calendar_Icals_Description": "Gestisci i tuoi URL iCal",
-
   "Tab_Calendar_Icals_Add_URL": "Aggiungi un URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Gestisci {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Aggiungi o rimuovi URL iCal da sincronizzare con il tuo calendario.",
   "Tab_Calendar_Icals_Add_Title": "Titolo mancante",
   "Tab_Calendar_Icals_Add_Description": "Assegna un nome a questo URL iCal per aggiungerlo.",
   "Tab_Calendar_Icals_Empty": "Nessun URL iCal aggiunto",
-
   "TabUnderConstruction_Title": "Questa scheda è in fase di sviluppo.",
   "TabUnderConstruction_Details": "Torna più tardi per nuovi aggiornamenti.",
-
   "TabDevModeNotice_Title": "Modalità Sviluppatore",
   "TabDevModeNotice_Details": "Ambiente di test completo per gli sviluppatori.",
-
   "Alert_TechnicalDetails": "Dettagli tecnici",
-
   "Online_Course": "Online",
   "Evaluated_Course": "Valutazione",
   "Edited_Course": "Lezione modificata",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Aula sconosciuta",
   "Event_DeleteEvent": "Elimina l'evento",
   "Event_Confirm_DeleteEvent": "Sei sicuro di voler eliminare questo evento?",
-
   "Course_Separator_Lunch_Default": "Pausa pranzo",
   "Course_Separator_Lunch_Alt_1": "Buon appetito!",
   "Course_Separator_Lunch_Alt_2": "Gnam!",
-
   "Course_Separator_Morning_Default": "Pausa mattutina",
   "Course_Separator_Morning_Alt_1": "A nanna!",
   "Course_Separator_Morning_Alt_2": "Colazione",
-
   "Course_Separator_Evening_Default": "Pausa pomeridiana",
   "Course_Separator_Evening_Alt_1": "Una pausa ci vuole!",
   "Course_Separator_Evening_Alt_2": "Ora della merenda!",
-
   "Course_Separator_Night_Default": "Pausa serale",
   "Course_Separator_Night_Alt_1": "A nanna!",
   "Course_Separator_Night_Alt_2": "È notte!",
-
   "Context_Delete": "Elimina",
   "Context_Cancel": "Annulla",
   "Context_Edit": "Modifica",
   "Context_Add": "Aggiungi",
-
   "Form_Title": "Titolo",
   "Form_Location": "Posizione",
   "Form_Organizer": "Organizzatore",
   "Form_Start": "Inizio",
   "Form_End": "Fine",
-
   "Confirm_DeleteEvent": "Sei sicuro di voler eliminare questo evento?",
-
   "Home_Welcome_Name": "Ciao, {{name}} {{emoji}}",
   "Home_Display_More": "Mostra altro",
   "Home_Cards_Button_Description_Plurial": "disponibili",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Non hai altre lezioni previste per oggi",
   "Home_Planned_One": "Hai una lezione rimasta per oggi",
   "Home_Planned_Number": "Hai {{number}} lezioni rimaste oggi",
-
   "Home_Widget_NextCourses": "Prossime lezioni",
   "Home_Widget_NewGrades": "Nuovi voti",
   "Home_Widget_NewHomeworks": "Compiti da fare",
-
   "Home_Widget_NoCourses": "Nessuna lezione in programma",
   "Home_Widget_NoCourses_Description": "Non ci sono lezioni previste per oggi.",
-
   "Home_Cards_Button_Title": "Tessere",
   "Home_Cards_Button_Description_None": "Nessuna tessera",
   "Home_Cards_Button_Description_Singular": "Una tessera",
   "Home_Cards_Button_Description_Number": "{{number}} tessere",
-
   "Home_Chats_Button_Title": "Messaggi",
   "Home_Chats_Button_Description_None": "Nessun messaggio",
   "Home_Chats_Button_Description_Singular": "Un messaggio",
   "Home_Chats_Button_Description_Number": "{{number}} messaggi",
-
   "Home_Attendance_Title": "Assenze",
   "Home_Attendance_Button_Description_None": "Nessuna assenza",
   "Home_Attendance_Button_Description_Singular": "Un'assenza",
   "Home_Attendance_Button_Description_Number": "{{number}} assenze",
-
   "Home_Menu_Button_Title": "Menu",
   "Home_Menu_Button_Description": "Menu del giorno",
-
   "Tab_Calendar_Empty": "Nessun evento trovato",
   "Tab_Calendar_Empty_Description": "Aggiungi un evento o sincronizza il tuo calendario per iniziare.",
-
   "Modal_Course_Title": "La mia lezione",
   "Modal_Course_StartsIn": "Inizia tra",
   "Modal_Course_StartedAgo": "Terminata da",
   "Modal_Course_Ongoing": "Iniziata da",
   "Modal_Course_Group": "Gruppo",
   "Modal_Course_Group_Full": "Classe",
-
   "Modal_Course_Details": "Dettagli della lezione",
   "Modal_Course_Teacher": "Docente",
   "Modal_Course_Room": "Aula",
   "Modal_Course_Duration": "Durata",
-
   "Modal_Course_Time": "Orario della lezione",
   "Modal_Course_Start": "Inizio",
   "Modal_Course_End": "Fine",
-
   "Tasks_Search_Placeholder": "Cerca compiti",
   "Tasks_LeftHomeworks_Title": "compiti rimanenti",
   "Tasks_LeftHomeworks_Time": "questa settimana",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Compiti completati",
   "Task_Show_Title": "Visualizza",
   "Settings_General": "Generale",
-
   "Latest_Grades": "Nuovi voti",
   "Grades_Search_Placeholder": "Cerca un voto, una materia",
-
   "Grades_Avg_Methods": "Metodi di calcolo",
   "Grades_Avg_All_Title": "Media generale",
   "Grades_Avg_All_Short": "Media gen.",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Calcola la media ponderata delle medie delle materie",
   "Grades_Avg_Median_Title": "Mediana",
   "Grades_Avg_Median_Short": "Mediana",
-
   "Grades_Avg_More": "Scopri di più",
   "Grades_Avg_KnowMore": "Saperne di più",
   "Grades_Avg_KnowMore_Description": "Comprendi i metodi di calcolo della media generale",
-
   "Grades_SubjectInfo": "Informazioni sulla materia",
   "Grades_SubjectInfo_NbGrades": "{{number}} voto/i",
   "SubjectInfo_StudentAverage_Label": "Media dello studente",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Migliore media del gruppo",
   "SubjectInfo_MinAverage_Label": "Media minima",
   "SubjectInfo_MinAverage_Description": "Media più bassa del gruppo",
-
   "Grades_Semester": "Semestre",
   "Grades_Trimester": "Trimestre",
   "Grades_OutPeriod": "Fuori periodo",
   "Grades_Year": "Anno",
   "Grades_MockExamBac": "Simulazione Maturità",
   "Grades_MockExamBrevet": "Simulazione Esame",
-
   "Grades_Method_AllGrades": "Tutte le materie",
   "Grades_Method_Weighted": "Ponderazione",
-
   "Grades_Sort": "Ordina",
   "Grades_Sorting_Alphabetical": "Alfabetico",
   "Grades_Sorting_Averages": "Medie",
   "Grades_Sorting_Date": "Data",
-
   "Grades_Menu_SortBy": "Ordina per",
   "Grades_Menu_AverageBy": "Media per",
   "NoAverage": "Nessuna media",
-
   "Grades_Empty_Title": "Nessun voto",
   "Grades_Empty_Description": "Non hai ancora ricevuto voti in questo periodo.",
-
   "Grade_NoDescription": "Compito di {{subject}}",
-
   "Grades_Tab_Subjects": "Materie",
   "Grades_Tab_Latest": "Ultimi voti",
-
   "Profile_Attendance_Title": "Frequenza",
   "Profile_Attendance_Denominator_Single": "assenza",
   "Profile_Attendance_Denominator_Plural": "assenze",
-
   "Profile_Discussions_Title": "Discussioni",
   "Profile_Discussions_Denominator_Single": "non letto",
   "Profile_Discussions_Denominator_Plural": "non letti",
-
   "Profile_News_Title": "Attualità",
   "Profile_News_Denominator_Single": "nuova",
   "Profile_News_Denominator_Plural": "nuove",
   "Profile_News_Open": "Apri",
   "Profile_News_Loading_Title": "Caricamento notizie...",
   "Profile_News_Author_Unknown": "Autore sconosciuto",
-
   "Profile_Cards_Title": "Codice QR e tessere",
-
   "Modal_Grades_Title": "Dettagli del voto",
   "Modal_Grades_BestGrade": "Miglior voto del gruppo",
-
   "Grades_Details_Title": "Dettagli",
   "Grades_NormalizedGrade_Title": "Voto riportato su 20",
   "Grades_NormalizedGrade_Description": "Valore del voto convertito in scala ventesimale",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "Media gruppo",
   "Grades_Tab_Rank": "Classifica",
   "Grades_Tab_Rank_Description": "Posizione nel gruppo",
-
   "News_Search_Placeholder": "Cerca una notizia",
   "News_Empty_Title": "Nessuna notizia",
   "News_Empty_Description": "Non sono state trovate notizie nel tuo istituto.",
   "News_Search_NoResults": "Nessun risultato",
   "News_Search_NoResults_Description": "Nessuna notizia trovata per la tua ricerca.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Un tema morbido ed elegante",
-
   "News_Theme_Reading_Title": "Lettura",
   "News_Theme_Reading_Description": "Un tema progettato per la lettura",
-
   "Attendance_Hours_Missed": "Ore perse",
   "Attendance_Hours_Unjustified": "Ore non giustificate",
   "Attendance_Missing": "Assenze",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Nessuna motivazione",
   "Attendance_NoEvent_Title": "Nessun evento",
   "Attendance_NoEvent_Description": "Nessuna assenza o ritardo registrato per questo periodo.",
-
   "Settings_Account_Title": "Il mio account",
   "Settings_Account_Description": "Il mio account",
   "Settings_Services_Title": "Account collegati",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Cambia lingua",
   "Settings_Tabs_Title": "Schede",
   "Settings_Tabs_Description": "Nascondi schede dal menu",
-
   "Settings_Personalization_Title_Card": "Personalizzazione",
   "Settings_Personalization_Subtitle_Card": "Temi, materie...",
   "Settings_SubjectPersonalization_Title": "Personalizza le materie",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Segnala un bug",
   "Settings_About_Issue_Description": "Segnala un errore riscontrato",
   "Settings_About_Dependency_Version": "Versione delle dipendenze",
-
   "Alert_No_Technical": "Nessuna informazione tecnica disponibile.",
   "Alert_Auth_Error": "Errore di autenticazione",
   "Alert_Auth_Bad_Creds": "Le credenziali inserite non sono corrette o stai cercando di connetterti con un account genitore. Questo tipo di account non è ancora supportato da Papillon.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon non riesce a ottenere informazioni da questa istanza PRONOTE, è ancora valida?",
   "Alert_No_Pos": "Impossibile recuperare la posizione",
   "Alert_Connexion_Fail": "Connessione impossibile",
-
   "Feature_Limited": "Funzionalità limitate",
   "Feature_Soon": "In arrivo!",
   "Feature_Soon_Notification": "Stiamo lavorando sodo per offrirti questa funzionalità in un futuro aggiornamento.",
   "Feature_Add_Card": "Aggiungi una nuova tessera dalla scheda Profilo accessibile nella barra di navigazione",
-
   "Webview_Wait": "Un po' di pazienza...",
-
   "Profile_QRCards": "Codice QR e tessere",
   "Profile_QRCards_Subtitle": "{{count}} tessera/e",
   "Profile_Cards_Loading_History": "Caricamento cronologia transazioni",
   "Profile_Cards_Loading_History_Description": "Potrebbe richiedere un momento...",
-
   "Settings_Cards_Banner_Title": "Tessere",
   "Settings_Cantineen_Subtitle_Card": "Mensa, accessi",
   "Settings_Cards_Banner_Description": "Aggiungi le tue tessere mensa e trasporti per accedervi ovunque dal tuo telefono su Papillon",
   "Settings_Cards_None_Title": "Nessuna tessera",
   "Settings_Cards_Add_Button": "Aggiungi",
-
   "Settings_Cards_None_Description": "Aggiungine una per accedere al tuo saldo mensa, scansionare il tuo codice QR e altro ancora",
   "Settings_Subjects_None_Title": "Nessuna materia",
   "Settings_Subjects_None_Description": "Esplora le diverse schede dell'app per poter personalizzare le materie.",
   "Settings_Subjects_Reset_Title": "Ripristina",
   "Settings_Subjects_Reset_Message": "Vuoi davvero ripristinare tutte le materie?",
   "Settings_Subjects_Reset_Button": "Ripristina",
-
   "Settings_Donator": "Donatori",
   "Settings_Donator_Description": "Vedi la lista dei donatori",
   "Settings_App_Version": "Versione dell'applicazione",
-
   "Profile_Cards_Scan_Orientation": "Orienta il codice QR verso il lettore del terminale",
   "Profile_Cards_No_Reservation": "Nessuna prenotazione",
   "Profile_Cards_No_Available_Reservation": "Sembra che tu non possa prenotare per questo giorno.",
   "Profile_Cards_History": "Cronologia",
   "Magic_Important": "Potrebbe essere importante",
-
   "OnBoarding_Step": "Passaggio ",
   "OnBoarding_Step_Of": "di ",
-
   "Consent_Advanced_Title": "Voglio aiutare Papillon",
   "Consent_Advanced_Description": "Raccogliamo informazioni più dettagliate sul tuo utilizzo.",
   "Consent_Required_Title": "Solo l'essenziale",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Serve solo a migliorare l'applicazione",
   "Consent_Arg2": "Anonimo e non collegato alla tua identità",
   "Consent_Arg3": "Non abbiamo accesso ai tuoi account",
-
   "Changelog_Title": "Note di aggiornamento",
-
   "Tasks_Sorting_Methods_DueDate": "Data di consegna",
   "Tasks_Sorting_Methods_Subject": "Materie",
   "Tasks_Sorting_Methods_Done": "Non completato",
   "Tasks_ThisWeek": "Questa settimana",
-
   "Task_Undone": "Non completato",
   "Task_Done": "Completato",
-
   "Modal_Wallpaper_Title": "Personalizza sfondo",
   "Modal_Profile_Title": "Personalizza profilo",
-
   "Modal_Task_Status": "Stato del compito",
   "Modal_Task_Description": "Descrizione del compito",
   "Modal_Task_Attachments": "Allegati",
-
   "Today": "Oggi",
   "Yesterday": "Ieri",
-  "Tomorrow": "Domani"
+  "Tomorrow": "Domani",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

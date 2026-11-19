@@ -1,7 +1,6 @@
 {
   "Global_Back": "ย้อนกลับ",
   "Global_DatePrefix": "เมื่อวันที่",
-
   "Tab_Home": "หน้าแรก",
   "Tab_Calendar": "ตารางเรียน",
   "Tab_Tasks": "งาน",
@@ -16,7 +15,6 @@
   "Tab_Page": "หน้า",
   "Tab_Settings": "การตั้งค่า",
   "Tab_News": "ข่าวสาร",
-
   "ONBOARDING_MAIN_TITLE": "แอปสำหรับจัดการชีวิตในโรงเรียนของคุณ",
   "ONBOARDING_MAIN_DESCRIPTION": "เชื่อมต่อแอปการศึกษาของคุณเพื่อเข้าถึงเกรด ตารางเรียน การบ้าน และอื่นๆ อีกมากมายใน Papillon!",
   "ONBOARDING_START_BTN": "เริ่มต้นใช้งาน",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "รหัส PIN",
   "SEARCH_UNIV_PLACEHOLDER": "ค้นหาเซิร์ฟเวอร์...",
   "ONBOARDING_LOADING_LOGIN": "กำลังเข้าสู่ระบบ...",
-
   "WAITING": "กรุณารอสักครู่",
   "IZLY_SMS_SEND": "คุณได้รับลิงก์สำหรับเข้าสู่ระบบแล้ว กรุณาคลิกและทำตามขั้นตอน",
   "STEP": "ขั้นตอนที่",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "เข้าสู่ระบบ",
   "CONFIRM_BTN": "ยืนยัน",
   "CANCEL_BTN": "ยกเลิก",
-
   "Tab_New_Event": "กิจกรรมใหม่",
-
   "Tab_Calendar_Icals": "จัดการ iCal",
   "Tab_Calendar_Icals_Description": "จัดการ URL ของ iCal ของคุณ",
-
   "Tab_Calendar_Icals_Add_URL": "เพิ่ม URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "จัดการ {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "เพิ่มหรือลบ URL iCal เพื่อซิงค์กับปฏิทินของคุณ",
   "Tab_Calendar_Icals_Add_Title": "ยังไม่ได้ระบุชื่อ",
   "Tab_Calendar_Icals_Add_Description": "ตั้งชื่อให้ URL iCal นี้เพื่อบันทึก",
   "Tab_Calendar_Icals_Empty": "ยังไม่มีการเพิ่ม URL iCal",
-
   "TabUnderConstruction_Title": "ส่วนนี้กำลังอยู่ระหว่างการพัฒนา",
   "TabUnderConstruction_Details": "กลับมาตรวจสอบการอัปเดตในภายหลัง",
-
   "TabDevModeNotice_Title": "โหมดนักพัฒนา",
   "TabDevModeNotice_Details": "สภาพแวดล้อมทดสอบเต็มรูปแบบสำหรับนักพัฒนา",
-
   "Alert_TechnicalDetails": "รายละเอียดทางเทคนิค",
-
   "Online_Course": "ออนไลน์",
   "Evaluated_Course": "การสอบ/ประเมิน",
   "Edited_Course": "แก้ไขเวลาเรียน",
@@ -94,36 +84,28 @@
   "No_Course_Room": "ไม่ระบุห้องเรียน",
   "Event_DeleteEvent": "ลบกิจกรรม",
   "Event_Confirm_DeleteEvent": "คุณแน่ใจหรือไม่ว่าต้องการลบกิจกรรมนี้?",
-
   "Course_Separator_Lunch_Default": "พักเที่ยง",
   "Course_Separator_Lunch_Alt_1": "ทานให้อร่อยนะ!",
   "Course_Separator_Lunch_Alt_2": "ง่ำๆ!",
-
   "Course_Separator_Morning_Default": "พักเช้า",
   "Course_Separator_Morning_Alt_1": "ไปนอนกัน!",
   "Course_Separator_Morning_Alt_2": "อาหารเช้า",
-
   "Course_Separator_Evening_Default": "พักบ่าย",
   "Course_Separator_Evening_Alt_1": "ได้เวลาพักแล้ว!",
   "Course_Separator_Evening_Alt_2": "เวลาของว่าง!",
-
   "Course_Separator_Night_Default": "พักดึก",
   "Course_Separator_Night_Alt_1": "ฝันดีนะ!",
   "Course_Separator_Night_Alt_2": "ดึกแล้ว!",
-
   "Context_Delete": "ลบ",
   "Context_Cancel": "ยกเลิก",
   "Context_Edit": "แก้ไข",
   "Context_Add": "เพิ่ม",
-
   "Form_Title": "ชื่อเรื่อง",
   "Form_Location": "สถานที่",
   "Form_Organizer": "ผู้จัดงาน",
   "Form_Start": "เริ่ม",
   "Form_End": "สิ้นสุด",
-
   "Confirm_DeleteEvent": "คุณแน่ใจหรือไม่ว่าต้องการลบกิจกรรมนี้?",
-
   "Home_Welcome_Name": "สวัสดี {{name}} {{emoji}}",
   "Home_Display_More": "แสดงเพิ่มเติม",
   "Home_Cards_Button_Description_Plurial": "รายการ",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "วันนี้ไม่มีเรียนแล้ว",
   "Home_Planned_One": "วันนี้เหลืออีก 1 คาบ",
   "Home_Planned_Number": "วันนี้เหลืออีก {{number}} คาบ",
-
   "Home_Widget_NextCourses": "คาบเรียนถัดไป",
   "Home_Widget_NewGrades": "เกรดใหม่",
   "Home_Widget_NewHomeworks": "งานที่ต้องทำ",
-
   "Home_Widget_NoCourses": "ไม่มีเรียนเร็วๆ นี้",
   "Home_Widget_NoCourses_Description": "ไม่มีตารางเรียนสำหรับวันนี้",
-
   "Home_Cards_Button_Title": "บัตร",
   "Home_Cards_Button_Description_None": "ไม่มีบัตร",
   "Home_Cards_Button_Description_Singular": "บัตร 1 ใบ",
   "Home_Cards_Button_Description_Number": "บัตร {{number}} ใบ",
-
   "Home_Chats_Button_Title": "ข้อความ",
   "Home_Chats_Button_Description_None": "ไม่มีข้อความ",
   "Home_Chats_Button_Description_Singular": "ข้อความ 1 รายการ",
   "Home_Chats_Button_Description_Number": "ข้อความ {{number}} รายการ",
-
   "Home_Attendance_Title": "การเข้าเรียน",
   "Home_Attendance_Button_Description_None": "ไม่มีการขาดเรียน",
   "Home_Attendance_Button_Description_Singular": "ขาดเรียน 1 ครั้ง",
   "Home_Attendance_Button_Description_Number": "ขาดเรียน {{number}} ครั้ง",
-
   "Home_Menu_Button_Title": "เมนูอาหาร",
   "Home_Menu_Button_Description": "รายการอาหารวันนี้",
-
   "Tab_Calendar_Empty": "ไม่พบกิจกรรม",
   "Tab_Calendar_Empty_Description": "เพิ่มกิจกรรมหรือซิงค์ปฏิทินเพื่อเริ่มต้น",
-
   "Modal_Course_Title": "วิชาเรียนของฉัน",
   "Modal_Course_StartsIn": "เริ่มในอีก",
   "Modal_Course_StartedAgo": "จบไปแล้วเมื่อ",
   "Modal_Course_Ongoing": "เริ่มมาแล้ว",
   "Modal_Course_Group": "กลุ่ม",
   "Modal_Course_Group_Full": "ชั้นเรียน",
-
   "Modal_Course_Details": "รายละเอียดวิชา",
   "Modal_Course_Teacher": "อาจารย์ผู้สอน",
   "Modal_Course_Room": "ห้องเรียน",
   "Modal_Course_Duration": "ระยะเวลา",
-
   "Modal_Course_Time": "เวลาเรียน",
   "Modal_Course_Start": "เริ่ม",
   "Modal_Course_End": "สิ้นสุด",
-
   "Tasks_Search_Placeholder": "ค้นหางาน",
   "Tasks_LeftHomeworks_Title": "งานที่เหลือ",
   "Tasks_LeftHomeworks_Time": "ในสัปดาห์นี้",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "งานที่เสร็จแล้ว",
   "Task_Show_Title": "แสดง",
   "Settings_General": "ทั่วไป",
-
   "Latest_Grades": "เกรดใหม่",
   "Grades_Search_Placeholder": "ค้นหาคะแนนหรือวิชา",
-
   "Grades_Avg_Methods": "วิธีการคำนวณ",
   "Grades_Avg_All_Title": "เกรดเฉลี่ยรวม",
   "Grades_Avg_All_Short": "เกรดรวม",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "คำนวณเกรดเฉลี่ยถ่วงน้ำหนักจากค่าเฉลี่ยของแต่ละวิชา",
   "Grades_Avg_Median_Title": "มัธยฐาน",
   "Grades_Avg_Median_Short": "มัธยฐาน",
-
   "Grades_Avg_More": "ดูเพิ่มเติม",
   "Grades_Avg_KnowMore": "เรียนรู้เพิ่มเติม",
   "Grades_Avg_KnowMore_Description": "ทำความเข้าใจวิธีการคำนวณเกรดเฉลี่ย",
-
   "Grades_SubjectInfo": "ข้อมูลวิชา",
   "Grades_SubjectInfo_NbGrades": "คะแนน {{number}} รายการ",
   "SubjectInfo_StudentAverage_Label": "คะแนนเฉลี่ยของนักเรียน",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "คะแนนที่ดีที่สุดในกลุ่ม",
   "SubjectInfo_MinAverage_Label": "คะแนนเฉลี่ยต่ำสุด",
   "SubjectInfo_MinAverage_Description": "คะแนนที่ต่ำที่สุดในกลุ่ม",
-
   "Grades_Semester": "ภาคเรียน",
   "Grades_Trimester": "ไตรมาส",
   "Grades_OutPeriod": "นอกช่วงเวลา",
   "Grades_Year": "ปีการศึกษา",
   "Grades_MockExamBac": "สอบจำลอง",
   "Grades_MockExamBrevet": "สอบจำลอง",
-
   "Grades_Method_AllGrades": "ทุกวิชา",
   "Grades_Method_Weighted": "น้ำหนัก/หน่วยกิต",
-
   "Grades_Sort": "จัดเรียง",
   "Grades_Sorting_Alphabetical": "ตามตัวอักษร",
   "Grades_Sorting_Averages": "ตามเกรดเฉลี่ย",
   "Grades_Sorting_Date": "ตามวันที่",
-
   "Grades_Menu_SortBy": "จัดเรียงตาม",
   "Grades_Menu_AverageBy": "เฉลี่ยตาม",
   "NoAverage": "ไม่มีเกรดเฉลี่ย",
-
   "Grades_Empty_Title": "ยังไม่มีคะแนน",
   "Grades_Empty_Description": "คุณยังไม่ได้รับคะแนนในช่วงเวลานี้",
-
   "Grade_NoDescription": "งานมอบหมายวิชา {{subject}}",
-
   "Grades_Tab_Subjects": "รายวิชา",
   "Grades_Tab_Latest": "เกรดใหม่",
-
   "Profile_Attendance_Title": "การเช็คชื่อ",
   "Profile_Attendance_Denominator_Single": "การขาดเรียน",
   "Profile_Attendance_Denominator_Plural": "การขาดเรียน",
-
   "Profile_Discussions_Title": "แชท",
   "Profile_Discussions_Denominator_Single": "ยังไม่ได้อ่าน",
   "Profile_Discussions_Denominator_Plural": "ยังไม่ได้อ่าน",
-
   "Profile_News_Title": "ข่าวประกาศ",
   "Profile_News_Denominator_Single": "ข่าวใหม่",
   "Profile_News_Denominator_Plural": "ข่าวใหม่",
   "Profile_News_Open": "เปิด",
   "Profile_News_Loading_Title": "กำลังโหลดข่าว...",
   "Profile_News_Author_Unknown": "ไม่ระบุผู้เขียน",
-
   "Profile_Cards_Title": "คิวอาร์โค้ดและบัตร",
-
   "Modal_Grades_Title": "รายละเอียดคะแนน",
   "Modal_Grades_BestGrade": "คะแนนสูงสุดในกลุ่ม",
-
   "Grades_Details_Title": "รายละเอียด",
   "Grades_NormalizedGrade_Title": "คะแนนฐาน 20",
   "Grades_NormalizedGrade_Description": "ค่าคะแนนที่แปลงเป็นมาตราส่วน 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "เฉลี่ยกลุ่ม",
   "Grades_Tab_Rank": "อันดับ",
   "Grades_Tab_Rank_Description": "ตำแหน่งในกลุ่ม",
-
   "News_Search_Placeholder": "ค้นหาข่าวสาร",
   "News_Empty_Title": "ไม่มีข่าวสาร",
   "News_Empty_Description": "ไม่พบข่าวสารในสถานศึกษาของคุณ",
   "News_Search_NoResults": "ไม่พบข่าวสาร",
   "News_Search_NoResults_Description": "ไม่พบข่าวสารที่คุณกำลังค้นหา",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "ธีมที่นุ่มนวลและหรูหรา",
-
   "News_Theme_Reading_Title": "โหมดอ่าน",
   "News_Theme_Reading_Description": "ธีมที่ออกแบบมาเพื่อการอ่านโดยเฉพาะ",
-
   "Attendance_Hours_Missed": "ชั่วโมงที่ขาด",
   "Attendance_Hours_Unjustified": "ชั่วโมงที่ไม่ได้รับการรับรอง",
   "Attendance_Missing": "การขาดเรียน",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "ไม่ระบุเหตุผล",
   "Attendance_NoEvent_Title": "ไม่มีรายการ",
   "Attendance_NoEvent_Description": "ไม่มีประวัติการขาดหรือมาสายในช่วงเวลานี้",
-
   "Settings_Account_Title": "บัญชีของฉัน",
   "Settings_Account_Description": "จัดการบัญชี",
   "Settings_Services_Title": "บัญชีที่เชื่อมต่อ",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "เปลี่ยนภาษา",
   "Settings_Tabs_Title": "แท็บ",
   "Settings_Tabs_Description": "ซ่อนแท็บจากเมนู",
-
   "Settings_Personalization_Title_Card": "การปรับแต่ง",
   "Settings_Personalization_Subtitle_Card": "ธีม วิชา...",
   "Settings_SubjectPersonalization_Title": "ปรับแต่งรายวิชา",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "รายงานปัญหา",
   "Settings_About_Issue_Description": "แจ้งบั๊กที่พบ",
   "Settings_About_Dependency_Version": "เวอร์ชันของซอฟต์แวร์สนับสนุน",
-
   "Alert_No_Technical": "ไม่มีข้อมูลทางเทคนิค",
   "Alert_Auth_Error": "การยืนยันตัวตนผิดพลาด",
   "Alert_Auth_Bad_Creds": "ข้อมูลประจำตัวที่คุณป้อนไม่ถูกต้อง หรือคุณกำลังพยายามเชื่อมต่อด้วยบัญชีผู้ปกครอง ซึ่ง Papillon ยังไม่รองรับบัญชีประเภทนี้",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon ไม่สามารถเข้าถึงข้อมูลของระบบ PRONOTE นี้ได้ ระบบยังใช้งานได้อยู่หรือไม่?",
   "Alert_No_Pos": "ไม่สามารถระบุตำแหน่งที่ตั้งได้",
   "Alert_Connexion_Fail": "การเชื่อมต่อล้มเหลว",
-
   "Feature_Limited": "ฟีเจอร์จำกัด",
   "Feature_Soon": "เร็วๆ นี้!",
   "Feature_Soon_Notification": "เรากำลังพัฒนาอย่างหนักเพื่อมอบฟีเจอร์นี้ให้คุณในการอัปเดตครั้งถัดไป",
   "Feature_Add_Card": "เพิ่มบัตรใหม่จากแท็บโปรไฟล์ในแถบนำทาง",
-
   "Webview_Wait": "กรุณารอสักครู่...",
-
   "Profile_QRCards": "คิวอาร์โค้ดและบัตร",
   "Profile_QRCards_Subtitle": "บัตร {{count}} ใบ",
   "Profile_Cards_Loading_History": "กำลังโหลดประวัติการใช้งาน",
   "Profile_Cards_Loading_History_Description": "อาจใช้เวลาสักครู่...",
-
   "Settings_Cards_Banner_Title": "บัตร",
   "Settings_Cantineen_Subtitle_Card": "โรงอาหาร การเข้าถึง",
   "Settings_Cards_Banner_Description": "เพิ่มบัตรโรงอาหารและบัตรเดินทางของคุณเพื่อให้เข้าถึงได้ทุกที่จากโทรศัพท์ใน Papillon",
   "Settings_Cards_None_Title": "ไม่มีบัตร",
   "Settings_Cards_Add_Button": "เพิ่ม",
-
   "Settings_Cards_None_Description": "เพิ่มบัตรเพื่อดูยอดเงินโรงอาหาร สแกนคิวอาร์โค้ด และอื่นๆ",
   "Settings_Subjects_None_Title": "ไม่มีวิชา",
   "Settings_Subjects_None_Description": "สำรวจแท็บต่างๆ ของแอปเพื่อให้สามารถปรับแต่งรายวิชาได้",
   "Settings_Subjects_Reset_Title": "รีเซ็ต",
   "Settings_Subjects_Reset_Message": "คุณต้องการรีเซ็ตวิชาทั้งหมดใช่หรือไม่?",
   "Settings_Subjects_Reset_Button": "รีเซ็ต",
-
   "Settings_Donator": "ผู้สนับสนุน",
   "Settings_Donator_Description": "ดูรายชื่อผู้สนับสนุน",
   "Settings_App_Version": "เวอร์ชันของแอป",
-
   "Profile_Cards_Scan_Orientation": "หันคิวอาร์โค้ดไปทางเครื่องสแกน",
   "Profile_Cards_No_Reservation": "ไม่มีการจอง",
   "Profile_Cards_No_Available_Reservation": "ดูเหมือนว่าคุณจะไม่สามารถจองในวันนี้ได้",
   "Profile_Cards_History": "ประวัติ",
   "Magic_Important": "อาจจะสำคัญ",
-
   "OnBoarding_Step": "ขั้นตอนที่ ",
   "OnBoarding_Step_Of": "จาก ",
-
   "Consent_Advanced_Title": "ฉันต้องการช่วย Papillon",
   "Consent_Advanced_Description": "เราจะรวบรวมข้อมูลการใช้งานอย่างละเอียดมากขึ้นเพื่อนำไปปรับปรุง",
   "Consent_Required_Title": "เฉพาะสิ่งที่จำเป็น",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "ใช้เพื่อพัฒนาแอปพลิเคชันเท่านั้น",
   "Consent_Arg2": "ไม่ระบุตัวตนและไม่เชื่อมโยงกับข้อมูลส่วนตัวของคุณ",
   "Consent_Arg3": "เราไม่สามารถเข้าถึงบัญชีของคุณได้",
-
   "Changelog_Title": "บันทึกการเปลี่ยนแปลง",
-
   "Tasks_Sorting_Methods_DueDate": "วันครบกำหนด",
   "Tasks_Sorting_Methods_Subject": "วิชา",
   "Tasks_Sorting_Methods_Done": "ยังไม่เสร็จ",
   "Tasks_ThisWeek": "สัปดาห์นี้",
-
   "Task_Undone": "ยังไม่เสร็จ",
   "Task_Done": "เสร็จแล้ว",
-
   "Modal_Wallpaper_Title": "ปรับแต่งภาพพื้นหลัง",
   "Modal_Profile_Title": "ปรับแต่งโปรไฟล์",
-
   "Modal_Task_Status": "สถานะงาน",
   "Modal_Task_Description": "คำอธิบายงาน",
   "Modal_Task_Attachments": "ไฟล์แนบ",
-
   "Today": "วันนี้",
   "Yesterday": "เมื่อวาน",
-  "Tomorrow": "พรุ่งนี้"
+  "Tomorrow": "พรุ่งนี้",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

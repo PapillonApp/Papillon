@@ -145,6 +145,10 @@ export async function getHomeworksFromCache(
 }
 
 export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
+  if (!homeworks || homeworks.length === 0) {
+    return;
+  }
+
   const db = getDatabaseInstance();
 
   const weekNumber = getWeekNumberFromDate(homeworks[0].dueDate);

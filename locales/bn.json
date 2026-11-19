@@ -1,7 +1,6 @@
 {
   "Global_Back": "ফিরে যান",
   "Global_DatePrefix": "তারিখে",
-
   "Tab_Home": "হোম",
   "Tab_Calendar": "ক্লাস",
   "Tab_Tasks": "কাজ",
@@ -16,7 +15,6 @@
   "Tab_Page": "পৃষ্ঠা",
   "Tab_Settings": "সেটিংস",
   "Tab_News": "খবর",
-
   "ONBOARDING_MAIN_TITLE": "তোমার স্কুল জীবন পরিচালনা করার অ্যাপ",
   "ONBOARDING_MAIN_DESCRIPTION": "তোমার স্কুলের অ্যাপগুলো যুক্ত করো এবং পাপিলন (Papillon) ইন্টারফেসে তোমার নম্বর, ক্লাস, বাড়ির কাজ এবং আরও অনেক কিছু দেখো!",
   "ONBOARDING_START_BTN": "শুরু করি",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "পিন কোড",
   "SEARCH_UNIV_PLACEHOLDER": "সার্ভার খুঁজুন...",
   "ONBOARDING_LOADING_LOGIN": "লগ-ইন হচ্ছে...",
-
   "WAITING": "অপেক্ষা করুন",
   "IZLY_SMS_SEND": "তুমি লগ-ইন করার জন্য একটি লিঙ্ক পেয়েছ, সেটিতে ক্লিক করো এবং ধাপগুলো অনুসরণ করো।",
   "STEP": "ধাপ",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "লগ-ইন",
   "CONFIRM_BTN": "নিশ্চিত করুন",
   "CANCEL_BTN": "বাতিল",
-
   "Tab_New_Event": "নতুন ইভেন্ট",
-
   "Tab_Calendar_Icals": "iCal পরিচালনা",
   "Tab_Calendar_Icals_Description": "তোমার iCal URL-গুলো পরিচালনা করো",
-
   "Tab_Calendar_Icals_Add_URL": "নতুন iCal URL যোগ করুন",
   "Tab_Calendar_Icals_Manage_Title": "{{title}} পরিচালনা করুন",
   "Tab_Calendar_Icals_Manage_Description": "ক্যালেন্ডারের সাথে সিঙ্ক করার জন্য iCal URL যোগ করুন বা মুছুন।",
   "Tab_Calendar_Icals_Add_Title": "শিরোনাম নেই",
   "Tab_Calendar_Icals_Add_Description": "যোগ করার জন্য এই iCal URL-টির একটি নাম দাও।",
   "Tab_Calendar_Icals_Empty": "কোনো iCal URL যোগ করা হয়নি",
-
   "TabUnderConstruction_Title": "এই ট্যাবটি তৈরির কাজ চলছে।",
   "TabUnderConstruction_Details": "আপডেটের জন্য পরে আবার দেখুন।",
-
   "TabDevModeNotice_Title": "ডেভেলপার মোড",
   "TabDevModeNotice_Details": "ডেভেলপারদের জন্য পূর্ণাঙ্গ টেস্টিং পরিবেশ।",
-
   "Alert_TechnicalDetails": "কারিগরি তথ্য",
-
   "Online_Course": "অনলাইন",
   "Evaluated_Course": "মূল্যায়ন/পরীক্ষা",
   "Edited_Course": "পরিবর্তিত ক্লাস",
@@ -94,36 +84,28 @@
   "No_Course_Room": "রুম অজানা",
   "Event_DeleteEvent": "ইভেন্ট মুছে ফেলুন",
   "Event_Confirm_DeleteEvent": "তুমি কি নিশ্চিত যে এই ইভেন্টটি মুছে ফেলতে চাও?",
-
   "Course_Separator_Lunch_Default": "দুপুরের বিরতি",
   "Course_Separator_Lunch_Alt_1": "খাবার উপভোগ করো!",
   "Course_Separator_Lunch_Alt_2": "দারুণ খাবার!",
-
   "Course_Separator_Morning_Default": "সকালের বিরতি",
   "Course_Separator_Morning_Alt_1": "ঘুমানোর সময়!",
   "Course_Separator_Morning_Alt_2": "সকালের নাস্তা",
-
   "Course_Separator_Evening_Default": "বিকেলের বিরতি",
   "Course_Separator_Evening_Alt_1": "একটু বিশ্রাম প্রয়োজন!",
   "Course_Separator_Evening_Alt_2": "নাস্তার সময়!",
-
   "Course_Separator_Night_Default": "রাতের বিরতি",
   "Course_Separator_Night_Alt_1": "ঘুমানোর সময়!",
   "Course_Separator_Night_Alt_2": "এখন রাত!",
-
   "Context_Delete": "মুছে ফেলুন",
   "Context_Cancel": "বাতিল",
   "Context_Edit": "সম্পাদনা",
   "Context_Add": "যোগ করুন",
-
   "Form_Title": "শিরোনাম",
   "Form_Location": "অবস্থান",
   "Form_Organizer": "আয়োজক",
   "Form_Start": "শুরু",
   "Form_End": "শেষ",
-
   "Confirm_DeleteEvent": "তুমি কি নিশ্চিত যে এই ইভেন্টটি মুছে ফেলতে চাও?",
-
   "Home_Welcome_Name": "হ্যালো, {{name}} {{emoji}}",
   "Home_Display_More": "আরও দেখুন",
   "Home_Cards_Button_Description_Plurial": "পাওয়া যাবে",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "আজ তোমার আর কোনো ক্লাস নেই",
   "Home_Planned_One": "আজ তোমার একটি ক্লাস বাকি আছে",
   "Home_Planned_Number": "আজ তোমার আরও {{number}}টি ক্লাস বাকি আছে",
-
   "Home_Widget_NextCourses": "পরবর্তী ক্লাস",
   "Home_Widget_NewGrades": "নতুন নম্বর",
   "Home_Widget_NewHomeworks": "করণীয় কাজ",
-
   "Home_Widget_NoCourses": "কোনো ক্লাস নেই",
   "Home_Widget_NoCourses_Description": "আজকের জন্য কোনো ক্লাস নির্ধারিত নেই।",
-
   "Home_Cards_Button_Title": "কার্ড",
   "Home_Cards_Button_Description_None": "কোনো কার্ড নেই",
   "Home_Cards_Button_Description_Singular": "একটি কার্ড",
   "Home_Cards_Button_Description_Number": "{{number}}টি কার্ড",
-
   "Home_Chats_Button_Title": "বার্তা",
   "Home_Chats_Button_Description_None": "কোনো বার্তা নেই",
   "Home_Chats_Button_Description_Singular": "একটি বার্তা",
   "Home_Chats_Button_Description_Number": "{{number}}টি বার্তা",
-
   "Home_Attendance_Title": "অনুপস্থিতি",
   "Home_Attendance_Button_Description_None": "কোনো অনুপস্থিতি নেই",
   "Home_Attendance_Button_Description_Singular": "একটি অনুপস্থিতি",
   "Home_Attendance_Button_Description_Number": "{{number}}টি অনুপস্থিতি",
-
   "Home_Menu_Button_Title": "মেনু",
   "Home_Menu_Button_Description": "আজকের খাবার",
-
   "Tab_Calendar_Empty": "কোনো ইভেন্ট পাওয়া যায়নি",
   "Tab_Calendar_Empty_Description": "শুরু করতে ক্যালেন্ডার সিঙ্ক করো বা ইভেন্ট যোগ করো।",
-
   "Modal_Course_Title": "আমার ক্লাস",
   "Modal_Course_StartsIn": "শুরু হবে",
   "Modal_Course_StartedAgo": "শেষ হয়েছে",
   "Modal_Course_Ongoing": "চলছে",
   "Modal_Course_Group": "গ্রুপ",
   "Modal_Course_Group_Full": "ক্লাস",
-
   "Modal_Course_Details": "ক্লাসের বিবরণ",
   "Modal_Course_Teacher": "শিক্ষক",
   "Modal_Course_Room": "রুম",
   "Modal_Course_Duration": "সময়সীমা",
-
   "Modal_Course_Time": "ক্লাসের সময়",
   "Modal_Course_Start": "শুরু",
   "Modal_Course_End": "শেষ",
-
   "Tasks_Search_Placeholder": "কাজ খুঁজুন",
   "Tasks_LeftHomeworks_Title": "টি কাজ বাকি",
   "Tasks_LeftHomeworks_Time": "এই সপ্তাহে",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "সম্পন্ন কাজ",
   "Task_Show_Title": "দেখান",
   "Settings_General": "সাধারণ",
-
   "Latest_Grades": "নতুন নম্বর",
   "Grades_Search_Placeholder": "নম্বর বা বিষয় খুঁজুন",
-
   "Grades_Avg_Methods": "গণনা পদ্ধতি",
   "Grades_Avg_All_Title": "মোট গড়",
   "Grades_Avg_All_Short": "গড়",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "বিষয়গুলোর গড়ের ওপর ভিত্তি করে গড় হিসাব করে",
   "Grades_Avg_Median_Title": "মধ্যমা",
   "Grades_Avg_Median_Short": "মধ্যমা",
-
   "Grades_Avg_More": "আরও জানুন",
   "Grades_Avg_KnowMore": "আরও তথ্য",
   "Grades_Avg_KnowMore_Description": "মোট গড় গণনার পদ্ধতিগুলো বুঝুন",
-
   "Grades_SubjectInfo": "বিষয়ের তথ্য",
   "Grades_SubjectInfo_NbGrades": "{{number}}টি নম্বর",
   "SubjectInfo_StudentAverage_Label": "ছাত্রের গড়",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "গ্রুপের সেরা গড়",
   "SubjectInfo_MinAverage_Label": "সর্বনিম্ন গড়",
   "SubjectInfo_MinAverage_Description": "গ্রুপের সর্বনিম্ন গড়",
-
   "Grades_Semester": "সেমিস্টার",
   "Grades_Trimester": "ত্রৈমাসিক",
   "Grades_OutPeriod": "সময়ের বাইরে",
   "Grades_Year": "বছর",
   "Grades_MockExamBac": "মক পরীক্ষা",
   "Grades_MockExamBrevet": "মক টেস্ট",
-
   "Grades_Method_AllGrades": "সব বিষয়",
   "Grades_Method_Weighted": "ওয়েটেজ",
-
   "Grades_Sort": "সাজান",
   "Grades_Sorting_Alphabetical": "বর্ণানুক্রমিক",
   "Grades_Sorting_Averages": "গড় অনুযায়ী",
   "Grades_Sorting_Date": "তারিখ অনুযায়ী",
-
   "Grades_Menu_SortBy": "সাজানোর ধরণ",
   "Grades_Menu_AverageBy": "গড় অনুযায়ী",
   "NoAverage": "কোনো গড় নেই",
-
   "Grades_Empty_Title": "কোনো নম্বর নেই",
   "Grades_Empty_Description": "এই সময়ের মধ্যে তোমাকে কোনো নম্বর দেওয়া হয়নি।",
-
   "Grade_NoDescription": "{{subject}}-এর কাজ",
-
   "Grades_Tab_Subjects": "বিষয়সমূহ",
   "Grades_Tab_Latest": "নতুন নম্বর",
-
   "Profile_Attendance_Title": "উপস্থিতি",
   "Profile_Attendance_Denominator_Single": "অনুপস্থিতি",
   "Profile_Attendance_Denominator_Plural": "অনুপস্থিতি",
-
   "Profile_Discussions_Title": "কথোপকথন",
   "Profile_Discussions_Denominator_Single": "অপঠিত",
   "Profile_Discussions_Denominator_Plural": "অপঠিত",
-
   "Profile_News_Title": "সংবাদ",
   "Profile_News_Denominator_Single": "নতুন",
   "Profile_News_Denominator_Plural": "নতুন",
   "Profile_News_Open": "খুলুন",
   "Profile_News_Loading_Title": "সংবাদ লোড হচ্ছে...",
   "Profile_News_Author_Unknown": "অজানা লেখক",
-
   "Profile_Cards_Title": "QR-কোড এবং কার্ড",
-
   "Modal_Grades_Title": "নম্বরের বিবরণ",
   "Modal_Grades_BestGrade": "গ্রুপের সর্বোচ্চ নম্বর",
-
   "Grades_Details_Title": "বিবরণ",
   "Grades_NormalizedGrade_Title": "২০-এর মধ্যে নম্বর",
   "Grades_NormalizedGrade_Description": "২০-এর স্কেলে পরিবর্তিত নম্বরের মান",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "গ্রুপ গড়",
   "Grades_Tab_Rank": "র‍্যাঙ্ক",
   "Grades_Tab_Rank_Description": "গ্রুপে অবস্থান",
-
   "News_Search_Placeholder": "সংবাদ খুঁজুন",
   "News_Empty_Title": "কোনো সংবাদ নেই",
   "News_Empty_Description": "তোমার শিক্ষা প্রতিষ্ঠানে কোনো সংবাদ পাওয়া যায়নি।",
   "News_Search_NoResults": "কোনো সংবাদ পাওয়া যায়নি",
   "News_Search_NoResults_Description": "তোমার অনুসন্ধানের সাথে মেলে এমন কোনো খবর নেই।",
-
   "News_Theme_Papillon_Title": "পাপিলন",
   "News_Theme_Papillon_Description": "একটি নরম ও মার্জিত থিম",
-
   "News_Theme_Reading_Title": "পড়া",
   "News_Theme_Reading_Description": "পড়ার জন্য বিশেষভাবে তৈরি থিম",
-
   "Attendance_Hours_Missed": "মিস হওয়া ঘণ্টা",
   "Attendance_Hours_Unjustified": "অজুহাতহীন ঘণ্টা",
   "Attendance_Missing": "অনুপস্থিতি",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "কোনো কারণ নেই",
   "Attendance_NoEvent_Title": "কোনো ইভেন্ট নেই",
   "Attendance_NoEvent_Description": "এই সময়ের মধ্যে কোনো অনুপস্থিতি বা দেরি রেকর্ড করা হয়নি।",
-
   "Settings_Account_Title": "আমার অ্যাকাউন্ট",
   "Settings_Account_Description": "আমার অ্যাকাউন্ট তথ্য",
   "Settings_Services_Title": "যুক্ত অ্যাকাউন্টসমূহ",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "ভাষা পরিবর্তন করুন",
   "Settings_Tabs_Title": "ট্যাবসমূহ",
   "Settings_Tabs_Description": "মেনু থেকে ট্যাব লুকিয়ে রাখুন",
-
   "Settings_Personalization_Title_Card": "ব্যক্তিগতকরণ",
   "Settings_Personalization_Subtitle_Card": "থিম, বিষয়...",
   "Settings_SubjectPersonalization_Title": "বিষয়গুলো কাস্টমাইজ করুন",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "বাগ রিপোর্ট করুন",
   "Settings_About_Issue_Description": "অ্যাপে কোনো সমস্যা পেলে জানান",
   "Settings_About_Dependency_Version": "ডিপেন্ডেন্সি ভার্সন",
-
   "Alert_No_Technical": "কোনো কারিগরি তথ্য নেই।",
   "Alert_Auth_Error": "অথেন্টিকেশন ত্রুটি",
   "Alert_Auth_Bad_Creds": "তোমার দেওয়া তথ্য সঠিক নয় অথবা তুমি কোনো অভিভাবক অ্যাকাউন্ট দিয়ে লগ-ইন করার চেষ্টা করছো। পাপিলন এখনও এই ধরণের অ্যাকাউন্ট সমর্থন করে না।",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "পাপিলন এই PRONOTE সার্ভার থেকে তথ্য পাচ্ছে না, এটি কি এখনও সচল?",
   "Alert_No_Pos": "অবস্থান পাওয়া যাচ্ছে না",
   "Alert_Connexion_Fail": "সংযুক্ত হওয়া সম্ভব হচ্ছে না",
-
   "Feature_Limited": "সীমিত ফিচার",
   "Feature_Soon": "শীঘ্রই আসছে!",
   "Feature_Soon_Notification": "ভবিষ্যতের আপডেটে এই ফিচারটি দেওয়ার জন্য আমরা কাজ করছি।",
   "Feature_Add_Card": "নেভিগেশন বারে প্রোফাইল ট্যাব থেকে নতুন কার্ড যোগ করো",
-
   "Webview_Wait": "একটু অপেক্ষা করুন...",
-
   "Profile_QRCards": "QR-কোড এবং কার্ড",
   "Profile_QRCards_Subtitle": "{{count}}টি কার্ড",
   "Profile_Cards_Loading_History": "লেনদেনের ইতিহাস লোড হচ্ছে",
   "Profile_Cards_Loading_History_Description": "এতে কিছুক্ষণ সময় লাগতে পারে...",
-
   "Settings_Cards_Banner_Title": "কার্ড",
   "Settings_Cantineen_Subtitle_Card": "ক্যান্টিন, অ্যাক্সেস",
   "Settings_Cards_Banner_Description": "তোমার ক্যান্টিন এবং যাতায়াত কার্ডগুলো যোগ করো যাতে ফোনের মাধ্যমে সবখানে সহজে ব্যবহার করতে পারো",
   "Settings_Cards_None_Title": "কোনো কার্ড নেই",
   "Settings_Cards_Add_Button": "যোগ করুন",
-
   "Settings_Cards_None_Description": "ক্যান্টিন ব্যালেন্স দেখতে বা QR-কোড স্ক্যান করতে একটি কার্ড যোগ করো",
   "Settings_Subjects_None_Title": "কোনো বিষয় নেই",
   "Settings_Subjects_None_Description": "বিষয়গুলো কাস্টমাইজ করতে অ্যাপের বিভিন্ন ট্যাব ঘুরে দেখো।",
   "Settings_Subjects_Reset_Title": "রিসেট করুন",
   "Settings_Subjects_Reset_Message": "তুমি কি নিশ্চিত যে সব বিষয়ের তথ্য রিসেট করতে চাও?",
   "Settings_Subjects_Reset_Button": "রিসেট করুন",
-
   "Settings_Donator": "দানকারীগণ",
   "Settings_Donator_Description": "দানকারীদের তালিকা দেখুন",
   "Settings_App_Version": "অ্যাপ ভার্সন",
-
   "Profile_Cards_Scan_Orientation": "QR-কোডটি স্ক্যানারের দিকে ধরুন",
   "Profile_Cards_No_Reservation": "কোনো বুকিং নেই",
   "Profile_Cards_No_Available_Reservation": "মনে হচ্ছে আজ তুমি বুকিং করতে পারবে না।",
   "Profile_Cards_History": "ইতিহাস",
   "Magic_Important": "হয়তো গুরুত্বপূর্ণ",
-
   "OnBoarding_Step": "ধাপ ",
   "OnBoarding_Step_Of": "এর মধ্যে ",
-
   "Consent_Advanced_Title": "আমি পাপিলনকে সাহায্য করতে চাই",
   "Consent_Advanced_Description": "আমরা তোমার অ্যাপ ব্যবহারের বিস্তারিত তথ্য সংগ্রহ করবো।",
   "Consent_Required_Title": "শুধু প্রয়োজনীয় তথ্য",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "শুধুমাত্র অ্যাপ উন্নত করার জন্য ব্যবহৃত হয়",
   "Consent_Arg2": "সম্পূর্ণ বেনামী এবং তোমার পরিচয়ের সাথে যুক্ত নয়",
   "Consent_Arg3": "তোমার অ্যাকাউন্টে আমাদের কোনো অ্যাক্সেস নেই",
-
   "Changelog_Title": "আপডেট নোটস",
-
   "Tasks_Sorting_Methods_DueDate": "জমা দেওয়ার তারিখ",
   "Tasks_Sorting_Methods_Subject": "বিষয়সমূহ",
   "Tasks_Sorting_Methods_Done": "অসম্পূর্ণ",
   "Tasks_ThisWeek": "এই সপ্তাহ",
-
   "Task_Undone": "অসম্পূর্ণ",
   "Task_Done": "সম্পন্ন",
-
   "Modal_Wallpaper_Title": "ওয়ালপেপার পরিবর্তন করুন",
   "Modal_Profile_Title": "প্রোফাইল কাস্টমাইজ করুন",
-
   "Modal_Task_Status": "কাজের অবস্থা",
   "Modal_Task_Description": "কাজের বিবরণ",
   "Modal_Task_Attachments": "অ্যাটাচমেন্ট",
-
   "Today": "আজ",
   "Yesterday": "গতকাল",
-  "Tomorrow": "আগামীকাল"
+  "Tomorrow": "আগামীকাল",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

@@ -52,6 +52,7 @@ import { Homework } from "@/services/shared/homework";
 import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import {
+  AttendanceSignParams,
   Capabilities,
   FetchOptions,
   SchoolServicePlugin,
@@ -563,10 +564,26 @@ export class AccountManager {
     );
   }
 
-  clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
-    const client = this.clients[clientId];
-    return !!client?.capabilities.includes(capatibility);
+  async signAttendance(params: AttendanceSignParams, clientId?: string): Promise<unknown> {
+    return await this.fetchData(
+      Capabilities.SIGN,
+      async client => {
+        if (!client.signAttendance) {
+          throw new Error("signAttendance not implemented but capability is set.");
+        }
+        return await client.signAttendance(params);
+      },
+      { multiple: false, clientId }
+    );
+  }
 
+  clientHasCapability(capability: Capabilities, clientId: string): boolean {
+    const client = this.clients[clientId];
+    return !!client?.capabilities.includes(capability);
+  }
+
+  clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
+    return this.clientHasCapability(capatibility, clientId);
   }
 
   getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
@@ -777,6 +794,12 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/mock/index");
       return new module.MockData(service.id);
+    }
+
+    if (service.serviceId === Services.EDUSIGN) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/edusign/index");
+      return new module.Edusign(service.id);
     }
 
     error(

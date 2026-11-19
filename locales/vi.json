@@ -1,7 +1,6 @@
 {
   "Global_Back": "Quay lại",
   "Global_DatePrefix": "vào",
-
   "Tab_Home": "Trang chủ",
   "Tab_Calendar": "Lịch học",
   "Tab_Tasks": "Bài tập",
@@ -16,7 +15,6 @@
   "Tab_Page": "Trang",
   "Tab_Settings": "Cài đặt",
   "Tab_News": "Tin tức",
-
   "ONBOARDING_MAIN_TITLE": "Ứng dụng quản lý đời sống học đường của bạn",
   "ONBOARDING_MAIN_DESCRIPTION": "Kết nối các ứng dụng trường học để xem điểm, lịch học, bài tập và nhiều hơn thế nữa ngay trên giao diện Papillon!",
   "ONBOARDING_START_BTN": "Bắt đầu",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "Mã PIN",
   "SEARCH_UNIV_PLACEHOLDER": "Tìm kiếm máy chủ...",
   "ONBOARDING_LOADING_LOGIN": "Đang kết nối...",
-
   "WAITING": "Đang chờ",
   "IZLY_SMS_SEND": "Bạn vừa nhận được một liên kết đăng nhập, hãy nhấn vào đó và làm theo các bước.",
   "STEP": "Bước",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Đăng nhập",
   "CONFIRM_BTN": "Xác nhận",
   "CANCEL_BTN": "Hủy bỏ",
-
   "Tab_New_Event": "Sự kiện mới",
-
   "Tab_Calendar_Icals": "Quản lý iCal",
   "Tab_Calendar_Icals_Description": "Quản lý các URL iCal của bạn",
-
   "Tab_Calendar_Icals_Add_URL": "Thêm URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Quản lý {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Thêm hoặc xóa các URL iCal để đồng bộ hóa với lịch của bạn.",
   "Tab_Calendar_Icals_Add_Title": "Thiếu tiêu đề",
   "Tab_Calendar_Icals_Add_Description": "Đặt tên cho URL iCal này để thêm vào.",
   "Tab_Calendar_Icals_Empty": "Chưa có URL iCal nào được thêm",
-
   "TabUnderConstruction_Title": "Tab này đang được phát triển.",
   "TabUnderConstruction_Details": "Vui lòng quay lại sau để cập nhật.",
-
   "TabDevModeNotice_Title": "Chế độ Nhà phát triển",
   "TabDevModeNotice_Details": "Môi trường thử nghiệm đầy đủ dành cho nhà phát triển.",
-
   "Alert_TechnicalDetails": "Chi tiết kỹ thuật",
-
   "Online_Course": "Trực tuyến",
   "Evaluated_Course": "Kiểm tra/Đánh giá",
   "Edited_Course": "Lịch học đã thay đổi",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Chưa rõ phòng học",
   "Event_DeleteEvent": "Xóa sự kiện",
   "Event_Confirm_DeleteEvent": "Bạn có chắc chắn muốn xóa sự kiện này không?",
-
   "Course_Separator_Lunch_Default": "Nghỉ trưa",
   "Course_Separator_Lunch_Alt_1": "Chúc ngon miệng!",
   "Course_Separator_Lunch_Alt_2": "Măm măm!",
-
   "Course_Separator_Morning_Default": "Nghỉ giải lao sáng",
   "Course_Separator_Morning_Alt_1": "Đi ngủ thôi!",
   "Course_Separator_Morning_Alt_2": "Bữa sáng",
-
   "Course_Separator_Evening_Default": "Nghỉ giải lao chiều",
   "Course_Separator_Evening_Alt_1": "Đến lúc nghỉ ngơi rồi!",
   "Course_Separator_Evening_Alt_2": "Giờ ăn nhẹ!",
-
   "Course_Separator_Night_Default": "Nghỉ tối",
   "Course_Separator_Night_Alt_1": "Đi ngủ thôi!",
   "Course_Separator_Night_Alt_2": "Trời đã tối rồi!",
-
   "Context_Delete": "Xóa",
   "Context_Cancel": "Hủy",
   "Context_Edit": "Chỉnh sửa",
   "Context_Add": "Thêm",
-
   "Form_Title": "Tiêu đề",
   "Form_Location": "Địa điểm",
   "Form_Organizer": "Người tổ chức",
   "Form_Start": "Bắt đầu",
   "Form_End": "Kết thúc",
-
   "Confirm_DeleteEvent": "Bạn có chắc chắn muốn xóa sự kiện này không?",
-
   "Home_Welcome_Name": "Chào bạn, {{name}} {{emoji}}",
   "Home_Display_More": "Hiển thị thêm",
   "Home_Cards_Button_Description_Plurial": "sẵn có",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Bạn không còn tiết học nào trong hôm nay",
   "Home_Planned_One": "Bạn còn một tiết học trong hôm nay",
   "Home_Planned_Number": "Bạn còn {{number}} tiết học trong hôm nay",
-
   "Home_Widget_NextCourses": "Tiết học sắp tới",
   "Home_Widget_NewGrades": "Điểm mới",
   "Home_Widget_NewHomeworks": "Bài tập cần làm",
-
   "Home_Widget_NoCourses": "Không có tiết học nào",
   "Home_Widget_NoCourses_Description": "Không có lịch học nào được lên kế hoạch cho hôm nay.",
-
   "Home_Cards_Button_Title": "Thẻ",
   "Home_Cards_Button_Description_None": "Không có thẻ",
   "Home_Cards_Button_Description_Singular": "Một thẻ",
   "Home_Cards_Button_Description_Number": "{{number}} thẻ",
-
   "Home_Chats_Button_Title": "Tin nhắn",
   "Home_Chats_Button_Description_None": "Không có tin nhắn",
   "Home_Chats_Button_Description_Singular": "Một tin nhắn",
   "Home_Chats_Button_Description_Number": "{{number}} tin nhắn",
-
   "Home_Attendance_Title": "Chuyên cần",
   "Home_Attendance_Button_Description_None": "Không có vắng mặt",
   "Home_Attendance_Button_Description_Singular": "Một lần vắng mặt",
   "Home_Attendance_Button_Description_Number": "{{number}} lần vắng mặt",
-
   "Home_Menu_Button_Title": "Thực đơn",
   "Home_Menu_Button_Description": "Thực đơn hôm nay",
-
   "Tab_Calendar_Empty": "Không tìm thấy sự kiện",
   "Tab_Calendar_Empty_Description": "Thêm sự kiện hoặc đồng bộ lịch của bạn để bắt đầu.",
-
   "Modal_Course_Title": "Tiết học của tôi",
   "Modal_Course_StartsIn": "Bắt đầu sau",
   "Modal_Course_StartedAgo": "Đã kết thúc cách đây",
   "Modal_Course_Ongoing": "Đã bắt đầu được",
   "Modal_Course_Group": "Nhóm",
   "Modal_Course_Group_Full": "Lớp",
-
   "Modal_Course_Details": "Chi tiết tiết học",
   "Modal_Course_Teacher": "Giáo viên",
   "Modal_Course_Room": "Phòng học",
   "Modal_Course_Duration": "Thời lượng",
-
   "Modal_Course_Time": "Thời gian học",
   "Modal_Course_Start": "Bắt đầu",
   "Modal_Course_End": "Kết thúc",
-
   "Tasks_Search_Placeholder": "Tìm kiếm bài tập",
   "Tasks_LeftHomeworks_Title": "bài tập còn lại",
   "Tasks_LeftHomeworks_Time": "trong tuần này",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Bài tập đã xong",
   "Task_Show_Title": "Hiển thị",
   "Settings_General": "Chung",
-
   "Latest_Grades": "Điểm mới",
   "Grades_Search_Placeholder": "Tìm kiếm điểm, môn học",
-
   "Grades_Avg_Methods": "Phương pháp tính",
   "Grades_Avg_All_Title": "Điểm trung bình chung",
   "Grades_Avg_All_Short": "ĐTB chung",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Tính trung bình dựa trên điểm trung bình của từng môn học",
   "Grades_Avg_Median_Title": "Số trung vị",
   "Grades_Avg_Median_Short": "Trung vị",
-
   "Grades_Avg_More": "Xem thêm",
   "Grades_Avg_KnowMore": "Tìm hiểu thêm",
   "Grades_Avg_KnowMore_Description": "Tìm hiểu về các phương pháp tính điểm trung bình chung",
-
   "Grades_SubjectInfo": "Thông tin môn học",
   "Grades_SubjectInfo_NbGrades": "{{number}} đầu điểm",
   "SubjectInfo_StudentAverage_Label": "Trung bình của học sinh",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Điểm trung bình tốt nhất trong nhóm",
   "SubjectInfo_MinAverage_Label": "Điểm thấp nhất",
   "SubjectInfo_MinAverage_Description": "Điểm trung bình thấp nhất trong nhóm",
-
   "Grades_Semester": "Học kỳ",
   "Grades_Trimester": "Quý",
   "Grades_OutPeriod": "Ngoài giai đoạn",
   "Grades_Year": "Năm học",
   "Grades_MockExamBac": "Thi thử tốt nghiệp",
   "Grades_MockExamBrevet": "Thi thử chuyển cấp",
-
   "Grades_Method_AllGrades": "Tất cả môn học",
   "Grades_Method_Weighted": "Trọng số (Hệ số)",
-
   "Grades_Sort": "Sắp xếp",
   "Grades_Sorting_Alphabetical": "Theo bảng chữ cái",
   "Grades_Sorting_Averages": "Theo điểm số",
   "Grades_Sorting_Date": "Theo ngày",
-
   "Grades_Menu_SortBy": "Sắp xếp theo",
   "Grades_Menu_AverageBy": "Trung bình theo",
   "NoAverage": "Không có điểm trung bình",
-
   "Grades_Empty_Title": "Chưa có điểm",
   "Grades_Empty_Description": "Bạn chưa có điểm số nào trong giai đoạn này.",
-
   "Grade_NoDescription": "Bài tập môn {{subject}}",
-
   "Grades_Tab_Subjects": "Môn học",
   "Grades_Tab_Latest": "Điểm mới",
-
   "Profile_Attendance_Title": "Chuyên cần",
   "Profile_Attendance_Denominator_Single": "lần vắng",
   "Profile_Attendance_Denominator_Plural": "lần vắng",
-
   "Profile_Discussions_Title": "Trao đổi",
   "Profile_Discussions_Denominator_Single": "chưa đọc",
   "Profile_Discussions_Denominator_Plural": "chưa đọc",
-
   "Profile_News_Title": "Tin tức",
   "Profile_News_Denominator_Single": "mới",
   "Profile_News_Denominator_Plural": "mới",
   "Profile_News_Open": "Mở",
   "Profile_News_Loading_Title": "Đang tải tin tức...",
   "Profile_News_Author_Unknown": "Tác giả ẩn danh",
-
   "Profile_Cards_Title": "Mã QR và thẻ",
-
   "Modal_Grades_Title": "Chi tiết điểm số",
   "Modal_Grades_BestGrade": "Điểm cao nhất nhóm",
-
   "Grades_Details_Title": "Chi tiết",
   "Grades_NormalizedGrade_Title": "Quy đổi thang điểm 20",
   "Grades_NormalizedGrade_Description": "Giá trị điểm số được chuyển đổi sang thang điểm 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "TB nhóm",
   "Grades_Tab_Rank": "Xếp hạng",
   "Grades_Tab_Rank_Description": "Vị trí trong nhóm",
-
   "News_Search_Placeholder": "Tìm kiếm tin tức",
   "News_Empty_Title": "Không có tin tức",
   "News_Empty_Description": "Không tìm thấy tin tức nào từ trường học của bạn.",
   "News_Search_NoResults": "Không tìm thấy kết quả",
   "News_Search_NoResults_Description": "Không có tin tức nào phù hợp với tìm kiếm của bạn.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Một chủ đề nhẹ nhàng và tinh tế",
-
   "News_Theme_Reading_Title": "Đọc sách",
   "News_Theme_Reading_Description": "Chủ đề được thiết kế tối ưu cho việc đọc",
-
   "Attendance_Hours_Missed": "Số giờ đã nghỉ",
   "Attendance_Hours_Unjustified": "Số giờ nghỉ không lý do",
   "Attendance_Missing": "Vắng mặt",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Không có lý do",
   "Attendance_NoEvent_Title": "Không có sự kiện",
   "Attendance_NoEvent_Description": "Không có ghi nhận vắng mặt hay đi muộn trong giai đoạn này.",
-
   "Settings_Account_Title": "Tài khoản của tôi",
   "Settings_Account_Description": "Thông tin cá nhân",
   "Settings_Services_Title": "Tài khoản liên kết",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Thay đổi ngôn ngữ",
   "Settings_Tabs_Title": "Các tab",
   "Settings_Tabs_Description": "Ẩn các tab khỏi menu",
-
   "Settings_Personalization_Title_Card": "Cá nhân hóa",
   "Settings_Personalization_Subtitle_Card": "Chủ đề, môn học...",
   "Settings_SubjectPersonalization_Title": "Tùy chỉnh môn học",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Báo lỗi",
   "Settings_About_Issue_Description": "Báo cáo lỗi bạn gặp phải",
   "Settings_About_Dependency_Version": "Phiên bản thư viện",
-
   "Alert_No_Technical": "Không có thông tin kỹ thuật.",
   "Alert_Auth_Error": "Lỗi xác thực",
   "Alert_Auth_Bad_Creds": "Thông tin bạn nhập không chính xác hoặc bạn đang dùng tài khoản phụ huynh. Papillon hiện chưa hỗ trợ loại tài khoản này.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon không thể lấy thông tin từ máy chủ PRONOTE này, nó còn hoạt động không?",
   "Alert_No_Pos": "Không thể lấy vị trí của bạn",
   "Alert_Connexion_Fail": "Không thể kết nối",
-
   "Feature_Limited": "Tính năng hạn chế",
   "Feature_Soon": "Sắp ra mắt!",
   "Feature_Soon_Notification": "Chúng tôi đang nỗ lực để mang tính năng này đến bạn trong bản cập nhật tới.",
   "Feature_Add_Card": "Thêm thẻ mới từ tab Cá nhân trên thanh điều hướng",
-
   "Webview_Wait": "Vui lòng chờ một chút...",
-
   "Profile_QRCards": "Mã QR và thẻ",
   "Profile_QRCards_Subtitle": "{{count}} thẻ",
   "Profile_Cards_Loading_History": "Đang tải lịch sử giao dịch",
   "Profile_Cards_Loading_History_Description": "Việc này có thể mất một lúc...",
-
   "Settings_Cards_Banner_Title": "Thẻ",
   "Settings_Cantineen_Subtitle_Card": "Căng-tin, ra vào",
   "Settings_Cards_Banner_Description": "Thêm thẻ căng-tin hoặc thẻ xe của bạn để dùng ngay trên điện thoại qua Papillon",
   "Settings_Cards_None_Title": "Không có thẻ",
   "Settings_Cards_Add_Button": "Thêm",
-
   "Settings_Cards_None_Description": "Thêm thẻ để xem số dư căng-tin, quét mã QR và nhiều hơn nữa",
   "Settings_Subjects_None_Title": "Không có môn học",
   "Settings_Subjects_None_Description": "Duyệt qua các tab khác của ứng dụng để có thể tùy chỉnh môn học.",
   "Settings_Subjects_Reset_Title": "Đặt lại",
   "Settings_Subjects_Reset_Message": "Bạn có thực sự muốn đặt lại tất cả môn học không?",
   "Settings_Subjects_Reset_Button": "Đặt lại",
-
   "Settings_Donator": "Người ủng hộ",
   "Settings_Donator_Description": "Xem danh sách những người ủng hộ",
   "Settings_App_Version": "Phiên bản ứng dụng",
-
   "Profile_Cards_Scan_Orientation": "Hướng mã QR về phía máy quét của trạm",
   "Profile_Cards_No_Reservation": "Không có lịch đặt",
   "Profile_Cards_No_Available_Reservation": "Có vẻ như bạn không thể đặt lịch vào ngày này.",
   "Profile_Cards_History": "Lịch sử",
   "Magic_Important": "Có thể quan trọng",
-
   "OnBoarding_Step": "Bước ",
   "OnBoarding_Step_Of": "trên ",
-
   "Consent_Advanced_Title": "Tôi muốn giúp Papillon",
   "Consent_Advanced_Description": "Chúng tôi thu thập thông tin chi tiết hơn về cách bạn sử dụng ứng dụng.",
   "Consent_Required_Title": "Chỉ những thông tin thiết yếu",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Chỉ dùng để cải thiện ứng dụng",
   "Consent_Arg2": "Ẩn danh và không liên kết với danh tính của bạn",
   "Consent_Arg3": "Chúng tôi không có quyền truy cập vào tài khoản của bạn",
-
   "Changelog_Title": "Nhật ký thay đổi",
-
   "Tasks_Sorting_Methods_DueDate": "Ngày hạn chót",
   "Tasks_Sorting_Methods_Subject": "Môn học",
   "Tasks_Sorting_Methods_Done": "Chưa hoàn thành",
   "Tasks_ThisWeek": "Tuần này",
-
   "Task_Undone": "Chưa hoàn thành",
   "Task_Done": "Đã hoàn thành",
-
   "Modal_Wallpaper_Title": "Tùy chỉnh hình nền",
   "Modal_Profile_Title": "Tùy chỉnh hồ sơ",
-
   "Modal_Task_Status": "Trạng thái bài tập",
   "Modal_Task_Description": "Mô tả bài tập",
   "Modal_Task_Attachments": "Tệp đính kèm",
-
   "Today": "Hôm nay",
   "Yesterday": "Hôm qua",
-  "Tomorrow": "Ngày mai"
+  "Tomorrow": "Ngày mai",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }

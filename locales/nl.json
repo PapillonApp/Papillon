@@ -1,7 +1,6 @@
 {
   "Global_Back": "Terug",
   "Global_DatePrefix": "op",
-
   "Tab_Home": "Home",
   "Tab_Calendar": "Lessen",
   "Tab_Tasks": "Taken",
@@ -16,7 +15,6 @@
   "Tab_Page": "Pagina",
   "Tab_Settings": "Instellingen",
   "Tab_News": "Nieuws",
-
   "ONBOARDING_MAIN_TITLE": "Dé app om je schoolleven te beheren",
   "ONBOARDING_MAIN_DESCRIPTION": "Verbind je schoolapps om toegang te krijgen tot je cijfers, lessen, huiswerk en meer in de Papillon-interface!",
   "ONBOARDING_START_BTN": "Beginnen",
@@ -51,7 +49,6 @@
   "INPUT_PIN": "Pincode",
   "SEARCH_UNIV_PLACEHOLDER": "Zoek een omgeving...",
   "ONBOARDING_LOADING_LOGIN": "Inloggen...",
-
   "WAITING": "Wachten",
   "IZLY_SMS_SEND": "Je hebt zojuist een link ontvangen om in te loggen, klik erop en volg de stappen.",
   "STEP": "Stap",
@@ -66,27 +63,20 @@
   "LOGIN_BTN": "Inloggen",
   "CONFIRM_BTN": "Bevestigen",
   "CANCEL_BTN": "Annuleren",
-
   "Tab_New_Event": "Nieuwe afspraak",
-
   "Tab_Calendar_Icals": "iCal-beheer",
   "Tab_Calendar_Icals_Description": "Beheer je iCal-URL's",
-
   "Tab_Calendar_Icals_Add_URL": "iCal-URL toevoegen",
   "Tab_Calendar_Icals_Manage_Title": "{{title}} beheren",
   "Tab_Calendar_Icals_Manage_Description": "iCal-URL's toevoegen of verwijderen om te synchroniseren met je agenda.",
   "Tab_Calendar_Icals_Add_Title": "Titel ontbreekt",
   "Tab_Calendar_Icals_Add_Description": "Geef deze iCal-URL een naam om hem toe te voegen.",
   "Tab_Calendar_Icals_Empty": "Geen iCal-URL's toegevoegd",
-
   "TabUnderConstruction_Title": "Dit tabblad is nog in ontwikkeling.",
   "TabUnderConstruction_Details": "Kom later terug voor updates.",
-
   "TabDevModeNotice_Title": "Ontwikkelaarsmodus",
   "TabDevModeNotice_Details": "Volledige testomgeving voor ontwikkelaars.",
-
   "Alert_TechnicalDetails": "Technische details",
-
   "Online_Course": "Online",
   "Evaluated_Course": "Beoordeling",
   "Edited_Course": "Gewijzigde les",
@@ -94,36 +84,28 @@
   "No_Course_Room": "Lokaal onbekend",
   "Event_DeleteEvent": "Verwijder afspraak",
   "Event_Confirm_DeleteEvent": "Weet je zeker dat je deze afspraak wilt verwijderen?",
-
   "Course_Separator_Lunch_Default": "Lunchpauze",
   "Course_Separator_Lunch_Alt_1": "Eet smakelijk!",
   "Course_Separator_Lunch_Alt_2": "Mjam!",
-
   "Course_Separator_Morning_Default": "Ochtendpauze",
   "Course_Separator_Morning_Alt_1": "Tijd om te slapen!",
   "Course_Separator_Morning_Alt_2": "Ontbijttijd",
-
   "Course_Separator_Evening_Default": "Middagpauze",
   "Course_Separator_Evening_Alt_1": "Tijd voor een pauze!",
   "Course_Separator_Evening_Alt_2": "Tijd voor een tussendoortje!",
-
   "Course_Separator_Night_Default": "Avondpauze",
   "Course_Separator_Night_Alt_1": "Slaap lekker!",
   "Course_Separator_Night_Alt_2": "Het is nacht!",
-
   "Context_Delete": "Verwijderen",
   "Context_Cancel": "Annuleren",
   "Context_Edit": "Bewerken",
   "Context_Add": "Toevoegen",
-
   "Form_Title": "Titel",
   "Form_Location": "Locatie",
   "Form_Organizer": "Organisator",
   "Form_Start": "Begin",
   "Form_End": "Einde",
-
   "Confirm_DeleteEvent": "Weet je zeker dat je deze afspraak wilt verwijderen?",
-
   "Home_Welcome_Name": "Hallo, {{name}} {{emoji}}",
   "Home_Display_More": "Toon meer",
   "Home_Cards_Button_Description_Plurial": "beschikbaar",
@@ -134,51 +116,40 @@
   "Home_Planned_None": "Je hebt geen lessen meer gepland voor vandaag",
   "Home_Planned_One": "Je hebt nog één les vandaag",
   "Home_Planned_Number": "Je hebt nog {{number}} lessen vandaag",
-
   "Home_Widget_NextCourses": "Volgende lessen",
   "Home_Widget_NewGrades": "Nieuwe cijfers",
   "Home_Widget_NewHomeworks": "Taken te doen",
-
   "Home_Widget_NoCourses": "Geen lessen gepland",
   "Home_Widget_NoCourses_Description": "Er zijn geen lessen gepland voor vandaag.",
-
   "Home_Cards_Button_Title": "Kaarten",
   "Home_Cards_Button_Description_None": "Geen kaarten",
   "Home_Cards_Button_Description_Singular": "Eén kaart",
   "Home_Cards_Button_Description_Number": "{{number}} kaarten",
-
   "Home_Chats_Button_Title": "Berichten",
   "Home_Chats_Button_Description_None": "Geen berichten",
   "Home_Chats_Button_Description_Singular": "Eén bericht",
   "Home_Chats_Button_Description_Number": "{{number}} berichten",
-
   "Home_Attendance_Title": "Afwezigheid",
   "Home_Attendance_Button_Description_None": "Niet afwezig",
   "Home_Attendance_Button_Description_Singular": "Eén afwezigheid",
   "Home_Attendance_Button_Description_Number": "{{number}} afwezigheden",
-
   "Home_Menu_Button_Title": "Menu",
   "Home_Menu_Button_Description": "Menu van de dag",
-
   "Tab_Calendar_Empty": "Geen afspraken gevonden",
   "Tab_Calendar_Empty_Description": "Voeg een afspraak toe of synchroniseer je agenda om te beginnen.",
-
   "Modal_Course_Title": "Mijn les",
   "Modal_Course_StartsIn": "Begint over",
   "Modal_Course_StartedAgo": "Geëindigd sinds",
   "Modal_Course_Ongoing": "Begonnen sinds",
   "Modal_Course_Group": "Groep",
   "Modal_Course_Group_Full": "Klas",
-
   "Modal_Course_Details": "Lesdetails",
   "Modal_Course_Teacher": "Docent",
   "Modal_Course_Room": "Lokaal",
   "Modal_Course_Duration": "Duur",
-
   "Modal_Course_Time": "Lestijden",
   "Modal_Course_Start": "Begin",
   "Modal_Course_End": "Einde",
-
   "Tasks_Search_Placeholder": "Zoek taken",
   "Tasks_LeftHomeworks_Title": "resterende taken",
   "Tasks_LeftHomeworks_Time": "deze week",
@@ -198,10 +169,8 @@
   "Task_OnlyShowUndone": "Voltooide taken",
   "Task_Show_Title": "Weergeven",
   "Settings_General": "Algemeen",
-
   "Latest_Grades": "Nieuwe cijfers",
   "Grades_Search_Placeholder": "Zoek een cijfer of vak",
-
   "Grades_Avg_Methods": "Berekeningsmethoden",
   "Grades_Avg_All_Title": "Algemeen gemiddelde",
   "Grades_Avg_All_Short": "Gemiddelde",
@@ -213,11 +182,9 @@
   "Grades_Avg_Subject_Description": "Berekent het gemiddelde op basis van vakgemiddelden",
   "Grades_Avg_Median_Title": "Mediaan",
   "Grades_Avg_Median_Short": "Mediaan",
-
   "Grades_Avg_More": "Meer informatie",
   "Grades_Avg_KnowMore": "Meer informatie",
   "Grades_Avg_KnowMore_Description": "Begrijp hoe het gemiddelde wordt berekend",
-
   "Grades_SubjectInfo": "Vakinformatie",
   "Grades_SubjectInfo_NbGrades": "{{number}} cijfer(s)",
   "SubjectInfo_StudentAverage_Label": "Gemiddelde leerling",
@@ -228,54 +195,41 @@
   "SubjectInfo_MaxAverage_Description": "Beste gemiddelde in de groep",
   "SubjectInfo_MinAverage_Label": "Laagste gemiddelde",
   "SubjectInfo_MinAverage_Description": "Laagste gemiddelde in de groep",
-
   "Grades_Semester": "Semester",
   "Grades_Trimester": "Trimester",
   "Grades_OutPeriod": "Buiten periode",
   "Grades_Year": "Jaar",
   "Grades_MockExamBac": "Proefexamen",
   "Grades_MockExamBrevet": "Proefexamen",
-
   "Grades_Method_AllGrades": "Alle vakken",
   "Grades_Method_Weighted": "Weging",
-
   "Grades_Sort": "Sorteren",
   "Grades_Sorting_Alphabetical": "Alfabetisch",
   "Grades_Sorting_Averages": "Gemiddelden",
   "Grades_Sorting_Date": "Datum",
-
   "Grades_Menu_SortBy": "Sorteren op",
   "Grades_Menu_AverageBy": "Gemiddelde per",
   "NoAverage": "Geen gemiddelde",
-
   "Grades_Empty_Title": "Geen cijfers",
   "Grades_Empty_Description": "Je hebt nog geen cijfers gekregen in deze periode.",
-
   "Grade_NoDescription": "Opdracht voor {{subject}}",
-
   "Grades_Tab_Subjects": "Vakken",
   "Grades_Tab_Latest": "Nieuwe cijfers",
-
   "Profile_Attendance_Title": "Aanwezigheid",
   "Profile_Attendance_Denominator_Single": "afwezigheid",
   "Profile_Attendance_Denominator_Plural": "afwezigheden",
-
   "Profile_Discussions_Title": "Berichten",
   "Profile_Discussions_Denominator_Single": "ongelezen",
   "Profile_Discussions_Denominator_Plural": "ongelezen",
-
   "Profile_News_Title": "Nieuws",
   "Profile_News_Denominator_Single": "nieuw",
   "Profile_News_Denominator_Plural": "nieuwe",
   "Profile_News_Open": "Openen",
   "Profile_News_Loading_Title": "Nieuws laden...",
   "Profile_News_Author_Unknown": "Onbekende auteur",
-
   "Profile_Cards_Title": "QR-code en kaarten",
-
   "Modal_Grades_Title": "Cijferdetails",
   "Modal_Grades_BestGrade": "Hoogste cijfer in de groep",
-
   "Grades_Details_Title": "Details",
   "Grades_NormalizedGrade_Title": "Cijfer op schaal van 20",
   "Grades_NormalizedGrade_Description": "Cijferwaarde omgerekend naar een schaal van 20",
@@ -289,19 +243,15 @@
   "Grades_Avg_Group_Short": "Groepsgem.",
   "Grades_Tab_Rank": "Rangschikking",
   "Grades_Tab_Rank_Description": "Positie in de groep",
-
   "News_Search_Placeholder": "Zoek nieuws",
   "News_Empty_Title": "Geen nieuws",
   "News_Empty_Description": "Er is geen nieuws gevonden voor jouw school.",
   "News_Search_NoResults": "Geen nieuws gevonden",
   "News_Search_NoResults_Description": "Geen nieuws gevonden voor jouw zoekopdracht.",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Een zacht en elegant thema",
-
   "News_Theme_Reading_Title": "Lezen",
   "News_Theme_Reading_Description": "Een thema ontworpen om te lezen",
-
   "Attendance_Hours_Missed": "Gemiste uren",
   "Attendance_Hours_Unjustified": "Ongeoorloofde uren",
   "Attendance_Missing": "Afwezigheden",
@@ -309,7 +259,6 @@
   "Attendance_NoReason": "Geen reden",
   "Attendance_NoEvent_Title": "Geen gebeurtenissen",
   "Attendance_NoEvent_Description": "Geen afwezigheid of te laat meldingen voor deze periode.",
-
   "Settings_Account_Title": "Mijn account",
   "Settings_Account_Description": "Mijn account",
   "Settings_Services_Title": "Gekoppelde accounts",
@@ -342,7 +291,6 @@
   "Settings_Language_Description": "Taal wijzigen",
   "Settings_Tabs_Title": "Tabbladen",
   "Settings_Tabs_Description": "Tabbladen in het menu verbergen",
-
   "Settings_Personalization_Title_Card": "Personnalisatie",
   "Settings_Personalization_Subtitle_Card": "Thema's, vakken...",
   "Settings_SubjectPersonalization_Title": "Vakken aanpassen",
@@ -365,7 +313,6 @@
   "Settings_About_Issue": "Bug melden",
   "Settings_About_Issue_Description": "Meld een probleem dat je bent tegengekomen",
   "Settings_About_Dependency_Version": "Versie van afhankelijkheden",
-
   "Alert_No_Technical": "Geen technische informatie beschikbaar.",
   "Alert_Auth_Error": "Authenticatiefout",
   "Alert_Auth_Bad_Creds": "De inloggegevens die je hebt ingevoerd zijn onjuist of je probeert in te loggen met een ouderaccount. Dit type account wordt nog niet ondersteund door Papillon.",
@@ -375,45 +322,36 @@
   "Alert_Invalid_Instance": "Papillon kan geen informatie ophalen van deze PRONOTE-omgeving, is deze nog geldig?",
   "Alert_No_Pos": "Kan locatie niet ophalen",
   "Alert_Connexion_Fail": "Verbinding mislukt",
-
   "Feature_Limited": "Beperkte functies",
   "Feature_Soon": "Binnenkort beschikbaar!",
   "Feature_Soon_Notification": "We werken hard om deze functie beschikbaar te maken in een toekomstige update.",
   "Feature_Add_Card": "Voeg een nieuwe kaart toe via het tabblad Profiel in de navigatiebalk",
-
   "Webview_Wait": "Even geduld a.u.b...",
-
   "Profile_QRCards": "QR-code en kaarten",
   "Profile_QRCards_Subtitle": "{{count}} kaarten",
   "Profile_Cards_Loading_History": "Transactiegeschiedenis laden",
   "Profile_Cards_Loading_History_Description": "Dit kan even duren...",
-
   "Settings_Cards_Banner_Title": "Kaarten",
   "Settings_Cantineen_Subtitle_Card": "Kantine, toegang",
   "Settings_Cards_Banner_Description": "Voeg je kantine- en vervoerskaarten toe voor snelle toegang op je telefoon via Papillon",
   "Settings_Cards_None_Title": "Geen kaarten",
   "Settings_Cards_Add_Button": "Toevoegen",
-
   "Settings_Cards_None_Description": "Voeg een kaart toe om je saldo te bekijken, je QR-code te scannen en meer",
   "Settings_Subjects_None_Title": "Geen vakken",
   "Settings_Subjects_None_Description": "Navigeer door de app om vakken aan te kunnen passen.",
   "Settings_Subjects_Reset_Title": "Resetten",
   "Settings_Subjects_Reset_Message": "Weet je zeker dat je alle vakken wilt resetten?",
   "Settings_Subjects_Reset_Button": "Resetten",
-
   "Settings_Donator": "Donateurs",
   "Settings_Donator_Description": "Bekijk de lijst met donateurs",
   "Settings_App_Version": "App-versie",
-
   "Profile_Cards_Scan_Orientation": "Richt de QR-code op de scanner",
   "Profile_Cards_No_Reservation": "Geen reservering",
   "Profile_Cards_No_Available_Reservation": "Het lijkt erop dat je voor vandaag niet kunt reserveren.",
   "Profile_Cards_History": "Geschiedenis",
   "Magic_Important": "Misschien belangrijk",
-
   "OnBoarding_Step": "Stap ",
   "OnBoarding_Step_Of": "van ",
-
   "Consent_Advanced_Title": "Ik wil Papillon helpen",
   "Consent_Advanced_Description": "We verzamelen gedetailleerde informatie over je gebruik.",
   "Consent_Required_Title": "Alleen het noodzakelijke",
@@ -429,25 +367,21 @@
   "Consent_Arg1": "Alleen om de app te verbeteren",
   "Consent_Arg2": "Anoniem en niet gekoppeld aan je identiteit",
   "Consent_Arg3": "We hebben geen toegang tot je accounts",
-
   "Changelog_Title": "Release-opmerkingen",
-
   "Tasks_Sorting_Methods_DueDate": "Inleverdatum",
   "Tasks_Sorting_Methods_Subject": "Vakken",
   "Tasks_Sorting_Methods_Done": "Niet voltooid",
   "Tasks_ThisWeek": "Deze week",
-
   "Task_Undone": "Niet voltooid",
   "Task_Done": "Voltooid",
-
   "Modal_Wallpaper_Title": "Achtergrond aanpassen",
   "Modal_Profile_Title": "Profiel aanpassen",
-
   "Modal_Task_Status": "Taakstatus",
   "Modal_Task_Description": "Taakbeschrijving",
   "Modal_Task_Attachments": "Bijlagen",
-
   "Today": "Vandaag",
   "Yesterday": "Gisteren",
-  "Tomorrow": "Morgen"
+  "Tomorrow": "Morgen",
+  "Alert_New_Password_Needed_Title": "Password reset required",
+  "Alert_New_Password_Needed_Description": "This account requires a password change. Please log in to the Edusign app to change it."
 }
