@@ -5,6 +5,7 @@ import { getWeekNumberFromDate } from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
+import { getPrepaServiceIds, isPrepaAccount } from "@/stores/account/prepaProviders";
 
 const widgetCacheStorage = createMMKV({ id: "home-widget-cache" });
 
@@ -75,19 +76,16 @@ export const useTimetableWidgetData = (options: { showCancelled?: boolean } = {}
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const account = accounts.find((a) => a.id === lastUsedAccount);
+  const services = useMemo(() => getPrepaServiceIds(account, "timetable"), [account]);
+  const providerKey = isPrepaAccount(account) ? ":" + services.join(",") : "";
   // Scoped by `showCancelled` so callers that keep cancelled courses don't seed
   // the ones that filter them out.
   const cacheKey = useMemo(
     () =>
       account?.id
-        ? `widget:timetable:${account.id}:${showCancelled ? "all" : "active"}`
+        ? `widget:timetable:${account.id}:${showCancelled ? "all" : "active"}${providerKey}`
         : undefined,
-    [account?.id, showCancelled]
-  );
-
-  const services = useMemo(() =>
-    account?.services?.map((service: { id: string }) => service.id) ?? [],
-    [account?.services]
+    [account?.id, providerKey, showCancelled]
   );
 
   const currentYear = now.getFullYear();

@@ -1,10 +1,13 @@
 import {
   CahierDePrepa as CahierDePrepaClient,
+  FetchTransport,
   type DocumentsPage,
   type RecentItem,
 } from "cahier-de-prepa";
+import { fetch } from "expo/fetch";
 
 import { mapRecentItemsToHomeworks } from "@/services/cahierDePrepa/mapping";
+import { cahierWeek, mapWeeklyAgenda } from "@/services/cahierDePrepa/agenda";
 import { Homework } from "@/services/shared/homework";
 import { News } from "@/services/shared/news";
 import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
@@ -67,6 +70,7 @@ export class CahierDePrepa implements SchoolServicePlugin {
     Capabilities.REFRESH,
     Capabilities.NEWS,
     Capabilities.HOMEWORK,
+    Capabilities.TIMETABLE,
   ];
   authData: Auth = {};
   session: CahierDePrepaClient | undefined;
@@ -92,10 +96,23 @@ export class CahierDePrepa implements SchoolServicePlugin {
       throw new Error("Cahier de Prépa credentials are incomplete.");
     }
 
-    const client = new CahierDePrepaClient(normalizeCahierDePrepaUrl(baseUrl));
+    const transport = new FetchTransport(undefined, async (input, init) => {
+      const response = await fetch(input.toString(), { ...init, credentials: "omit" });
+      if (init?.method === "POST") {
+        const payload = await response.clone().json().catch(() => undefined);
+        const message = typeof payload?.message === "string" ? payload.message : "";
+        console.log("[PREPA-DIAG] Cahier POST", response.status,
+          payload?.etat === "ok" ? "accepted" : /mot de passe/i.test(message) ? "credentials rejected" :
+            /accès non autorisé/i.test(message) ? "session rejected" : /aucune action/i.test(message) ? "login not handled" : "other",
+          Boolean(response.headers.get("set-cookie")));
+      }
+      return response;
+    });
+    const client = new CahierDePrepaClient(normalizeCahierDePrepaUrl(baseUrl), transport);
     try {
       await client.login(username, password);
-    } catch {
+    } catch (error) {
+      console.log("[PREPA-DIAG] Cahier login", error instanceof Error ? error.name + ": " + error.message : "unknown");
       throw new Error("Cahier de Prépa authentication failed.");
     }
     this.authData = credentials;
@@ -126,6 +143,14 @@ export class CahierDePrepa implements SchoolServicePlugin {
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
     const recent = await (await this.getSession()).recent.get();
     return mapRecentItemsToHomeworks(recent.items, this.accountId, weekNumber);
+  }
+
+  async getWeeklyTimetable(_weekNumber: number, date: Date) {
+    const client = await this.getSession();
+    const response = await client.session.request("agenda", {}, { semaine: cahierWeek(date) });
+    const result = mapWeeklyAgenda(await response.text(), date, this.accountId);
+    console.log("[PREPA-DIAG] Cahier agenda", cahierWeek(date), result.flatMap(day => day.courses).length);
+    return result;
   }
 
   async getDocuments(folderId?: string): Promise<DocumentsPage> {

@@ -15,10 +15,18 @@ export class PrepaLogin {
   readonly services: ServiceAccount[] = [];
   profile?: Profile;
 
-  constructor(readonly selection: PrepaServiceSelection) {
+  constructor(
+    readonly selection: PrepaServiceSelection,
+    linked: readonly ServiceAccount[] = [],
+    readonly returnTo:
+      | "/(onboarding)/prepa"
+      | "/(settings)/prepaProviders" = "/(onboarding)/prepa"
+  ) {
     this.providers = [
       ...new Set([selection.timetable, selection.grades, selection.homework]),
-    ];
+    ].filter(
+      provider => !linked.some(service => service.serviceId === provider)
+    );
   }
 
   get next(): PrepaProvider | undefined {

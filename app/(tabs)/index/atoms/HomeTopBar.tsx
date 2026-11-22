@@ -79,6 +79,7 @@ const HomeTopBar = ({ height = 56, loading }: { height?: number, loading?: boole
             <View>
               <HomeTopBarButton
                 icon="palette"
+                label={t("Modal_Wallpaper_Title")}
                 route="/(modals)/wallpaper"
               />
               <Tip
@@ -92,6 +93,7 @@ const HomeTopBar = ({ height = 56, loading }: { height?: number, loading?: boole
             </View>
             <HomeTopBarButton
               icon="gears"
+              label={t("Tab_Settings")}
               route="/(settings)/settings"
             />
           </Stack>

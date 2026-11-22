@@ -1,22 +1,22 @@
 import React from 'react';
-import { Pressable, TouchableNativeFeedback, View } from 'react-native';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { Pressable } from 'react-native';
 import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Stack from '@/ui/components/Stack';
-import { Link } from 'expo-router';
+import { Link, type Href } from 'expo-router';
 
 interface HomeTopBarButtonProps {
   icon: string;
-  route?: string;
+  label: string;
+  route: Href;
 }
 
-const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route }) => {
+const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, label, route }) => {
   return (
-    <Link asChild href={route ?? "/(features)/soon"}>
-    <TouchableNativeFeedback useForeground>
-      <View
+    <Link asChild href={route}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        android_ripple={{ color: '#FFFFFF40', foreground: true }}
         style={{
           width: 42,
           height: 42,
@@ -30,8 +30,7 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route }) => {
         <Icon size={26} fill='white'>
           <Papicons name={icon} />
         </Icon>
-      </View>
-    </TouchableNativeFeedback>
+      </Pressable>
     </Link>
   );
 };

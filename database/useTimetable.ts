@@ -76,18 +76,19 @@ export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, dat
   return timetable;
 }
 
-export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
+export async function addCourseDayToDatabase(courses: SharedCourseDay[], refreshedIds: string[] = []) {
   const db = getDatabaseInstance();
   await safeWrite(
     db,
     async () => {
       for (const day of courses) {
         const dayTimestamp = day.date.getTime();
-        const oneDayMs = 24 * 60 * 60 * 1000;
+        const nextDay = new Date(day.date);
+        nextDay.setDate(nextDay.getDate() + 1);
 
         const dbCourses = await db.get<Course>('courses')
           .query(
-            Q.where('from', Q.between(dayTimestamp, dayTimestamp + oneDayMs))
+            Q.where('from', Q.between(dayTimestamp, nextDay.getTime() - 1))
           )
           .fetch();
 
@@ -99,7 +100,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
           }).flat()
         );
         const refreshedServiceIds = new Set(
-          day.courses.map(course => course.createdByAccount)
+          [...refreshedIds, ...day.courses.map(course => course.createdByAccount)]
         );
 
         const coursesToDelete = dbCourses.filter(

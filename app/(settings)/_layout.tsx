@@ -41,6 +41,10 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
+          name="prepaProviders"
+          options={{ headerTitle: t("Settings_Prepa_Providers"), presentation: "modal" }}
+        />
+        <Stack.Screen
           name="accounts"
           options={{
             headerTitle: t("Settings_Accounts_Title"),

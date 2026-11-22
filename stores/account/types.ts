@@ -16,6 +16,7 @@ export interface AccountsStorage {
   setLastUsedAccount: (accountId: string) => void;
   updateServiceAuthData: (serviceId: string, authData: Auth) => void;
   addServiceToAccount: (accountId: string, service: ServiceAccount) => void;
+  setPrepaServices: (accountId: string, selection: PrepaServiceSelection, services: ServiceAccount[]) => void;
   removeServiceFromAccount: (serviceId: string) => void;
   setAccountName: (
     accountId: string,

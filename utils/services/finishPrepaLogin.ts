@@ -11,7 +11,8 @@ export function finishPrepaLogin(
   service: ServiceAccount,
   profile?: Parameters<PrepaLogin["add"]>[1]
 ) {
-  if (pendingPrepaLogins.get(id)?.add(service, profile)) {
-    router.dismissTo("/(onboarding)/prepa" as never);
+  const flow = pendingPrepaLogins.get(id);
+  if (flow?.add(service, profile)) {
+    router.dismissTo(flow.returnTo as never);
   }
 }
