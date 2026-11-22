@@ -1,54 +1,22 @@
 import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
-import * as WebBrowser from "expo-web-browser";
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import packageJson from '@/package.json';
-import Icon from '@/ui/components/Icon';
 import Stack from '@/ui/components/Stack';
-import Typography from '@/ui/components/Typography';
-import { useSettingsStore } from '@/stores/settings';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
-import { Papicons } from '@getpapillon/papicons';
 
 import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
 import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
-import { useTheme } from "expo-router/react-navigation";
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
-import { ListTouchable } from '@/ui/new/List';
 
 const HomeHeader = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const theme = useTheme();
-  const { colors } = theme;
   const { availableCanteenCards, attendancesPeriods, attendances, absencesCount, news } = useHomeHeaderData();
-  const settingsStore = useSettingsStore(state => state.personalization);
-  const mutateProperty = useSettingsStore(state => state.mutateProperty);
-  const currentVersion = packageJson.version;
-  const releaseNotesUrl = `https://papillon.bzh/release-notes/${currentVersion}`;
   const currentAttendancePeriod = attendancesPeriods.length > 0
     ? getCurrentPeriod(attendancesPeriods)
     : undefined;
-
-  useEffect(() => {
-    const installedVersion = settingsStore.installedVersion;
-    if (!installedVersion) {
-      mutateProperty("personalization", {
-        installedVersion: currentVersion,
-        releaseNotesSeenForVersion: currentVersion,
-      });
-      return;
-    }
-    if (installedVersion !== currentVersion) {
-      mutateProperty("personalization", { installedVersion: currentVersion });
-    }
-  }, [currentVersion, mutateProperty, settingsStore.installedVersion]);
-
-  const showReleaseNotesBanner = settingsStore.releaseNotesSeenForVersion !== currentVersion;
 
   const HomeHeaderButtons: HomeHeaderButtonItem[] = useMemo(() => [
     {
@@ -114,48 +82,6 @@ const HomeHeader = () => {
           </View>
         </Stack>
       </LiquidGlassContainer>
-
-      {showReleaseNotesBanner && (
-        <ListTouchable
-          onPress={() =>
-            WebBrowser.openBrowserAsync(releaseNotesUrl, {
-              presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
-            })
-          }
-        >
-          <Stack card style={{ marginTop: 12, elevation: 2, backgroundColor: (!theme.dark && Platform.OS === 'android') ? '#FFF' : theme.colors.item, overflow: Platform.OS === 'android' ? 'hidden' : 'visible' }} padding={0}>
-            <Stack padding={[12, 10]} gap={8} direction='horizontal'>
-              <Papicons name="sparkles" size={24} color={colors.tint} />
-              
-              <Stack inline flex style={{ marginRight: 32 }}>
-                <Typography variant='title'>
-                  {t("Home_Release_Notes_Banner", { version: currentVersion })}
-                </Typography>
-                <Typography variant='body1' color="secondary">
-                  {t("Home_Release_Notes_Banner_Description")}
-                </Typography>
-              </Stack>
-              
-              <ListTouchable
-                hitSlop={10}
-                onPress={(event) => {
-                  event.stopPropagation();
-                  mutateProperty("personalization", { releaseNotesSeenForVersion: currentVersion });
-                }}
-              >
-                <View 
-                  style={{ width: 24, height: 24, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: colors.text + '11', position: "absolute", right: 0 }}
-                >
-                  <Icon size={16}>
-                    < Papicons name="Cross" />
-                  </Icon>
-                </View>
-              </ListTouchable>
-            </Stack>
-          </Stack>
-        </ListTouchable>
-      )}
-
     </View>
   );
 };

@@ -1,47 +1,33 @@
 import {
   AccountKind,
-  AuthenticateError,
   BusyPageError,
   createSessionHandle,
   loginToken,
   PageUnavailableError,
+  RefreshInformation,
   SecurityError,
   SessionHandle,
-  SuspendedIPError,
   TokenAuthenticationParams,
   UnreachableError,
 } from "@blockshub/pawnote-lts";
 
+import { runAuthRefresh } from "@/services/auth/coordinator";
+import { CredentialsMissingError } from "@/services/auth/errors";
+import { AuthTracker } from "@/services/auth/types";
 import { SecurityChallengeError } from "@/services/errors/SecurityChallengeError";
-import { useAccountStore } from "@/stores/account";
+import { classifyPronoteError } from "@/services/pronote/errors";
 import { Auth } from "@/stores/account/types";
 import { customFetcher } from "@/utils/pronote/fetcher";
-import { warn } from "@/utils/logger/logger";
 
 const MAX_ATTEMPTS = 2;
 const RETRY_BASE_DELAY_MS = 2000;
-const SUSPENSION_COOLDOWN_MS = 30 * 60 * 1000;
 
-let suspendedUntil = 0;
-
-export const getPronoteSuspensionRemaining = (): number =>
-  Math.max(0, suspendedUntil - Date.now());
+type PronoteRefresh = { auth: Auth, session: SessionHandle };
 
 const isSafeToRetry = (e: unknown): boolean =>
   e instanceof UnreachableError ||
   e instanceof BusyPageError ||
   e instanceof PageUnavailableError;
-
-const readStoredAuth = (serviceId: string, fallback: Auth): Auth => {
-  for (const account of useAccountStore.getState().accounts) {
-    const service = account.services.find(s => s.id === serviceId);
-    if (service) {
-      return service.auth;
-    }
-  }
-
-  return fallback;
-};
 
 const buildTokenParams = (stored: Auth, deviceUUID: string): TokenAuthenticationParams => {
   const url = String(
@@ -51,7 +37,7 @@ const buildTokenParams = (stored: Auth, deviceUUID: string): TokenAuthentication
   const username = String(stored.additionals?.["username"] || "");
 
   if (!url || !token || !username) {
-    throw new AuthenticateError(
+    throw new CredentialsMissingError(
       "Stored PRONOTE credentials are incomplete, the account has to be linked again."
     );
   }
@@ -66,62 +52,73 @@ const buildTokenParams = (stored: Auth, deviceUUID: string): TokenAuthentication
   } as TokenAuthenticationParams;
 };
 
-export async function refreshPronoteAccount(
+const toAuth = (refresh: RefreshInformation, deviceUUID: string): Auth => ({
+  accessToken: refresh.token,
+  refreshToken: refresh.token,
+  additionals: {
+    ...refresh,
+    instanceURL: refresh.url,
+    deviceUUID,
+  },
+});
+
+// PRONOTE tokens are single-use: the coordinator makes every caller share one login.
+export function refreshPronoteAccount(
   accountId: string,
   credentials: Auth
-): Promise<{auth: Auth, session: SessionHandle}> {
-  const suspensionRemaining = getPronoteSuspensionRemaining();
-  if (suspensionRemaining > 0) {
-    warn(
-      `Pronote authentication is on cooldown for ${Math.ceil(suspensionRemaining / 1000)}s, not sending a new login.`
-    );
-    throw new SuspendedIPError();
-  }
+): Promise<PronoteRefresh> {
+  return runAuthRefresh(
+    accountId,
+    credentials,
+    { rotatesCredential: true, classifyError: classifyPronoteError },
+    async tracker => {
+      let lastError: unknown;
 
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-    const handle = createSessionHandle(customFetcher);
-    const stored = attempt === 0 ? credentials : readStoredAuth(accountId, credentials);
-    const deviceUUID = String(stored.additionals?.["deviceUUID"] || "");
-    const loginParams = buildTokenParams(stored, deviceUUID);
-
-    try {
-      const refresh = await loginToken(handle, loginParams);
-
-      const auth: Auth = {
-        accessToken: refresh.token,
-        refreshToken: refresh.token,
-        additionals: {
-          ...refresh,
-          instanceURL: refresh.url,
-          deviceUUID,
-        },
-      };
-
-      useAccountStore.getState().updateServiceAuthData(accountId, auth);
-
-      return { auth, session: handle };
-    } catch (e) {
-      if (e instanceof SecurityError) {
-        throw new SecurityChallengeError(e, handle, deviceUUID);
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        try {
+          return await loginWithStoredToken(tracker);
+        } catch (e) {
+          lastError = e;
+          if (!isSafeToRetry(e)) {
+            throw e;
+          }
+          if (attempt < MAX_ATTEMPTS - 1) {
+            await new Promise(r => setTimeout(r, RETRY_BASE_DELAY_MS * 4 ** attempt));
+          }
+        }
       }
 
-      if (e instanceof SuspendedIPError) {
-        suspendedUntil = Date.now() + SUSPENSION_COOLDOWN_MS;
-        warn("Pronote suspended this IP, pausing every authentication for 30 minutes.");
-        throw e;
-      }
-
-      lastError = e;
-      if (!isSafeToRetry(e)) {
-        throw e;
-      }
-      if (attempt < MAX_ATTEMPTS - 1) {
-        await new Promise(r => setTimeout(r, RETRY_BASE_DELAY_MS * 4 ** attempt));
-      }
+      throw lastError;
     }
-  }
+  );
+}
 
-  throw lastError;
+async function loginWithStoredToken(tracker: AuthTracker): Promise<PronoteRefresh> {
+  const handle = createSessionHandle(customFetcher);
+  const stored = tracker.readCredentials();
+  const deviceUUID = String(stored.additionals?.["deviceUUID"] || "");
+  const loginParams = buildTokenParams(stored, deviceUUID);
+
+  try {
+    const refresh = await loginToken(handle, loginParams, {
+      onCredentialSent: () => tracker.credentialSent(stored),
+      onAuthenticationSent: () => tracker.awaitingNewCredential(),
+      // Saved before ParametresUtilisateur: if that request fails, the next
+      // login still has a valid token.
+      onTokenIssued: information => {
+        if (information.token) {
+          tracker.credentialReceived(toAuth(information, deviceUUID));
+        }
+      },
+    });
+
+    const auth = toAuth(refresh, deviceUUID);
+    tracker.credentialReceived(auth);
+    return { auth, session: handle };
+  } catch (e) {
+    if (e instanceof SecurityError) {
+      throw new SecurityChallengeError(e, handle, deviceUUID);
+    }
+    throw e;
+  }
 }

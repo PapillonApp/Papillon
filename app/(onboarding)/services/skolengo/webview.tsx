@@ -1,5 +1,5 @@
 import * as Linking from "expo-linking";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, KeyboardAvoidingView } from "react-native";
@@ -13,7 +13,6 @@ import uuid from "@/utils/uuid/uuid";
 import OnboardingWebView from "../../components/OnboardingWebView";
 
 export default function WebViewScreen() {
-  const navigation = useNavigation();
   const [loginURL, setLoginURL] = useState<string | undefined>(undefined);
   const { ref } = useLocalSearchParams();
   const parsedRef = typeof ref === "string" ? JSON.parse(ref) : {};
@@ -79,21 +78,14 @@ export default function WebViewScreen() {
       store.addAccount(account);
       store.setLastUsedAccount(id);
 
-      const parent = navigation.getParent();
-      if (parent) {
-        parent.goBack();
-        parent.getParent()?.goBack();
-      }
-      router.back();
-      router.dismissAll();
-      router.push("/");
+      router.dismissTo("/");
     } catch (err) {
       consumedCodeRef.current = null;
       error("[Skolengo] Failed to finalize login: " + String(err));
       Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
     }
     return false;
-  }, [navigation, t]);
+  }, [t]);
 
   useEffect(() => {
     const handleDeepLink = ({ url }: { url: string }) => {

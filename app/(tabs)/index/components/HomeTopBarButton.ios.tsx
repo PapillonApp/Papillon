@@ -22,7 +22,7 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, route }) => {
         borderRadius: 30,
       }}
     >
-      <Link asChild prefetch href={route ?? "/(features)/soon"}>
+      <Link asChild href={route ?? "/(features)/soon"}>
       <Pressable
         style={{
           width: '100%',

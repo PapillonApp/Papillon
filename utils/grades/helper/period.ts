@@ -1,7 +1,7 @@
 import { Period } from "@/services/shared/grade";
-import { error, warn } from "@/utils/logger/logger";
+import { warn } from "@/utils/logger/logger";
 
-export function getCurrentPeriod(periods: Period[]): Period {
+export function getCurrentPeriod(periods: Period[]): Period | undefined {
   const now = new Date().getTime();
   const excludedNames = [
     "Bac blanc",
@@ -35,6 +35,6 @@ export function getCurrentPeriod(periods: Period[]): Period {
     return periods[0];
   }
 
-  error("Unable to find the current period and unable to fallback...");
-  return periods[0];
+  // No periods yet (fresh account, nothing synced): a normal state, callers handle undefined.
+  return undefined;
 }

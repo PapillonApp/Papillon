@@ -1,7 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "expo-router/react-navigation";
 import { useRouter } from "expo-router";
-import { Github, Languages, Users } from "lucide-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Linking } from "react-native";
@@ -24,7 +23,6 @@ export const Team = [
     leading: (
       <Avatar
         size={40}
-        shape="square"
         initials={getInitials("Vince Linise")}
         imageUrl="https://avatars.githubusercontent.com/u/32978709?v=4"
       />
@@ -38,7 +36,6 @@ export const Team = [
     leading: (
       <Avatar
         size={40}
-        shape="square"
         initials={getInitials("Lucas Lavajo")}
         imageUrl="https://avatars.githubusercontent.com/u/68423470?v=4"
       />
@@ -52,7 +49,6 @@ export const Team = [
     leading: (
       <Avatar
         size={40}
-        shape="square"
         initials={getInitials("Raphaël Schröder")}
         imageUrl="https://avatars.githubusercontent.com/u/41128238?v=4"
       />
@@ -66,7 +62,6 @@ export const Team = [
     leading: (
       <Avatar
         size={40}
-        shape="square"
         initials={getInitials("Tom Hélière")}
         imageUrl="https://avatars.githubusercontent.com/u/135361669?v=4"
       />
@@ -80,7 +75,6 @@ export const Team = [
     leading: (
       <Avatar
         size={40}
-        shape="square"
         initials={getInitials("Rémy Godet")}
         imageUrl="https://avatars.githubusercontent.com/u/77058107?v=4"
       />
@@ -94,7 +88,6 @@ export const Team = [
     leading: (
       <Avatar
         size={40}
-        shape="square"
         initials={getInitials("Mael Duret")}
         imageUrl="https://avatars.githubusercontent.com/u/96339570?v=4"
       />
@@ -138,19 +131,19 @@ export default function SettingsAbout() {
     {
       title: t("Settings_About_Crowdin"),
       description: t("Settings_About_Crowdin_Description"),
-      leading: <Languages />,
+      leading: <Papicons name="Globe" />,
       onPress: () => Linking.openURL("https://crowdin.com/project/papillonapp"),
     },
     {
       title: t("Settings_About_Github"),
       description: t("Settings_About_Github_Description"),
-      leading: <Github />,
+      leading: <Papicons name="Code" />,
       onPress: () => Linking.openURL("https://github.com/PapillonApp/Papillon"),
     },
     {
       title: t("Settings_About_Contributors"),
       description: t("Settings_About_Contributors_Description"),
-      leading: <Users />,
+      leading: <Papicons name="User" />,
       onPress: () => router.push("/(settings)/contributors"),
     },
   ];
@@ -212,7 +205,7 @@ export default function SettingsAbout() {
         {Team.map((item, index) => (
           <List.Item key={index} onPress={item.onPress}>
             <List.Leading>
-              <Icon>{item.leading}</Icon>
+              {item.leading}
             </List.Leading>
 
             <Typography variant="title">{item.title}</Typography>

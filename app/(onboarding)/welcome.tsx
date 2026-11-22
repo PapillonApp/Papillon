@@ -1,5 +1,5 @@
-import { useFocusEffect, useIsFocused, useTheme } from "expo-router/react-navigation";
-import { useRouter } from "expo-router";
+import { type ParamListBase, useFocusEffect, useIsFocused, useTheme } from "expo-router/react-navigation";
+import { type NativeStackNavigationProp, useNavigation, useRouter } from "expo-router";
 import * as WebBrowser from 'expo-web-browser';
 import React from "react";
 import { Image, StatusBar, View } from "react-native";
@@ -14,13 +14,25 @@ import Typography from "@/ui/new/Typography";
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { LinearGradient } from "expo-linear-gradient";
+import * as SplashScreen from "expo-splash-screen";
 import { useTranslation } from "react-i18next";
+
+import { consumeSecurityLogoutNotice } from "@/stores/global/encryption";
 
 export default function Welcome() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const router = useRouter();
+  const navigation = useNavigation();
   const { t } = useTranslation();
+
+  // Without an account, the splash stays up until the redirect from home ends.
+  React.useLayoutEffect(() => {
+    const onboardingNavigation = navigation.getParent<NativeStackNavigationProp<ParamListBase>>();
+    return onboardingNavigation?.addListener("transitionEnd", event => {
+      if (!event.data.closing) SplashScreen.hideAsync();
+    });
+  }, [navigation]);
 
   const openHelpWebPage = () => {
     WebBrowser.openBrowserAsync("https://docs.papillon.bzh/support", {
@@ -37,6 +49,22 @@ export default function Welcome() {
   const openDevMenu = () => {
     router.push("/devmode");
   }
+
+  React.useEffect(() => {
+    if (!consumeSecurityLogoutNotice()) {return;}
+    router.navigate({
+      pathname: "/alert",
+      params: {
+        data: JSON.stringify({
+          title: t("SecurityLogout_Title"),
+          description: t("SecurityLogout_Description"),
+          icon: "Lock",
+          color: "#0E7CCB",
+          customButton: { label: t("SecurityLogout_Button") },
+        }),
+      },
+    });
+  }, []);
 
   const player = useVideoPlayer({
       assetId: require('@/assets/video/welcome.mp4'),

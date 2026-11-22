@@ -38,6 +38,17 @@ export default function Layout() {
           ...androidHeaderProps,
         }}
       />
+      <Stack.Screen
+        name="subject/[id]"
+        options={{
+          headerShown: true,
+          headerTitle: t('Grades_SubjectInfo'),
+          headerLargeTitle: false,
+          headerTransparent: true,
+          presentation: 'card',
+          ...androidHeaderProps,
+        }}
+      />
     </Stack>
   );
 }

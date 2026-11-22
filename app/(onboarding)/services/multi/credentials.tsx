@@ -1,7 +1,7 @@
 
 import { useTheme, useHeaderHeight } from "expo-router/react-navigation";
 import { authWithCredentials } from 'esup-multi.js';
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -33,7 +33,6 @@ const ANIMATION_DURATION = 170;
 export default function MultiLoginWithCredentials() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  const navigation = useNavigation();
 
   const alert = useAlert();
   const { t } = useTranslation();
@@ -108,19 +107,7 @@ export default function MultiLoginWithCredentials() {
 
       setIsLoggingIn(false);
 
-      const parent = navigation.getParent();
-                    if (parent) {
-                      parent.goBack();
-                      
-                      const parentsParent = parent.getParent();
-                      if (parentsParent) {
-                        parentsParent.goBack();
-                      }
-                    }
-            
-                    router.back();
-                    router.dismissAll();
-                    return router.push("/");
+      return router.dismissTo("/");
     } catch (error) {
       if (error instanceof Error) {
         alert.showAlert({

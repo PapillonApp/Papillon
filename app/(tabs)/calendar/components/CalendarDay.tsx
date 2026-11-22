@@ -44,7 +44,11 @@ function areCoursesEquivalent(a: SharedCourse[], b: SharedCourse[]) {
       left.from?.getTime?.() !== right.from?.getTime?.() ||
       left.to?.getTime?.() !== right.to?.getTime?.() ||
       left.status !== right.status ||
-      left.customStatus !== right.customStatus
+      left.customStatus !== right.customStatus ||
+      left.room !== right.room ||
+      left.teacher !== right.teacher ||
+      left.subject !== right.subject ||
+      left.backgroundColor !== right.backgroundColor
     ) {
       return false;
     }

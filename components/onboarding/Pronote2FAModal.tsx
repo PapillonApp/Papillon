@@ -75,7 +75,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         store.updateServiceAuthData(relinkServiceId, auth)
         store.setLastUsedAccount(relinkAccountId)
         setChallengeModalVisible(false)
-        return router.replace("/");
+        return router.dismissTo("/");
       }
 
       const account = {

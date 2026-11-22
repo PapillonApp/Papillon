@@ -6,10 +6,12 @@ import { Papicons } from "@getpapillon/papicons";
 import * as PapillonKit from "@getpapillon/papillonkit";
 
 import packageJson from "@/package.json";
+import AuthStateDetails from "@/components/Devmode/AuthStateDetails";
 import Disclosure from "@/components/Devmode/Disclosure";
 import { database } from "@/database";
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import { showAllTips, tipsAreSupported } from "@/modules/papillon-tips";
+import { clearAuthState } from "@/services/auth/coordinator";
 import { attachMockDataToCurrentAccount } from "@/services/mock/account";
 import { getManager, initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
@@ -26,6 +28,7 @@ import { confirmDestructive, useDevAction } from "@/utils/devmode/actions";
 import { fillStoreFromServices } from "@/utils/devmode/fillStore";
 import { warn } from "@/utils/logger/logger";
 import { MAGIC_AVAILABLE } from "@/utils/magic/tflite";
+import { getServiceName } from "@/utils/services/helper";
 import { initializeTransport } from "@/utils/transport";
 
 const SCHOOL_ADDRESS = "106 Rue de la Pompe, 75016 Paris";
@@ -140,6 +143,20 @@ export default function DevMode() {
         tips.reset();
         tips.requestDatastoreReset();
       }
+    );
+
+  const resetAuthState = (serviceId: string, serviceName: string) =>
+    confirmDestructive(
+      "Réinitialiser l'état d'auth",
+      `L'état enregistré de ${serviceName} est effacé, y compris une attente ou un blocage en cours, puis une reconnexion est lancée. Le compte reste lié.`,
+      "Réinitialiser",
+      () =>
+        run(`auth-${serviceId}`, async () => {
+          clearAuthState(serviceId);
+          if (account) {
+            await initializeAccountManager(account.id, { force: true });
+          }
+        })
     );
 
   const testTransport = (address?: string) =>
@@ -279,6 +296,26 @@ export default function DevMode() {
             </List.Trailing>
           </List.Item>
         </List.Section>
+
+        {account && account.services.length > 0 ? (
+          <List.Section>
+            <List.SectionTitle>
+              <Papicons name="User" color={muted} />
+              <List.Label>État d'auth</List.Label>
+            </List.SectionTitle>
+            {account.services.map(service => (
+              <List.Item key={service.id} onPress={() => resetAuthState(service.id, getServiceName(service.serviceId))}>
+                <Typography variant="action">{getServiceName(service.serviceId)}</Typography>
+                <AuthStateDetails serviceId={service.id} />
+                {running === `auth-${service.id}` ? (
+                  <List.Trailing>
+                    <ActivityIndicator />
+                  </List.Trailing>
+                ) : null}
+              </List.Item>
+            ))}
+          </List.Section>
+        ) : null}
 
         <List.Section>
           <List.SectionTitle>
