@@ -23,10 +23,11 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
+import { finishPrepaLogin } from "@/utils/services/finishPrepaLogin";
 
 import { PlatformPressable } from "@/app/(onboarding)/services/ed/credentials";
 
-export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId, relinkAccountId, relinkServiceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string, relinkAccountId?: string, relinkServiceId?: string }) {
+export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId, relinkAccountId, relinkServiceId, prepaLoginId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string, relinkAccountId?: string, relinkServiceId?: string, prepaLoginId?: string }) {
   const { t } = useTranslation();
   const { colors, dark } = useTheme();
   const alert = useAlert();
@@ -67,6 +68,14 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
           username: refresh.username,
           deviceUUID: deviceId
         }
+      }
+
+      if (prepaLoginId) {
+        const now = new Date().toISOString();
+        finishPrepaLogin(prepaLoginId, {
+          id: deviceId, auth, serviceId: Services.PRONOTE, createdAt: now, updatedAt: now,
+        }, { firstName, lastName, schoolName, className });
+        return;
       }
 
       const store = useAccountStore.getState()
@@ -194,6 +203,12 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
       name: "check",
       icon: <Papicons name="Check" fill={colors.text} />,
       onPress: () => {
+        if (prepaLoginId) {
+          if (pinCode.length === 4) {
+            void solveDoubleAuth(pinCode);
+          }
+          return;
+        }
         solveDoubleAuth(pinCode);
 
         if (!doubleAuthSession || !doubleAuthError || pinCode.length < 4) { return; }

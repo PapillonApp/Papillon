@@ -58,6 +58,7 @@ export interface Account {
   customisation?: CustomisationStorage;
   transport?: TransportStorage;
   services: ServiceAccount[];
+  prepaServices?: PrepaServiceSelection;
   createdAt: string;
   updatedAt: string;
 }
@@ -135,4 +136,8 @@ export enum Services {
   // 9 is reserved: it was the removed Lannion service, and accounts still using
   // it are signed out (REMOVED_SERVICE_ID in useHomeData). Never reuse it.
   MOCK_DATA = 10,
+  PREPA_PLUS = 11,
 }
+
+export type PrepaProvider = Services.PRONOTE | Services.CAHIER_DE_PREPA | Services.PREPA_PLUS;
+export type PrepaServiceSelection = Record<"timetable" | "grades" | "homework", PrepaProvider>;

@@ -84,6 +84,7 @@ export interface SchoolServicePlugin {
     | Appscho
     | MockData
     | import("@/services/cahierDePrepa").CahierDePrepa
+    | import("@/services/prepaPlus").PrepaPlus
   >;
   isTokenValid?: () => boolean;
   getKids?: () => Kid[];

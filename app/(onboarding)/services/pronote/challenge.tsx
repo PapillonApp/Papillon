@@ -35,6 +35,7 @@ export default function PronoteChallengeScreen() {
       deviceId={challenge.deviceUUID}
       relinkAccountId={challenge.relinkAccountId}
       relinkServiceId={challenge.relinkServiceId}
+      prepaLoginId={challenge.prepaLoginId}
     />
   );
 }

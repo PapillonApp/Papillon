@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView, Platform } from "react-native";
@@ -71,6 +71,8 @@ export default function PronoteLoginMethod() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const { prepaLoginId } = useLocalSearchParams<{ prepaLoginId?: string }>();
+  const prepaParams = prepaLoginId ? { prepaLoginId } : undefined;
   const { t } = useTranslation();
 
   const [city, setCity] = useState<string>("");
@@ -117,7 +119,7 @@ export default function PronoteLoginMethod() {
   }, [debouncedCity]);
 
   const selectCity = (city: School) => {
-    navigation.navigate(`select`, { city: city });
+    navigation.navigate(`select`, { city, ...prepaParams });
   }
 
   return (
@@ -135,7 +137,7 @@ export default function PronoteLoginMethod() {
         animated
       >
         {cities.length === 0 && !loading && (
-          <List.Item animated onPress={() => navigation.navigate("qrcode")}>
+          <List.Item animated onPress={() => navigation.navigate("qrcode", prepaParams)}>
             <List.Leading>
               <Icon><Papicons name="qrcode" /></Icon>
             </List.Leading>
@@ -147,7 +149,7 @@ export default function PronoteLoginMethod() {
         )}
 
         {cities.length === 0 && !loading && (
-          <List.Item animated onPress={() => navigation.navigate("url")}>
+          <List.Item animated onPress={() => navigation.navigate("url", prepaParams)}>
             <List.Leading>
               <Icon><Papicons name="link" /></Icon>
             </List.Leading>

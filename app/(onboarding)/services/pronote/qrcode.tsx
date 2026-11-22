@@ -3,7 +3,7 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { useTheme } from "expo-router/react-navigation";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   AuthenticateError,
   createSessionHandle,
@@ -30,11 +30,13 @@ import { URLToBase64 } from "@/utils/attachments/helper";
 import { setPendingPronoteChallenge } from "@/utils/pronote/challenge";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
+import { finishPrepaLogin } from "@/utils/services/finishPrepaLogin";
 import uuid from "@/utils/uuid/uuid";
 import SafeHorizontalView from "@/ui/components/SafeHorizontalView";
 import * as Device from "expo-device";
 
 export default function PronoteLoginWithQR() {
+  const { prepaLoginId } = useLocalSearchParams<{ prepaLoginId?: string }>();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -98,8 +100,10 @@ export default function PronoteLoginWithQR() {
               context.initialUsername,
             );
           } else {
-            setPendingPronoteChallenge({ session, error, deviceUUID: accountID });
+            setPendingPronoteChallenge({ session, error, deviceUUID: accountID, prepaLoginId });
+            setLoadingModalVisible(false);
             router.push("/(onboarding)/services/pronote/challenge");
+            return;
           }
         }
       }
@@ -115,6 +119,26 @@ export default function PronoteLoginWithQR() {
         pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
       }
 
+      const auth = {
+        accessToken: refresh.token,
+        refreshToken: refresh.token,
+        additionals: {
+          ...refresh,
+          instanceURL: refresh.url,
+          kind: refresh.kind,
+          username: refresh.username,
+          deviceUUID: accountID,
+        },
+      };
+      if (prepaLoginId) {
+        const now = new Date().toISOString();
+        setLoadingModalVisible(false);
+        finishPrepaLogin(prepaLoginId, {
+          id: accountID, auth, serviceId: Services.PRONOTE, createdAt: now, updatedAt: now,
+        }, { firstName, lastName, schoolName, className, customisation: { profilePicture: pp, subjects: {} } });
+        return;
+      }
+
       useAccountStore.getState().addAccount({
         id: accountID,
         firstName,
@@ -127,17 +151,7 @@ export default function PronoteLoginWithQR() {
         },
         services: [{
           id: accountID,
-          auth: {
-            accessToken: refresh.token,
-            refreshToken: refresh.token,
-            additionals: {
-              ...refresh,
-              instanceURL: refresh.url,
-              kind: refresh.kind,
-              username: refresh.username,
-              deviceUUID: accountID
-            }
-          },
+          auth,
           serviceId: Services.PRONOTE,
           createdAt: (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString()

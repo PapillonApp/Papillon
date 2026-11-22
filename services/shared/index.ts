@@ -731,6 +731,11 @@ export class AccountManager {
       return new module.CahierDePrepa(service.id);
     }
 
+    if (service.serviceId === Services.PREPA_PLUS) {
+      const module = require("@/services/prepaPlus");
+      return new module.PrepaPlus();
+    }
+
     if (service.serviceId === Services.SKOLENGO) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/skolengo/index");

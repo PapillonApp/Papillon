@@ -6,6 +6,7 @@ export interface PronoteChallenge {
   deviceUUID: string;
   relinkAccountId?: string;
   relinkServiceId?: string;
+  prepaLoginId?: string;
 }
 
 let pendingChallenge: PronoteChallenge | null = null;

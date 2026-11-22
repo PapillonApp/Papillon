@@ -1,5 +1,5 @@
 import { useHeaderHeight, useRoute, useTheme } from "expo-router/react-navigation";
-import { useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { geolocation } from "@blockshub/pawnote-lts";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -61,6 +61,7 @@ export default function PronoteLoginSelectEtab() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const { prepaLoginId } = useLocalSearchParams<{ prepaLoginId?: string }>();
   const { t } = useTranslation();
 
   const { params } = useRoute();
@@ -82,7 +83,7 @@ export default function PronoteLoginSelectEtab() {
   const filteredSchools = schools.filter(school => school.name.toLowerCase().includes(search.toLowerCase()));
 
   const selectSchool = (school: School) => {
-    navigation.navigate("browser", { url: school.url, school });
+    navigation.navigate("browser", { url: school.url, school, ...(prepaLoginId && { prepaLoginId }) });
   }
 
   return (
