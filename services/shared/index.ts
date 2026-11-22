@@ -31,6 +31,7 @@ import {
 import {
   addHomeworkToDatabase,
   getHomeworksFromCache,
+  getWeekNumberFromDate,
 } from "@/database/useHomework";
 import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
@@ -58,6 +59,7 @@ import {
   ServiceFailure,
 } from "@/services/shared/types";
 import { useAccountStore } from "@/stores/account";
+import { getPrepaServiceIds, type PrepaCategory, isPrepaAccount } from "@/stores/account/prepaProviders";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { debug, error, log, warn } from "@/utils/logger/logger";
 
@@ -115,6 +117,7 @@ export class AccountManager {
    * backoff or a block left by a rejected credential.
    */
   async refreshAllAccounts(options: { force?: boolean } = {}): Promise<boolean> {
+    console.log("[PREPA-DIAG] selection", JSON.stringify({ selection: this.account.prepaServices, linked: this.account.services.map(service => service.serviceId) }));
     debug("We're refreshing all services for the account " + this.account.id);
     const hasInternet = await this.hasInternet();
 
@@ -224,15 +227,20 @@ export class AccountManager {
   }
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
+    const ids = this.prepaServiceIds(Capabilities.HOMEWORK);
     return await this.fetchData(
       Capabilities.HOMEWORK,
       async client =>
         client.getHomeworks ? await client.getHomeworks(weekNumber) : [],
       {
         multiple: true,
-        fallback: async () => getHomeworksFromCache(weekNumber),
+        fallback: async () => (await getHomeworksFromCache(weekNumber)).filter(item =>
+          !ids || (item.custom ? item.createdByAccount === this.account.id : ids.includes(item.createdByAccount))
+        ),
         saveToCache: async (data: Homework[]) => {
-          await addHomeworkToDatabase(data);
+          if (data.length) {
+            await addHomeworkToDatabase(data);
+          }
         },
       }
     );
@@ -257,6 +265,10 @@ export class AccountManager {
     clientId: string,
     kid?: Kid
   ): Promise<PeriodGrades> {
+    const ids = this.prepaServiceIds(Capabilities.GRADES);
+    if (ids && !ids.includes(clientId)) {
+      throw new Error("This grade period belongs to a different provider.");
+    }
     return await this.fetchData(
       Capabilities.GRADES,
       async client =>
@@ -275,13 +287,16 @@ export class AccountManager {
   }
 
   async getGradesPeriods(): Promise<Period[]> {
+    const ids = this.prepaServiceIds(Capabilities.GRADES);
     return await this.fetchData(
       Capabilities.GRADES,
       async client =>
         client.getGradesPeriods ? await client.getGradesPeriods() : [],
       {
         multiple: true,
-        fallback: async () => getPeriodsFromCache(),
+        fallback: async () => (await getPeriodsFromCache()).filter(period =>
+          !ids || ids.includes(period.createdByAccount)
+        ),
         saveToCache: async (data: Period[]) => {
           await addPeriodsToDatabase(data);
         },
@@ -401,6 +416,7 @@ export class AccountManager {
   }
 
   async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
+    const ids = this.prepaServiceIds(Capabilities.TIMETABLE);
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
@@ -409,9 +425,17 @@ export class AccountManager {
           : [],
       {
         multiple: true,
-        fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
+        fallback: async () => (await getCoursesFromCache([weekNumber], date.getFullYear())).map(day => ({
+          ...day,
+          courses: day.courses.filter(course =>
+            !ids || ids.includes(course.createdByAccount) || course.createdByAccount.startsWith("ical_")
+          ),
+        })).filter(day => day.courses.length > 0),
         saveToCache: async (data: CourseDay[]) => {
-          addCourseDayToDatabase(data);
+          const cahierIds = this.account.services.filter(service =>
+            service.serviceId === Services.CAHIER_DE_PREPA && ids?.includes(service.id)
+          ).map(service => service.id);
+          await addCourseDayToDatabase(data, cahierIds);
         },
       }
     );
@@ -570,9 +594,20 @@ export class AccountManager {
   }
 
   getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
-    return Object.values(this.clients).filter(client =>
-      client.capabilities.includes(capability)
-    );
+    const ids = this.prepaServiceIds(capability);
+    return Object.entries(this.clients).filter(([id, client]) =>
+      (!ids || ids.includes(id)) && client.capabilities.includes(capability)
+    ).map(([, client]) => client);
+  }
+
+  private prepaServiceIds(capability: Capabilities): string[] | undefined {
+    const categories: Partial<Record<Capabilities, PrepaCategory>> = {
+      [Capabilities.TIMETABLE]: "timetable",
+      [Capabilities.GRADES]: "grades",
+      [Capabilities.HOMEWORK]: "homework",
+    };
+    const category = categories[capability];
+    return category && isPrepaAccount(this.account) ? getPrepaServiceIds(this.account, category) : undefined;
   }
 
   private async hasInternet(): Promise<boolean> {
@@ -695,6 +730,10 @@ export class AccountManager {
           result.status === "fulfilled" ? result.value : []
         );
 
+        if (options.fallback && this.prepaServiceIds(capability) && settled.every(result => result.status === "rejected")) {
+          return await callFallback();
+        }
+
         if (options?.saveToCache && failures.length === 0) {
           await options.saveToCache(combinedResult);
         }
@@ -723,6 +762,17 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/pronote/index");
       return new module.Pronote(service.id);
+    }
+
+    if (service.serviceId === Services.CAHIER_DE_PREPA) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/cahierDePrepa/index");
+      return new module.CahierDePrepa(service.id);
+    }
+
+    if (service.serviceId === Services.PREPA_PLUS) {
+      const module = require("@/services/prepaPlus");
+      return new module.PrepaPlus(service.id);
     }
 
     if (service.serviceId === Services.SKOLENGO) {
@@ -811,6 +861,34 @@ const notifyManagerListeners = (manager: AccountManager) => {
 };
 
 const managerInFlight = new Map<string, Promise<AccountManager>>();
+
+export async function applyPrepaProviderChanges(accountId: string, hasNewServices: boolean) {
+  const account = useAccountStore.getState().accounts.find(item => item.id === accountId);
+  if (!account || useAccountStore.getState().lastUsedAccount !== accountId) {
+    return;
+  }
+  const managerBefore = globalManager?.account.id === accountId ? globalManager : null;
+  const timetableChanged = getPrepaServiceIds(managerBefore?.account, "timetable").join(",") !==
+    getPrepaServiceIds(account, "timetable").join(",");
+  if (managerBefore) {
+    managerBefore.syncAccount(account);
+    notifyManagerListeners(managerBefore);
+  }
+  if (hasNewServices || !managerBefore) {
+    await managerInFlight.get(accountId)?.catch(() => undefined);
+    if (useAccountStore.getState().lastUsedAccount === accountId) {
+      await initializeAccountManager(accountId);
+    }
+  }
+  if (timetableChanged && globalManager?.account.id === accountId) {
+    const manager = globalManager;
+    const today = new Date();
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+    await manager.getWeeklyTimetable(getWeekNumberFromDate(today), today);
+    await manager.getWeeklyTimetable(getWeekNumberFromDate(nextWeek), nextWeek);
+  }
+}
 
 export const initializeAccountManager = async (
   accountId?: string,

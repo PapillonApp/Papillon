@@ -132,7 +132,13 @@ export default function ServiceSelection() {
         {filteredServices.map(app => (
           <List.Item
             key={app.name}
-            onPress={() => setSelectedService(app.name)}
+            onPress={() => {
+              if (app.name === "prepa") {
+                app.onPress();
+              } else {
+                setSelectedService(app.name);
+              }
+            }}
             style={{
               backgroundColor:
                 selectedService === app.name

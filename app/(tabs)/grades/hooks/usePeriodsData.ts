@@ -56,14 +56,17 @@ export function usePeriodsData(): UsePeriodsDataResult {
   // Avoids re-applying the saved period every time the periods list is refreshed
   // once the user has actively picked one for this session.
   const hasUserSelection = useRef(false);
+  const latestRequest = useRef(0);
 
   const fetchPeriods = useCallback(async (managerToUse: AccountManager, isRefresh = false) => {
+    const request = ++latestRequest.current;
     if (isRefresh) { setRefreshing(true); } else { setLoading(true); }
     setError(null);
     setFailures([]);
 
     try {
       const result = await managerToUse.getGradesPeriods();
+      if (request !== latestRequest.current) { return; }
       setFailures(managerToUse.getFailures(Capabilities.GRADES));
       const sorted = sortPeriods(result);
       setPeriods(sorted);
@@ -83,12 +86,15 @@ export function usePeriodsData(): UsePeriodsDataResult {
         return sorted.length > 0 ? getCurrentPeriod(sorted) : undefined;
       });
     } catch (e) {
+      if (request !== latestRequest.current) { return; }
       warn(String(e), "usePeriodsData");
       setFailures(managerToUse.getFailures(Capabilities.GRADES));
       setError(e instanceof Error ? e : new Error(String(e)));
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (request === latestRequest.current) {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   }, [savedPeriodName]);
 

@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAccountStore } from "@/stores/account";
+import { getPrepaServiceIds } from "@/stores/account/prepaProviders";
 import { allowAllAuthRetries } from "@/services/auth/coordinator";
 import type { AccountManager } from "@/services/shared";
 import { getManager } from "@/services/shared";
@@ -62,8 +63,8 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
   const account = accounts.find(acc => acc.id === lastUsedAccount);
-  type Service = { id: string };
-  const services = useMemo(() => account?.services?.map((s: Service) => s.id) ?? [], [account]);
+  const services = useMemo(() => getPrepaServiceIds(account, "homework"), [account]);
+  const providerKey = services.join(",");
   const [manager, setManager] = useState(() => getManager(true));
   const [loadError, setLoadError] = useState<Error | null>(null);
   const [failures, setFailures] = useState<ServiceFailure[]>([]);
@@ -108,8 +109,8 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
 
   // A week is fetched from the service once per session; `inFlightWeeks` keeps a
   // swipe back and forth from queueing the same request twice.
-  const fetchedWeeks = useRef<Set<number>>(new Set());
-  const inFlightWeeks = useRef<Set<number>>(new Set());
+  const fetchedWeeks = useRef<Set<string>>(new Set());
+  const inFlightWeeks = useRef<Set<string>>(new Set());
   const weeksRef = useRef(weeks);
   weeksRef.current = weeks;
 
@@ -136,10 +137,11 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
   const fetchWeek = useCallback(
     async (week: number, managerToUse = manager, force = false) => {
       if (!managerToUse) { return; }
-      if (inFlightWeeks.current.has(week)) { return; }
-      if (!force && fetchedWeeks.current.has(week)) { return; }
+      const key = `${providerKey}:${week}`;
+      if (inFlightWeeks.current.has(key)) { return; }
+      if (!force && fetchedWeeks.current.has(key)) { return; }
 
-      inFlightWeeks.current.add(week);
+      inFlightWeeks.current.add(key);
       try {
         const result: Homework[] = await managerToUse.getHomeworks(week);
         const fetched: Record<string, Homework> = {};
@@ -147,7 +149,7 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
           const id = homeworkKey(hw);
           fetched[id] = { ...hw, id: hw.id ?? id };
         }
-        fetchedWeeks.current.add(week);
+        fetchedWeeks.current.add(key);
         setHomework(prev => ({ ...prev, ...fetched }));
         scheduleRefresh();
         // The manager falls back to the cache rather than throwing, so a service
@@ -159,10 +161,10 @@ export const useHomeworkData = (weeks: number[], alert: any) => {
         setFailures(managerToUse.getFailures(Capabilities.HOMEWORK));
         setLoadError(e instanceof Error ? e : new Error(String(e)));
       } finally {
-        inFlightWeeks.current.delete(week);
+        inFlightWeeks.current.delete(key);
       }
     },
-    [manager, scheduleRefresh]
+    [manager, providerKey, scheduleRefresh]
   );
 
   const weeksKey = weeks.join(",");

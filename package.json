@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@aramir/react-native-barcode": "^1.0.2",
+    "@babel/runtime": "^7.29.7",
     "@blockshub/blockscho": "^0.1.0",
     "@blockshub/blocksdirecte": "^0.0.10-alpha",
     "@blockshub/blocksrd": "^0.1.0",
@@ -38,6 +39,7 @@
     "@shopify/react-native-skia": "2.11.2",
     "alise-api": "^0.2.5",
     "buffer": "^6.0.3",
+    "cahier-de-prepa": "file:modules/cahier-de-prepa-0.1.4.tgz",
     "date-fns": "^4.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
@@ -76,6 +78,7 @@
     "ezly": "^1.4.3",
     "fflate": "^0.8.2",
     "i18next": "^25.10.10",
+    "htmlparser2": "^10.1.0",
     "ical.js": "^2.2.1",
     "lottie-react-native": "~7.5.0",
     "lucide-react-native": "^0.511.0",

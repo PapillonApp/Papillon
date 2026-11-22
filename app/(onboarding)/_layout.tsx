@@ -69,6 +69,18 @@ export default function OnboardingLayout() {
           options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_SCHOOLSERVICE") }}
         />
         <Stack.Screen
+          name="prepa"
+          options={{
+            ...newScreenOptions,
+            title: t("ONBOARDING_SERVICE_PREPA"),
+            presentation: "modal",
+          }}
+        />
+        <Stack.Screen
+          name="prepaCredentials"
+          options={{ ...newScreenOptions, title: t("ONBOARDING_LOGIN_TO_SERVICE"), presentation: "modal" }}
+        />
+        <Stack.Screen
           name="restaurants"
           options={{ headerShown: false, title: t("ONBOARDING_RESTAURANTS") }}
         />
@@ -87,6 +99,10 @@ export default function OnboardingLayout() {
         />
         <Stack.Screen
           name="services/multi"
+          options={{ headerShown: false, title: "", presentation: "formSheet" }}
+        />
+        <Stack.Screen
+          name="services/cahierDePrepa"
           options={{ headerShown: false, title: "", presentation: "formSheet" }}
         />
         <Stack.Screen

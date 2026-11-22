@@ -85,6 +85,20 @@ export const useAccountStore = create<AccountsStorage>()(
         });
         trackAdvancedEvent("external_account_added");
       },
+      setPrepaServices: (accountId, selection, services) =>
+        set(state => ({
+          accounts: state.accounts.map(account => account.id === accountId
+            ? {
+                ...account,
+                prepaServices: selection,
+                services: [...account.services, ...services.filter(service =>
+                  !account.services.some(existing => existing.serviceId === service.serviceId)
+                )],
+                updatedAt: new Date().toISOString(),
+              }
+            : account
+          ),
+        })),
       removeServiceFromAccount: serviceId =>
         set({
           accounts: get().accounts.map(account => {

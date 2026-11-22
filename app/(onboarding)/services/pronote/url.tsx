@@ -1,5 +1,5 @@
 import { useHeaderHeight, useTheme } from "expo-router/react-navigation";
-import { useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView } from "react-native";
@@ -17,12 +17,13 @@ const PronoteSearchHeader = memo(({
 }: {
 }) => {
   const navigation = useNavigation();
+  const { prepaLoginId } = useLocalSearchParams<{ prepaLoginId?: string }>();
   const { t } = useTranslation();
   const [url, setUrl] = React.useState("");
 
   const submitURL = () => {
     if (url.trim().length === 0) {return;}
-    navigation.navigate("browser", { url });
+    navigation.navigate("browser", { url, ...(prepaLoginId && { prepaLoginId }) });
   };
 
   const urlValid = url.trim().length > 0 && (url.startsWith("http://") || url.startsWith("https://"));

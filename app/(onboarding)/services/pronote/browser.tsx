@@ -30,6 +30,7 @@ import Typography from "@/ui/new/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
+import { finishPrepaLogin } from "@/utils/services/finishPrepaLogin";
 import uuid from "@/utils/uuid/uuid";
 
 import OnboardingWebView from "../../components/OnboardingWebView";
@@ -42,12 +43,13 @@ export default function PronoteENTLogin() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { params } = useRoute();
-  const { url, school, relinkAccountId, relinkServiceId, relinkDeviceUUID } = (params ?? {}) as {
+  const { url, school, relinkAccountId, relinkServiceId, relinkDeviceUUID, prepaLoginId } = (params ?? {}) as {
     url: string;
     school?: { name?: string };
     relinkAccountId?: string;
     relinkServiceId?: string;
     relinkDeviceUUID?: string;
+    prepaLoginId?: string;
   };
   const baseURL = url.split("/pronote")[0];
 
@@ -296,7 +298,6 @@ export default function PronoteENTLogin() {
       }
 
       try {
-        console.log("Login successful, adding account to store...");
         const schoolName = session.user.resources[0].establishmentName;
         const className = session.user.resources[0].className;
         const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
@@ -315,6 +316,14 @@ export default function PronoteENTLogin() {
             deviceUUID,
           },
         };
+
+        if (prepaLoginId) {
+          const now = new Date().toISOString();
+          finishPrepaLogin(prepaLoginId, {
+            id: deviceUUID, auth, serviceId: Services.PRONOTE, createdAt: now, updatedAt: now,
+          }, { firstName, lastName, schoolName, className, customisation: { profilePicture: pp, subjects: {} } });
+          return;
+        }
 
         const store = useAccountStore.getState();
 
@@ -447,7 +456,7 @@ export default function PronoteENTLogin() {
         presentationStyle="pageSheet"
         onRequestClose={() => setChallengeModalVisible(false)}
       >
-        <Pronote2FAModal doubleAuthSession={doubleAuthSession} doubleAuthError={doubleAuthError} setChallengeModalVisible={setChallengeModalVisible} deviceId={deviceId} relinkAccountId={relinkAccountId} relinkServiceId={relinkServiceId} />
+        <Pronote2FAModal doubleAuthSession={doubleAuthSession} doubleAuthError={doubleAuthError} setChallengeModalVisible={setChallengeModalVisible} deviceId={deviceId} relinkAccountId={relinkAccountId} relinkServiceId={relinkServiceId} prepaLoginId={prepaLoginId} />
       </Modal>
     </KeyboardAvoidingView>
   )

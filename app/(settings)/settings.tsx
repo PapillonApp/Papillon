@@ -10,6 +10,7 @@ import { Alert, Image, Platform, Pressable, View } from "react-native";
 
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import { useAccountStore } from "@/stores/account";
+import { isPrepaAccount } from "@/stores/account/prepaProviders";
 import { useSettingsStore } from "@/stores/settings";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Avatar from "@/ui/components/Avatar";
@@ -70,6 +71,16 @@ export default function SettingsIndex() {
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [
+    ...(isPrepaAccount(account) ? [{
+      title: t("ONBOARDING_SERVICE_PREPA"),
+      content: [{
+        title: t("Settings_Prepa_Providers"),
+        description: t("Settings_Prepa_Providers_Description"),
+        papicon: <Papicons name="Calendar" />,
+        color: "#29947A",
+        onPress: () => router.navigate("/(settings)/prepaProviders" as never),
+      }],
+    }] : []),
     {
       title: t("Settings_More"),
       content: [

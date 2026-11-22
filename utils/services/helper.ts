@@ -16,6 +16,10 @@ export function getServiceName(service: Services): string {
     return "Alise";
   case Services.ECOLEDIRECTE:
     return "ÉcoleDirecte";
+  case Services.CAHIER_DE_PREPA:
+    return "Cahier de Prépa";
+  case Services.PREPA_PLUS:
+    return "Prépa Plus";
   default:
     return "Pronote";
   }
@@ -39,6 +43,10 @@ export function getServiceLogo(service: Services): ImageSourcePropType {
     return require("@/assets/images/ecoledirecte.png")
   case Services.ALISE:
     return require("@/assets/images/alise.jpg")
+  case Services.CAHIER_DE_PREPA:
+    return require("@/assets/images/cahier_de_prepa.png")
+  case Services.PREPA_PLUS:
+    return require("@/assets/images/icon.png")
   default: 
     return require("@/assets/images/turboself.png")
   }

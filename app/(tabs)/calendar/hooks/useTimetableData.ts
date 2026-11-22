@@ -8,6 +8,7 @@ import type { AccountManager } from "@/services/shared";
 import { getManager } from "@/services/shared";
 import { Capabilities, ServiceFailure } from "@/services/shared/types";
 import { useAccountStore } from '@/stores/account';
+import { getPrepaServiceIds } from '@/stores/account/prepaProviders';
 import { debug, log } from "@/utils/logger/logger";
 
 export function useTimetableData(weekNumber: number, currentDate: Date = new Date()) {
@@ -30,10 +31,11 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
   const account = accounts.find(item => item.id === lastUsedAccount);
   const services: string[] = useMemo(
-    () => account?.services?.map((service: { id: string }) => service.id) ?? [],
+    () => getPrepaServiceIds(account, "timetable"),
     [account]
   );
 
+  const providerKey = services.join(",");
   const rawTimetable = useTimetable(refresh, [weekNumber - 1, weekNumber, weekNumber + 1], safeDate);
 
   const timetable = useMemo(() => {
@@ -66,7 +68,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
           const targetDate = new Date(safeDate);
           targetDate.setDate(targetDate.getDate() + (week - targetWeekNumber) * 7);
           const year = targetDate.getFullYear();
-          const key = `${year}-${week}`;
+          const key = `${providerKey}:${year}-${week}`;
           return { week, targetDate, key };
         });
 
@@ -101,7 +103,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date = new Dat
         fetchTimeoutRef.current = null;
       }
     }, 100);
-  }, [manager, safeDate]);
+  }, [manager, providerKey, safeDate]);
 
   useEffect(() => {
     fetchWeeklyTimetable(weekNumber);
