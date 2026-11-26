@@ -2,7 +2,7 @@ import { type ParamListBase, useFocusEffect, useIsFocused, useTheme } from "expo
 import { type NativeStackNavigationProp, useNavigation, useRouter } from "expo-router";
 import * as WebBrowser from 'expo-web-browser';
 import React from "react";
-import { Image, StatusBar, View } from "react-native";
+import { Image, Platform, StatusBar, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
 
@@ -28,6 +28,11 @@ export default function Welcome() {
 
   // Without an account, the splash stays up until the redirect from home ends.
   React.useLayoutEffect(() => {
+    if (Platform.OS === "android") {
+      SplashScreen.hide();
+      return;
+    }
+
     const onboardingNavigation = navigation.getParent<NativeStackNavigationProp<ParamListBase>>();
     return onboardingNavigation?.addListener("transitionEnd", event => {
       if (!event.data.closing) SplashScreen.hideAsync();

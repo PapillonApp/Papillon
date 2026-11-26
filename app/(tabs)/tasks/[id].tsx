@@ -132,7 +132,7 @@ const Task = () => {
     <>
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <HeaderBackButton onPress={() => router.back()} />
+          <HeaderBackButton tintColor={colors.text} onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
 
