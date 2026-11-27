@@ -99,7 +99,7 @@ export default function CourseModal() {
     <View style={{ flex: 1, backgroundColor: colors.overground }}>
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <HeaderBackButton onPress={() => router.back()} />
+          <HeaderBackButton tintColor={colors.text} onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
 

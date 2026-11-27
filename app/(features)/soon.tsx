@@ -4,12 +4,13 @@ import Typography from "@/ui/components/Typography";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { Papicons } from "@getpapillon/papicons";
 import { useRouter } from "expo-router";
-import { HeaderBackButton } from "expo-router/react-navigation";
+import { HeaderBackButton, useTheme } from "expo-router/react-navigation";
 import React from "react";
 import { Linking, Platform, View } from "react-native";
 
 export default function Soon() {
   const router = useRouter();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -20,7 +21,7 @@ export default function Soon() {
     >
       {Platform.OS === "android" && (
         <NativeHeaderSide side="Left">
-          <HeaderBackButton onPress={() => router.back()} />
+          <HeaderBackButton tintColor={colors.text} onPress={() => router.back()} />
         </NativeHeaderSide>
       )}
 

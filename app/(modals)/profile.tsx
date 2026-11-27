@@ -175,7 +175,7 @@ export default function CustomProfileScreen() {
         </View>
         <NativeHeaderSide side="Left">
           {Platform.OS === "android" ? (
-            <HeaderBackButton onPress={() => router.back()} />
+            <HeaderBackButton tintColor={colors.text} onPress={() => router.back()} />
           ) : (
             <NativeHeaderPressable onPressIn={() => router.back()}>
               <Icon papicon size={26}>
